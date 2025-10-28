@@ -25,16 +25,32 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Obtener lista de usuarios
-    const { data: { users }, error } = await supabaseAdmin.auth.admin.listUsers()
+    // Obtener TODOS los usuarios con paginación
+    let allUsers = []
+    let page = 1
+    const perPage = 1000
+    let hasMore = true
 
-    if (error) {
-      console.error('Error listando usuarios:', error)
-      return NextResponse.json(
-        { error: 'Error al obtener usuarios', details: error.message },
-        { status: 500 }
-      )
+    while (hasMore) {
+      const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+        page,
+        perPage
+      })
+
+      if (error) {
+        console.error('Error listando usuarios:', error)
+        return NextResponse.json(
+          { error: 'Error al obtener usuarios', details: error.message },
+          { status: 500 }
+        )
+      }
+
+      allUsers = allUsers.concat(data.users)
+      hasMore = data.users.length === perPage
+      page++
     }
+
+    const users = allUsers
 
     // Formatear datos para el cliente
     const formattedUsers = users.map(user => ({
