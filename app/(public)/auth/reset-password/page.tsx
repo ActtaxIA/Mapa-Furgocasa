@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState('')
@@ -64,10 +65,13 @@ export default function ResetPasswordPage() {
         {/* Logo y título */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <span className="text-5xl">🚐</span>
-              <h1 className="text-3xl font-bold text-gray-900">Furgocasa</h1>
-            </div>
+            <Image 
+              src="/logo-negro.png" 
+              alt="Furgocasa" 
+              width={200} 
+              height={80}
+              className="mx-auto mb-4"
+            />
           </Link>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">¿Olvidaste tu contraseña?</h2>
           <p className="text-gray-600">

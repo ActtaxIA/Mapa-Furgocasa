@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
@@ -56,10 +57,13 @@ export default function LoginPage() {
         {/* Logo y título */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <span className="text-5xl">🚐</span>
-              <h1 className="text-3xl font-bold text-gray-900">Furgocasa</h1>
-            </div>
+            <Image 
+              src="/logo-negro.png" 
+              alt="Furgocasa" 
+              width={200} 
+              height={80}
+              className="mx-auto mb-4"
+            />
           </Link>
           <p className="text-gray-600">Inicia sesión en tu cuenta</p>
         </div>
