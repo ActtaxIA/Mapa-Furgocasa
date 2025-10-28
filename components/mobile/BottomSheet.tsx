@@ -83,12 +83,11 @@ export default function BottomSheet({
       {/* Bottom Sheet */}
       <div
         ref={sheetRef}
-        className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-50 transition-transform duration-300 ease-out md:hidden ${getHeightClass()}`}
-        style={{ touchAction: 'none' }}
+        className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-50 transition-transform duration-300 ease-out md:hidden flex flex-col ${getHeightClass()}`}
       >
         {/* Drag Handle */}
         <div
-          className="w-full flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing"
+          className="w-full flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing flex-shrink-0"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -98,7 +97,7 @@ export default function BottomSheet({
 
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
             <h2 className="text-xl font-bold text-gray-900">{title}</h2>
             <button
               onClick={onClose}
@@ -111,7 +110,7 @@ export default function BottomSheet({
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-6 py-4">
+        <div className="flex-1 overflow-y-auto min-h-0">
           {children}
         </div>
       </div>

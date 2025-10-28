@@ -10,6 +10,13 @@ type VistaRuta = 'ruta' | 'mapa' | 'lista'
 export default function RutaPage() {
   const [vistaActual, setVistaActual] = useState<VistaRuta>('ruta')
 
+  const handleRutaCalculada = () => {
+    // Cambiar a vista mapa en móvil cuando se calcula una ruta
+    if (window.innerWidth < 768) {
+      setVistaActual('mapa')
+    }
+  }
+
   return (
     <div className="h-screen flex flex-col">
       {/* Navbar - siempre visible */}
@@ -25,7 +32,10 @@ export default function RutaPage() {
             </div>
           </div>
         }>
-          <PlanificadorRuta vistaMovil={vistaActual} />
+          <PlanificadorRuta 
+            vistaMovil={vistaActual} 
+            onRutaCalculada={handleRutaCalculada}
+          />
         </Suspense>
       </main>
 

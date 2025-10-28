@@ -62,6 +62,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
             zoomControlOptions: {
               position: google.maps.ControlPosition.RIGHT_CENTER
             },
+            gestureHandling: 'greedy', // Permite desplazar con un dedo en móvil
             styles: [
               {
                 featureType: 'poi',
@@ -651,10 +652,10 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
         <span className="text-sm" suppressHydrationWarning>{gpsActive ? 'GPS Activo' : 'Activar GPS'}</span>
       </button>
 
-      {/* Botón Restablecer Zoom - Abajo Centro */}
+      {/* Botón Restablecer Zoom - Abajo Centro (más arriba en móvil para evitar bottom bar) */}
       <button
         onClick={resetZoom}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-10 flex items-center gap-2 font-semibold text-gray-700"
+        className="absolute bottom-6 md:bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-10 flex items-center gap-2 font-semibold text-gray-700 mb-16 md:mb-0"
         aria-label="Restablecer zoom"
       >
         <svg

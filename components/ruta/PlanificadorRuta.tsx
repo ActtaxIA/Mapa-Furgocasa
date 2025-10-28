@@ -34,9 +34,10 @@ interface RoutePoint {
 
 interface PlanificadorRutaProps {
   vistaMovil?: 'ruta' | 'mapa' | 'lista'
+  onRutaCalculada?: () => void
 }
 
-export default function PlanificadorRuta({ vistaMovil = 'ruta' }: PlanificadorRutaProps = {}) {
+export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada }: PlanificadorRutaProps = {}) {
   const mapRef = useRef<HTMLDivElement>(null)
   const origenInputRef = useRef<HTMLInputElement>(null)
   const destinoInputRef = useRef<HTMLInputElement>(null)
@@ -147,6 +148,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta' }: PlanificadorRu
         zoomControlOptions: {
           position: google.maps.ControlPosition.RIGHT_CENTER
         },
+        gestureHandling: 'greedy', // Permite desplazar con un dedo en móvil
         styles: [
           {
             featureType: 'poi',
@@ -408,6 +410,19 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta' }: PlanificadorRu
           
           // Buscar áreas cercanas a la ruta
           await buscarAreasCercanasARuta(result.routes[0])
+          
+          // Hacer zoom automático a la ruta
+          const bounds = new google.maps.LatLngBounds()
+          result.routes[0].legs.forEach((leg: any) => {
+            bounds.extend(leg.start_location)
+            bounds.extend(leg.end_location)
+          })
+          map.fitBounds(bounds, { padding: 50 })
+          
+          // En móvil, cambiar a vista mapa automáticamente
+          if (onRutaCalculada) {
+            onRutaCalculada()
+          }
         } else {
           showToast('No se pudo calcular la ruta', 'error')
         }
@@ -1438,7 +1453,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta' }: PlanificadorRu
           <span className="text-sm" suppressHydrationWarning>{gpsActive ? 'GPS Activo' : 'Activar GPS'}</span>
         </button>
 
-        {/* Botón Restablecer Zoom - Abajo Centro */}
+        {/* Botón Restablecer Zoom - Abajo Centro (más arriba en móvil para evitar bottom bar) */}
         <button
           onClick={() => {
             if (map) {
@@ -1446,7 +1461,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta' }: PlanificadorRu
               map.setZoom(6)
             }
           }}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-30 flex items-center gap-2 font-semibold text-gray-700"
+          className="absolute bottom-6 md:bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-30 flex items-center gap-2 font-semibold text-gray-700 mb-16 md:mb-0"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
