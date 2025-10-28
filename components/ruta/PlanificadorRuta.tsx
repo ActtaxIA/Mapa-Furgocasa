@@ -15,6 +15,17 @@ import {
 } from '@heroicons/react/24/outline'
 import { useToast } from '@/hooks/useToast'
 
+// Tipos simplificados para Google Maps
+type GoogleMap = any
+type GoogleDirectionsService = any
+type GoogleDirectionsRenderer = any
+type GoogleMarker = any
+type GoogleInfoWindow = any
+type GoogleDirectionsResult = any
+type GoogleDirectionsRoute = any
+type GoogleDirectionsRequest = any
+type GoogleDirectionsWaypoint = any
+
 interface RoutePoint {
   name: string
   lat: number
@@ -28,9 +39,9 @@ export default function PlanificadorRuta() {
   const { toast, showToast, hideToast } = useToast()
   const searchParams = useSearchParams()
   
-  const [map, setMap] = useState<google.maps.Map | null>(null)
-  const [directionsService, setDirectionsService] = useState<google.maps.DirectionsService | null>(null)
-  const [directionsRenderer, setDirectionsRenderer] = useState<google.maps.DirectionsRenderer | null>(null)
+  const [map, setMap] = useState<GoogleMap | null>(null)
+  const [directionsService, setDirectionsService] = useState<GoogleDirectionsService | null>(null)
+  const [directionsRenderer, setDirectionsRenderer] = useState<GoogleDirectionsRenderer | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isCalculating, setIsCalculating] = useState(false)
   
@@ -39,10 +50,10 @@ export default function PlanificadorRuta() {
   const [waypoints, setWaypoints] = useState<RoutePoint[]>([])
   const [radio, setRadio] = useState<number>(10) // km
   const [areasEnRuta, setAreasEnRuta] = useState<Area[]>([])
-  const [markers, setMarkers] = useState<google.maps.Marker[]>([])
-  const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(null)
+  const [markers, setMarkers] = useState<GoogleMarker[]>([])
+  const [infoWindow, setInfoWindow] = useState<GoogleInfoWindow | null>(null)
   const [rutaInfo, setRutaInfo] = useState<{ distancia: string; duracion: string } | null>(null)
-  const userMarkerRef = useRef<google.maps.Marker | null>(null)
+  const userMarkerRef = useRef<GoogleMarker | null>(null)
   const [gpsActive, setGpsActive] = useState(false) // Siempre false inicialmente para evitar hidratación
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const watchIdRef = useRef<number | null>(null)
@@ -116,6 +127,8 @@ export default function PlanificadorRuta() {
 
       await loader.load()
       console.log('✅ Google Maps cargado correctamente')
+
+      const google = (window as any).google
 
       if (!mapRef.current) return
 
@@ -206,7 +219,7 @@ export default function PlanificadorRuta() {
     }
   }
 
-  const actualizarInfoRuta = (directions: google.maps.DirectionsResult) => {
+  const actualizarInfoRuta = (directions: GoogleDirectionsResult) => {
     const route = directions.routes[0]
     if (!route || !route.legs[0]) return
 
@@ -359,6 +372,8 @@ export default function PlanificadorRuta() {
 
     setIsCalculating(true)
 
+    const google = (window as any).google
+
     try {
       // Preparar waypoints para Google Maps
       const waypointsFormatted = waypoints.map(wp => ({
@@ -367,7 +382,7 @@ export default function PlanificadorRuta() {
       }))
 
       // Calcular ruta
-      const request: google.maps.DirectionsRequest = {
+      const request: GoogleDirectionsRequest = {
         origin: new google.maps.LatLng(origen.lat, origen.lng),
         destination: new google.maps.LatLng(destino.lat, destino.lng),
         waypoints: waypointsFormatted,
@@ -399,7 +414,9 @@ export default function PlanificadorRuta() {
     }
   }
 
-  const buscarAreasCercanasARuta = async (route: google.maps.DirectionsRoute) => {
+  const buscarAreasCercanasARuta = async (route: GoogleDirectionsRoute) => {
+    const google = (window as any).google
+
     try {
       // Limpiar marcadores anteriores
       markers.forEach(marker => marker.setMap(null))
@@ -659,7 +676,8 @@ export default function PlanificadorRuta() {
   const mostrarAreasEnMapa = (areas: Area[]) => {
     if (!map || !infoWindow) return
 
-    const nuevosMarkers: google.maps.Marker[] = []
+    const google = (window as any).google
+    const nuevosMarkers: GoogleMarker[] = []
 
     areas.forEach((area) => {
       const pinColor = getTipoAreaColor(area.tipo_area)
@@ -700,7 +718,9 @@ export default function PlanificadorRuta() {
   }
 
   const loadRutaFromId = async (rutaId: string) => {
-    try {
+    const google = (window as any).google
+
+    try{
       const supabase = createClient()
       const { data: ruta, error } = await supabase
         .from('rutas')
@@ -856,7 +876,7 @@ export default function PlanificadorRuta() {
 
     setIsCalculating(true)
 
-    const waypointsFormatted: google.maps.DirectionsWaypoint[] = paradasPuntos.map((parada: any) => ({
+    const waypointsFormatted: GoogleDirectionsWaypoint[] = paradasPuntos.map((parada: any) => ({
       location: new google.maps.LatLng(parada.latitud, parada.longitud),
       stopover: true
     }))
