@@ -220,7 +220,10 @@ export default function ConfiguracionPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Configuración de IA</h1>
               <p className="text-gray-600 mt-1">
-                Ajusta los prompts y parámetros de los agentes de inteligencia artificial
+                Ajusta los prompts y parámetros de los 2 agentes que usan OpenAI
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                💡 <strong>Nota:</strong> "Enriquecer Imágenes" no aparece aquí porque solo usa SerpAPI (sin prompts de IA)
               </p>
             </div>
           </div>
@@ -590,9 +593,26 @@ export default function ConfiguracionPage() {
           )}
         </div>
 
-        {/* Info sobre tipos de prompts */}
+        {/* Info sobre agentes y tipos de prompts */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-          <h3 className="font-semibold text-blue-900 mb-2">💡 Cómo funcionan los diferentes tipos de prompts</h3>
+          <h3 className="font-semibold text-blue-900 mb-3">🤖 Agentes de IA Disponibles</h3>
+          
+          <div className="mb-4 text-sm text-blue-800">
+            <p className="font-semibold mb-2">Agentes con Prompts Configurables (aparecen en pestañas):</p>
+            <ul className="list-disc list-inside space-y-1 ml-2">
+              <li><strong>🔍 Actualizar Servicios:</strong> Usa OpenAI para analizar texto web y detectar servicios (agua, electricidad, etc.)</li>
+              <li><strong>✨ Enriquecer Textos:</strong> Usa OpenAI para generar descripciones detalladas de áreas</li>
+            </ul>
+          </div>
+
+          <div className="mb-4 text-sm text-blue-800 bg-blue-100 p-3 rounded">
+            <p className="font-semibold mb-1">Agente sin Prompts (no necesita configuración aquí):</p>
+            <ul className="list-disc list-inside ml-2">
+              <li><strong>🖼️ Enriquecer Imágenes:</strong> Solo usa SerpAPI para buscar fotos (no requiere OpenAI ni prompts)</li>
+            </ul>
+          </div>
+
+          <h3 className="font-semibold text-blue-900 mb-2 mt-4">💡 Tipos de Prompts (para los agentes de OpenAI)</h3>
           <ul className="text-sm text-blue-800 space-y-2">
             <li className="flex items-start gap-2">
               <span className="font-bold mt-0.5">⚙️ System:</span>
