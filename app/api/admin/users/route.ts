@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, User } from '@supabase/supabase-js'
 
 /**
  * API para gestionar usuarios (requiere Service Role Key)
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Obtener TODOS los usuarios con paginación
-    let allUsers = []
+    let allUsers: User[] = []
     let page = 1
     const perPage = 1000
     let hasMore = true
