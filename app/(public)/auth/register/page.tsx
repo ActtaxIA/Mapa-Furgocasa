@@ -75,7 +75,7 @@ export default function RegisterPage() {
       const isBrowser = typeof window !== 'undefined'
       const isLocalhost = isBrowser && window.location.hostname === 'localhost'
       const redirectUrl = isLocalhost
-        ? 'http://localhost:3000/auth/callback?next=/mapa'
+        ? 'https://localhost:3000/auth/callback?next=/mapa'
         : 'https://www.mapafurgocasa.com/auth/callback?next=/mapa'
       
       // Debug en consola para verificar
