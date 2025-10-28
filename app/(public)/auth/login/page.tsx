@@ -39,21 +39,28 @@ export default function LoginPage() {
     try {
       const supabase = createClient()
       
-      // FORZAR URL de producción - NO usar detección automática por ahora
-      const baseUrl = 'https://www.mapafurgocasa.com'
+      // Detectar la URL actual del navegador (será www.mapafurgocasa.com en producción)
+      const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://www.mapafurgocasa.com'
+      const redirectUrl = `${currentOrigin}/auth/callback`
+      
+      // Debug en consola para verificar
+      console.log('🔐 OAuth redirectTo:', redirectUrl)
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${baseUrl}/auth/callback`,
-          // Forzar skip de cache
+          redirectTo: redirectUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
           },
         },
       })
-      if (error) throw error
+      
+      if (error) {
+        console.error('❌ Error OAuth:', error)
+        throw error
+      }
     } catch (error: any) {
       setError(error.message || 'Error al iniciar sesión con Google')
     }
