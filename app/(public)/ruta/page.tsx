@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 import PlanificadorRuta from '@/components/ruta/PlanificadorRuta'
 import { MapPinIcon, MapIcon, ListBulletIcon } from '@heroicons/react/24/outline'
@@ -17,8 +17,16 @@ export default function RutaPage() {
     }
   }
 
+  // Prevenir scroll en esta página (app-like)
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [])
+
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       {/* Navbar - siempre visible */}
       <Navbar />
       

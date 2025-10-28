@@ -168,8 +168,16 @@ export default function MapaPage() {
     )
   }
 
+  // Prevenir scroll en esta página (app-like)
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [])
+
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       {/* Navbar - siempre visible */}
       <Navbar />
       

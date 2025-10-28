@@ -14,8 +14,6 @@
   
   html, body {
     @apply h-full w-full;
-    overflow: hidden;
-    position: fixed;
   }
 
   body {
@@ -27,12 +25,12 @@
   html {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
+    scroll-behavior: smooth;
   }
 
   /* Contenedor principal de la app ocupa 100% altura */
   #__next {
     @apply h-full;
-    overflow: hidden;
   }
 
   /* Evitar zoom en inputs en iOS */
