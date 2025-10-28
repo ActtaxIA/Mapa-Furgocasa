@@ -8,6 +8,9 @@ export function createClient() {
     {
       cookies: {
         get(name: string) {
+          // Verificar que estamos en el navegador
+          if (typeof document === 'undefined') return undefined
+          
           // Decodificar URI para manejar valores especiales
           const cookie = document.cookie
             .split('; ')
@@ -16,6 +19,9 @@ export function createClient() {
           return cookie ? decodeURIComponent(cookie) : undefined
         },
         set(name: string, value: string, options: any) {
+          // Verificar que estamos en el navegador
+          if (typeof document === 'undefined') return
+          
           // Detectar si estamos en producción (HTTPS)
           const isProduction = typeof window !== 'undefined' && 
             window.location.protocol === 'https:'
@@ -39,6 +45,9 @@ export function createClient() {
           document.cookie = cookieOptions.join('; ')
         },
         remove(name: string, options: any) {
+          // Verificar que estamos en el navegador
+          if (typeof document === 'undefined') return
+          
           const isProduction = typeof window !== 'undefined' && 
             window.location.protocol === 'https:'
           
