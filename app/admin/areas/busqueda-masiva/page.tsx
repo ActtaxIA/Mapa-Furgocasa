@@ -619,9 +619,18 @@ export default function BusquedaMasivaPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Ej: areas autocaravanas murcia, camping barcelona..."
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                className="w-full pl-10 pr-12 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
                 disabled={searching}
               />
+              {searchQuery && !searching && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  aria-label="Limpiar búsqueda"
+                >
+                  <XCircleIcon className="w-5 h-5 text-gray-400" />
+                </button>
+              )}
             </div>
             <button
               onClick={handleSearch}

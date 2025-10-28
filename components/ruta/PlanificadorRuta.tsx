@@ -1177,7 +1177,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       )}
 
       {/* Panel de Controles - Izquierda (Desktop) o vista "ruta" (Móvil) */}
-      <aside className={`w-full md:w-80 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-50 flex flex-col h-full ${
+      <aside className={`w-full md:w-80 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-30 flex flex-col h-full ${
         vistaMovil === 'ruta' ? 'flex' : 'hidden md:flex'
       }`}>
         {/* Header Azulado */}
@@ -1472,7 +1472,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       </div>
 
       {/* Lista de Resultados - Derecha (Desktop siempre visible, Móvil solo en vista "lista") */}
-      <aside className={`w-full md:w-96 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-50 h-full md:block ${
+      <aside className={`w-full md:w-96 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-30 h-full md:block ${
         vistaMovil === 'lista' ? 'block' : 'hidden md:block'
       }`}>
         <ListaResultados

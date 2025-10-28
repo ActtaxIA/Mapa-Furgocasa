@@ -129,9 +129,18 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
               value={filtros.busqueda}
               onChange={(e) => handleBusquedaChange(e.target.value)}
               placeholder="Nombre, ciudad, dirección..."
-              className="w-full pl-8 pr-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-transparent"
+              className="w-full pl-8 pr-8 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-transparent"
             />
             <MagnifyingGlassIcon className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            {filtros.busqueda && (
+              <button
+                onClick={() => handleBusquedaChange('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Limpiar búsqueda"
+              >
+                <XMarkIcon className="w-4 h-4 text-gray-400" />
+              </button>
+            )}
           </div>
         </div>
 
