@@ -4,6 +4,8 @@ import { MapaInteractivo } from '@/components/mapa/MapaInteractivo'
 import { FiltrosMapa, Filtros } from '@/components/mapa/FiltrosMapa'
 import { ListaResultados } from '@/components/mapa/ListaResultados'
 import { Navbar } from '@/components/layout/Navbar'
+import BottomNavigation from '@/components/mobile/BottomNavigation'
+import BottomSheet from '@/components/mobile/BottomSheet'
 import { createClient } from '@/lib/supabase/client'
 import type { Area } from '@/types/database.types'
 import { useEffect, useState, useMemo } from 'react'
@@ -172,59 +174,23 @@ export default function MapaPage() {
 
   return (
     <div className="h-screen flex flex-col">
-      {/* Navbar */}
-      <Navbar />
-      
-      {/* Controles móviles (solo en móvil) */}
-      <div className="lg:hidden bg-primary-700 px-4 py-2 flex gap-2 shrink-0">
-        <button
-          onClick={() => setMostrarFiltros(!mostrarFiltros)}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white text-primary-600 rounded-lg font-semibold hover:bg-primary-50 transition-colors"
-        >
-          <FunnelIcon className="w-5 h-5" />
-          Filtros
-        </button>
-        <button
-          onClick={() => setMostrarLista(!mostrarLista)}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white text-primary-600 rounded-lg font-semibold hover:bg-primary-50 transition-colors relative"
-        >
-          <ListBulletIcon className="w-5 h-5" />
-          Resultados
-          {areasFiltradas.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-              {areasFiltradas.length > 99 ? '99+' : areasFiltradas.length}
-            </span>
-          )}
-        </button>
+      {/* Navbar - oculta en móvil */}
+      <div className="hidden md:block">
+        <Navbar />
       </div>
-
+      
       {/* Layout principal */}
       <main className="flex-1 relative flex overflow-hidden">
-        {/* Panel de Filtros - Desktop: Fijo izquierda, Móvil: Overlay */}
-        <aside
-          className={`
-            ${mostrarFiltros ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-            fixed lg:static inset-y-0 left-0 z-30 w-80 bg-white shadow-lg
-            transition-transform duration-300 ease-in-out
-            lg:shadow-none lg:border-r
-          `}
-        >
+        {/* Panel de Filtros - Solo Desktop */}
+        <aside className="hidden lg:block w-80 bg-white shadow-lg border-r overflow-y-auto">
           <FiltrosMapa
             filtros={filtros}
             onFiltrosChange={setFiltros}
-            onClose={() => setMostrarFiltros(false)}
+            onClose={() => {}}
             totalResultados={areasFiltradas.length}
             paisesDisponibles={paisesDisponibles}
           />
         </aside>
-
-        {/* Overlay oscuro en móvil */}
-        {mostrarFiltros && (
-          <div
-            className="lg:hidden fixed inset-0 bg-black/50 z-20"
-            onClick={() => setMostrarFiltros(false)}
-          />
-        )}
 
         {/* Mapa - Centro */}
         <div className="flex-1 relative">
@@ -234,6 +200,28 @@ export default function MapaPage() {
             onAreaClick={handleAreaClick}
           />
 
+          {/* Botones flotantes móvil - Superior */}
+          <div className="md:hidden absolute top-4 left-4 right-4 flex gap-2 z-10">
+            <button
+              onClick={() => setMostrarFiltros(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-gray-700 rounded-full shadow-lg font-semibold hover:bg-gray-50 transition-colors"
+            >
+              <FunnelIcon className="w-5 h-5" />
+              Filtros
+            </button>
+            <button
+              onClick={() => setMostrarLista(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-full shadow-lg font-semibold hover:bg-primary-700 transition-colors relative"
+            >
+              {areasFiltradas.length > 0 && (
+                <span className="bg-white text-primary-600 text-xs rounded-full px-2 py-0.5 font-bold">
+                  {areasFiltradas.length > 99 ? '99+' : areasFiltradas.length}
+                </span>
+              )}
+              <span>Lugares</span>
+            </button>
+          </div>
+
           {/* Contador de resultados - Desktop */}
           <div className="hidden lg:block absolute top-4 left-4 bg-white rounded-lg shadow-lg px-4 py-2 z-10">
             <p className="text-sm font-semibold text-gray-700">
@@ -242,32 +230,55 @@ export default function MapaPage() {
           </div>
         </div>
 
-        {/* Panel de Resultados - Desktop: Fijo derecha, Móvil: Overlay */}
-        <aside
-          className={`
-            ${mostrarLista ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
-            fixed lg:static inset-y-0 right-0 z-30 w-full sm:w-96 bg-white shadow-lg
-            transition-transform duration-300 ease-in-out
-            lg:shadow-none lg:border-l
-          `}
-        >
+        {/* Panel de Resultados - Solo Desktop */}
+        <aside className="hidden lg:block w-96 bg-white shadow-lg border-l overflow-y-auto">
           <ListaResultados
             areas={areasFiltradas}
             onAreaClick={handleAreaClick}
-            onClose={() => setMostrarLista(false)}
+            onClose={() => {}}
             userLocation={userLocation}
             gpsActive={gpsActive}
           />
         </aside>
-
-        {/* Overlay oscuro en móvil para lista */}
-        {mostrarLista && (
-          <div
-            className="lg:hidden fixed inset-0 bg-black/50 z-20"
-            onClick={() => setMostrarLista(false)}
-          />
-        )}
       </main>
+
+      {/* Bottom Sheet - Filtros (solo móvil) */}
+      <BottomSheet
+        isOpen={mostrarFiltros}
+        onClose={() => setMostrarFiltros(false)}
+        title="Filtros"
+        snapPoints={['full']}
+      >
+        <FiltrosMapa
+          filtros={filtros}
+          onFiltrosChange={setFiltros}
+          onClose={() => setMostrarFiltros(false)}
+          totalResultados={areasFiltradas.length}
+          paisesDisponibles={paisesDisponibles}
+        />
+      </BottomSheet>
+
+      {/* Bottom Sheet - Lista (solo móvil) */}
+      <BottomSheet
+        isOpen={mostrarLista}
+        onClose={() => setMostrarLista(false)}
+        title={`${areasFiltradas.length} Lugares`}
+        snapPoints={['full', 'half']}
+      >
+        <ListaResultados
+          areas={areasFiltradas}
+          onAreaClick={handleAreaClick}
+          onClose={() => setMostrarLista(false)}
+          userLocation={userLocation}
+          gpsActive={gpsActive}
+        />
+      </BottomSheet>
+
+      {/* Bottom Navigation (solo móvil) */}
+      <BottomNavigation 
+        onListClick={() => setMostrarLista(true)}
+        showListButton={false}
+      />
     </div>
   )
 }

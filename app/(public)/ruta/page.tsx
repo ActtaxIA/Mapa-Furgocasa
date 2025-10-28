@@ -2,12 +2,16 @@
 
 import { Suspense } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
+import BottomNavigation from '@/components/mobile/BottomNavigation'
 import PlanificadorRuta from '@/components/ruta/PlanificadorRuta'
 
 export default function RutaPage() {
   return (
     <div className="h-screen flex flex-col">
-      <Navbar />
+      {/* Navbar - oculta en móvil */}
+      <div className="hidden md:block">
+        <Navbar />
+      </div>
       
       {/* Planificador */}
       <main className="flex-1 overflow-hidden">
@@ -22,6 +26,9 @@ export default function RutaPage() {
           <PlanificadorRuta />
         </Suspense>
       </main>
+
+      {/* Bottom Navigation (solo móvil) */}
+      <BottomNavigation showListButton={false} />
     </div>
   )
 }
