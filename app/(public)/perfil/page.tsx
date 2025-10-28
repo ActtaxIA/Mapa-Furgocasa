@@ -91,7 +91,7 @@ export default function PerfilPage() {
         .eq('user_id', userId)
 
       const totalValoraciones = valoraciones?.length || 0
-      const promedioRating = totalValoraciones > 0
+      const promedioRating = totalValoraciones > 0 && valoraciones
         ? valoraciones.reduce((sum, v) => sum + v.rating, 0) / totalValoraciones
         : 0
 
