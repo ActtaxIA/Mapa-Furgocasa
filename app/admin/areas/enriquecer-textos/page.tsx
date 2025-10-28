@@ -149,11 +149,17 @@ export default function EnriquecerTextosPage() {
       }
 
       console.log('✅ [ENRICH] Área encontrada:', area.nombre, '-', area.ciudad)
+      console.log('  📝 Descripción actual:', area.descripcion ? `${area.descripcion.length} caracteres` : 'Sin descripción')
 
-      // Si ya tiene descripción, no sobrescribir
-      if (area.descripcion && area.descripcion.length > 100) {
-        console.log('⚠️ [ENRICH] El área ya tiene descripción (>100 caracteres). No se sobrescribe.')
+      // Si ya tiene descripción, no sobrescribir (SOLO si es una descripción válida y larga)
+      if (area.descripcion && area.descripcion.trim().length > 200) {
+        console.log('⚠️ [ENRICH] El área ya tiene descripción válida (>200 caracteres). No se sobrescribe.')
+        console.log('  💡 Si quieres sobrescribirla, borra primero la descripción en el admin.')
         return false
+      }
+      
+      if (area.descripcion && area.descripcion.trim().length > 0) {
+        console.log('⚠️ [ENRICH] El área tiene texto corto. Se sobrescribirá.')
       }
 
       // 1. Buscar información con SerpAPI
@@ -314,10 +320,14 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
       }
 
       console.log('✅ [ENRICH] ¡Descripción guardada exitosamente!')
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
       return true
 
-    } catch (error) {
+    } catch (error: any) {
+      console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
       console.error('❌ [ENRICH] Error enriqueciendo área:', error)
+      console.error('  Detalles:', error?.message || 'Sin detalles')
+      console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
       return false
     }
   }
