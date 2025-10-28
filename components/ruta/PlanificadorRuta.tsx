@@ -61,7 +61,7 @@ export default function PlanificadorRuta() {
   // Estados para guardar ruta
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [currentRoute, setCurrentRoute] = useState<google.maps.DirectionsRoute | null>(null)
+  const [currentRoute, setCurrentRoute] = useState<GoogleDirectionsRoute | null>(null)
   const [saveForm, setSaveForm] = useState({
     nombre: '',
     descripcion: ''
