@@ -134,7 +134,7 @@ export default function EditAreaPage() {
       console.log('💾 Guardando área...', {
         id: params.id,
         nombre: area.nombre,
-        galeria_fotos: area.galeria_fotos,
+        fotos_urls: area.fotos_urls,
         foto_principal: area.foto_principal
       })
       
@@ -576,7 +576,7 @@ export default function EditAreaPage() {
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900">Galería de Imágenes</h2>
                   <p className="text-sm text-gray-500">
-                    {(area.galeria_fotos as string[] || []).length} de 7 imágenes
+                    {(area.fotos_urls as string[] || []).length} de 7 imágenes
                   </p>
                 </div>
               </div>
@@ -589,9 +589,9 @@ export default function EditAreaPage() {
             </div>
 
             {/* Grid de Imágenes */}
-            {(area.galeria_fotos as string[] || []).length > 0 ? (
+            {(area.fotos_urls as string[] || []).length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {(area.galeria_fotos as string[] || []).map((foto, index) => (
+                {(area.fotos_urls as string[] || []).map((foto, index) => (
                   <div
                     key={index}
                     className="relative group aspect-square rounded-lg overflow-hidden border-2 border-gray-200 hover:border-sky-500 transition-all bg-gray-100"
@@ -620,11 +620,11 @@ export default function EditAreaPage() {
                           type="button"
                           onClick={() => {
                             console.log('⬅️ Moviendo imagen a la izquierda')
-                            const fotos = [...(area.galeria_fotos as string[] || [])]
+                            const fotos = [...(area.fotos_urls as string[] || [])]
                             ;[fotos[index], fotos[index - 1]] = [fotos[index - 1], fotos[index]]
                             setArea({ 
                               ...area, 
-                              galeria_fotos: fotos,
+                              fotos_urls: fotos,
                               foto_principal: fotos[0]
                             })
                             setHasUnsavedChanges(true)
@@ -649,16 +649,16 @@ export default function EditAreaPage() {
                       </button>
 
                       {/* Botón Mover Derecha */}
-                      {index < (area.galeria_fotos as string[] || []).length - 1 && (
+                      {index < (area.fotos_urls as string[] || []).length - 1 && (
                         <button
                           type="button"
                           onClick={() => {
                             console.log('➡️ Moviendo imagen a la derecha')
-                            const fotos = [...(area.galeria_fotos as string[] || [])]
+                            const fotos = [...(area.fotos_urls as string[] || [])]
                             ;[fotos[index], fotos[index + 1]] = [fotos[index + 1], fotos[index]]
                             setArea({ 
                               ...area, 
-                              galeria_fotos: fotos,
+                              fotos_urls: fotos,
                               foto_principal: fotos[0]
                             })
                             setHasUnsavedChanges(true)
@@ -683,7 +683,7 @@ export default function EditAreaPage() {
                 ))}
 
                 {/* Placeholder para más imágenes */}
-                {Array.from({ length: 7 - (area.galeria_fotos as string[] || []).length }).map((_, i) => (
+                {Array.from({ length: 7 - (area.fotos_urls as string[] || []).length }).map((_, i) => (
                   <div
                     key={`empty-${i}`}
                     className="aspect-square rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center text-gray-400"
@@ -757,10 +757,10 @@ export default function EditAreaPage() {
         onConfirm={() => {
           if (deleteImageModal.index !== null) {
             console.log('🗑️ Eliminando imagen #' + (deleteImageModal.index + 1))
-            const fotos = [...(area.galeria_fotos as string[] || [])].filter((_, i) => i !== deleteImageModal.index)
+            const fotos = [...(area.fotos_urls as string[] || [])].filter((_, i) => i !== deleteImageModal.index)
             setArea({ 
               ...area, 
-              galeria_fotos: fotos,
+              fotos_urls: fotos,
               foto_principal: fotos[0] || null
             })
             setHasUnsavedChanges(true)

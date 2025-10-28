@@ -290,7 +290,7 @@ export default function EnriquecerImagenesPage() {
                           <div className="flex items-center gap-2">
                             <img src={area.foto_principal} alt="" className="w-16 h-12 object-cover rounded" />
                             <span className="text-sm text-gray-600">
-                              {area.galeria_fotos?.length || 0} foto(s)
+                              {area.fotos_urls?.length || 0} foto(s)
                             </span>
                           </div>
                         ) : (

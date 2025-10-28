@@ -174,14 +174,14 @@ export async function POST(request: NextRequest) {
 
     // Guardar las mejores 7 imágenes en la BD
     const foto_principal = imagenesUnicas[0]?.url || null
-    const galeria_fotos = imagenesUnicas.slice(0, 7).map(img => img.url)
+    const fotos_urls = imagenesUnicas.slice(0, 7).map(img => img.url)
 
     console.log('💾 [IMAGES] Actualizando base de datos...')
     const { error: updateError } = await supabase
       .from('areas')
       .update({
         foto_principal: foto_principal,
-        galeria_fotos: galeria_fotos,
+        fotos_urls: fotos_urls,
         updated_at: new Date().toISOString()
       })
       .eq('id', areaId)
@@ -197,7 +197,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       foto_principal: foto_principal,
-      total_imagenes: galeria_fotos.length,
+      total_imagenes: fotos_urls.length,
       imagenes: imagenesUnicas.slice(0, 7)
     })
 

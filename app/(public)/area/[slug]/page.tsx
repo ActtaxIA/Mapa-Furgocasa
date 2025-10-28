@@ -100,8 +100,8 @@ export default async function AreaPage({ params }: PageProps) {
           )}
 
           {/* Galería de fotos */}
-          {area.galeria_fotos && Array.isArray(area.galeria_fotos) && area.galeria_fotos.length > 0 && (
-            <GaleriaFotos fotos={area.galeria_fotos} nombre={area.nombre} />
+          {area.fotos_urls && Array.isArray(area.fotos_urls) && area.fotos_urls.length > 0 && (
+            <GaleriaFotos fotos={area.fotos_urls} nombre={area.nombre} />
           )}
 
           {/* Mapa de ubicación */}
