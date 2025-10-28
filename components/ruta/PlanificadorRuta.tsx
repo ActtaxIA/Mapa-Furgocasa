@@ -837,7 +837,7 @@ export default function PlanificadorRuta() {
               }))
             }))
           }]
-        } as google.maps.DirectionsResult
+        } as any
 
         // Limpiar cualquier ruta anterior
         directionsRenderer.setMap(null)
