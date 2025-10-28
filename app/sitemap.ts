@@ -5,7 +5,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.mapafurgocasa.com'
   
   // Obtener todas las áreas activas desde Supabase
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: areas } = await supabase
     .from('areas')
     .select('slug, updated_at')
