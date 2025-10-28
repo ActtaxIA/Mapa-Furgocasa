@@ -70,21 +70,31 @@ export default function ActualizarServiciosPage() {
         return null
       }
 
-      const serpApiKey = process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
       const openaiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
 
-      // 2. Buscar información con SerpAPI (búsqueda única simplificada)
+      // 2. Buscar información con SerpAPI (a través del proxy del servidor)
       const query = `"${area.nombre}" ${area.ciudad} ${area.provincia} servicios autocaravanas camping agua electricidad`
-      const serpUrl = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&api_key=${serpApiKey}&location=Spain&hl=es&gl=es&num=15`
       
-      console.log('🔍 Llamando a SerpAPI...')
-      const serpResponse = await fetch(serpUrl)
-      const serpData = await serpResponse.json()
+      console.log('🔍 Llamando a SerpAPI (vía proxy)...')
+      const serpResponse = await fetch('/api/admin/serpapi-proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, engine: 'google' })
+      })
 
-      if (serpData.error) {
-        console.error('❌ Error de SerpAPI:', serpData.error)
+      if (!serpResponse.ok) {
+        console.error('❌ Error del proxy de SerpAPI:', serpResponse.status)
         return null
       }
+
+      const serpResult = await serpResponse.json()
+      
+      if (!serpResult.success) {
+        console.error('❌ Error de SerpAPI:', serpResult.error)
+        return null
+      }
+
+      const serpData = serpResult.data
 
       // 3. Construir texto para analizar
       let textoParaAnalizar = `INFORMACIÓN DEL ÁREA: ${area.nombre}, ${area.ciudad}, ${area.provincia}\n\n`
@@ -227,13 +237,13 @@ export default function ActualizarServiciosPage() {
   const checkConfiguration = async () => {
     try {
       const openaiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
-      const serpApiKey = process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
       
+      // SerpAPI ahora se usa a través del proxy del servidor, no necesitamos verificarla aquí
       setConfigStatus({
-        ready: !!openaiKey && !!serpApiKey,
+        ready: !!openaiKey,
         checks: {
           openaiKeyValid: !!openaiKey,
-          serpApiKeyValid: !!serpApiKey
+          serpApiKeyValid: true // Asumimos que está en el servidor
         }
       })
     } catch (error) {

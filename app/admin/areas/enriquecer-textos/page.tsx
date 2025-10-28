@@ -162,21 +162,30 @@ export default function EnriquecerTextosPage() {
         console.log('⚠️ [ENRICH] El área tiene texto corto. Se sobrescribirá.')
       }
 
-      // 1. Buscar información con SerpAPI
+      // 1. Buscar información con SerpAPI (a través del proxy del servidor)
       const query = `"${area.ciudad}" ${area.provincia} turismo autocaravanas qué ver`
-      const serpApiKey = process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
-      const serpApiUrl = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&api_key=${serpApiKey}&location=Spain&hl=es&gl=es&num=10`
 
-      console.log('🔎 [ENRICH] Llamando a SerpAPI...')
-      const serpResponse = await fetch(serpApiUrl)
-      const serpData = await serpResponse.json()
+      console.log('🔎 [ENRICH] Llamando a SerpAPI (vía proxy)...')
+      const serpResponse = await fetch('/api/admin/serpapi-proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, engine: 'google' })
+      })
 
-      if (serpData.error) {
-        console.error('❌ [ENRICH] Error de SerpAPI:', serpData.error)
+      if (!serpResponse.ok) {
+        console.error('❌ [ENRICH] Error del proxy de SerpAPI:', serpResponse.status)
         return false
       }
 
-      console.log('✅ [ENRICH] SerpAPI respondió correctamente')
+      const serpResult = await serpResponse.json()
+      
+      if (!serpResult.success) {
+        console.error('❌ [ENRICH] Error de SerpAPI:', serpResult.error)
+        return false
+      }
+
+      const serpData = serpResult.data
+      console.log('✅ [ENRICH] SerpAPI respondió correctamente (vía proxy)')
 
       // Filtrar resultados por ciudad
       if (serpData.organic_results && serpData.organic_results.length > 0) {

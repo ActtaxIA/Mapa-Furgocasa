@@ -56,8 +56,6 @@ export default function EnriquecerImagenesPage() {
         return false
       }
 
-      const serpApiKey = process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
-      
       const imagenesEncontradas: Array<{
         url: string
         fuente: string
@@ -65,16 +63,26 @@ export default function EnriquecerImagenesPage() {
         prioridad: number
       }> = []
 
-      // 2. Buscar en Google Images
-      console.log('🔎 Buscando en Google Images...')
+      // 2. Buscar en Google Images (vía proxy)
+      console.log('🔎 Buscando en Google Images (vía proxy)...')
       const queryImages = `"${area.nombre}" ${area.ciudad} autocaravanas`
       
       try {
-        const serpImagesUrl = `https://serpapi.com/search.json?engine=google_images&q=${encodeURIComponent(queryImages)}&api_key=${serpApiKey}&location=Spain&hl=es&gl=es&num=20`
-        const respImages = await fetch(serpImagesUrl)
-        const dataImages = await respImages.json()
+        const respImages = await fetch('/api/admin/serpapi-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: queryImages, engine: 'google_images' })
+        })
 
-        if (!dataImages.error && dataImages.images_results) {
+        if (!respImages.ok) {
+          console.log('  ⚠️ Error con el proxy de SerpAPI')
+          return false
+        }
+
+        const resultImages = await respImages.json()
+        const dataImages = resultImages.success ? resultImages.data : null
+
+        if (dataImages && dataImages.images_results) {
           console.log(`  ✅ ${dataImages.images_results.length} imágenes en Google Images`)
           
           dataImages.images_results.slice(0, 10).forEach((img: any) => {
@@ -92,28 +100,37 @@ export default function EnriquecerImagenesPage() {
         console.log('  ⚠️ Error buscando imágenes:', e)
       }
 
-      // 3. Buscar en Park4night
-      console.log('🏕️ Buscando en Park4night...')
+      // 3. Buscar en Park4night (vía proxy)
+      console.log('🏕️ Buscando en Park4night (vía proxy)...')
       const queryPark4night = `"${area.nombre}" ${area.ciudad} site:park4night.com`
       
       try {
-        const serpPark4nightUrl = `https://serpapi.com/search.json?engine=google_images&q=${encodeURIComponent(queryPark4night)}&api_key=${serpApiKey}&num=10`
-        const respPark = await fetch(serpPark4nightUrl)
-        const dataPark = await respPark.json()
+        const respPark = await fetch('/api/admin/serpapi-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: queryPark4night, engine: 'google_images' })
+        })
 
-        if (!dataPark.error && dataPark.images_results) {
-          console.log(`  ✅ ${dataPark.images_results.length} imágenes en Park4night`)
-          
-          dataPark.images_results.forEach((img: any) => {
-            if (img.original && esImagenValida(img.original)) {
-              imagenesEncontradas.push({
-                url: img.original,
-                fuente: 'Park4night',
-                titulo: img.title,
-                prioridad: 1 // Alta prioridad
-              })
-            }
-          })
+        if (!respPark.ok) {
+          console.log('  ⚠️ Error con el proxy de SerpAPI')
+        } else {
+          const resultPark = await respPark.json()
+          const dataPark = resultPark.success ? resultPark.data : null
+
+          if (dataPark && dataPark.images_results) {
+            console.log(`  ✅ ${dataPark.images_results.length} imágenes en Park4night`)
+            
+            dataPark.images_results.forEach((img: any) => {
+              if (img.original && esImagenValida(img.original)) {
+                imagenesEncontradas.push({
+                  url: img.original,
+                  fuente: 'Park4night',
+                  titulo: img.title,
+                  prioridad: 1 // Alta prioridad
+                })
+              }
+            })
+          }
         }
       } catch (e) {
         console.log('  ⚠️ Error buscando Park4night:', e)
