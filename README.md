@@ -133,14 +133,19 @@ En Supabase Dashboard:
 }
 ```
 
-### 7. Ejecutar en Desarrollo
+### 7. Despliegue en Producción
 
-```powershell
-cd "E:\Acttax Dropbox\Narciso Pardo\Acttax\EI - FURGOCASA\1 - ADMINISTRACION\7 - ACTIVOS\6 - MAPA FURGOCASA\NEW MAPA FURGOCASA"
-npm run dev
+Esta aplicación está configurada para funcionar **únicamente en producción** a través de AWS Amplify.
+
+**No se desarrolla localmente**. Todos los cambios se despliegan directamente:
+
+```bash
+git add .
+git commit -m "descripción de cambios"
+git push origin main
 ```
 
-La aplicación estará disponible en `http://localhost:3000`
+Amplify desplegará automáticamente en: `https://www.mapafurgocasa.com`
 
 ---
 

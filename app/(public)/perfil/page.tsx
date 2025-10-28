@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
+import { Footer } from '@/components/layout/Footer'
 import { DashboardStats } from '@/components/perfil/DashboardStats'
 import { VisitasTab } from '@/components/perfil/VisitasTab'
 import { ValoracionesTab } from '@/components/perfil/ValoracionesTab'
@@ -460,6 +461,9 @@ export default function PerfilPage() {
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

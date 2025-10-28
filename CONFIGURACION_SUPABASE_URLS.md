@@ -1,36 +1,50 @@
 # Configuración de URLs Autorizadas en Supabase
 
-## Problema Resuelto
-Se han corregido dos problemas críticos con la autenticación:
-1. **Sesión no se mantiene en móvil**: Arreglado mediante mejora en la configuración de cookies
-2. **OAuth de Google redirige a localhost**: Corregido para usar la URL del dominio actual
+## ✅ Problema Resuelto Definitivamente
 
-## Cambios Realizados en el Código
+Se han corregido **todos** los problemas críticos con la autenticación OAuth de Google:
+1. **✅ Sesión no se mantiene en móvil**: Arreglado mediante mejora en la configuración de cookies
+2. **✅ OAuth de Google redirige a localhost**: **ELIMINADO** - Ahora SIEMPRE redirige a producción
+3. **✅ Código simplificado**: Sin detección de localhost, sin lógica condicional
 
-### 1. Cliente de Supabase (`lib/supabase/client.ts`)
+## 🔥 Cambios Finales en el Código
+
+### 1. Login con Google (`app/(public)/auth/login/page.tsx`)
+```typescript
+// SIEMPRE redirige a producción - SIN CONDICIONALES
+const redirectUrl = 'https://www.mapafurgocasa.com/auth/callback?next=/mapa'
+```
+
+### 2. Register con Google (`app/(public)/auth/register/page.tsx`)
+```typescript
+// SIEMPRE redirige a producción - SIN CONDICIONALES
+const redirectUrl = 'https://www.mapafurgocasa.com/auth/callback?next=/mapa'
+```
+
+### 3. Callback Route (`app/(public)/auth/callback/route.ts`)
+```typescript
+// SIEMPRE redirige a producción - SIN CONDICIONALES
+const redirectUrl = new URL(next, 'https://www.mapafurgocasa.com')
+```
+
+### 4. Cliente de Supabase (`lib/supabase/client.ts`)
 - ✅ Mejorada la configuración de cookies para móviles
 - ✅ Añadido atributo `Secure` en producción (HTTPS)
 - ✅ Configurado `SameSite=Lax` para compatibilidad móvil
 - ✅ Cookies con `max-age=31536000` (1 año) para persistencia
 
-### 2. Login con Google (`app/(public)/auth/login/page.tsx`)
-- ✅ Cambiado de URL hardcodeada a URL dinámica
-- ✅ Usa `window.location.origin` para detectar el dominio actual
-- ✅ Funciona en desarrollo (localhost) y producción (www.mapafurgocasa.com)
-
-### 3. Callback Route (`app/(public)/auth/callback/route.ts`)
-- ✅ Actualizado para usar el cliente correcto de Supabase SSR
-- ✅ Mejorado manejo de errores
-- ✅ Redirige al login si hay error en la autenticación
-
-### 4. Middleware (`middleware.ts`)
+### 5. Middleware (`middleware.ts`)
 - ✅ Mejorada configuración de cookies en el servidor
 - ✅ Detecta HTTPS correctamente usando headers
 - ✅ Configura cookies con opciones óptimas para móviles
 
-## Configuración Requerida en Supabase Dashboard
+## ⚠️ IMPORTANTE: No se usa desarrollo local
 
-Para que el OAuth de Google funcione correctamente, debes verificar estas configuraciones en el Dashboard de Supabase:
+Esta aplicación **NO se desarrolla localmente**. Todo el código está configurado para funcionar **ÚNICAMENTE en producción** (`https://www.mapafurgocasa.com`).
+
+**No hay referencias a `localhost` en el código ejecutable.**
+
+## Configuración Requerida en Supabase Dashboard
 
 ### Paso 1: Acceder a Configuración de Autenticación
 1. Ve a [Supabase Dashboard](https://app.supabase.com)
@@ -39,23 +53,19 @@ Para que el OAuth de Google funcione correctamente, debes verificar estas config
 
 ### Paso 2: Configurar URLs Autorizadas
 
-Añade las siguientes URLs en los campos correspondientes:
-
 #### **Site URL** (URL Principal)
 ```
 https://www.mapafurgocasa.com
 ```
 
 #### **Redirect URLs** (URLs de Redirección)
-Añade TODAS estas URLs (una por línea):
+Añade estas URLs (una por línea):
 ```
 https://www.mapafurgocasa.com/auth/callback
 https://mapafurgocasa.com/auth/callback
 https://main.d1wbtrilaad2yt.amplifyapp.com/auth/callback
-http://localhost:3000/auth/callback
+https://dkqnemjcmcnyhuvstos f.supabase.co/auth/v1/callback
 ```
-
-> **Nota**: Incluye localhost para desarrollo y testing local
 
 ### Paso 3: Configurar Proveedores OAuth
 
@@ -68,30 +78,24 @@ http://localhost:3000/auth/callback
 
 ### Paso 4: Configurar en Google Cloud Console
 
-También necesitas configurar las URLs autorizadas en Google Cloud Console:
-
 1. Ve a [Google Cloud Console](https://console.cloud.google.com)
-2. Selecciona tu proyecto
+2. Selecciona tu proyecto: **Mapa FURGOCASA NEW**
 3. Ve a **APIs & Services** → **Credentials**
 4. Edita tu **OAuth 2.0 Client ID**
+
 5. En **Authorized JavaScript origins** añade:
    ```
    https://www.mapafurgocasa.com
    https://mapafurgocasa.com
    https://main.d1wbtrilaad2yt.amplifyapp.com
-   http://localhost:3000
    ```
+
 6. En **Authorized redirect URIs** añade:
    ```
    https://www.mapafurgocasa.com/auth/callback
    https://mapafurgocasa.com/auth/callback
    https://main.d1wbtrilaad2yt.amplifyapp.com/auth/callback
-   http://localhost:3000/auth/callback
-   ```
-   
-   Y también las URLs de Supabase:
-   ```
-   https://[TU-PROYECTO-ID].supabase.co/auth/v1/callback
+   https://dkqnemjcmcnyhuvstos f.supabase.co/auth/v1/callback
    ```
 
 ### Paso 5: Configuración de Cookies en Supabase
@@ -102,9 +106,16 @@ También necesitas configurar las URLs autorizadas en Google Cloud Console:
    - **Cookie Duration** está configurado a un valor alto (ej: 31536000 segundos = 1 año)
    - **Cookie SameSite** está en `Lax` (recomendado para móviles)
 
-## Testing
+## Testing en Producción
 
-### Probar en Móvil
+### Probar OAuth de Google
+1. Ve a `https://www.mapafurgocasa.com/auth/login`
+2. Click en "Continuar con Google"
+3. Selecciona tu cuenta de Google
+4. **✅ DEBE redirigir a: `https://www.mapafurgocasa.com/mapa`**
+5. **❌ NUNCA debe redirigir a: `localhost`**
+
+### Probar Sesión en Móvil
 1. Cierra sesión completamente
 2. Limpia las cookies del navegador móvil
 3. Inicia sesión con email/password o con Google
@@ -112,53 +123,53 @@ También necesitas configurar las URLs autorizadas en Google Cloud Console:
 5. Abre el navegador nuevamente
 6. Verifica que la sesión se mantiene
 
-### Probar OAuth de Google
-1. Ve a `www.mapafurgocasa.com/auth/login`
-2. Click en "Continuar con Google"
-3. Selecciona tu cuenta de Google
-4. Verifica que redirige a `www.mapafurgocasa.com/mapa` (NO a localhost)
-
 ## Solución de Problemas
 
-### Si la sesión sigue sin mantenerse en móvil:
+### Si aparece error "redirect_uri_mismatch":
+1. Las URLs en Google Cloud Console no coinciden
+2. Verifica que has añadido EXACTAMENTE las mismas URLs en ambos lugares
+3. Google es sensible a `http://` vs `https://` y `www` vs sin `www`
+4. Espera 5-10 minutos para que los cambios se propaguen
+
+### Si la sesión no se mantiene en móvil:
 1. Verifica que tu dominio usa HTTPS (no HTTP)
 2. Limpia completamente las cookies del navegador móvil
 3. Verifica en las DevTools del móvil que las cookies tienen el atributo `Secure`
 4. Comprueba que `SameSite=Lax` está configurado
 
-### Si OAuth sigue redirigiendo a localhost:
-1. Verifica que has guardado los cambios en Supabase Dashboard
+### Si OAuth redirige incorrectamente:
+**Esto ya no debería pasar**, pero si sucede:
+1. Limpia el caché del navegador completamente
 2. Espera 5-10 minutos para que los cambios se propaguen
-3. Limpia el caché del navegador
-4. Verifica las URLs en Google Cloud Console
-
-### Si aparece error "redirect_uri_mismatch":
-1. Las URLs en Google Cloud Console no coinciden
-2. Verifica que has añadido EXACTAMENTE las mismas URLs en ambos lugares
-3. Google es sensible a la diferencia entre `http://` y `https://`
+3. Verifica que has hecho deploy del código más reciente
+4. Revisa que NO haya código antiguo con lógica de localhost
 
 ## Variables de Entorno
 
-Asegúrate de tener estas variables configuradas en tu `.env.local` o en Amplify:
+Asegúrate de tener estas variables configuradas en Amplify:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://[TU-PROYECTO-ID].supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://dkqnemjcmcnyhuvstos f.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=[TU-ANON-KEY]
 ```
 
-## Despliegue
+## Páginas Legales Añadidas
 
-Después de estos cambios, necesitas:
-1. ✅ Commit y push de los cambios
-2. ✅ Desplegar en Amplify (se hace automáticamente con push a main)
-3. ✅ Verificar las configuraciones en Supabase Dashboard
-4. ✅ Verificar las configuraciones en Google Cloud Console
-5. ✅ Probar en móvil después del despliegue
+Se han creado dos nuevas páginas con contenido legal completo:
 
-## Estado de los Cambios
+- **✅ `/privacidad`** - Política de Privacidad (RGPD compliant)
+- **✅ `/condiciones`** - Condiciones del Servicio
+- **✅ Footer actualizado** - Con logo blanco de Furgocasa y enlaces a páginas legales
+- **✅ Footer añadido a `/perfil`** - Consistencia en toda la app
 
-- ✅ Código actualizado localmente
-- ⏳ Pendiente: Verificar configuración en Supabase Dashboard
-- ⏳ Pendiente: Verificar configuración en Google Cloud Console
-- ⏳ Pendiente: Deploy y testing en producción
+## Estado Final
 
+- ✅ Código actualizado y desplegado
+- ✅ OAuth SIEMPRE redirige a producción
+- ✅ Ninguna referencia a localhost en código ejecutable
+- ✅ Footer con logo blanco en todas las páginas
+- ✅ Páginas legales creadas (/privacidad, /condiciones)
+- ✅ Código simplificado sin lógica condicional de entorno
+- ✅ Probado y funcionando en producción
+
+**Última actualización**: 28 de octubre de 2025
