@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 import PlanificadorRuta from '@/components/ruta/PlanificadorRuta'
-import { MapIcon } from '@heroicons/react/24/outline'
 
 export default function RutaPage() {
   return (
@@ -12,7 +11,16 @@ export default function RutaPage() {
       
       {/* Planificador */}
       <main className="flex-1 overflow-hidden">
-        <PlanificadorRuta />
+        <Suspense fallback={
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Cargando planificador de rutas...</p>
+            </div>
+          </div>
+        }>
+          <PlanificadorRuta />
+        </Suspense>
       </main>
     </div>
   )
