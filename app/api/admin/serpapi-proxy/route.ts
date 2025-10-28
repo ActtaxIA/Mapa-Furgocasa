@@ -12,15 +12,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Query es requerido' }, { status: 400 })
     }
 
-    // Validar API key
-    const serpApiKey = process.env.SERPAPI_KEY
+    // Validar API key (intentar múltiples fuentes)
+    const serpApiKey = process.env.SERPAPI_KEY || process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
+    
     if (!serpApiKey) {
       console.error('❌ SERPAPI_KEY no configurada en el servidor')
+      console.error('Variables disponibles:', {
+        SERPAPI_KEY: !!process.env.SERPAPI_KEY,
+        NEXT_PUBLIC_SERPAPI_KEY_ADMIN: !!process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
+      })
       return NextResponse.json({
         error: 'SERPAPI_KEY no configurada',
-        details: 'Configura SERPAPI_KEY en las variables de entorno'
+        details: 'Configura SERPAPI_KEY o NEXT_PUBLIC_SERPAPI_KEY_ADMIN en las variables de entorno de AWS'
       }, { status: 500 })
     }
+    
+    console.log('✅ [SERPAPI-PROXY] API key encontrada:', serpApiKey ? 'SÍ' : 'NO')
 
     // Construir URL de SerpAPI
     let serpUrl = ''
