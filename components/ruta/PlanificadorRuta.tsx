@@ -378,7 +378,7 @@ export default function PlanificadorRuta() {
 
     try {
       // Preparar waypoints para Google Maps
-      const waypointsFormatted = waypoints.map(wp => ({
+      const waypointsFormatted = waypoints.map((wp: any) => ({
         location: new google.maps.LatLng(wp.lat, wp.lng),
         stopover: true
       }))
@@ -392,7 +392,7 @@ export default function PlanificadorRuta() {
         travelMode: google.maps.TravelMode.DRIVING
       }
 
-      directionsService.route(request, async (result, status) => {
+      directionsService.route(request, async (result: any, status: any) => {
         if (status === 'OK' && result) {
           directionsRenderer.setDirections(result)
           
@@ -421,7 +421,7 @@ export default function PlanificadorRuta() {
 
     try {
       // Limpiar marcadores anteriores
-      markers.forEach(marker => marker.setMap(null))
+      markers.forEach((marker: any) => marker.setMap(null))
       setMarkers([])
 
       // Obtener puntos de la ruta
@@ -541,7 +541,7 @@ export default function PlanificadorRuta() {
     const serviciosDisponibles = area.servicios && typeof area.servicios === 'object' 
       ? Object.entries(area.servicios)
           .filter(([key, value]) => value === true && serviciosValidos.includes(key))
-          .map(([key]) => ({
+          .map(([key]: any) => ({
             icon: getServicioIcon(key),
             label: getServicioLabel(key)
           }))
@@ -614,7 +614,7 @@ export default function PlanificadorRuta() {
                 <span style="font-size: 12px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Servicios Disponibles</span>
               </div>
               <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                ${mostrarServicios.map(s => `
+                ${mostrarServicios.map((s: any) => `
                   <div style="display: flex; align-items: center; font-size: 11px; color: #6B7280;">
                     <span style="font-size: 16px; margin-right: 4px;">${s.icon}</span>
                     <span>${s.label}</span>
@@ -894,7 +894,7 @@ export default function PlanificadorRuta() {
           waypoints: waypointsFormatted,
           travelMode: google.maps.TravelMode.DRIVING,
         },
-        (result, status) => {
+        (result: any, status: any) => {
           if (status === 'OK' && result) {
             directionsRenderer.setDirections(result)
             setCurrentRoute(result.routes[0])
@@ -918,7 +918,7 @@ export default function PlanificadorRuta() {
     if (directionsRenderer) {
       directionsRenderer.setDirections({ routes: [] } as any)
     }
-    markers.forEach(marker => marker.setMap(null))
+    markers.forEach((marker: any) => marker.setMap(null))
     setMarkers([])
     setAreasEnRuta([])
     setOrigen(null)
@@ -960,7 +960,7 @@ export default function PlanificadorRuta() {
       let distanciaTotal = 0
       let duracionTotal = 0
       
-      currentRoute.legs.forEach(leg => {
+      currentRoute.legs.forEach((leg: any) => {
         if (leg.distance) distanciaTotal += leg.distance.value
         if (leg.duration) duracionTotal += leg.duration.value
       })
@@ -981,7 +981,7 @@ export default function PlanificadorRuta() {
           latitud: destino.lat,
           longitud: destino.lng
         },
-        paradas: waypoints.map((wp, index) => ({
+        paradas: waypoints.map((wp: any, index: number) => ({
           nombre: wp.name,
           latitud: wp.lat,
           longitud: wp.lng,
@@ -996,14 +996,14 @@ export default function PlanificadorRuta() {
             type: 'Feature',
             geometry: {
               type: 'LineString',
-              coordinates: currentRoute.overview_path.map(point => [
+              coordinates: currentRoute.overview_path.map((point: any) => [
                 point.lng(),
                 point.lat()
               ])
             },
             properties: {
               // Guardar legs para recrear la ruta sin recalcular
-              legs: currentRoute.legs.map(leg => ({
+              legs: currentRoute.legs.map((leg: any) => ({
                 distance: leg.distance?.value,
                 distance_text: leg.distance?.text,
                 duration: leg.duration?.value,
@@ -1017,7 +1017,7 @@ export default function PlanificadorRuta() {
                   lng: leg.end_location.lng()
                 },
                 // Guardar los steps para poder recrear exactamente la ruta
-                steps: leg.steps.map(step => ({
+                steps: leg.steps.map((step: any) => ({
                   distance: step.distance?.value,
                   duration: step.duration?.value,
                   start_location: {
@@ -1028,7 +1028,7 @@ export default function PlanificadorRuta() {
                     lat: step.end_location.lat(),
                     lng: step.end_location.lng()
                   },
-                  path: step.path?.map(p => ({
+                  path: step.path?.map((p: any) => ({
                     lat: p.lat(),
                     lng: p.lng()
                   })) || []
@@ -1213,7 +1213,7 @@ export default function PlanificadorRuta() {
 
             {waypoints.length > 0 && (
               <div className="space-y-2 max-h-48 overflow-y-auto">
-                {waypoints.map((waypoint, index) => (
+                {waypoints.map((waypoint: any, index: number) => (
                   <div key={index} className="flex items-center gap-2">
                     <input
                       type="text"
@@ -1288,7 +1288,7 @@ export default function PlanificadorRuta() {
               📏 Radio de búsqueda: <strong>{radio} km</strong>
             </label>
             <div className="grid grid-cols-4 gap-2">
-              {[5, 10, 20, 50].map((r) => (
+              {[5, 10, 20, 50].map((r: number) => (
                 <button
                   key={r}
                   onClick={() => setRadio(r)}
