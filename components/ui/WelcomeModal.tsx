@@ -39,11 +39,13 @@ export default function WelcomeModal() {
   }
 
   const handleRegister = () => {
+    setIsOpen(false)
     localStorage.setItem('hasSeenWelcome', 'true')
     router.push('/auth/register')
   }
 
   const handleLogin = () => {
+    setIsOpen(false)
     localStorage.setItem('hasSeenWelcome', 'true')
     router.push('/auth/login')
   }
