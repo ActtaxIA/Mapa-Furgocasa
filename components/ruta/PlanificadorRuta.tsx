@@ -227,7 +227,7 @@ export default function PlanificadorRuta() {
     let duracionTotal = 0
 
     // Sumar todas las etapas (legs)
-    route.legs.forEach(leg => {
+    route.legs.forEach((leg: any) => {
       if (leg.distance) distanciaTotal += leg.distance.value
       if (leg.duration) duracionTotal += leg.duration.value
     })

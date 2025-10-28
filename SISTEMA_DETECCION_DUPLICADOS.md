@@ -550,3 +550,4 @@ Para mejoras o bugs, contactar al equipo de desarrollo.
 - ✅ Documentación completa
 - ✅ Tests de casos de uso
 
+
