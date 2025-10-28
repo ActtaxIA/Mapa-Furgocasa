@@ -39,9 +39,12 @@ export default function LoginPage() {
     try {
       const supabase = createClient()
       
-      // Detectar la URL actual del navegador (será www.mapafurgocasa.com en producción)
-      const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://www.mapafurgocasa.com'
-      const redirectUrl = `${currentOrigin}/auth/callback`
+      // Construir redirect robusto: en producción forzamos dominio público para evitar localhost
+      const isBrowser = typeof window !== 'undefined'
+      const isLocalhost = isBrowser && window.location.hostname === 'localhost'
+      const redirectUrl = isLocalhost
+        ? 'http://localhost:3000/auth/callback?next=/mapa'
+        : 'https://www.mapafurgocasa.com/auth/callback?next=/mapa'
       
       // Debug en consola para verificar
       console.log('🔐 OAuth redirectTo:', redirectUrl)

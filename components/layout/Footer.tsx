@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -11,7 +12,15 @@ export function Footer() {
           
           {/* Columna 1: Sobre Furgocasa */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">🚐 Mapa Furgocasa</h3>
+            <Link href="/" className="inline-block mb-4">
+              <Image 
+                src="/logo-furgocasa.png" 
+                alt="Furgocasa" 
+                width={180}
+                height={40}
+                className="h-10 w-auto"
+              />
+            </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
               Tu guía completa de áreas para autocaravanas, campers y furgonetas camperizadas en España.
             </p>
@@ -77,13 +86,13 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-white transition-colors">
-                  📜 Términos de Uso
+                <Link href="/condiciones" className="hover:text-white transition-colors">
+                  📜 Condiciones del Servicio
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-white transition-colors">
-                  🔒 Privacidad
+                <Link href="/privacidad" className="hover:text-white transition-colors">
+                  🔒 Política de Privacidad
                 </Link>
               </li>
             </ul>

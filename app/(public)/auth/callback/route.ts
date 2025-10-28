@@ -11,8 +11,21 @@ export async function GET(request: NextRequest) {
   if (code) {
     const cookieStore = await cookies()
     
+    // 🔥 FORZAR redirección a producción si NO estamos en localhost
+    const isLocalhost = request.nextUrl.hostname === 'localhost' || 
+                       request.nextUrl.hostname === '127.0.0.1'
+    
+    let redirectUrl: URL
+    if (isLocalhost) {
+      // Desarrollo: usar localhost
+      redirectUrl = new URL(next, request.url)
+    } else {
+      // Producción: SIEMPRE redirigir a www.mapafurgocasa.com
+      redirectUrl = new URL(next, 'https://www.mapafurgocasa.com')
+    }
+    
     // Crear respuesta para poder establecer cookies
-    const response = NextResponse.redirect(new URL(next, request.url))
+    const response = NextResponse.redirect(redirectUrl)
     
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
