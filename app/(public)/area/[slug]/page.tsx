@@ -100,9 +100,24 @@ export default async function AreaPage({ params }: PageProps) {
           )}
 
           {/* Galería de fotos */}
-          {area.fotos_urls && Array.isArray(area.fotos_urls) && area.fotos_urls.length > 0 && (
-            <GaleriaFotos fotos={area.fotos_urls} nombre={area.nombre} />
-          )}
+          {(() => {
+            // Normalizar fotos_urls por si viene como string en lugar de array
+            let fotos = area.fotos_urls
+            if (typeof fotos === 'string' && fotos.trim()) {
+              try {
+                fotos = JSON.parse(fotos)
+              } catch {
+                // Si no es JSON válido, intentar dividir por comas
+                fotos = fotos.split(',').map(url => url.trim()).filter(url => url)
+              }
+            }
+            
+            // Verificar que sea un array válido y con elementos
+            if (fotos && Array.isArray(fotos) && fotos.length > 0) {
+              return <GaleriaFotos fotos={fotos} nombre={area.nombre} />
+            }
+            return null
+          })()}
 
           {/* Mapa de ubicación */}
           <MapaUbicacion 
