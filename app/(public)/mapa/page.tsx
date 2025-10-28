@@ -175,8 +175,8 @@ export default function MapaPage() {
       
       {/* Layout principal */}
       <main className="flex-1 relative flex overflow-hidden min-h-0">
-        {/* Panel de Filtros - Solo Desktop */}
-        <aside className="hidden lg:block w-80 bg-white shadow-lg border-r overflow-y-auto">
+        {/* Panel de Filtros - Desktop y Tablet */}
+        <aside className="hidden md:block md:w-72 lg:w-80 bg-white shadow-lg border-r overflow-y-auto">
           <FiltrosMapa
             filtros={filtros}
             onFiltrosChange={setFiltros}
@@ -195,7 +195,7 @@ export default function MapaPage() {
           />
 
 
-          {/* Contador de resultados - Visible en móvil y desktop */}
+          {/* Contador de resultados - Visible en todos los tamaños */}
           <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg px-3 py-2 z-10">
             <p className="text-sm font-semibold text-gray-700">
               {areasFiltradas.length} {areasFiltradas.length === 1 ? 'área' : 'áreas'}
@@ -203,8 +203,8 @@ export default function MapaPage() {
           </div>
         </div>
 
-        {/* Panel de Resultados - Solo Desktop */}
-        <aside className="hidden lg:block w-96 bg-white shadow-lg border-l overflow-y-auto">
+        {/* Panel de Resultados - Desktop y Tablet */}
+        <aside className="hidden md:block md:w-80 lg:w-96 bg-white shadow-lg border-l overflow-y-auto">
           <ListaResultados
             areas={areasFiltradas}
             onAreaClick={handleAreaClick}
