@@ -134,8 +134,8 @@ export default function NewAreaPage() {
     setArea(prev => ({
       ...prev,
       servicios: {
-        ...prev.servicios,
-        [servicioId]: !prev.servicios?.[servicioId]
+        ...(prev.servicios as Record<string, boolean>),
+        [servicioId]: !(prev.servicios as Record<string, boolean>)?.[servicioId]
       }
     }))
   }
@@ -500,14 +500,14 @@ export default function NewAreaPage() {
                 <label
                   key={servicio.id}
                   className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-                    area.servicios?.[servicio.id]
+                    (area.servicios as Record<string, boolean>)?.[servicio.id]
                       ? 'border-sky-500 bg-sky-50'
                       : 'border-gray-200 hover:border-sky-300'
                   }`}
                 >
                   <input
                     type="checkbox"
-                    checked={area.servicios?.[servicio.id] || false}
+                    checked={(area.servicios as Record<string, boolean>)?.[servicio.id] || false}
                     onChange={() => handleServicioToggle(servicio.id)}
                     className="w-5 h-5 text-sky-600 rounded focus:ring-sky-500"
                   />

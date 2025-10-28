@@ -541,7 +541,7 @@ export default function EditAreaPage() {
                 >
                   <input
                     type="checkbox"
-                    checked={area.servicios?.[servicio.id] || false}
+                    checked={(area.servicios as Record<string, boolean>)?.[servicio.id] || false}
                     onChange={() => handleServicioToggle(servicio.id)}
                     className="w-5 h-5 text-sky-600 rounded focus:ring-sky-500"
                   />
