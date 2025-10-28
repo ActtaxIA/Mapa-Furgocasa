@@ -1177,8 +1177,8 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       )}
 
       {/* Panel de Controles - Izquierda (Desktop) o vista "ruta" (Móvil) */}
-      <aside className={`w-full md:w-80 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-10 flex flex-col md:block ${
-        vistaMovil === 'ruta' ? 'block' : 'hidden md:block'
+      <aside className={`w-full md:w-80 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-10 flex flex-col h-full ${
+        vistaMovil === 'ruta' ? 'flex' : 'hidden md:flex'
       }`}>
         {/* Header Azulado */}
         <div className="bg-gradient-to-r from-sky-50 to-blue-50 border-b border-sky-200 p-4 sticky top-0 z-10">
@@ -1407,7 +1407,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       </aside>
 
       {/* Mapa - Centro (Desktop siempre visible, Móvil solo en vista "mapa") */}
-      <div className={`flex-1 relative z-20 md:block ${
+      <div className={`flex-1 relative z-20 h-full md:block ${
         vistaMovil === 'mapa' ? 'block' : 'hidden md:block'
       }`}>
         <div ref={mapRef} className="w-full h-full" />
@@ -1472,7 +1472,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       </div>
 
       {/* Lista de Resultados - Derecha (Desktop siempre visible, Móvil solo en vista "lista") */}
-      <aside className={`w-full md:w-96 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-10 md:block ${
+      <aside className={`w-full md:w-96 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-10 h-full md:block ${
         vistaMovil === 'lista' ? 'block' : 'hidden md:block'
       }`}>
         <ListaResultados
