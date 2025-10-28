@@ -17,38 +17,42 @@ export async function middleware(request: NextRequest) {
           return request.cookies.get(name)?.value
         },
         set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({
+          // Mejorar opciones de cookies para móviles
+          const cookieOptions = {
             name,
             value,
             ...options,
-          })
+            path: options.path || '/',
+            sameSite: (options.sameSite || 'lax') as 'lax' | 'strict' | 'none',
+            secure: request.headers.get('x-forwarded-proto') === 'https' || 
+                    request.nextUrl.protocol === 'https:',
+            httpOnly: options.httpOnly !== false,
+          }
+          
+          request.cookies.set(cookieOptions)
           response = NextResponse.next({
             request: {
               headers: request.headers,
             },
           })
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
+          response.cookies.set(cookieOptions)
         },
         remove(name: string, options: CookieOptions) {
-          request.cookies.set({
+          const cookieOptions = {
             name,
             value: '',
             ...options,
-          })
+            path: options.path || '/',
+            maxAge: 0,
+          }
+          
+          request.cookies.set(cookieOptions)
           response = NextResponse.next({
             request: {
               headers: request.headers,
             },
           })
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
+          response.cookies.set(cookieOptions)
         },
       },
     }

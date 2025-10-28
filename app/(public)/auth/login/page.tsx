@@ -39,10 +39,15 @@ export default function LoginPage() {
     try {
       const supabase = createClient()
       
+      // Detectar la URL base según el entorno
+      const baseUrl = typeof window !== 'undefined' 
+        ? `${window.location.protocol}//${window.location.host}`
+        : 'https://www.mapafurgocasa.com'
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'https://main.d1wbtrilaad2yt.amplifyapp.com/auth/callback',
+          redirectTo: `${baseUrl}/auth/callback`,
         },
       })
       if (error) throw error
