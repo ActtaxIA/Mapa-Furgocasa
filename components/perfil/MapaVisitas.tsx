@@ -49,7 +49,7 @@ export default function MapaVisitas({ visitas }: Props) {
         const loader = new Loader({
           apiKey,
           version: 'weekly',
-          libraries: ['places']
+          libraries: ['places', 'geometry']
         })
 
         await loader.load()
