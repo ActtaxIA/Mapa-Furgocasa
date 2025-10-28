@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   keywords: ['áreas autocaravanas españa', 'mapa autocaravanas', 'parkings autocaravanas', 'camping autocaravanas', 'furgo españa', 'camper van españa', 'rutas autocaravanas', 'pernocta autocaravanas', 'furgocasa'],
   authors: [{ name: 'Furgocasa' }],
   manifest: '/manifest.json',
-  themeColor: '#373737',
+  themeColor: '#4b5668',
   icons: {
     icon: '/favicon.png',
     apple: '/favicon.png',
@@ -46,7 +46,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: '#373737',
+  themeColor: '#4b5668',
 }
 
 export default function RootLayout({
