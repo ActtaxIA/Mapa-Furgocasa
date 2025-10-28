@@ -17,16 +17,8 @@ export default function RutaPage() {
     }
   }
 
-  // Prevenir scroll en esta página (app-like)
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [])
-
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-screen flex flex-col">
       {/* Navbar - siempre visible */}
       <Navbar />
       
