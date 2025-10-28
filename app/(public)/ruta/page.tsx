@@ -18,12 +18,12 @@ export default function RutaPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       {/* Navbar - siempre visible */}
       <Navbar />
       
       {/* Planificador */}
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden min-h-0">
         <Suspense fallback={
           <div className="flex items-center justify-center h-full">
             <div className="text-center">

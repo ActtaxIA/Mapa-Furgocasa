@@ -169,12 +169,12 @@ export default function MapaPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       {/* Navbar - siempre visible */}
       <Navbar />
       
       {/* Layout principal */}
-      <main className="flex-1 relative flex overflow-hidden">
+      <main className="flex-1 relative flex overflow-hidden min-h-0">
         {/* Panel de Filtros - Solo Desktop */}
         <aside className="hidden lg:block w-80 bg-white shadow-lg border-r overflow-y-auto">
           <FiltrosMapa
