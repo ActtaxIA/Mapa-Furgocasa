@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Navbar } from '@/components/layout/Navbar'
 import { 
   MapIcon, 
   MapPinIcon, 
@@ -34,45 +35,8 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3">
-              <Image 
-                src="/logo_gris.jpg" 
-                alt="Furgocasa Logo" 
-                width={45} 
-                height={45}
-                className="rounded-lg"
-              />
-              <span className="text-2xl font-bold text-primary-600">Furgocasa</span>
-            </Link>
-            <nav className="hidden md:flex items-center gap-6">
-              <Link href="/mapa" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-                Mapa
-              </Link>
-              <Link href="/ruta" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-                Rutas
-              </Link>
-            </nav>
-            <div className="flex items-center gap-3">
-              <Link 
-                href="/auth/login"
-                className="px-4 py-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors font-medium"
-              >
-                Iniciar sesión
-              </Link>
-              <Link 
-                href="/auth/register"
-                className="hidden md:inline-block px-5 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-semibold shadow-sm"
-              >
-                Registrarse
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Header - Mismo Navbar que el resto de la app */}
+      <Navbar />
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50 py-16 md:py-24 overflow-hidden">
