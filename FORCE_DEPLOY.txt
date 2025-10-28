@@ -1,0 +1,3 @@
+Force deploy - Fix OAuth redirect to localhost issue
+Timestamp: 2025-10-28
+
