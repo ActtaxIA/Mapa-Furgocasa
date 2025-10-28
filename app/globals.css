@@ -12,6 +12,10 @@
     border-color: theme('colors.gray.200');
   }
   
+  html, body {
+    @apply h-full w-full overflow-hidden;
+  }
+
   body {
     @apply bg-white text-gray-900;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -22,6 +26,11 @@
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
     scroll-behavior: smooth;
+  }
+
+  /* Contenedor principal de la app ocupa 100% altura */
+  #__next {
+    @apply h-full;
   }
 
   /* Evitar zoom en inputs en iOS */
