@@ -134,9 +134,11 @@ export default function EnriquecerTextosPage() {
 
   const enrichArea = async (areaId: string): Promise<boolean> => {
     try {
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
       console.log('🚀 [ENRICH] Iniciando enriquecimiento de área:', areaId)
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
       
-      // Obtener el área de la base de datos
+      // IMPORTANTE: Leer directamente de Supabase (sin caché)
       const { data: area, error: areaError } = await supabase
         .from('areas')
         .select('*')
@@ -149,7 +151,9 @@ export default function EnriquecerTextosPage() {
       }
 
       console.log('✅ [ENRICH] Área encontrada:', area.nombre, '-', area.ciudad)
-      console.log('  📝 Descripción actual:', area.descripcion ? `${area.descripcion.length} caracteres` : 'Sin descripción')
+      console.log('  📍 ID:', area.id)
+      console.log('  📝 Descripción actual:', area.descripcion ? `"${area.descripcion.substring(0, 100)}..." (${area.descripcion.length} caracteres)` : 'NULL o vacío')
+      console.log('  📏 Longitud trimmed:', area.descripcion ? area.descripcion.trim().length : 0)
 
       // Si ya tiene descripción, no sobrescribir (SOLO si es una descripción válida y larga)
       if (area.descripcion && area.descripcion.trim().length > 200) {
