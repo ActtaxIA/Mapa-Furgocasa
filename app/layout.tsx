@@ -9,6 +9,10 @@ export const metadata: Metadata = {
   authors: [{ name: 'Furgocasa' }],
   manifest: '/manifest.json',
   themeColor: '#0284c7',
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -17,15 +21,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'es_ES',
-    url: 'https://www.furgocasa.com',
+    url: 'https://www.mapafurgocasa.com',
     title: 'Mapa Furgocasa - Áreas para Autocaravanas',
     description: 'Encuentra las mejores áreas para autocaravanas en España',
     siteName: 'Furgocasa',
+    images: ['/favicon.png'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Mapa Furgocasa',
     description: 'Áreas para autocaravanas en España',
+    images: ['/favicon.png'],
   },
 }
 
