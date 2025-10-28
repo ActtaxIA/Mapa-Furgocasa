@@ -3,9 +3,9 @@ import './globals.css'
 import WelcomeModal from '@/components/ui/WelcomeModal'
 
 export const metadata: Metadata = {
-  title: 'Mapa Furgocasa - Áreas para Autocaravanas en España',
-  description: 'Encuentra las mejores áreas para autocaravanas en España. Información actualizada de servicios, precios y ubicaciones.',
-  keywords: ['autocaravanas', 'áreas autocaravanas', 'furgocasa', 'camping', 'españa', 'camper', 'furgo'],
+  title: 'Mapa Furgocasa - Encuentra Áreas para Autocaravanas en España | +600 Ubicaciones',
+  description: 'Descubre más de 600 áreas para autocaravanas en España. Planifica rutas, encuentra servicios, guarda favoritos y viaja con libertad. Información actualizada de parkings, campings y áreas públicas.',
+  keywords: ['áreas autocaravanas españa', 'mapa autocaravanas', 'parkings autocaravanas', 'camping autocaravanas', 'furgo españa', 'camper van españa', 'rutas autocaravanas', 'pernocta autocaravanas', 'furgocasa'],
   authors: [{ name: 'Furgocasa' }],
   manifest: '/manifest.json',
   themeColor: '#373737',
@@ -22,16 +22,22 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_ES',
     url: 'https://www.mapafurgocasa.com',
-    title: 'Mapa Furgocasa - Áreas para Autocaravanas',
-    description: 'Encuentra las mejores áreas para autocaravanas en España',
-    siteName: 'Furgocasa',
-    images: ['/favicon.png'],
+    title: 'Mapa Furgocasa - Descubre +600 Áreas para Autocaravanas en España',
+    description: 'Encuentra las mejores áreas para autocaravanas, planifica rutas y viaja con libertad por España. Información completa de servicios, precios y ubicaciones.',
+    siteName: 'Mapa Furgocasa',
+    images: [{
+      url: 'https://www.mapafurgocasa.com/og-image.jpg',
+      width: 1200,
+      height: 630,
+      alt: 'Mapa Furgocasa - Áreas para Autocaravanas en España'
+    }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Mapa Furgocasa',
-    description: 'Áreas para autocaravanas en España',
-    images: ['/favicon.png'],
+    title: 'Mapa Furgocasa - +600 Áreas para Autocaravanas',
+    description: 'Descubre áreas para autocaravanas en España. Planifica rutas, encuentra servicios y viaja con libertad.',
+    images: ['https://www.mapafurgocasa.com/og-image.jpg'],
+    creator: '@furgocasa',
   },
 }
 
