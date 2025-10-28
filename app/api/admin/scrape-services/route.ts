@@ -2,14 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import OpenAI from 'openai'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!
-})
+function getOpenAIClient() {
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY!
+  })
+}
 
 // Servicios que buscamos (deben coincidir EXACTAMENTE con la base de datos)
 const SERVICIOS_VALIDOS = [
@@ -27,6 +31,9 @@ const SERVICIOS_VALIDOS = [
 ]
 
 export async function POST(request: NextRequest) {
+  const supabase = getSupabaseClient()
+  const openai = getOpenAIClient()
+  
   try {
     // Validar API keys al inicio
     if (!process.env.OPENAI_API_KEY) {

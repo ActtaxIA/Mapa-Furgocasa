@@ -1,18 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 // GET - Obtener configuración
 export async function GET(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient()
     const { searchParams } = new URL(request.url)
     const configKey = searchParams.get('key')
 
-    const { data, error } = configKey
+    const { data, error} = configKey
       ? await supabase
           .from('ia_config')
           .select('*')
@@ -36,6 +39,8 @@ export async function GET(request: NextRequest) {
 
 // PUT - Actualizar configuración
 export async function PUT(request: NextRequest) {
+  const supabase = getSupabaseClient()
+  
   try {
     const { configKey, configValue } = await request.json()
 
@@ -70,6 +75,8 @@ export async function PUT(request: NextRequest) {
 
 // POST - Restablecer a valores por defecto
 export async function POST(request: NextRequest) {
+  const supabase = getSupabaseClient()
+  
   try {
     const { configKey } = await request.json()
 
