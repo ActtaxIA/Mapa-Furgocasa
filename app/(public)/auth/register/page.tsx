@@ -71,12 +71,8 @@ export default function RegisterPage() {
     try {
       const supabase = createClient()
       
-      // Construir redirect robusto: en producción forzamos dominio público para evitar localhost
-      const isBrowser = typeof window !== 'undefined'
-      const isLocalhost = isBrowser && window.location.hostname === 'localhost'
-      const redirectUrl = isLocalhost
-        ? 'https://localhost:3000/auth/callback?next=/mapa'
-        : 'https://www.mapafurgocasa.com/auth/callback?next=/mapa'
+      // SIEMPRE redirigir a producción
+      const redirectUrl = 'https://www.mapafurgocasa.com/auth/callback?next=/mapa'
       
       // Debug en consola para verificar
       console.log('🔐 OAuth redirectTo:', redirectUrl)
