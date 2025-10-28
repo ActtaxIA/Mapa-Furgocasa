@@ -70,10 +70,19 @@ export default function RegisterPage() {
   const handleGoogleSignup = async () => {
     try {
       const supabase = createClient()
+      
+      // FORZAR URL de producción - NO usar detección automática por ahora
+      const baseUrl = 'https://www.mapafurgocasa.com'
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${baseUrl}/auth/callback`,
+          // Forzar skip de cache
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       })
       if (error) throw error
