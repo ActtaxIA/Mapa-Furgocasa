@@ -17,7 +17,8 @@ interface UserProfile {
   id: string
   email: string
   created_at: string
-  last_sign_in_at: string
+  last_sign_in_at: string | null
+  confirmed_at: string | null
   user_metadata: {
     full_name?: string
     first_name?: string
@@ -53,16 +54,24 @@ export default function AdminUsersPage() {
 
   const loadUsers = async () => {
     try {
-      const supabase = createClient()
+      setLoading(true)
       
-      // Nota: Esto requiere usar el service role key para acceder a auth.users
-      // Por ahora mostramos datos de ejemplo
-      // En producción, necesitarías crear una función de servidor o Edge Function
+      // Llamar a la API del servidor que usa Service Role Key
+      const response = await fetch('/api/admin/users')
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al cargar usuarios')
+      }
+
+      console.log(`✅ Cargados ${data.total} usuarios desde Supabase Auth`)
+      setUsers(data.users || [])
       
-      setUsers([])
-      setLoading(false)
     } catch (error) {
-      console.error('Error cargando usuarios:', error)
+      console.error('❌ Error cargando usuarios:', error)
+      alert('Error al cargar usuarios. Verifica la consola.')
+      setUsers([])
+    } finally {
       setLoading(false)
     }
   }
@@ -102,7 +111,7 @@ export default function AdminUsersPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Gestión de Usuarios</h1>
             <p className="mt-1 text-sm text-gray-500">
-              Total: 382 usuarios registrados
+              Total: {users.length} usuarios registrados
             </p>
           </div>
         </div>
@@ -141,39 +150,37 @@ export default function AdminUsersPage() {
           </div>
         </div>
 
-        {/* Información sobre acceso a usuarios */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <ShieldCheckIcon className="h-6 w-6 text-yellow-600" />
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-yellow-800">
-                Acceso a Usuarios Limitado
-              </h3>
-              <div className="mt-2 text-sm text-yellow-700">
-                <p>
-                  Para acceder a la lista completa de usuarios y gestionarlos, necesitas configurar una Edge Function 
-                  o Server Action con el Service Role Key de Supabase. 
-                </p>
-                <p className="mt-2">
-                  <strong>Total de usuarios migrados:</strong> 382 usuarios
-                </p>
-                <p className="mt-1">
-                  Puedes ver y gestionar usuarios directamente desde el{' '}
-                  <a 
-                    href="https://supabase.com/dashboard" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium underline hover:text-yellow-900"
-                  >
-                    Dashboard de Supabase → Authentication → Users
-                  </a>
-                </p>
+        {/* Información sobre gestión de usuarios */}
+        {users.length > 0 && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <ShieldCheckIcon className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-blue-800">
+                  Usuarios Cargados desde Supabase Auth
+                </h3>
+                <div className="mt-2 text-sm text-blue-700">
+                  <p>
+                    Se encontraron <strong>{users.length} usuarios</strong> registrados en Supabase Authentication.
+                  </p>
+                  <p className="mt-1">
+                    También puedes gestionar usuarios directamente desde el{' '}
+                    <a 
+                      href="https://supabase.com/dashboard" 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium underline hover:text-blue-900"
+                    >
+                      Dashboard de Supabase → Authentication → Users
+                    </a>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -184,7 +191,7 @@ export default function AdminUsersPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Total Usuarios</p>
-                <p className="text-2xl font-bold text-gray-900">382</p>
+                <p className="text-2xl font-bold text-gray-900">{users.length}</p>
               </div>
             </div>
           </div>
@@ -196,7 +203,9 @@ export default function AdminUsersPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Administradores</p>
-                <p className="text-2xl font-bold text-gray-900">1</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {users.filter(u => u.user_metadata?.is_admin).length}
+                </p>
               </div>
             </div>
           </div>
@@ -207,32 +216,133 @@ export default function AdminUsersPage() {
                 <CheckCircleIcon className="w-8 h-8 text-green-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Activos</p>
-                <p className="text-2xl font-bold text-gray-900">382</p>
+                <p className="text-sm font-medium text-gray-500">Confirmados</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {users.filter(u => u.confirmed_at).length}
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Próximamente */}
-        <div className="mt-8 bg-white rounded-lg shadow p-12 text-center">
-          <UserCircleIcon className="mx-auto h-16 w-16 text-gray-400" />
-          <h3 className="mt-4 text-lg font-medium text-gray-900">Gestión de Usuarios</h3>
-          <p className="mt-2 text-sm text-gray-500 max-w-md mx-auto">
-            La gestión detallada de usuarios estará disponible próximamente. 
-            Por ahora, puedes administrar usuarios desde el Dashboard de Supabase.
-          </p>
-          <div className="mt-6">
-            <a
-              href="https://supabase.com/dashboard"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors"
-            >
-              Ir a Supabase Dashboard
-            </a>
+        {/* Tabla de usuarios */}
+        {users.length === 0 ? (
+          <div className="mt-8 bg-white rounded-lg shadow p-12 text-center">
+            <UserCircleIcon className="mx-auto h-16 w-16 text-gray-400" />
+            <h3 className="mt-4 text-lg font-medium text-gray-900">No hay usuarios</h3>
+            <p className="mt-2 text-sm text-gray-500 max-w-md mx-auto">
+              No se encontraron usuarios en Supabase Authentication.
+            </p>
           </div>
-        </div>
+        ) : (
+          <div className="mt-8 bg-white rounded-lg shadow overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Usuario
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Rol
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Fecha Registro
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Último Acceso
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Estado
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {usuariosFiltrados.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10">
+                          {user.user_metadata?.profile_photo ? (
+                            <img 
+                              className="h-10 w-10 rounded-full" 
+                              src={user.user_metadata.profile_photo} 
+                              alt="" 
+                            />
+                          ) : (
+                            <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                              <UserCircleIcon className="h-6 w-6 text-gray-500" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {user.user_metadata?.full_name || 
+                             user.user_metadata?.username || 
+                             user.user_metadata?.first_name || 
+                             'Sin nombre'}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            ID: {user.id.substring(0, 8)}...
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{user.email}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {user.user_metadata?.is_admin ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          <ShieldCheckIcon className="w-4 h-4 mr-1" />
+                          Admin
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          <UserCircleIcon className="w-4 h-4 mr-1" />
+                          Usuario
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(user.created_at).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {user.last_sign_in_at ? (
+                        new Date(user.last_sign_in_at).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })
+                      ) : (
+                        <span className="text-gray-400">Nunca</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {user.confirmed_at ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          <CheckCircleIcon className="w-4 h-4 mr-1" />
+                          Confirmado
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                          <XCircleIcon className="w-4 h-4 mr-1" />
+                          Pendiente
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </main>
     </div>
   )
