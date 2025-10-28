@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { MapIcon, MapPinIcon, RouteIcon, HeartIcon } from '@heroicons/react/24/outline'
+import { MapIcon, MapPinIcon, ArrowPathIcon, HeartIcon } from '@heroicons/react/24/outline'
 
 export default function HomePage() {
   const router = useRouter()
@@ -80,7 +80,7 @@ export default function HomePage() {
 
             <div className="bg-white rounded-xl p-6 shadow-md">
               <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <RouteIcon className="w-6 h-6 text-primary-600" />
+                <ArrowPathIcon className="w-6 h-6 text-primary-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Planifica Rutas
