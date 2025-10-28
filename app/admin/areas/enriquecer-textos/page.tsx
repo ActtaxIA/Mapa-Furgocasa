@@ -107,9 +107,9 @@ export default function EnriquecerTextosPage() {
       filtered = filtered.filter(area => area.provincia === selectedProvince)
     }
 
-    // Filtrar solo sin texto (umbral: 150 caracteres = sin descripción válida)
+    // Filtrar solo sin texto (sin descripción = NULL, vacío, o < 50 caracteres)
     if (soloSinTexto) {
-      filtered = filtered.filter(area => !area.descripcion || area.descripcion.trim().length < 150)
+      filtered = filtered.filter(area => !area.descripcion || area.descripcion.trim().length < 50)
     }
 
     setFilteredAreas(filtered)
@@ -157,11 +157,11 @@ export default function EnriquecerTextosPage() {
       if (forceProcess) {
         console.log('  ⚡ Modo forzado: Se procesará sin verificar (viene del filtro)')
       } else {
-        console.log('  📝 Descripción actual:', area.descripcion ? `${area.descripcion.length} caracteres` : 'NULL o vacío')
+        console.log('  📝 Descripción actual:', area.descripcion ? `"${area.descripcion.trim()}" (${area.descripcion.trim().length} caracteres)` : 'NULL o vacío')
         
-        // Solo verificamos si NO viene del filtro (umbral: 150 caracteres)
-        if (area.descripcion && area.descripcion.trim().length > 150) {
-          console.log('⚠️ [ENRICH] El área ya tiene descripción válida (>150 caracteres). No se sobrescribe.')
+        // Solo verificamos si NO viene del filtro (sin descripción = < 50 caracteres)
+        if (area.descripcion && area.descripcion.trim().length >= 50) {
+          console.log('⚠️ [ENRICH] El área ya tiene descripción válida (≥50 caracteres). No se sobrescribe.')
           return false
         }
       }
@@ -653,7 +653,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
                         <div className="text-sm text-gray-600">{area.ciudad}, {area.provincia}</div>
                       </td>
                       <td className="px-6 py-4">
-                        {area.descripcion && area.descripcion.length > 100 ? (
+                        {area.descripcion && area.descripcion.trim().length >= 50 ? (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                             Con descripción
                           </span>
