@@ -195,8 +195,8 @@ export default function MapaPage() {
           />
 
 
-          {/* Contador de resultados - Desktop */}
-          <div className="hidden lg:block absolute top-4 left-4 bg-white rounded-lg shadow-lg px-4 py-2 z-10">
+          {/* Contador de resultados - Visible en móvil y desktop */}
+          <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg px-3 py-2 z-10">
             <p className="text-sm font-semibold text-gray-700">
               {areasFiltradas.length} {areasFiltradas.length === 1 ? 'área' : 'áreas'}
             </p>
