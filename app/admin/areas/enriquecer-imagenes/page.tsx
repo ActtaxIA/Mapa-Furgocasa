@@ -41,29 +41,150 @@ export default function EnriquecerImagenesPage() {
 
   const enrichImages = async (areaId: string): Promise<boolean> => {
     try {
-      console.log('🖼️ Llamando API para área:', areaId)
-      const response = await fetch('/api/admin/scrape-images', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ areaId })
-      })
-
-      console.log('📡 Respuesta HTTP:', response.status)
-      const data = await response.json()
-      console.log('📦 Datos recibidos:', data)
+      console.log('🖼️ [IMAGES] Buscando imágenes para área:', areaId)
       
-      if (!response.ok) {
-        console.error('❌ Error del servidor:', data)
-        setProcessLog(prev => [...prev, `  ⚠️ Error: ${data.error || 'Error desconocido'}`])
+      // 1. Obtener datos del área
+      const { data: area, error: areaError } = await supabase
+        .from('areas')
+        .select('*')
+        .eq('id', areaId)
+        .single()
+
+      if (areaError || !area) {
+        console.error('❌ Área no encontrada')
+        setProcessLog(prev => [...prev, `  ❌ Área no encontrada`])
         return false
       }
+
+      const serpApiKey = process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
       
-      return data.success === true
+      const imagenesEncontradas: Array<{
+        url: string
+        fuente: string
+        titulo?: string
+        prioridad: number
+      }> = []
+
+      // 2. Buscar en Google Images
+      console.log('🔎 Buscando en Google Images...')
+      const queryImages = `"${area.nombre}" ${area.ciudad} autocaravanas`
+      
+      try {
+        const serpImagesUrl = `https://serpapi.com/search.json?engine=google_images&q=${encodeURIComponent(queryImages)}&api_key=${serpApiKey}&location=Spain&hl=es&gl=es&num=20`
+        const respImages = await fetch(serpImagesUrl)
+        const dataImages = await respImages.json()
+
+        if (!dataImages.error && dataImages.images_results) {
+          console.log(`  ✅ ${dataImages.images_results.length} imágenes en Google Images`)
+          
+          dataImages.images_results.slice(0, 10).forEach((img: any) => {
+            if (img.original && esImagenValida(img.original)) {
+              imagenesEncontradas.push({
+                url: img.original,
+                fuente: 'Google Images',
+                titulo: img.title,
+                prioridad: 2
+              })
+            }
+          })
+        }
+      } catch (e) {
+        console.log('  ⚠️ Error buscando imágenes:', e)
+      }
+
+      // 3. Buscar en Park4night
+      console.log('🏕️ Buscando en Park4night...')
+      const queryPark4night = `"${area.nombre}" ${area.ciudad} site:park4night.com`
+      
+      try {
+        const serpPark4nightUrl = `https://serpapi.com/search.json?engine=google_images&q=${encodeURIComponent(queryPark4night)}&api_key=${serpApiKey}&num=10`
+        const respPark = await fetch(serpPark4nightUrl)
+        const dataPark = await respPark.json()
+
+        if (!dataPark.error && dataPark.images_results) {
+          console.log(`  ✅ ${dataPark.images_results.length} imágenes en Park4night`)
+          
+          dataPark.images_results.forEach((img: any) => {
+            if (img.original && esImagenValida(img.original)) {
+              imagenesEncontradas.push({
+                url: img.original,
+                fuente: 'Park4night',
+                titulo: img.title,
+                prioridad: 1 // Alta prioridad
+              })
+            }
+          })
+        }
+      } catch (e) {
+        console.log('  ⚠️ Error buscando Park4night:', e)
+      }
+
+      // 4. Filtrar duplicados y ordenar
+      const imagenesUnicas = eliminarDuplicados(imagenesEncontradas)
+      imagenesUnicas.sort((a, b) => a.prioridad - b.prioridad)
+
+      console.log(`📊 Total imágenes encontradas: ${imagenesUnicas.length}`)
+
+      if (imagenesUnicas.length === 0) {
+        setProcessLog(prev => [...prev, `  ⚠️ No se encontraron imágenes`])
+        return false
+      }
+
+      // 5. Guardar en BD
+      const foto_principal = imagenesUnicas[0]?.url || null
+      const fotos_urls = imagenesUnicas.slice(0, 7).map(img => img.url)
+
+      console.log('💾 Actualizando base de datos...')
+      const { error: updateError } = await supabase
+        .from('areas')
+        .update({
+          foto_principal: foto_principal,
+          fotos_urls: fotos_urls,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', areaId)
+
+      if (updateError) {
+        console.error('❌ Error al actualizar BD:', updateError)
+        setProcessLog(prev => [...prev, `  ❌ Error guardando imágenes`])
+        return false
+      }
+
+      console.log('✅ Imágenes guardadas exitosamente!')
+      return true
+
     } catch (error) {
       console.error('❌ Error enriqueciendo imágenes:', error)
       setProcessLog(prev => [...prev, `  ❌ Error de red: ${error}`])
       return false
     }
+  }
+
+  const esImagenValida = (url: string): boolean => {
+    if (!url) return false
+    
+    // Evitar imágenes pequeñas de iconos o tracking
+    const blacklist = [
+      'logo', 'icon', 'avatar', 'pixel', 'badge',
+      'tracking', 'analytics', 'ad.', '/ads/',
+      'favicon', 'sprite', 'thumb',
+      '1x1', '16x16', '32x32', '64x64',
+      'data:image', 'base64'
+    ]
+    
+    const urlLower = url.toLowerCase()
+    return !blacklist.some(term => urlLower.includes(term))
+  }
+
+  const eliminarDuplicados = (imagenes: Array<{url: string, fuente: string, titulo?: string, prioridad: number}>) => {
+    const urlsVistas = new Set<string>()
+    return imagenes.filter(img => {
+      if (urlsVistas.has(img.url)) {
+        return false
+      }
+      urlsVistas.add(img.url)
+      return true
+    })
   }
 
   const handleEnrichSelected = async () => {

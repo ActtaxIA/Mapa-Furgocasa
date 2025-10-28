@@ -23,10 +23,40 @@ export default function ConfiguracionPage() {
   const [activeTab, setActiveTab] = useState<string>('scrape_services')
   const [editedConfig, setEditedConfig] = useState<IAConfig | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+  const [apiStatus, setApiStatus] = useState<{
+    openai: boolean
+    serpapi: boolean
+    supabase: boolean
+  } | null>(null)
 
   useEffect(() => {
     loadConfigs()
+    checkApiConnections()
   }, [])
+
+  const checkApiConnections = async () => {
+    try {
+      const openaiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
+      const serpApiKey = process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
+      
+      // Check Supabase
+      const { data, error } = await supabase.from('areas').select('id').limit(1)
+      const supabaseOk = !error && !!data
+
+      setApiStatus({
+        openai: !!openaiKey,
+        serpapi: !!serpApiKey,
+        supabase: supabaseOk
+      })
+    } catch (error) {
+      console.error('Error checking APIs:', error)
+      setApiStatus({
+        openai: false,
+        serpapi: false,
+        supabase: false
+      })
+    }
+  }
 
   useEffect(() => {
     const active = configs.find(c => c.config_key === activeTab)
@@ -39,14 +69,16 @@ export default function ConfiguracionPage() {
     try {
       setLoading(true)
       
-      const response = await fetch('/api/admin/ia-config')
-      const result = await response.json()
+      const { data, error } = await supabase
+        .from('ia_config')
+        .select('*')
+        .order('config_key')
 
-      if (result.success) {
-        setConfigs(result.data)
-        if (result.data.length > 0 && !activeTab) {
-          setActiveTab(result.data[0].config_key)
-        }
+      if (error) throw error
+
+      setConfigs(data || [])
+      if (data && data.length > 0 && !activeTab) {
+        setActiveTab(data[0].config_key)
       }
     } catch (error) {
       console.error('Error cargando configuración:', error)
@@ -67,23 +99,18 @@ export default function ConfiguracionPage() {
     try {
       setSaving(true)
 
-      const response = await fetch('/api/admin/ia-config', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          configKey: editedConfig.config_key,
-          configValue: editedConfig.config_value
+      const { error } = await supabase
+        .from('ia_config')
+        .update({
+          config_value: editedConfig.config_value,
+          updated_at: new Date().toISOString()
         })
-      })
+        .eq('config_key', editedConfig.config_key)
 
-      const result = await response.json()
+      if (error) throw error
 
-      if (result.success) {
-        showMessage('success', '✓ Configuración guardada correctamente')
-        await loadConfigs()
-      } else {
-        showMessage('error', 'Error al guardar: ' + result.error)
-      }
+      showMessage('success', '✓ Configuración guardada correctamente')
+      await loadConfigs()
     } catch (error) {
       console.error('Error guardando:', error)
       showMessage('error', 'Error al guardar la configuración')
@@ -99,29 +126,7 @@ export default function ConfiguracionPage() {
       return
     }
 
-    try {
-      setSaving(true)
-
-      const response = await fetch('/api/admin/ia-config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ configKey: editedConfig.config_key })
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
-        showMessage('success', '✓ Configuración restablecida')
-        await loadConfigs()
-      } else {
-        showMessage('error', 'Error al restablecer: ' + result.error)
-      }
-    } catch (error) {
-      console.error('Error restableciendo:', error)
-      showMessage('error', 'Error al restablecer la configuración')
-    } finally {
-      setSaving(false)
-    }
+    alert('⚠️ Funcionalidad de reset temporalmente deshabilitada.\n\nPara restaurar valores por defecto, contacta con el administrador del sistema.')
   }
 
   const updateConfigValue = (field: keyof IAConfigValue, value: any) => {
@@ -220,6 +225,89 @@ export default function ConfiguracionPage() {
             </div>
           </div>
         </div>
+
+        {/* API Status */}
+        {apiStatus && (
+          <div className="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">🔌 Estado de Conexiones API</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* OpenAI */}
+              <div className={`flex items-center gap-3 p-4 rounded-lg border-2 ${
+                apiStatus.openai 
+                  ? 'bg-green-50 border-green-200' 
+                  : 'bg-red-50 border-red-200'
+              }`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  apiStatus.openai ? 'bg-green-500' : 'bg-red-500'
+                }`}>
+                  {apiStatus.openai ? (
+                    <CheckIcon className="w-6 h-6 text-white" />
+                  ) : (
+                    <span className="text-white text-xl">✕</span>
+                  )}
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">OpenAI</p>
+                  <p className={`text-sm ${
+                    apiStatus.openai ? 'text-green-700' : 'text-red-700'
+                  }`}>
+                    {apiStatus.openai ? 'Conectado' : 'No configurado'}
+                  </p>
+                </div>
+              </div>
+
+              {/* SerpAPI */}
+              <div className={`flex items-center gap-3 p-4 rounded-lg border-2 ${
+                apiStatus.serpapi 
+                  ? 'bg-green-50 border-green-200' 
+                  : 'bg-red-50 border-red-200'
+              }`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  apiStatus.serpapi ? 'bg-green-500' : 'bg-red-500'
+                }`}>
+                  {apiStatus.serpapi ? (
+                    <CheckIcon className="w-6 h-6 text-white" />
+                  ) : (
+                    <span className="text-white text-xl">✕</span>
+                  )}
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">SerpAPI</p>
+                  <p className={`text-sm ${
+                    apiStatus.serpapi ? 'text-green-700' : 'text-red-700'
+                  }`}>
+                    {apiStatus.serpapi ? 'Conectado' : 'No configurado'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Supabase */}
+              <div className={`flex items-center gap-3 p-4 rounded-lg border-2 ${
+                apiStatus.supabase 
+                  ? 'bg-green-50 border-green-200' 
+                  : 'bg-red-50 border-red-200'
+              }`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  apiStatus.supabase ? 'bg-green-500' : 'bg-red-500'
+                }`}>
+                  {apiStatus.supabase ? (
+                    <CheckIcon className="w-6 h-6 text-white" />
+                  ) : (
+                    <span className="text-white text-xl">✕</span>
+                  )}
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Supabase</p>
+                  <p className={`text-sm ${
+                    apiStatus.supabase ? 'text-green-700' : 'text-red-700'
+                  }`}>
+                    {apiStatus.supabase ? 'Conectado' : 'Error de conexión'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Message */}
         {message && (

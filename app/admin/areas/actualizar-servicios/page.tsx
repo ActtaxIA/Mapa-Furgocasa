@@ -23,8 +23,23 @@ interface AreaConCambios extends Area {
   serviciosNuevos?: Record<string, boolean>
 }
 
+const SERVICIOS_VALIDOS = [
+  'agua',
+  'electricidad',
+  'vaciado_aguas_negras',
+  'vaciado_aguas_grises',
+  'wifi',
+  'duchas',
+  'wc',
+  'lavanderia',
+  'restaurante',
+  'supermercado',
+  'zona_mascotas'
+]
+
 export default function ActualizarServiciosPage() {
   const router = useRouter()
+  const supabase = createClient()
   const [areas, setAreas] = useState<AreaConCambios[]>([])
   const [loading, setLoading] = useState(true)
   const [procesando, setProcesando] = useState(false)
@@ -37,6 +52,160 @@ export default function ActualizarServiciosPage() {
     ready: boolean
     checks: any
   } | null>(null)
+
+  // Función para analizar servicios directamente desde el cliente
+  const analizarServiciosArea = async (areaId: string): Promise<Record<string, boolean> | null> => {
+    try {
+      console.log('🔎 [SCRAPE] Analizando servicios para área:', areaId)
+      
+      // 1. Obtener datos del área
+      const { data: area, error: areaError } = await supabase
+        .from('areas')
+        .select('*')
+        .eq('id', areaId)
+        .single()
+
+      if (areaError || !area) {
+        console.error('❌ Área no encontrada')
+        return null
+      }
+
+      const serpApiKey = process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
+      const openaiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
+
+      // 2. Buscar información con SerpAPI (búsqueda única simplificada)
+      const query = `"${area.nombre}" ${area.ciudad} ${area.provincia} servicios autocaravanas camping agua electricidad`
+      const serpUrl = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&api_key=${serpApiKey}&location=Spain&hl=es&gl=es&num=15`
+      
+      console.log('🔍 Llamando a SerpAPI...')
+      const serpResponse = await fetch(serpUrl)
+      const serpData = await serpResponse.json()
+
+      if (serpData.error) {
+        console.error('❌ Error de SerpAPI:', serpData.error)
+        return null
+      }
+
+      // 3. Construir texto para analizar
+      let textoParaAnalizar = `INFORMACIÓN DEL ÁREA: ${area.nombre}, ${area.ciudad}, ${area.provincia}\n\n`
+
+      if (serpData.organic_results) {
+        serpData.organic_results.forEach((result: any) => {
+          textoParaAnalizar += `${result.title}\n${result.snippet}\n\n`
+        })
+      }
+
+      if (serpData.answer_box) {
+        textoParaAnalizar += `${serpData.answer_box.snippet || serpData.answer_box.answer}\n\n`
+      }
+
+      console.log(`📊 Información recopilada: ${textoParaAnalizar.length} caracteres`)
+
+      // 4. Obtener configuración del agente
+      const { data: configData } = await supabase
+        .from('ia_config')
+        .select('config_value')
+        .eq('config_key', 'scrape_services')
+        .single()
+
+      const config = configData?.config_value || {
+        model: 'gpt-4o-mini',
+        temperature: 0.1,
+        max_tokens: 300,
+        prompts: [
+          {
+            id: 'sys-1',
+            role: 'system',
+            content: 'Eres un auditor crítico que analiza información sobre áreas de autocaravanas. Solo confirmas servicios con evidencia explícita. Respondes únicamente con JSON válido, sin texto adicional.',
+            order: 1,
+            required: true
+          }
+        ]
+      }
+
+      // 5. Construir mensajes para OpenAI
+      const messages = config.prompts
+        .sort((a: any, b: any) => a.order - b.order)
+        .map((prompt: any) => {
+          let content = prompt.content
+            .replace(/\{\{area_nombre\}\}/g, area.nombre)
+            .replace(/\{\{area_ciudad\}\}/g, area.ciudad)
+            .replace(/\{\{area_provincia\}\}/g, area.provincia)
+            .replace(/\{\{texto_analizar\}\}/g, textoParaAnalizar)
+          
+          return {
+            role: prompt.role === 'agent' ? 'user' : prompt.role,
+            content: content
+          }
+        })
+
+      // 6. Llamar a OpenAI
+      console.log('🤖 Llamando a OpenAI...')
+      const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${openaiKey}`
+        },
+        body: JSON.stringify({
+          model: config.model,
+          messages: messages,
+          temperature: config.temperature,
+          max_tokens: config.max_tokens
+        })
+      })
+
+      if (!openaiResponse.ok) {
+        console.error('❌ Error de OpenAI:', openaiResponse.status)
+        return null
+      }
+
+      const openaiData = await openaiResponse.json()
+      const respuestaIA = openaiData.choices[0].message.content || '{}'
+
+      // 7. Parsear respuesta
+      let serviciosDetectados: Record<string, boolean> = {}
+      try {
+        const jsonMatch = respuestaIA.match(/\{[\s\S]*\}/)
+        if (jsonMatch) {
+          serviciosDetectados = JSON.parse(jsonMatch[0])
+        } else {
+          serviciosDetectados = JSON.parse(respuestaIA)
+        }
+      } catch (e) {
+        console.error('❌ Error parseando respuesta:', respuestaIA)
+        return null
+      }
+
+      // 8. Validar servicios
+      const serviciosFinales: Record<string, boolean> = {}
+      SERVICIOS_VALIDOS.forEach(servicio => {
+        serviciosFinales[servicio] = serviciosDetectados[servicio] === true
+      })
+
+      // 9. Actualizar en la base de datos
+      console.log('💾 Actualizando base de datos...')
+      const { error: updateError } = await supabase
+        .from('areas')
+        .update({
+          servicios: serviciosFinales,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', areaId)
+
+      if (updateError) {
+        console.error('❌ Error al actualizar BD:', updateError)
+        return null
+      }
+
+      console.log('✅ Servicios actualizados exitosamente!')
+      return serviciosFinales
+
+    } catch (error) {
+      console.error('❌ Error analizando servicios:', error)
+      return null
+    }
+  }
 
   useEffect(() => {
     checkAdminAndLoadAreas()
@@ -57,12 +226,15 @@ export default function ActualizarServiciosPage() {
 
   const checkConfiguration = async () => {
     try {
-      const response = await fetch('/api/admin/check-config')
-      const checks = await response.json()
+      const openaiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
+      const serpApiKey = process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
       
       setConfigStatus({
-        ready: checks.openaiKeyValid && checks.serpApiKeyValid,
-        checks
+        ready: !!openaiKey && !!serpApiKey,
+        checks: {
+          openaiKeyValid: !!openaiKey,
+          serpApiKeyValid: !!serpApiKey
+        }
       })
     } catch (error) {
       console.error('Error verificando configuración:', error)
@@ -172,26 +344,21 @@ export default function ActualizarServiciosPage() {
       ))
 
       try {
-        const response = await fetch('/api/admin/scrape-services', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ areaId: area.id })
-        })
-
-        const result = await response.json()
-
-        if (response.ok) {
+        // Llamar directamente a la lógica desde el cliente
+        const servicios = await analizarServiciosArea(area.id)
+        
+        if (servicios) {
           setAreas(prev => prev.map(a => 
             a.id === area.id ? {
               ...a,
               procesando: false,
               procesada: true,
-              serviciosNuevos: result.servicios,
+              serviciosNuevos: servicios,
               error: null
             } : a
           ))
         } else {
-          throw new Error(result.details || result.error || 'Error procesando área')
+          throw new Error('No se pudieron analizar los servicios')
         }
       } catch (error: any) {
         setAreas(prev => prev.map(a => 

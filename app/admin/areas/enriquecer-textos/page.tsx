@@ -134,16 +134,190 @@ export default function EnriquecerTextosPage() {
 
   const enrichArea = async (areaId: string): Promise<boolean> => {
     try {
-      const response = await fetch('/api/admin/enrich-description', {
+      console.log('🚀 [ENRICH] Iniciando enriquecimiento de área:', areaId)
+      
+      // Obtener el área de la base de datos
+      const { data: area, error: areaError } = await supabase
+        .from('areas')
+        .select('*')
+        .eq('id', areaId)
+        .single()
+
+      if (areaError || !area) {
+        console.error('❌ [ENRICH] Error: Área no encontrada', areaError)
+        return false
+      }
+
+      console.log('✅ [ENRICH] Área encontrada:', area.nombre, '-', area.ciudad)
+
+      // Si ya tiene descripción, no sobrescribir
+      if (area.descripcion && area.descripcion.length > 100) {
+        console.log('⚠️ [ENRICH] El área ya tiene descripción (>100 caracteres). No se sobrescribe.')
+        return false
+      }
+
+      // 1. Buscar información con SerpAPI
+      const query = `"${area.ciudad}" ${area.provincia} turismo autocaravanas qué ver`
+      const serpApiKey = process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
+      const serpApiUrl = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&api_key=${serpApiKey}&location=Spain&hl=es&gl=es&num=10`
+
+      console.log('🔎 [ENRICH] Llamando a SerpAPI...')
+      const serpResponse = await fetch(serpApiUrl)
+      const serpData = await serpResponse.json()
+
+      if (serpData.error) {
+        console.error('❌ [ENRICH] Error de SerpAPI:', serpData.error)
+        return false
+      }
+
+      console.log('✅ [ENRICH] SerpAPI respondió correctamente')
+
+      // Filtrar resultados por ciudad
+      if (serpData.organic_results && serpData.organic_results.length > 0) {
+        const ciudadLower = area.ciudad.toLowerCase()
+        serpData.organic_results = serpData.organic_results.filter((result: any) => {
+          const snippet = (result.snippet || '').toLowerCase()
+          const title = (result.title || '').toLowerCase()
+          return snippet.includes(ciudadLower) || title.includes(ciudadLower)
+        })
+      }
+
+      // 2. Construir contexto para OpenAI
+      let contexto = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ ÁREA ESPECÍFICA QUE DEBES DESCRIBIR:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Nombre del área: ${area.nombre}
+Ciudad: ${area.ciudad}
+Provincia: ${area.provincia}
+País: ${area.pais}
+Tipo: ${area.tipo_area}
+`
+      
+      if (area.precio_por_noche) {
+        contexto += `Precio: ${area.precio_por_noche}€/noche\n`
+      } else {
+        contexto += `Precio: Gratis o desconocido\n`
+      }
+
+      if (area.plazas_disponibles) {
+        contexto += `Plazas disponibles: ${area.plazas_disponibles}\n`
+      }
+
+      if (area.servicios && typeof area.servicios === 'object') {
+        const serviciosDisponibles = Object.entries(area.servicios)
+          .filter(([_, value]) => value === true)
+          .map(([key]) => key)
+        
+        if (serviciosDisponibles.length > 0) {
+          contexto += `\n✅ Servicios confirmados: ${serviciosDisponibles.join(', ')}\n`
+        } else {
+          contexto += `\n⚠️ No hay servicios confirmados para esta área.\n`
+        }
+      }
+
+      contexto += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(Esta información es solo sobre ${area.ciudad}, NO sobre otras ciudades)
+
+`
+
+      if (serpData.organic_results) {
+        serpData.organic_results.forEach((result: any) => {
+          contexto += `${result.title}\n${result.snippet}\n\n`
+        })
+      }
+
+      if (serpData.answer_box) {
+        contexto += `${serpData.answer_box.snippet || serpData.answer_box.answer}\n\n`
+      }
+
+      // 3. Obtener configuración del agente desde la BD
+      const { data: configData } = await supabase
+        .from('ia_config')
+        .select('config_value')
+        .eq('config_key', 'enrich_description')
+        .single()
+
+      const config = configData?.config_value || {
+        model: 'gpt-4o-mini',
+        temperature: 0.7,
+        max_tokens: 1500,
+        prompts: [
+          {
+            id: 'sys-1',
+            role: 'system',
+            content: 'Eres un redactor experto en guías de viaje para autocaravanas. Escribes textos informativos, naturales y bien estructurados en español.',
+            order: 1,
+            required: true
+          }
+        ]
+      }
+
+      // Construir mensajes para OpenAI
+      const messages = config.prompts
+        .sort((a: any, b: any) => a.order - b.order)
+        .map((prompt: any) => {
+          let content = prompt.content
+            .replace(/\{\{contexto\}\}/g, contexto)
+            .replace(/\{\{area_nombre\}\}/g, area.nombre)
+            .replace(/\{\{area_ciudad\}\}/g, area.ciudad)
+            .replace(/\{\{area_provincia\}\}/g, area.provincia)
+          
+          return {
+            role: prompt.role === 'agent' ? 'user' : prompt.role,
+            content: content
+          }
+        })
+
+      // 4. Llamar a OpenAI desde el cliente
+      console.log('🤖 [ENRICH] Llamando a OpenAI...')
+      const openaiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
+      const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ areaId })
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${openaiKey}`
+        },
+        body: JSON.stringify({
+          model: config.model,
+          messages: messages,
+          temperature: config.temperature,
+          max_tokens: config.max_tokens
+        })
       })
 
-      const data = await response.json()
-      return data.success === true
+      if (!openaiResponse.ok) {
+        console.error('❌ [ENRICH] Error de OpenAI:', openaiResponse.status)
+        return false
+      }
+
+      const openaiData = await openaiResponse.json()
+      const descripcionGenerada = openaiData.choices[0].message.content || ''
+
+      console.log('📝 [ENRICH] Descripción generada (' + descripcionGenerada.length + ' caracteres)')
+
+      // 5. Guardar en la base de datos
+      console.log('💾 [ENRICH] Guardando en base de datos...')
+      const { error: updateError } = await supabase
+        .from('areas')
+        .update({
+          descripcion: descripcionGenerada,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', areaId)
+
+      if (updateError) {
+        console.error('❌ [ENRICH] Error al guardar en BD:', updateError)
+        return false
+      }
+
+      console.log('✅ [ENRICH] ¡Descripción guardada exitosamente!')
+      return true
+
     } catch (error) {
-      console.error('Error enriqueciendo área:', error)
+      console.error('❌ [ENRICH] Error enriqueciendo área:', error)
       return false
     }
   }
