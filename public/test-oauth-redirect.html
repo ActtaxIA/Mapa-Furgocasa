@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test OAuth Redirect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .result {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .result h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .result code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+            margin: 2px 0;
+        }
+        .ok { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Diagnóstico OAuth Redirect</h1>
+    
+    <div class="result">
+        <h3>Información de la Página Actual</h3>
+        <p><strong>URL completa:</strong> <code id="fullUrl"></code></p>
+        <p><strong>Protocol:</strong> <code id="protocol"></code></p>
+        <p><strong>Host:</strong> <code id="host"></code></p>
+        <p><strong>Origin:</strong> <code id="origin"></code></p>
+    </div>
+
+    <div class="result">
+        <h3>Lo que el código debería generar</h3>
+        <p><strong>Base URL:</strong> <code id="baseUrl"></code></p>
+        <p><strong>Redirect To (OAuth):</strong> <code id="redirectTo"></code></p>
+    </div>
+
+    <div class="result">
+        <h3>Verificación</h3>
+        <p id="verification"></p>
+    </div>
+
+    <div class="result">
+        <h3>Instrucciones</h3>
+        <ol>
+            <li>Si ves <code>localhost</code> en alguna parte arriba, significa que estás accediendo desde localhost.</li>
+            <li>Asegúrate de estar accediendo desde: <code>https://www.mapafurgocasa.com/test-oauth-redirect.html</code></li>
+            <li>Si estás en el dominio correcto y aún así dice localhost, el problema es el código desplegado.</li>
+            <li>Si dice el dominio correcto, entonces el problema puede ser la configuración de Supabase.</li>
+        </ol>
+    </div>
+
+    <script>
+        // Obtener información actual
+        document.getElementById('fullUrl').textContent = window.location.href;
+        document.getElementById('protocol').textContent = window.location.protocol;
+        document.getElementById('host').textContent = window.location.host;
+        document.getElementById('origin').textContent = window.location.origin;
+
+        // Simular lo que hace el código
+        const baseUrl = typeof window !== 'undefined' 
+            ? `${window.location.protocol}//${window.location.host}`
+            : 'https://www.mapafurgocasa.com';
+        
+        document.getElementById('baseUrl').textContent = baseUrl;
+        document.getElementById('redirectTo').textContent = `${baseUrl}/auth/callback`;
+
+        // Verificación
+        const verification = document.getElementById('verification');
+        if (baseUrl.includes('mapafurgocasa.com')) {
+            verification.innerHTML = '<span class="ok">✅ CORRECTO: El código generaría la URL correcta</span>';
+        } else if (baseUrl.includes('localhost')) {
+            verification.innerHTML = '<span class="error">❌ PROBLEMA: Estás accediendo desde localhost</span>';
+        } else if (baseUrl.includes('amplifyapp.com')) {
+            verification.innerHTML = '<span class="ok">✅ CORRECTO: URL de Amplify detectada correctamente</span>';
+        } else {
+            verification.innerHTML = '<span class="error">⚠️ ADVERTENCIA: URL no reconocida</span>';
+        }
+    </script>
+</body>
+</html>
+
