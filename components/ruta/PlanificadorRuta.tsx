@@ -315,6 +315,7 @@ export default function PlanificadorRuta() {
             lng: position.coords.longitude
           }
           
+          const google = (window as any).google
           // Crear o actualizar marcador de usuario
           if (!userMarkerRef.current) {
             console.log('📍 Creando marcador GPS (auto-activación RUTA) en:', pos)
@@ -441,6 +442,7 @@ export default function PlanificadorRuta() {
       }
 
       // Filtrar áreas que están dentro del radio de la ruta
+      const google = (window as any).google
       const areasCercanas: Area[] = []
       const radioMetros = radio * 1000
 
@@ -782,6 +784,7 @@ export default function PlanificadorRuta() {
       if (geometriaData?.features?.[0]?.properties?.legs && directionsRenderer && map) {
         console.log('📦 Cargando ruta desde caché (sin llamada a API)')
         
+        const google = (window as any).google
         const savedLegs = geometriaData.features[0].properties.legs
         const coordinates = geometriaData.features[0].geometry.coordinates
         
@@ -877,6 +880,7 @@ export default function PlanificadorRuta() {
 
     setIsCalculating(true)
 
+    const google = (window as any).google
     const waypointsFormatted: GoogleDirectionsWaypoint[] = paradasPuntos.map((parada: any) => ({
       location: new google.maps.LatLng(parada.latitud, parada.longitud),
       stopover: true
@@ -1217,6 +1221,7 @@ export default function PlanificadorRuta() {
                       className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                       onChange={(e) => {
                         if (!map) return
+                        const google = (window as any).google
                         const autocomplete = new google.maps.places.Autocomplete(e.target, {
                           componentRestrictions: { country: ['es', 'fr', 'pt', 'it'] }
                         })
