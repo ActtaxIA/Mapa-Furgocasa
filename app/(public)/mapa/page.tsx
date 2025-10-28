@@ -4,12 +4,11 @@ import { MapaInteractivo } from '@/components/mapa/MapaInteractivo'
 import { FiltrosMapa, Filtros } from '@/components/mapa/FiltrosMapa'
 import { ListaResultados } from '@/components/mapa/ListaResultados'
 import { Navbar } from '@/components/layout/Navbar'
-import BottomNavigation from '@/components/mobile/BottomNavigation'
 import BottomSheet from '@/components/mobile/BottomSheet'
 import { createClient } from '@/lib/supabase/client'
 import type { Area } from '@/types/database.types'
 import { useEffect, useState, useMemo } from 'react'
-import { FunnelIcon, ListBulletIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { MapIcon, FunnelIcon, ListBulletIcon } from '@heroicons/react/24/outline'
 
 export default function MapaPage() {
   const [areas, setAreas] = useState<Area[]>([])
@@ -174,10 +173,8 @@ export default function MapaPage() {
 
   return (
     <div className="h-screen flex flex-col">
-      {/* Navbar - oculta en móvil */}
-      <div className="hidden md:block">
-        <Navbar />
-      </div>
+      {/* Navbar - siempre visible */}
+      <Navbar />
       
       {/* Layout principal */}
       <main className="flex-1 relative flex overflow-hidden">
@@ -200,27 +197,6 @@ export default function MapaPage() {
             onAreaClick={handleAreaClick}
           />
 
-          {/* Botones flotantes móvil - Superior */}
-          <div className="md:hidden absolute top-4 left-4 right-4 flex gap-2 z-10">
-            <button
-              onClick={() => setMostrarFiltros(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-gray-700 rounded-full shadow-lg font-semibold hover:bg-gray-50 transition-colors"
-            >
-              <FunnelIcon className="w-5 h-5" />
-              Filtros
-            </button>
-            <button
-              onClick={() => setMostrarLista(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-full shadow-lg font-semibold hover:bg-primary-700 transition-colors relative"
-            >
-              {areasFiltradas.length > 0 && (
-                <span className="bg-white text-primary-600 text-xs rounded-full px-2 py-0.5 font-bold">
-                  {areasFiltradas.length > 99 ? '99+' : areasFiltradas.length}
-                </span>
-              )}
-              <span>Lugares</span>
-            </button>
-          </div>
 
           {/* Contador de resultados - Desktop */}
           <div className="hidden lg:block absolute top-4 left-4 bg-white rounded-lg shadow-lg px-4 py-2 z-10">
@@ -274,11 +250,53 @@ export default function MapaPage() {
         />
       </BottomSheet>
 
-      {/* Bottom Navigation (solo móvil) */}
-      <BottomNavigation 
-        onListClick={() => setMostrarLista(true)}
-        showListButton={false}
-      />
+      {/* Bottom Bar (solo móvil) - Mapa, Filtros, Lista */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-bottom z-40">
+        <div className="flex items-center justify-around h-16 px-2">
+          {/* Mapa */}
+          <button
+            onClick={() => {
+              setMostrarFiltros(false)
+              setMostrarLista(false)
+            }}
+            className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+              !mostrarFiltros && !mostrarLista ? 'text-primary-600' : 'text-gray-600'
+            }`}
+          >
+            <MapIcon className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Mapa</span>
+          </button>
+
+          {/* Filtros */}
+          <button
+            onClick={() => setMostrarFiltros(true)}
+            className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+              mostrarFiltros ? 'text-primary-600' : 'text-gray-600'
+            }`}
+          >
+            <FunnelIcon className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Filtros</span>
+          </button>
+
+          {/* Lista */}
+          <button
+            onClick={() => setMostrarLista(true)}
+            className={`flex flex-col items-center justify-center flex-1 h-full transition-colors relative ${
+              mostrarLista ? 'text-primary-600' : 'text-gray-600'
+            }`}
+          >
+            <div className="relative">
+              <ListBulletIcon className="w-6 h-6 mb-1" />
+              {areasFiltradas.length > 0 && (
+                <span className="absolute -top-1 -right-2 bg-primary-600 text-white text-xs rounded-full px-1.5 py-0.5 font-bold min-w-[20px] text-center">
+                  {areasFiltradas.length > 99 ? '99+' : areasFiltradas.length}
+                </span>
+              )}
+            </div>
+            <span className="text-xs font-medium">Lista</span>
+          </button>
+        </div>
+      </nav>
     </div>
   )
 }

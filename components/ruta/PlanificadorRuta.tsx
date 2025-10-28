@@ -32,7 +32,11 @@ interface RoutePoint {
   lng: number
 }
 
-export default function PlanificadorRuta() {
+interface PlanificadorRutaProps {
+  vistaMovil?: 'ruta' | 'mapa' | 'lista'
+}
+
+export default function PlanificadorRuta({ vistaMovil = 'ruta' }: PlanificadorRutaProps = {}) {
   const mapRef = useRef<HTMLDivElement>(null)
   const origenInputRef = useRef<HTMLInputElement>(null)
   const destinoInputRef = useRef<HTMLInputElement>(null)
@@ -1157,8 +1161,10 @@ export default function PlanificadorRuta() {
         </div>
       )}
 
-      {/* Panel de Controles - Izquierda */}
-      <aside className="w-80 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-10 flex flex-col">
+      {/* Panel de Controles - Izquierda (Desktop) o vista "ruta" (Móvil) */}
+      <aside className={`w-full md:w-80 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-10 flex flex-col md:block ${
+        vistaMovil === 'ruta' ? 'block' : 'hidden md:block'
+      }`}>
         {/* Header Azulado */}
         <div className="bg-gradient-to-r from-sky-50 to-blue-50 border-b border-sky-200 p-4 sticky top-0 z-10">
           <h2 className="text-lg font-bold text-sky-900">Planifica tu Ruta</h2>
@@ -1385,8 +1391,10 @@ export default function PlanificadorRuta() {
         </div>
       </aside>
 
-      {/* Mapa - Centro */}
-      <div className="flex-1 relative z-20">
+      {/* Mapa - Centro (Desktop siempre visible, Móvil solo en vista "mapa") */}
+      <div className={`flex-1 relative z-20 md:block ${
+        vistaMovil === 'mapa' ? 'block' : 'hidden md:block'
+      }`}>
         <div ref={mapRef} className="w-full h-full" />
         
         {isLoading && (
@@ -1448,8 +1456,10 @@ export default function PlanificadorRuta() {
         </button>
       </div>
 
-      {/* Lista de Resultados - Derecha */}
-      <aside className="w-96 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-10">
+      {/* Lista de Resultados - Derecha (Desktop siempre visible, Móvil solo en vista "lista") */}
+      <aside className={`w-full md:w-96 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-10 md:block ${
+        vistaMovil === 'lista' ? 'block' : 'hidden md:block'
+      }`}>
         <ListaResultados
           areas={areasEnRuta}
           onAreaClick={(area) => {
