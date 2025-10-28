@@ -1177,10 +1177,9 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       )}
 
       {/* Panel de Controles - Izquierda (Desktop) o vista "ruta" (Móvil) */}
-      <aside className={`bg-white shadow-lg overflow-y-auto flex-shrink-0 z-50 flex flex-col h-full
-        md:w-80 md:relative md:flex
-        ${vistaMovil === 'ruta' ? 'fixed inset-0 w-full' : 'hidden'}
-      `}>
+      <aside className={`w-full md:w-80 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-50 flex flex-col h-full ${
+        vistaMovil === 'ruta' ? 'flex' : 'hidden md:flex'
+      }`}>
         {/* Header Azulado */}
         <div className="bg-gradient-to-r from-sky-50 to-blue-50 border-b border-sky-200 p-4 sticky top-0 z-10">
           <h2 className="text-lg font-bold text-sky-900">Planifica tu Ruta</h2>
@@ -1473,10 +1472,9 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       </div>
 
       {/* Lista de Resultados - Derecha (Desktop siempre visible, Móvil solo en vista "lista") */}
-      <aside className={`bg-white shadow-lg overflow-y-auto flex-shrink-0 z-50 h-full
-        md:w-96 md:relative md:block
-        ${vistaMovil === 'lista' ? 'fixed inset-0 w-full' : 'hidden'}
-      `}>
+      <aside className={`w-full md:w-96 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-50 h-full md:block ${
+        vistaMovil === 'lista' ? 'block' : 'hidden md:block'
+      }`}>
         <ListaResultados
           areas={areasEnRuta}
           onAreaClick={(area) => {
