@@ -34,7 +34,13 @@ export default function MapaVisitas({ visitas }: Props) {
 
       try {
         const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+        console.log('🗺️ MapaVisitas - Inicializando mapa...', {
+          hasApiKey: !!apiKey,
+          visitasCount: visitas.length
+        })
+        
         if (!apiKey) {
+          console.error('❌ MapaVisitas - API Key de Google Maps no configurada')
           setError('API Key de Google Maps no configurada')
           setLoading(false)
           return
@@ -47,6 +53,7 @@ export default function MapaVisitas({ visitas }: Props) {
         })
 
         await loader.load()
+        console.log('✅ MapaVisitas - Google Maps cargado')
 
         const google = (window as any).google
 
@@ -121,6 +128,7 @@ export default function MapaVisitas({ visitas }: Props) {
           mapRef.current.fitBounds(bounds, { padding: 50 })
         }
 
+        console.log('✅ MapaVisitas - Mapa inicializado correctamente con', markersRef.current.length, 'marcadores')
         setLoading(false)
       } catch (error) {
         console.error('Error cargando Google Maps:', error)
