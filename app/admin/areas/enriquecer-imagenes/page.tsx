@@ -126,7 +126,7 @@ export default function EnriquecerImagenesPage() {
     }, 500)
   }
 
-  const provincias = Array.from(new Set(areas.map(a => a.provincia))).sort()
+  const provincias = Array.from(new Set(areas.map(a => a.provincia).filter((p): p is string => p !== null))).sort()
 
   const areasFiltradas = areas.filter(area => {
     const matchSearch = searchTerm === '' || 

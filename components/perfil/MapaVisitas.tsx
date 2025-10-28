@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Loader } from '@googlemaps/js-api-loader'
+
+// Tipos simplificados para Google Maps
+type GoogleMap = any
+type GoogleMarker = any
 import { Visita, Area } from '@/types/database.types'
 
 interface VisitaConArea extends Visita {
@@ -13,9 +17,9 @@ interface Props {
 }
 
 export default function MapaVisitas({ visitas }: Props) {
-  const mapRef = useRef<google.maps.Map | null>(null)
+  const mapRef = useRef<GoogleMap | null>(null)
   const mapContainerRef = useRef<HTMLDivElement>(null)
-  const markersRef = useRef<google.maps.Marker[]>([])
+  const markersRef = useRef<GoogleMarker[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -43,6 +47,8 @@ export default function MapaVisitas({ visitas }: Props) {
         })
 
         await loader.load()
+
+        const google = (window as any).google
 
         // Crear mapa si no existe
         if (!mapRef.current && mapContainerRef.current) {

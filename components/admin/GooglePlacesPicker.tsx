@@ -4,6 +4,11 @@ import { useEffect, useRef, useState } from 'react'
 import { Loader } from '@googlemaps/js-api-loader'
 import { MagnifyingGlassIcon, MapPinIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 
+// Tipos simplificados para Google Maps (se cargan dinámicamente)
+type GoogleMap = any
+type GoogleMarker = any
+type GooglePlaceResult = any
+
 interface PlaceData {
   nombre: string
   direccion: string
@@ -28,9 +33,9 @@ interface GooglePlacesPickerProps {
 export default function GooglePlacesPicker({ onPlaceSelected, initialLat, initialLng }: GooglePlacesPickerProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const [map, setMap] = useState<google.maps.Map | null>(null)
-  const [marker, setMarker] = useState<google.maps.Marker | null>(null)
-  const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null)
+  const [map, setMap] = useState<GoogleMap | null>(null)
+  const [marker, setMarker] = useState<GoogleMarker | null>(null)
+  const [selectedPlace, setSelectedPlace] = useState<GooglePlaceResult | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -63,6 +68,9 @@ export default function GooglePlacesPicker({ onPlaceSelected, initialLat, initia
         console.error('❌ Referencia al mapa no encontrada')
         return
       }
+
+      // Alias para google.maps cargado dinámicamente
+      const google = (window as any).google
 
       // Crear mapa centrado en España (o en las coordenadas iniciales)
       const mapInstance = new google.maps.Map(mapRef.current, {
@@ -117,7 +125,7 @@ export default function GooglePlacesPicker({ onPlaceSelected, initialLat, initia
       }
 
       // Permitir hacer clic en el mapa para colocar marcador
-      mapInstance.addListener('click', (e: google.maps.MapMouseEvent) => {
+      mapInstance.addListener('click', (e: any) => {
         if (e.latLng) {
           placeMarkerAndReverseGeocode(e.latLng, mapInstance)
         }
@@ -133,8 +141,10 @@ export default function GooglePlacesPicker({ onPlaceSelected, initialLat, initia
     }
   }
 
-  const handlePlaceSelect = (place: google.maps.places.PlaceResult, mapInstance: google.maps.Map) => {
+  const handlePlaceSelect = (place: any, mapInstance: any) => {
     if (!place.geometry?.location) return
+
+    const google = (window as any).google
 
     setSelectedPlace(place)
 
@@ -167,7 +177,9 @@ export default function GooglePlacesPicker({ onPlaceSelected, initialLat, initia
     extractPlaceData(place)
   }
 
-  const placeMarkerAndReverseGeocode = (location: google.maps.LatLng, mapInstance: google.maps.Map) => {
+  const placeMarkerAndReverseGeocode = (location: any, mapInstance: any) => {
+    const google = (window as any).google
+    
     // Actualizar o crear marcador
     if (marker) {
       marker.setPosition(location)
@@ -194,6 +206,7 @@ export default function GooglePlacesPicker({ onPlaceSelected, initialLat, initia
   }
 
   const reverseGeocode = async (lat: number, lng: number) => {
+    const google = (window as any).google
     const geocoder = new google.maps.Geocoder()
     
     try {
@@ -203,10 +216,10 @@ export default function GooglePlacesPicker({ onPlaceSelected, initialLat, initia
         const place = response.results[0]
         
         // Crear un objeto PlaceResult simplificado
-        const simplifiedPlace: google.maps.places.PlaceResult = {
+        const simplifiedPlace: any = {
           geometry: {
             location: new google.maps.LatLng(lat, lng),
-          } as google.maps.places.PlaceGeometry,
+          },
           formatted_address: place.formatted_address,
           address_components: place.address_components,
           name: place.formatted_address?.split(',')[0] || '',
@@ -221,14 +234,14 @@ export default function GooglePlacesPicker({ onPlaceSelected, initialLat, initia
     }
   }
 
-  const extractPlaceData = (place: google.maps.places.PlaceResult) => {
+  const extractPlaceData = (place: any) => {
     let ciudad = ''
     let provincia = ''
     let pais = ''
     let codigo_postal = ''
 
     // Extraer componentes de dirección
-    place.address_components?.forEach(component => {
+    place.address_components?.forEach((component: any) => {
       const types = component.types
 
       if (types.includes('locality')) {

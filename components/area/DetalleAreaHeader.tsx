@@ -48,11 +48,7 @@ export function DetalleAreaHeader({ area }: Props) {
 
   const handleFavorite = async () => {
     if (!user) {
-      showToast({
-        message: 'Debes iniciar sesión para añadir favoritos',
-        type: 'info',
-        duration: 3000
-      })
+      showToast('Debes iniciar sesión para añadir favoritos', 'info')
       setTimeout(() => router.push('/auth/login'), 1500)
       return
     }
@@ -69,11 +65,7 @@ export function DetalleAreaHeader({ area }: Props) {
 
         if (error) throw error
         setIsFavorite(false)
-        showToast({
-          message: '❌ Quitado de favoritos',
-          type: 'info',
-          duration: 2000
-        })
+        showToast('❌ Quitado de favoritos', 'info')
       } else {
         const { error } = await supabase
           .from('favoritos')
@@ -81,19 +73,11 @@ export function DetalleAreaHeader({ area }: Props) {
 
         if (error) throw error
         setIsFavorite(true)
-        showToast({
-          message: '❤️ Añadido a favoritos',
-          type: 'success',
-          duration: 2000
-        })
+        showToast('❤️ Añadido a favoritos', 'success')
       }
     } catch (error: any) {
       console.error('Error toggling favorite:', error)
-      showToast({
-        message: error.message || 'Error al actualizar favorito',
-        type: 'error',
-        duration: 3000
-      })
+      showToast(error.message || 'Error al actualizar favorito', 'error')
     }
   }
 
@@ -110,11 +94,7 @@ export function DetalleAreaHeader({ area }: Props) {
       }
     } else {
       navigator.clipboard.writeText(window.location.href)
-      showToast({
-        message: '🔗 Enlace copiado al portapapeles',
-        type: 'success',
-        duration: 2000
-      })
+      showToast('🔗 Enlace copiado al portapapeles', 'success')
     }
   }
 
@@ -145,7 +125,6 @@ export function DetalleAreaHeader({ area }: Props) {
           message={toast.message}
           type={toast.type}
           onClose={hideToast}
-          duration={toast.duration}
         />
       )}
       <div className="relative">

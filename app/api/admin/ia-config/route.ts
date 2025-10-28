@@ -12,15 +12,15 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const configKey = searchParams.get('key')
 
-    let query = supabase
-      .from('ia_config')
-      .select('*')
-
-    if (configKey) {
-      query = query.eq('config_key', configKey).single()
-    }
-
-    const { data, error } = await query
+    const { data, error } = configKey
+      ? await supabase
+          .from('ia_config')
+          .select('*')
+          .eq('config_key', configKey)
+          .single()
+      : await supabase
+          .from('ia_config')
+          .select('*')
 
     if (error) throw error
 

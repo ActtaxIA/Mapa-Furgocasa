@@ -39,7 +39,7 @@ export default function NewAreaPage() {
     nombre: '',
     slug: '',
     descripcion: '',
-    tipo_area: 'publica',
+    tipo_area: 'publica' as 'publica' | 'privada' | 'camping' | 'parking',
     pais: 'España',
     provincia: '',
     ciudad: '',
@@ -47,7 +47,7 @@ export default function NewAreaPage() {
     codigo_postal: '',
     latitud: 0,
     longitud: 0,
-    precio_noche: 0,
+    precio_noche: null as number | null,
     plazas_camper: 0,
     telefono: '',
     email: '',
@@ -291,7 +291,7 @@ export default function NewAreaPage() {
                     const val = e.target.value
                     setArea({ 
                       ...area, 
-                      precio_noche: val === '' ? null : parseFloat(val) 
+                      precio_noche: val === '' ? null : (parseFloat(val) || null)
                     })
                   }}
                   placeholder="Dejar vacío si desconocido"

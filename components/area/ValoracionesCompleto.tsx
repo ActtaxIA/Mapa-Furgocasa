@@ -47,11 +47,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
 
   const handleRegistrarVisita = async () => {
     if (!user) {
-      showToast({
-        message: 'Debes iniciar sesión para registrar visitas',
-        type: 'info',
-        duration: 3000
-      })
+      showToast('Debes iniciar sesión para registrar visitas', 'info')
       setTimeout(() => router.push('/auth/login'), 1500)
       return
     }
@@ -86,17 +82,9 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
     } catch (error: any) {
       console.error('Error registrando visita:', error)
       if (error.code === '23505') {
-        showToast({
-          message: 'Ya has registrado una visita en esta fecha',
-          type: 'error',
-          duration: 3000
-        })
+        showToast('Ya has registrado una visita en esta fecha', 'error')
       } else {
-        showToast({
-          message: `Error al registrar visita: ${error.message}`,
-          type: 'error',
-          duration: 3000
-        })
+        showToast(`Error al registrar visita: ${error.message}`, 'error')
       }
     } finally {
       setLoading(false)
@@ -105,21 +93,13 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
 
   const handleSubmitValoracion = async () => {
     if (!user) {
-      showToast({
-        message: 'Debes iniciar sesión para valorar',
-        type: 'info',
-        duration: 3000
-      })
+      showToast('Debes iniciar sesión para valorar', 'info')
       setTimeout(() => router.push('/auth/login'), 1500)
       return
     }
 
     if (formData.rating === 0) {
-      showToast({
-        message: 'Por favor selecciona una puntuación',
-        type: 'error',
-        duration: 2000
-      })
+      showToast('Por favor selecciona una puntuación', 'error')
       return
     }
 
@@ -150,28 +130,16 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
         setValoraciones(newValoraciones)
       }
 
-      showToast({
-        message: '✅ ¡Valoración publicada con éxito!',
-        type: 'success',
-        duration: 3000
-      })
+      showToast('✅ ¡Valoración publicada con éxito!', 'success')
       setShowForm(false)
       setFormData({ rating: 0, comentario: '' })
       router.refresh()
     } catch (error: any) {
       console.error('Error creando valoración:', error)
       if (error.code === '23505') {
-        showToast({
-          message: 'Ya has valorado esta área. Solo puedes dejar una valoración por área.',
-          type: 'error',
-          duration: 3000
-        })
+        showToast('Ya has valorado esta área. Solo puedes dejar una valoración por área.', 'error')
       } else {
-        showToast({
-          message: `Error al publicar valoración: ${error.message}`,
-          type: 'error',
-          duration: 3000
-        })
+        showToast(`Error al publicar valoración: ${error.message}`, 'error')
       }
     } finally {
       setLoading(false)
@@ -195,7 +163,6 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
           message={toast.message}
           type={toast.type}
           onClose={hideToast}
-          duration={toast.duration}
         />
       )}
       <section className="bg-white rounded-lg shadow-mobile p-6">

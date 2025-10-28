@@ -6,6 +6,11 @@ import { MarkerClusterer } from '@googlemaps/markerclusterer'
 import type { Area } from '@/types/database.types'
 import Link from 'next/link'
 
+// Tipos simplificados para Google Maps (se cargan dinámicamente)
+type GoogleMap = any
+type GoogleMarker = any
+type GoogleInfoWindow = any
+
 interface MapaInteractivoProps {
   areas: Area[]
   areaSeleccionada: Area | null
@@ -14,12 +19,12 @@ interface MapaInteractivoProps {
 
 export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaInteractivoProps) {
   const mapRef = useRef<HTMLDivElement>(null)
-  const [map, setMap] = useState<google.maps.Map | null>(null)
+  const [map, setMap] = useState<GoogleMap | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const markersRef = useRef<google.maps.Marker[]>([])
-  const infoWindowRef = useRef<google.maps.InfoWindow | null>(null)
+  const markersRef = useRef<GoogleMarker[]>([])
+  const infoWindowRef = useRef<GoogleInfoWindow | null>(null)
   const markerClustererRef = useRef<MarkerClusterer | null>(null)
-  const userMarkerRef = useRef<google.maps.Marker | null>(null)
+  const userMarkerRef = useRef<GoogleMarker | null>(null)
   const [gpsActive, setGpsActive] = useState(false) // Siempre false inicialmente para evitar hidratación
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const watchIdRef = useRef<number | null>(null)
@@ -43,6 +48,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
         })
 
         const { Map } = await loader.importLibrary('maps')
+        const google = (window as any).google
         
         if (mapRef.current) {
           console.log('🗺️ Inicializando mapa con centro:', { lat: 40.4168, lng: -3.7038 }, 'zoom:', 6)
@@ -84,6 +90,8 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
   // Añadir marcadores al mapa con clustering
   useEffect(() => {
     if (!map || areas.length === 0) return
+
+    const google = (window as any).google
 
     // Limpiar clusterer anterior
     if (markerClustererRef.current) {
@@ -201,6 +209,8 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
     
     if (map && gpsActive && !watchIdRef.current && navigator.geolocation) {
       console.log('🟢 Auto-activando GPS desde localStorage')
+      
+      const google = (window as any).google
       
       // Activar directamente sin pasar por toggleGPS
       const watchId = navigator.geolocation.watchPosition(
@@ -494,6 +504,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
     if (!gpsActive) {
       // Activar GPS
           if (navigator.geolocation && map) {
+        const google = (window as any).google
         const watchId = navigator.geolocation.watchPosition(
               (position) => {
                 const pos = {
@@ -610,7 +621,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
 
       {/* Botón GPS - Arriba Centro */}
       <button
-        onClick={toggleGPS}
+        onClick={() => toggleGPS()}
         className={`absolute top-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full shadow-lg font-semibold transition-all z-10 flex items-center gap-2 ${
           gpsActive 
             ? 'bg-orange-500 text-white hover:bg-orange-600' 

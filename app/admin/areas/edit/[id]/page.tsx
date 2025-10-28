@@ -350,7 +350,7 @@ export default function EditAreaPage() {
                     const val = e.target.value
                     setArea({ 
                       ...area, 
-                      precio_noche: val === '' ? null : parseFloat(val) 
+                      precio_noche: val === '' ? null : (parseFloat(val) || null) 
                     })
                   }}
                   placeholder="Dejar vacío si desconocido"
