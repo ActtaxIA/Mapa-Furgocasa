@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 import PlanificadorRuta from '@/components/ruta/PlanificadorRuta'
 import { MapPinIcon, MapIcon, ListBulletIcon } from '@heroicons/react/24/outline'
