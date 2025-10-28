@@ -1,0 +1,55 @@
+{
+  "name": "mapa-furgocasa",
+  "version": "1.0.0-beta.1",
+  "private": true,
+  "description": "Aplicación PWA para visualizar y gestionar áreas para autocaravanas en España - BETA 1.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "db:migrate": "echo 'Ejecutar migraciones en Supabase SQL Editor'",
+    "db:inspect": "node scripts/inspect-sqlite.js",
+    "db:inspect:users": "node scripts/inspect-users.js",
+    "db:migrate:areas": "node scripts/migrate-to-supabase.js",
+    "db:migrate:users": "node scripts/migrate-users-to-supabase.js",
+    "db:migrate:all": "node scripts/migrate-to-supabase.js --users",
+    "db:fix:services": "node scripts/fix-services-language.js"
+  },
+  "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.6",
+    "@googlemaps/markerclusterer": "^2.6.2",
+    "@heroicons/react": "^2.1.1",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/ssr": "^0.1.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "framer-motion": "^10.16.16",
+    "next": "14.2.13",
+    "next-pwa": "^5.6.0",
+    "openai": "^6.7.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.49.3",
+    "serpapi": "^2.2.1",
+    "sharp": "^0.33.1",
+    "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/react": "^18.2.46",
+    "@types/react-dom": "^18.2.18",
+    "autoprefixer": "^10.4.16",
+    "better-sqlite3": "^12.4.1",
+    "dotenv": "^17.2.3",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.2.13",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
