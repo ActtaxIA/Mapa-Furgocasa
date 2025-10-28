@@ -10,6 +10,10 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const cookieStore = await cookies()
+    
+    // Crear respuesta para poder establecer cookies
+    const response = NextResponse.redirect(new URL(next, request.url))
+    
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -19,10 +23,48 @@ export async function GET(request: NextRequest) {
             return cookieStore.get(name)?.value
           },
           set(name: string, value: string, options: CookieOptions) {
-            cookieStore.set({ name, value, ...options })
+            // Establecer en cookieStore
+            cookieStore.set({
+              name,
+              value,
+              ...options,
+              path: options.path || '/',
+              sameSite: (options.sameSite || 'lax') as 'lax' | 'strict' | 'none',
+              secure: request.headers.get('x-forwarded-proto') === 'https' || 
+                      request.nextUrl.protocol === 'https:',
+              httpOnly: options.httpOnly ?? false,
+              maxAge: options.maxAge || 31536000, // 1 año
+            })
+            
+            // También establecer en la respuesta
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+              path: options.path || '/',
+              sameSite: (options.sameSite || 'lax') as 'lax' | 'strict' | 'none',
+              secure: request.headers.get('x-forwarded-proto') === 'https' || 
+                      request.nextUrl.protocol === 'https:',
+              httpOnly: options.httpOnly ?? false,
+              maxAge: options.maxAge || 31536000,
+            })
           },
           remove(name: string, options: CookieOptions) {
-            cookieStore.set({ name, value: '', ...options })
+            cookieStore.set({
+              name,
+              value: '',
+              ...options,
+              path: options.path || '/',
+              maxAge: 0,
+            })
+            
+            response.cookies.set({
+              name,
+              value: '',
+              ...options,
+              path: options.path || '/',
+              maxAge: 0,
+            })
           },
         },
       }
@@ -31,8 +73,8 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (!error) {
-      // Redirigir al mapa después de la autenticación exitosa
-      return NextResponse.redirect(new URL(next, request.url))
+      // Retornar respuesta con cookies establecidas
+      return response
     }
   }
 

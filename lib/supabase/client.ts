@@ -8,27 +8,30 @@ export function createClient() {
     {
       cookies: {
         get(name: string) {
-          return document.cookie
+          // Decodificar URI para manejar valores especiales
+          const cookie = document.cookie
             .split('; ')
             .find((row) => row.startsWith(`${name}=`))
             ?.split('=')[1]
+          return cookie ? decodeURIComponent(cookie) : undefined
         },
         set(name: string, value: string, options: any) {
-          // Detectar si estamos en producción
+          // Detectar si estamos en producción (HTTPS)
           const isProduction = typeof window !== 'undefined' && 
-            (window.location.hostname === 'www.mapafurgocasa.com' || 
-             window.location.hostname === 'mapafurgocasa.com' ||
-             window.location.hostname.includes('amplifyapp.com'))
+            window.location.protocol === 'https:'
           
-          // Configurar cookies con atributos correctos para móviles
+          // Encodear el valor para manejar caracteres especiales
+          const encodedValue = encodeURIComponent(value)
+          
+          // Configurar cookies con atributos correctos
           const cookieOptions = [
-            `${name}=${value}`,
+            `${name}=${encodedValue}`,
             'path=/',
-            'max-age=31536000',
+            `max-age=${options?.maxAge || 31536000}`, // 1 año por defecto
             'SameSite=Lax',
           ]
           
-          // Agregar Secure solo en producción (HTTPS)
+          // Agregar Secure en producción (HTTPS)
           if (isProduction) {
             cookieOptions.push('Secure')
           }
@@ -37,9 +40,7 @@ export function createClient() {
         },
         remove(name: string, options: any) {
           const isProduction = typeof window !== 'undefined' && 
-            (window.location.hostname === 'www.mapafurgocasa.com' || 
-             window.location.hostname === 'mapafurgocasa.com' ||
-             window.location.hostname.includes('amplifyapp.com'))
+            window.location.protocol === 'https:'
           
           const cookieOptions = [
             `${name}=`,
