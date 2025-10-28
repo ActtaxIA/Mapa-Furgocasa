@@ -39,15 +39,18 @@ export default function LoginPage() {
     try {
       const supabase = createClient()
       
-      // Detectar la URL base según el entorno
-      const baseUrl = typeof window !== 'undefined' 
-        ? `${window.location.protocol}//${window.location.host}`
-        : 'https://www.mapafurgocasa.com'
+      // FORZAR URL de producción - NO usar detección automática por ahora
+      const baseUrl = 'https://www.mapafurgocasa.com'
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${baseUrl}/auth/callback`,
+          // Forzar skip de cache
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       })
       if (error) throw error
