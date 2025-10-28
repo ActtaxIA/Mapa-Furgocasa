@@ -1,5 +1,13 @@
 # ✅ PROYECTO CREADO - Mapa Furgocasa
 
+> **⚠️ NOTA: Este documento es de referencia histórica.**  
+> Para información actualizada del proyecto consulta:
+> - **[README.md](./README.md)** - Documentación principal actualizada
+> - **[INDICE_DOCUMENTACION.md](./INDICE_DOCUMENTACION.md)** - Índice completo
+> - **[CHANGELOG.md](./CHANGELOG.md)** - Historial de cambios
+
+---
+
 ## 🎉 ¡Tu aplicación PWA está lista!
 
 Se ha creado una estructura completa y profesional para la aplicación **Mapa Furgocasa**, una PWA móvil-first para gestionar áreas de autocaravanas en España.

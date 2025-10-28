@@ -1,5 +1,10 @@
 # 🔧 SOLUCIÓN: Problemas con Edición y Borrado de Áreas en Admin
 
+> **⚠️ NOTA: Este documento ha sido supersedido.**  
+> Consulta **[SOLUCION_ADMIN_AREAS_FINAL.md](./SOLUCION_ADMIN_AREAS_FINAL.md)** para la solución definitiva aplicada.
+
+---
+
 ## 📋 PROBLEMA IDENTIFICADO
 
 Las acciones de **editar** y **borrar** áreas desde el panel de administrador (`/admin/areas`) no funcionaban en Supabase debido a políticas RLS (Row Level Security) restrictivas.

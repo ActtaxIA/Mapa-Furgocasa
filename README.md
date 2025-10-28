@@ -434,22 +434,50 @@ node scripts/migrate-users-to-supabase.js # Migrar usuarios
 
 ---
 
-## 📚 Documentación Adicional
+## 📚 Documentación
 
-### Guías de Instalación y Configuración
-- [INSTALACION_RAPIDA.md](./INSTALACION_RAPIDA.md) - Guía paso a paso
-- [SOLUCION_ADMIN_AREAS_FINAL.md](./SOLUCION_ADMIN_AREAS_FINAL.md) - Solución de permisos
-- [COMANDOS_UTILES.md](./COMANDOS_UTILES.md) - Comandos frecuentes
+### 🎯 Guía Rápida de Documentación
 
-### Funcionalidades Avanzadas
-- [BUSQUEDA_MASIVA_AREAS.md](./BUSQUEDA_MASIVA_AREAS.md) - Búsqueda masiva desde Google Places
-- [SISTEMA_DETECCION_DUPLICADOS.md](./SISTEMA_DETECCION_DUPLICADOS.md) - Sistema de 7 criterios anti-duplicados
-- [SISTEMA_PROMPTS_FLEXIBLE.md](./SISTEMA_PROMPTS_FLEXIBLE.md) - Configuración de IA
-- [SISTEMA_VISITAS_VALORACIONES_COMPLETO.md](./SISTEMA_VISITAS_VALORACIONES_COMPLETO.md) - Sistema de visitas y valoraciones
+**NUEVO:** Consulta el **[📋 Índice Completo de Documentación](./INDICE_DOCUMENTACION.md)** para navegar toda la documentación organizada por categorías.
 
-### Debugging y Diagnóstico
-- [GUIA_DEBUGGING_IA.md](./GUIA_DEBUGGING_IA.md) - Solución de problemas de IA
-- [DIAGNOSTICO_GOOGLE_PLACES_API.md](./DIAGNOSTICO_GOOGLE_PLACES_API.md) - Diagnóstico de Google Places API
+### Documentos Esenciales
+
+#### Instalación y Setup
+- **[INSTALACION_RAPIDA.md](./INSTALACION_RAPIDA.md)** - Guía de instalación en 5 pasos
+- **[COMANDOS_UTILES.md](./COMANDOS_UTILES.md)** - Comandos frecuentes de desarrollo
+- **[CONFIGURACION_SUPABASE_URLS.md](./CONFIGURACION_SUPABASE_URLS.md)** - Configurar OAuth y URLs
+- **[CONFIGURACION_SEO.md](./CONFIGURACION_SEO.md)** - 🆕 SEO, Sitemap XML y Robots.txt
+
+#### Deployment y SEO
+- **[GUIA_DEPLOYMENT_AWS.md](./GUIA_DEPLOYMENT_AWS.md)** - Guía completa de deployment en AWS Amplify
+- **[GUIA_GOOGLE_SEARCH_CONSOLE.md](./GUIA_GOOGLE_SEARCH_CONSOLE.md)** - 🆕 Configuración paso a paso de Google Search Console
+- **[FIX_IA_PRODUCCION.md](./FIX_IA_PRODUCCION.md)** - Solución de funciones IA en producción
+
+#### Sistemas Principales
+- **[SISTEMA_VISITAS_VALORACIONES_COMPLETO.md](./SISTEMA_VISITAS_VALORACIONES_COMPLETO.md)** - Visitas y valoraciones
+- **[SISTEMA_DETECCION_DUPLICADOS.md](./SISTEMA_DETECCION_DUPLICADOS.md)** - 7 criterios anti-duplicados
+- **[BUSQUEDA_MASIVA_AREAS.md](./BUSQUEDA_MASIVA_AREAS.md)** - Importación masiva desde Google Places
+- **[SISTEMA_PROMPTS_FLEXIBLE.md](./SISTEMA_PROMPTS_FLEXIBLE.md)** - Configuración de IA
+
+#### Soluciones Aplicadas
+- **[SOLUCION_ADMIN_AREAS_FINAL.md](./SOLUCION_ADMIN_AREAS_FINAL.md)** - Permisos de administrador
+- **[SOLUCION_FUNCIONES_IA_ADMIN.md](./SOLUCION_FUNCIONES_IA_ADMIN.md)** - Funciones de IA
+- **[OAUTH_GOOGLE_SOLUCION_FINAL.md](./OAUTH_GOOGLE_SOLUCION_FINAL.md)** - OAuth redirect a producción
+
+#### Debugging
+- **[GUIA_DEBUGGING_IA.md](./GUIA_DEBUGGING_IA.md)** - Debugging de funciones IA paso a paso
+- **[DIAGNOSTICO_GOOGLE_PLACES_API.md](./DIAGNOSTICO_GOOGLE_PLACES_API.md)** - Diagnóstico de Google Places API
+
+### 📋 Otros Documentos
+
+Para ver **TODA la documentación organizada** consulta:  
+👉 **[INDICE_DOCUMENTACION.md](./INDICE_DOCUMENTACION.md)**
+
+Incluye:
+- 30+ documentos organizados por categoría
+- Búsqueda por tema
+- Flujos de trabajo comunes
+- Estado y vigencia de cada documento
 
 ---
 
