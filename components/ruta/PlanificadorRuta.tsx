@@ -258,6 +258,7 @@ export default function PlanificadorRuta() {
           }
           
           // Crear o actualizar marcador de usuario
+          const google = (window as any).google
           if (!userMarkerRef.current) {
             userMarkerRef.current = new google.maps.Marker({
               position: pos,

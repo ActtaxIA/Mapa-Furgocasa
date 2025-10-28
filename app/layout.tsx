@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import WelcomeModal from '@/components/ui/WelcomeModal'
 
 export const metadata: Metadata = {
   title: 'Mapa Furgocasa - Áreas para Autocaravanas en España',
@@ -44,6 +45,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="antialiased">
+        <WelcomeModal />
         {children}
       </body>
     </html>
