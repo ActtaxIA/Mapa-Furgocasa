@@ -57,7 +57,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <head>
+      <body className="antialiased">
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-8E3JE5ZVET"
@@ -71,8 +71,7 @@ export default function RootLayout({
             gtag('config', 'G-8E3JE5ZVET');
           `}
         </Script>
-      </head>
-      <body className="antialiased">
+        
         <WelcomeModal />
         {children}
       </body>
