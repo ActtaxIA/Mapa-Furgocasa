@@ -108,7 +108,7 @@ export default async function AreaPage({ params }: PageProps) {
                 fotos = JSON.parse(fotos)
               } catch {
                 // Si no es JSON válido, intentar dividir por comas
-                fotos = fotos.split(',').map(url => url.trim()).filter(url => url)
+                fotos = fotos.split(',').map((url: string) => url.trim()).filter((url: string) => url)
               }
             }
             

@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { MapIcon, NavigationIcon, ListBulletIcon } from '@heroicons/react/24/outline'
-import { MapIcon as MapIconSolid, NavigationIcon as NavigationIconSolid, ListBulletIcon as ListBulletIconSolid } from '@heroicons/react/24/solid'
+import { MapIcon, MapPinIcon, ListBulletIcon } from '@heroicons/react/24/outline'
+import { MapIcon as MapIconSolid, MapPinIcon as MapPinIconSolid, ListBulletIcon as ListBulletIconSolid } from '@heroicons/react/24/solid'
 
 interface BottomNavigationProps {
   onListClick?: () => void
@@ -42,9 +42,9 @@ export default function BottomNavigation({ onListClick, showListButton = true }:
           }`}
         >
           {isRutaPage ? (
-            <NavigationIconSolid className="w-6 h-6 mb-1" />
+            <MapPinIconSolid className="w-6 h-6 mb-1" />
           ) : (
-            <NavigationIcon className="w-6 h-6 mb-1" />
+            <MapPinIcon className="w-6 h-6 mb-1" />
           )}
           <span className="text-xs font-medium">Ruta</span>
         </Link>
