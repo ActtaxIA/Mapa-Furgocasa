@@ -154,10 +154,7 @@ export default function MapaPage() {
 
   const handleAreaClick = (area: Area) => {
     setAreaSeleccionada(area)
-    // En móvil, abrir la lista cuando se selecciona un área
-    if (window.innerWidth < 1024) {
-      setMostrarLista(true)
-    }
+    // En móvil se muestra el InfoWindow del mapa, no se abre la lista
   }
 
   if (loading) {
