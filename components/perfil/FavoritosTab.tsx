@@ -140,8 +140,8 @@ export function FavoritosTab({ userId }: Props) {
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               ) : (
-                <div className="w-full h-48 bg-gradient-to-br from-sky-100 to-blue-100 flex items-center justify-center">
-                  <MapPinIcon className="w-16 h-16 text-sky-300" />
+                <div className="w-full h-48 bg-gradient-to-br from-primary-100 to-blue-100 flex items-center justify-center">
+                  <MapPinIcon className="w-16 h-16 text-primary-300" />
                 </div>
               )}
               
@@ -161,7 +161,7 @@ export function FavoritosTab({ userId }: Props) {
             {/* Contenido */}
             <div className="p-4">
               <Link href={`/area/${favorito.area.slug}`}>
-                <h4 className="font-semibold text-gray-900 hover:text-sky-600 transition-colors mb-2">
+                <h4 className="font-semibold text-gray-900 hover:text-primary-600 transition-colors mb-2">
                   {favorito.area.nombre}
                 </h4>
               </Link>
@@ -182,7 +182,7 @@ export function FavoritosTab({ userId }: Props) {
 
               {favorito.area.precio_noche && (
                 <div className="mt-3 pt-3 border-t border-gray-200">
-                  <span className="text-lg font-bold text-sky-600">
+                  <span className="text-lg font-bold text-primary-600">
                     {favorito.area.precio_noche}€
                   </span>
                   <span className="text-sm text-gray-600">

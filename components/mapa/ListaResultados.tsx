@@ -58,7 +58,7 @@ export function ListaResultados({ areas, onAreaClick, onClose, userLocation, gps
 
   const getTipoAreaBadge = (tipo: string) => {
     const badges = {
-      publica: { label: 'Pública', color: 'bg-sky-100 text-sky-800' },
+      publica: { label: 'Pública', color: 'bg-primary-100 text-primary-800' },
       privada: { label: 'Privada', color: 'bg-orange-100 text-orange-800' },
       camping: { label: 'Camping', color: 'bg-green-100 text-green-800' },
       parking: { label: 'Parking', color: 'bg-yellow-100 text-yellow-800' }
@@ -128,11 +128,11 @@ export function ListaResultados({ areas, onAreaClick, onClose, userLocation, gps
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Header Azulado */}
-      <div className="bg-gradient-to-r from-sky-50 to-blue-50 border-b border-sky-200 sticky top-0 z-10">
+      <div className="bg-gradient-to-r from-primary-50 to-blue-50 border-b border-primary-200 sticky top-0 z-10">
         <div className="flex items-center justify-between p-4">
           <div>
-            <h2 className="text-lg font-bold text-sky-900">Lugares Encontrados</h2>
-            <p className="text-sm text-sky-700">
+            <h2 className="text-lg font-bold text-primary-900">Lugares Encontrados</h2>
+            <p className="text-sm text-primary-700">
               {hasMoreResults
                 ? `Mostrando ${visibleResults} de ${totalResults} resultados`
                 : `${totalResults} resultados`}
@@ -141,17 +141,17 @@ export function ListaResultados({ areas, onAreaClick, onClose, userLocation, gps
           {onClose && (
             <button
               onClick={onClose}
-              className="lg:hidden p-2 hover:bg-sky-100 rounded-full transition-colors"
+              className="lg:hidden p-2 hover:bg-primary-100 rounded-full transition-colors"
               aria-label="Cerrar lista"
             >
-              <XMarkIcon className="w-6 h-6 text-sky-700" />
+              <XMarkIcon className="w-6 h-6 text-primary-700" />
             </button>
           )}
         </div>
         
         {/* Selector de Ordenación */}
         <div className="px-4 pb-3">
-          <label className="flex items-center gap-1 text-xs font-semibold text-sky-700 mb-1.5">
+          <label className="flex items-center gap-1 text-xs font-semibold text-primary-700 mb-1.5">
             <AdjustmentsHorizontalIcon className="w-4 h-4" />
             Ordenar por
           </label>
@@ -159,7 +159,7 @@ export function ListaResultados({ areas, onAreaClick, onClose, userLocation, gps
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="flex-1 px-3 py-2 bg-white border border-sky-300 rounded-lg text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="flex-1 px-3 py-2 bg-white border border-primary-300 rounded-lg text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="nombre">🔤 Nombre</option>
               <option value="valoracion">⭐ Valoración</option>
@@ -170,10 +170,10 @@ export function ListaResultados({ areas, onAreaClick, onClose, userLocation, gps
             </select>
             <button
               onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-              className="px-3 py-2 bg-white border border-sky-300 rounded-lg hover:bg-sky-50 transition-colors flex items-center justify-center min-w-[44px]"
+              className="px-3 py-2 bg-white border border-primary-300 rounded-lg hover:bg-primary-50 transition-colors flex items-center justify-center min-w-[44px]"
               title={sortDirection === 'asc' ? 'Ascendente (A-Z)' : 'Descendente (Z-A)'}
             >
-              <span className="text-sm font-bold text-sky-700">
+              <span className="text-sm font-bold text-primary-700">
                 {sortDirection === 'asc' ? 'A→Z' : 'Z→A'}
               </span>
             </button>
@@ -220,7 +220,7 @@ export function ListaResultados({ areas, onAreaClick, onClose, userLocation, gps
                 <div
                   key={area.id}
                   onClick={() => onAreaClick(area)}
-                  className="border border-gray-200 rounded-lg hover:border-sky-500 hover:shadow-md transition-all cursor-pointer overflow-hidden bg-white"
+                  className="border border-gray-200 rounded-lg hover:border-primary-500 hover:shadow-md transition-all cursor-pointer overflow-hidden bg-white"
                 >
                   {/* Imagen */}
                   {area.foto_principal && (
@@ -309,7 +309,7 @@ export function ListaResultados({ areas, onAreaClick, onClose, userLocation, gps
                       <Link
                         href={`/area/${area.slug}`}
                         target="_blank"
-                        className="text-sm text-sky-600 hover:text-sky-700 font-semibold"
+                        className="text-sm text-primary-600 hover:text-primary-700 font-semibold"
                         onClick={(e) => e.stopPropagation()}
                       >
                         Ver detalles →

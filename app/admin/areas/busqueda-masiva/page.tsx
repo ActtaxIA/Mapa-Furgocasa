@@ -619,7 +619,7 @@ export default function BusquedaMasivaPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Ej: areas autocaravanas murcia, camping barcelona..."
-                className="w-full pl-10 pr-12 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                className="w-full pl-10 pr-12 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 disabled={searching}
               />
               {searchQuery && !searching && (
@@ -635,7 +635,7 @@ export default function BusquedaMasivaPage() {
             <button
               onClick={handleSearch}
               disabled={searching || !searchQuery.trim()}
-              className="px-6 py-3 bg-sky-600 text-white rounded-lg font-semibold hover:bg-sky-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {searching ? (
                 <>
@@ -675,7 +675,7 @@ export default function BusquedaMasivaPage() {
                 </span>
                 <button
                   onClick={selectAll}
-                  className="text-sm text-sky-600 hover:text-sky-700 font-medium"
+                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
                 >
                   Seleccionar todas las nuevas
                 </button>
@@ -736,7 +736,7 @@ export default function BusquedaMasivaPage() {
                           place.exists_in_db 
                             ? 'bg-gray-100 opacity-60' 
                             : selectedPlaces.has(place.place_id)
-                            ? 'bg-sky-50'
+                            ? 'bg-primary-50'
                             : 'hover:bg-gray-50'
                         }`}
                       >
@@ -748,13 +748,13 @@ export default function BusquedaMasivaPage() {
                               type="checkbox"
                               checked={selectedPlaces.has(place.place_id)}
                               onChange={() => toggleSelection(place.place_id)}
-                              className="w-5 h-5 text-sky-600 rounded focus:ring-sky-500"
+                              className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
                             />
                           )}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <MapPinIcon className="w-5 h-5 text-sky-600 flex-shrink-0" />
+                            <MapPinIcon className="w-5 h-5 text-primary-600 flex-shrink-0" />
                             <div>
                               <div className="text-sm font-semibold text-gray-900">{place.name}</div>
                               <div className="text-xs text-gray-500">{place.types?.[0]?.replace(/_/g, ' ')}</div>

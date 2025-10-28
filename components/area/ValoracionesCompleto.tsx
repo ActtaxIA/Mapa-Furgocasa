@@ -228,7 +228,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
                 setShowForm(!showForm)
               }
             }}
-            className="py-3 bg-sky-600 text-white rounded-lg font-semibold hover:bg-sky-700 transition-colors"
+            className="py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors"
           >
             ✍️ Escribir valoración
           </button>
@@ -272,7 +272,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
                 onChange={(e) => setFormData({ ...formData, comentario: e.target.value })}
                 placeholder="Comparte tu experiencia..."
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
                 maxLength={1000}
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -284,7 +284,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
               <button
                 onClick={handleSubmitValoracion}
                 disabled={loading || formData.rating === 0}
-                className="flex-1 py-2 bg-sky-600 text-white rounded-lg font-semibold hover:bg-sky-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-2 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Publicando...' : 'Publicar Valoración'}
               </button>
@@ -311,7 +311,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-sky-600 font-semibold">
+                    <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-semibold">
                       👤
                     </div>
                     <div>

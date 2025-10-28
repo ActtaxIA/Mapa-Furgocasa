@@ -117,7 +117,7 @@ export function RutasTab({ userId }: Props) {
         </p>
         <Link
           href="/ruta"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
         >
           <MapIcon className="w-5 h-5" />
           Ir al Planificador
@@ -135,7 +135,7 @@ export function RutasTab({ userId }: Props) {
         </h3>
         <Link
           href="/ruta"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors text-sm"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm"
         >
           <MapIcon className="w-4 h-4" />
           Nueva Ruta
@@ -256,7 +256,7 @@ export function RutasTab({ userId }: Props) {
                 {/* Botón Ver en Mapa */}
                 <Link
                   href={`/ruta?ruta=${ruta.id}`}
-                  className="block w-full text-center px-4 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors font-medium text-sm"
+                  className="block w-full text-center px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm"
                 >
                   <span className="flex items-center justify-center gap-2">
                     <MapIcon className="w-4 h-4" />

@@ -417,7 +417,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
             bounds.extend(leg.start_location)
             bounds.extend(leg.end_location)
           })
-          map.fitBounds(bounds, { padding: 50 })
+          map.fitBounds(bounds, { padding: 100 })
           
           // En móvil, cambiar a vista mapa automáticamente
           if (onRutaCalculada) {
@@ -870,7 +870,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         actualizarInfoRuta(mockResult)
         
         // Ajustar el mapa a los bounds de la ruta
-        map.fitBounds(mockResult.routes[0].bounds, { padding: 50 })
+        map.fitBounds(mockResult.routes[0].bounds, { padding: 100 })
         
         // Buscar áreas cercanas usando el path guardado
         buscarAreasCercanasARuta(mockResult.routes[0])
@@ -1119,7 +1119,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                   value={saveForm.nombre}
                   onChange={(e) => setSaveForm({ ...saveForm, nombre: e.target.value })}
                   placeholder="Ej: Viaje a la Costa"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   maxLength={100}
                 />
               </div>
@@ -1133,7 +1133,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                   onChange={(e) => setSaveForm({ ...saveForm, descripcion: e.target.value })}
                   placeholder="Añade notas o detalles sobre esta ruta..."
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
                   maxLength={500}
                 />
               </div>
@@ -1157,7 +1157,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                 <button
                   onClick={handleSaveRuta}
                   disabled={saving || !saveForm.nombre.trim()}
-                  className="flex-1 px-4 py-2.5 bg-sky-600 text-white rounded-lg font-semibold hover:bg-sky-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2.5 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? 'Guardando...' : 'Guardar'}
                 </button>
@@ -1181,9 +1181,9 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         vistaMovil === 'ruta' ? 'flex' : 'hidden md:flex'
       }`}>
         {/* Header Azulado */}
-        <div className="bg-gradient-to-r from-sky-50 to-blue-50 border-b border-sky-200 p-4 sticky top-0 z-10">
-          <h2 className="text-lg font-bold text-sky-900">Planifica tu Ruta</h2>
-          <p className="text-sm text-sky-700 mb-2">
+        <div className="bg-gradient-to-r from-primary-50 to-blue-50 border-b border-primary-200 p-4 sticky top-0 z-10">
+          <h2 className="text-lg font-bold text-primary-900">Planifica tu Ruta</h2>
+          <p className="text-sm text-primary-700 mb-2">
             Encuentra áreas a lo largo de tu viaje
           </p>
           {/* Mensaje informativo */}
@@ -1225,7 +1225,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
               </label>
               <button
                 onClick={agregarPuntoIntermedio}
-                className="text-xs px-2 py-1 bg-sky-100 text-sky-700 rounded hover:bg-sky-200 transition-colors font-medium"
+                className="text-xs px-2 py-1 bg-primary-100 text-primary-700 rounded hover:bg-primary-200 transition-colors font-medium"
                 disabled={isLoading}
               >
                 + Añadir
@@ -1239,7 +1239,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                     <input
                       type="text"
                       placeholder={`Parada ${index + 1}...`}
-                      className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                      className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       onChange={(e) => {
                         if (!map) return
                         const google = (window as any).google
@@ -1315,7 +1315,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                   onClick={() => setRadio(r)}
                   className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
                     radio === r
-                      ? 'bg-sky-600 text-white'
+                      ? 'bg-primary-600 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -1330,7 +1330,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
             <button
               onClick={calcularRuta}
               disabled={!origen || !destino || isCalculating}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-600 text-white rounded-lg font-semibold hover:bg-sky-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isCalculating ? (
                 <>
@@ -1367,8 +1367,8 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
 
           {/* Información de la Ruta */}
           {rutaInfo && (
-            <div className="bg-gradient-to-br from-sky-50 to-blue-50 rounded-lg p-4 border border-sky-200">
-              <h3 className="text-sm font-semibold text-sky-900 mb-3 flex items-center gap-2">
+            <div className="bg-gradient-to-br from-primary-50 to-blue-50 rounded-lg p-4 border border-primary-200">
+              <h3 className="text-sm font-semibold text-primary-900 mb-3 flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
@@ -1382,7 +1382,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                     </svg>
                     Distancia
                   </span>
-                  <span className="text-sm font-bold text-sky-700">{rutaInfo.distancia}</span>
+                  <span className="text-sm font-bold text-primary-700">{rutaInfo.distancia}</span>
                 </div>
                 <div className="flex items-center justify-between bg-white rounded-lg px-3 py-2">
                   <span className="text-sm text-gray-600 flex items-center gap-2">
@@ -1391,10 +1391,10 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                     </svg>
                     Duración
                   </span>
-                  <span className="text-sm font-bold text-sky-700">{rutaInfo.duracion}</span>
+                  <span className="text-sm font-bold text-primary-700">{rutaInfo.duracion}</span>
                 </div>
               </div>
-              <div className="mt-3 p-2 bg-sky-100 rounded text-xs text-sky-700 flex items-start gap-2">
+              <div className="mt-3 p-2 bg-primary-100 rounded text-xs text-primary-700 flex items-start gap-2">
                 <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
@@ -1415,7 +1415,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
             <div className="text-center">
-              <ArrowPathIcon className="w-12 h-12 text-sky-600 animate-spin mx-auto mb-4" />
+              <ArrowPathIcon className="w-12 h-12 text-primary-600 animate-spin mx-auto mb-4" />
               <p className="text-gray-600 font-semibold">Cargando mapa...</p>
             </div>
           </div>

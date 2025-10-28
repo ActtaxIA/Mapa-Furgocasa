@@ -122,7 +122,7 @@ export function VisitasTab({ userId }: Props) {
             onClick={() => setVistaActual('lista')}
             className={`px-4 py-2 rounded-lg transition-colors ${
               vistaActual === 'lista'
-                ? 'bg-sky-600 text-white'
+                ? 'bg-primary-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -132,7 +132,7 @@ export function VisitasTab({ userId }: Props) {
             onClick={() => setVistaActual('mapa')}
             className={`px-4 py-2 rounded-lg transition-colors ${
               vistaActual === 'mapa'
-                ? 'bg-sky-600 text-white'
+                ? 'bg-primary-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -162,7 +162,7 @@ export function VisitasTab({ userId }: Props) {
                 <div className="flex-1">
                   <Link
                     href={`/area/${visita.area.slug}`}
-                    className="text-lg font-semibold text-gray-900 hover:text-sky-600 transition-colors"
+                    className="text-lg font-semibold text-gray-900 hover:text-primary-600 transition-colors"
                   >
                     {visita.area.nombre}
                   </Link>

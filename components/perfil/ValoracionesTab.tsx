@@ -169,7 +169,7 @@ export function ValoracionesTab({ userId }: Props) {
                   <div>
                     <Link
                       href={`/area/${valoracion.area.slug}`}
-                      className="text-lg font-semibold text-gray-900 hover:text-sky-600 transition-colors"
+                      className="text-lg font-semibold text-gray-900 hover:text-primary-600 transition-colors"
                     >
                       {valoracion.area.nombre}
                     </Link>
@@ -213,7 +213,7 @@ export function ValoracionesTab({ userId }: Props) {
               <div className="flex gap-2 ml-4">
                 <Link
                   href={`/area/${valoracion.area.slug}`}
-                  className="p-2 text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
+                  className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                   title="Editar valoración"
                 >
                   <PencilIcon className="w-5 h-5" />

@@ -103,15 +103,15 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Header Azulado */}
-      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-sky-50 to-blue-50 border-b border-sky-200">
-        <h2 className="text-lg font-bold text-sky-900">Filtros de Búsqueda</h2>
+      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary-50 to-blue-50 border-b border-primary-200">
+        <h2 className="text-lg font-bold text-primary-900">Filtros de Búsqueda</h2>
         {onClose && (
           <button
             onClick={onClose}
-            className="lg:hidden p-2 hover:bg-sky-100 rounded-full transition-colors"
+            className="lg:hidden p-2 hover:bg-primary-100 rounded-full transition-colors"
             aria-label="Cerrar filtros"
           >
-            <XMarkIcon className="w-6 h-6 text-sky-700" />
+            <XMarkIcon className="w-6 h-6 text-primary-700" />
           </button>
         )}
       </div>
