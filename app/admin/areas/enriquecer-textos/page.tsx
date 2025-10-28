@@ -132,13 +132,13 @@ export default function EnriquecerTextosPage() {
     }
   }
 
-  const enrichArea = async (areaId: string): Promise<boolean> => {
+  const enrichArea = async (areaId: string, forceProcess: boolean = false): Promise<boolean> => {
     try {
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
       console.log('🚀 [ENRICH] Iniciando enriquecimiento de área:', areaId)
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
       
-      // IMPORTANTE: Leer directamente de Supabase (sin caché)
+      // Obtener datos frescos de Supabase
       const { data: area, error: areaError } = await supabase
         .from('areas')
         .select('*')
@@ -152,18 +152,18 @@ export default function EnriquecerTextosPage() {
 
       console.log('✅ [ENRICH] Área encontrada:', area.nombre, '-', area.ciudad)
       console.log('  📍 ID:', area.id)
-      console.log('  📝 Descripción actual:', area.descripcion ? `"${area.descripcion.substring(0, 100)}..." (${area.descripcion.length} caracteres)` : 'NULL o vacío')
-      console.log('  📏 Longitud trimmed:', area.descripcion ? area.descripcion.trim().length : 0)
-
-      // Si ya tiene descripción, no sobrescribir (SOLO si es una descripción válida y larga)
-      if (area.descripcion && area.descripcion.trim().length > 200) {
-        console.log('⚠️ [ENRICH] El área ya tiene descripción válida (>200 caracteres). No se sobrescribe.')
-        console.log('  💡 Si quieres sobrescribirla, borra primero la descripción en el admin.')
-        return false
-      }
       
-      if (area.descripcion && area.descripcion.trim().length > 0) {
-        console.log('⚠️ [ENRICH] El área tiene texto corto. Se sobrescribirá.')
+      // Si viene del filtro "Solo sin descripción", procesamos directamente
+      if (forceProcess) {
+        console.log('  ⚡ Modo forzado: Se procesará sin verificar (viene del filtro)')
+      } else {
+        console.log('  📝 Descripción actual:', area.descripcion ? `${area.descripcion.length} caracteres` : 'NULL o vacío')
+        
+        // Solo verificamos si NO viene del filtro
+        if (area.descripcion && area.descripcion.trim().length > 200) {
+          console.log('⚠️ [ENRICH] El área ya tiene descripción válida (>200 caracteres). No se sobrescribe.')
+          return false
+        }
       }
 
       // 1. Buscar información con SerpAPI (a través del proxy del servidor)
@@ -402,7 +402,9 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
 
       setProcessLog(prev => [...prev, `[${i + 1}/${selectedIds.length}] Procesando: ${area.nombre}...`])
 
-      const success = await enrichArea(areaId)
+      // Forzar procesamiento si el filtro "Solo sin descripción" está activo
+      const forceProcess = soloSinTexto
+      const success = await enrichArea(areaId, forceProcess)
 
       if (success) {
         successCount++
