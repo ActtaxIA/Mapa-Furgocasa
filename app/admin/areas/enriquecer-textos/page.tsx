@@ -107,9 +107,9 @@ export default function EnriquecerTextosPage() {
       filtered = filtered.filter(area => area.provincia === selectedProvince)
     }
 
-    // Filtrar solo sin texto
+    // Filtrar solo sin texto (umbral: 150 caracteres = sin descripción válida)
     if (soloSinTexto) {
-      filtered = filtered.filter(area => !area.descripcion || area.descripcion.length < 100)
+      filtered = filtered.filter(area => !area.descripcion || area.descripcion.trim().length < 150)
     }
 
     setFilteredAreas(filtered)
@@ -159,9 +159,9 @@ export default function EnriquecerTextosPage() {
       } else {
         console.log('  📝 Descripción actual:', area.descripcion ? `${area.descripcion.length} caracteres` : 'NULL o vacío')
         
-        // Solo verificamos si NO viene del filtro
-        if (area.descripcion && area.descripcion.trim().length > 200) {
-          console.log('⚠️ [ENRICH] El área ya tiene descripción válida (>200 caracteres). No se sobrescribe.')
+        // Solo verificamos si NO viene del filtro (umbral: 150 caracteres)
+        if (area.descripcion && area.descripcion.trim().length > 150) {
+          console.log('⚠️ [ENRICH] El área ya tiene descripción válida (>150 caracteres). No se sobrescribe.')
           return false
         }
       }
