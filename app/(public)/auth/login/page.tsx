@@ -38,16 +38,10 @@ export default function LoginPage() {
     try {
       const supabase = createClient()
       
-      // Usar la URL de producción si estamos en AWS, sino la actual
-      const isProduction = window.location.hostname.includes('amplifyapp.com') || window.location.hostname === 'mapa.furgocasa.com'
-      const redirectUrl = isProduction 
-        ? `https://main.d1wbtrilaad2yt.amplifyapp.com/auth/callback`
-        : `${window.location.origin}/auth/callback`
-      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl,
+          redirectTo: 'https://main.d1wbtrilaad2yt.amplifyapp.com/auth/callback',
         },
       })
       if (error) throw error
