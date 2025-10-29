@@ -466,21 +466,42 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       
       console.log(`🗺️ Analizando ruta con ${path.length} puntos (radio: ${radio}km)`)
       
-      // Obtener todas las áreas activas de Supabase
+      // Obtener TODAS las áreas activas con paginación (evitar límite de 1000)
       const supabase = createClient()
-      const { data: todasLasAreas, error } = await supabase
-        .from('areas')
-        .select('*')
-        .eq('activo', true)
+      const todasLasAreas: Area[] = []
+      const pageSize = 1000
+      let page = 0
+      let hasMore = true
 
-      if (error) throw error
+      console.log('📦 Cargando todas las áreas activas (con paginación)...')
 
-      if (!todasLasAreas || todasLasAreas.length === 0) {
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from('areas')
+          .select('*')
+          .eq('activo', true)
+          .range(page * pageSize, (page + 1) * pageSize - 1)
+
+        if (error) throw error
+
+        if (data && data.length > 0) {
+          todasLasAreas.push(...data)
+          console.log(`   ✓ Página ${page + 1}: ${data.length} áreas cargadas`)
+          page++
+          if (data.length < pageSize) {
+            hasMore = false
+          }
+        } else {
+          hasMore = false
+        }
+      }
+
+      if (todasLasAreas.length === 0) {
         setAreasEnRuta([])
         return
       }
 
-      console.log(`📊 Base de datos: ${todasLasAreas.length} áreas activas`)
+      console.log(`📊 Total en base de datos: ${todasLasAreas.length} áreas activas`)
 
       // Filtrar áreas que están dentro del radio de la ruta
       const areasCercanas: Area[] = []
