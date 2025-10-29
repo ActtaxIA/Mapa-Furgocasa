@@ -110,12 +110,12 @@ export function DetalleAreaHeader({ area }: Props) {
 
   const getTipoAreaColor = (tipo: string) => {
     const colors: Record<string, string> = {
-      publica: 'bg-blue-100 text-blue-800',
-      privada: 'bg-orange-100 text-orange-800',
-      camping: 'bg-green-100 text-green-800',
-      parking: 'bg-gray-100 text-gray-800',
+      publica: 'bg-[#0b3c74]/90 text-white backdrop-blur-sm',
+      privada: 'bg-orange-500/90 text-white backdrop-blur-sm',
+      camping: 'bg-green-500/90 text-white backdrop-blur-sm',
+      parking: 'bg-gray-700/90 text-white backdrop-blur-sm',
     }
-    return colors[tipo] || 'bg-gray-100 text-gray-800'
+    return colors[tipo] || 'bg-gray-700/90 text-white backdrop-blur-sm'
   }
 
   return (
@@ -139,13 +139,13 @@ export function DetalleAreaHeader({ area }: Props) {
             priority
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200">
-            <MapPinIcon className="w-24 h-24 text-primary-400" />
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f]">
+            <MapPinIcon className="w-24 h-24 text-white/50" />
           </div>
         )}
         
         {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0b3c74]/60 to-transparent" />
       </div>
 
       {/* Botones flotantes */}
