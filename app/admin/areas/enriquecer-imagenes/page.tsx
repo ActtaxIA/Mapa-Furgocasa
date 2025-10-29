@@ -90,6 +90,7 @@ export default function EnriquecerImagenesPage() {
       // 2. Buscar en Google Images (vía proxy)
       console.log('🔎 Buscando en Google Images (vía proxy)...')
       const queryImages = `"${area.nombre}" ${area.ciudad} autocaravanas`
+      setProcessLog(prev => [...prev, `🔎 Buscando imágenes: "${queryImages}"`])
       
       try {
         const respImages = await fetch('/api/admin/serpapi-proxy', {
@@ -99,34 +100,41 @@ export default function EnriquecerImagenesPage() {
         })
 
         if (!respImages.ok) {
-          console.log('  ⚠️ Error con el proxy de SerpAPI')
-          return false
-        }
+          const errorData = await respImages.json().catch(() => ({ error: 'Error desconocido' }))
+          console.log('  ⚠️ Error con el proxy de SerpAPI:', errorData)
+          setProcessLog(prev => [...prev, `  ⚠️ Error SerpAPI: ${errorData.error || 'HTTP ' + respImages.status}`])
+          // NO retornar false, seguir intentando otras fuentes
+        } else {
+          const resultImages = await respImages.json()
+          const dataImages = resultImages.success ? resultImages.data : null
 
-        const resultImages = await respImages.json()
-        const dataImages = resultImages.success ? resultImages.data : null
-
-        if (dataImages && dataImages.images_results) {
-          console.log(`  ✅ ${dataImages.images_results.length} imágenes en Google Images`)
-          
-          dataImages.images_results.slice(0, 10).forEach((img: any) => {
-            if (img.original && esImagenValida(img.original)) {
-              imagenesEncontradas.push({
-                url: img.original,
-                fuente: 'Google Images',
-                titulo: img.title,
-                prioridad: 2
-              })
-            }
-          })
+          if (dataImages && dataImages.images_results) {
+            console.log(`  ✅ ${dataImages.images_results.length} imágenes en Google Images`)
+            setProcessLog(prev => [...prev, `  ✅ ${dataImages.images_results.length} imágenes encontradas en Google`])
+            
+            dataImages.images_results.slice(0, 10).forEach((img: any) => {
+              if (img.original && esImagenValida(img.original)) {
+                imagenesEncontradas.push({
+                  url: img.original,
+                  fuente: 'Google Images',
+                  titulo: img.title,
+                  prioridad: 2
+                })
+              }
+            })
+          } else {
+            setProcessLog(prev => [...prev, `  ⚠️ No se encontraron imágenes en Google`])
+          }
         }
-      } catch (e) {
+      } catch (e: any) {
         console.log('  ⚠️ Error buscando imágenes:', e)
+        setProcessLog(prev => [...prev, `  ⚠️ Error de red: ${e.message}`])
       }
 
       // 3. Buscar en Park4night (vía proxy)
       console.log('🏕️ Buscando en Park4night (vía proxy)...')
       const queryPark4night = `"${area.nombre}" ${area.ciudad} site:park4night.com`
+      setProcessLog(prev => [...prev, `🏕️ Buscando en Park4night...`])
       
       try {
         const respPark = await fetch('/api/admin/serpapi-proxy', {
@@ -136,13 +144,15 @@ export default function EnriquecerImagenesPage() {
         })
 
         if (!respPark.ok) {
-          console.log('  ⚠️ Error con el proxy de SerpAPI')
+          console.log('  ⚠️ Error con el proxy de SerpAPI para Park4night')
+          setProcessLog(prev => [...prev, `  ⚠️ Error buscando en Park4night`])
         } else {
           const resultPark = await respPark.json()
           const dataPark = resultPark.success ? resultPark.data : null
 
           if (dataPark && dataPark.images_results) {
             console.log(`  ✅ ${dataPark.images_results.length} imágenes en Park4night`)
+            setProcessLog(prev => [...prev, `  ✅ ${dataPark.images_results.length} imágenes en Park4night`])
             
             dataPark.images_results.forEach((img: any) => {
               if (img.original && esImagenValida(img.original)) {
@@ -154,10 +164,13 @@ export default function EnriquecerImagenesPage() {
                 })
               }
             })
+          } else {
+            setProcessLog(prev => [...prev, `  ⚠️ No se encontraron imágenes en Park4night`])
           }
         }
-      } catch (e) {
+      } catch (e: any) {
         console.log('  ⚠️ Error buscando Park4night:', e)
+        setProcessLog(prev => [...prev, `  ⚠️ Error de red Park4night: ${e.message}`])
       }
 
       // 4. Filtrar duplicados y ordenar
@@ -165,9 +178,10 @@ export default function EnriquecerImagenesPage() {
       imagenesUnicas.sort((a, b) => a.prioridad - b.prioridad)
 
       console.log(`📊 Total imágenes encontradas: ${imagenesUnicas.length}`)
+      setProcessLog(prev => [...prev, `📊 Total: ${imagenesUnicas.length} imágenes únicas`])
 
       if (imagenesUnicas.length === 0) {
-        setProcessLog(prev => [...prev, `  ⚠️ No se encontraron imágenes`])
+        setProcessLog(prev => [...prev, `  ✗ No se encontraron imágenes válidas`])
         return false
       }
 
