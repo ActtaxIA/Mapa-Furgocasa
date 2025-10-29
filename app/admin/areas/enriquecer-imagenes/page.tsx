@@ -15,6 +15,9 @@ export default function EnriquecerImagenesPage() {
   const [processLog, setProcessLog] = useState<string[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [filterProvincia, setFilterProvincia] = useState('')
+  const [filterPais, setFilterPais] = useState('')
+  const [ordenarPor, setOrdenarPor] = useState<'nombre' | 'ciudad' | 'provincia' | 'pais'>('nombre')
+  const [ordenAscendente, setOrdenAscendente] = useState(true)
 
   const supabase = createClient()
 
@@ -287,16 +290,32 @@ export default function EnriquecerImagenesPage() {
   }
 
   const provincias = Array.from(new Set(areas.map(a => a.provincia).filter((p): p is string => p !== null))).sort()
+  const paises = Array.from(new Set(areas.map(a => a.pais).filter((p): p is string => p !== null))).sort()
 
   const areasFiltradas = areas.filter(area => {
+    // Búsqueda mejorada: buscar en nombre, ciudad, dirección, provincia y país
     const matchSearch = searchTerm === '' || 
       area.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       area.ciudad?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      area.provincia?.toLowerCase().includes(searchTerm.toLowerCase())
+      area.direccion?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      area.provincia?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      area.pais?.toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchProvincia = filterProvincia === '' || area.provincia === filterProvincia
+    const matchPais = filterPais === '' || area.pais === filterPais
 
-    return matchSearch && matchProvincia
+    return matchSearch && matchProvincia && matchPais
+  }).sort((a, b) => {
+    // Ordenar por la columna seleccionada
+    let valorA = a[ordenarPor] || ''
+    let valorB = b[ordenarPor] || ''
+    
+    if (typeof valorA === 'string') valorA = valorA.toLowerCase()
+    if (typeof valorB === 'string') valorB = valorB.toLowerCase()
+    
+    if (valorA < valorB) return ordenAscendente ? -1 : 1
+    if (valorA > valorB) return ordenAscendente ? 1 : -1
+    return 0
   })
 
   // Filtrar áreas sin foto_principal
@@ -327,16 +346,30 @@ export default function EnriquecerImagenesPage() {
 
         {/* Filtros */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">Buscar área</label>
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Nombre o ciudad..."
+                placeholder="Nombre, ciudad, dirección, país..."
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">País</label>
+              <select
+                value={filterPais}
+                onChange={(e) => setFilterPais(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="">Todos los países</option>
+                {paises.map(pais => (
+                  <option key={pais} value={pais}>{pais}</option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -352,21 +385,21 @@ export default function EnriquecerImagenesPage() {
                 ))}
               </select>
             </div>
+          </div>
 
-            <div className="flex items-end gap-2">
-              <button
-                onClick={() => setSelectedIds(areasSinImagenes.map(a => a.id))}
-                className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-              >
-                Seleccionar sin imágenes ({areasSinImagenes.length})
-              </button>
-              <button
-                onClick={() => setSelectedIds([])}
-                className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-              >
-                Deseleccionar todas
-              </button>
-            </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSelectedIds(areasSinImagenes.map(a => a.id))}
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+            >
+              Seleccionar sin imágenes ({areasSinImagenes.length})
+            </button>
+            <button
+              onClick={() => setSelectedIds([])}
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+            >
+              Deseleccionar todas
+            </button>
           </div>
         </div>
 
@@ -406,7 +439,24 @@ export default function EnriquecerImagenesPage() {
                       className="w-4 h-4 text-primary-600 rounded"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Área</th>
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100 select-none"
+                    onClick={() => {
+                      if (ordenarPor === 'nombre') {
+                        setOrdenAscendente(!ordenAscendente)
+                      } else {
+                        setOrdenarPor('nombre')
+                        setOrdenAscendente(true)
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      Área
+                      {ordenarPor === 'nombre' && (
+                        <span>{ordenAscendente ? '↑' : '↓'}</span>
+                      )}
+                    </div>
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Imágenes</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
                 </tr>
@@ -443,7 +493,9 @@ export default function EnriquecerImagenesPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="font-medium text-gray-900">{area.nombre}</div>
-                        <div className="text-sm text-gray-500">{area.ciudad}, {area.provincia}</div>
+                        <div className="text-sm text-gray-500">
+                          {area.ciudad}, {area.provincia} • {area.pais}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         {area.foto_principal ? (

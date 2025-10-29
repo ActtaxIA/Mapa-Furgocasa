@@ -46,12 +46,16 @@ export default function ActualizarServiciosPage() {
   const [busqueda, setBusqueda] = useState('')
   const [provinciaFiltro, setProvinciaFiltro] = useState('todas')
   const [provincias, setProvincias] = useState<string[]>([])
+  const [paisFiltro, setPaisFiltro] = useState('todos')
+  const [paises, setPaises] = useState<string[]>([])
   const [soloSinWeb, setSoloSinWeb] = useState(false)
   const [progreso, setProgreso] = useState({ actual: 0, total: 0 })
   const [configStatus, setConfigStatus] = useState<{
     ready: boolean
     checks: any
   } | null>(null)
+  const [ordenarPor, setOrdenarPor] = useState<'nombre' | 'ciudad' | 'provincia' | 'pais'>('nombre')
+  const [ordenAscendente, setOrdenAscendente] = useState(true)
 
   // Función para analizar servicios directamente desde el cliente
   const analizarServiciosArea = async (areaId: string): Promise<Record<string, boolean> | null> => {
@@ -299,6 +303,10 @@ export default function ActualizarServiciosPage() {
       const provinciasUnicas = [...new Set(allAreas.map(a => a.provincia).filter(Boolean))] as string[]
       setProvincias(provinciasUnicas.sort())
 
+      // Extraer países únicos
+      const paisesUnicos = [...new Set(allAreas.map(a => a.pais).filter(Boolean))] as string[]
+      setPaises(paisesUnicos.sort())
+
     } catch (error) {
       console.error('Error cargando áreas:', error)
     } finally {
@@ -307,14 +315,32 @@ export default function ActualizarServiciosPage() {
   }
 
   const areasFiltradas = areas.filter(area => {
-    const matchBusqueda = area.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-                         area.ciudad?.toLowerCase().includes(busqueda.toLowerCase())
+    // Búsqueda mejorada: buscar en nombre, ciudad, dirección, provincia y país
+    const matchBusqueda = busqueda === '' || 
+      area.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      area.ciudad?.toLowerCase().includes(busqueda.toLowerCase()) ||
+      area.direccion?.toLowerCase().includes(busqueda.toLowerCase()) ||
+      area.provincia?.toLowerCase().includes(busqueda.toLowerCase()) ||
+      area.pais?.toLowerCase().includes(busqueda.toLowerCase())
     
     const matchProvincia = provinciaFiltro === 'todas' || area.provincia === provinciaFiltro
     
+    const matchPais = paisFiltro === 'todos' || area.pais === paisFiltro
+    
     const matchWeb = !soloSinWeb || !area.website || area.website === ''
 
-    return matchBusqueda && matchProvincia && matchWeb
+    return matchBusqueda && matchProvincia && matchPais && matchWeb
+  }).sort((a, b) => {
+    // Ordenar por la columna seleccionada
+    let valorA = a[ordenarPor] || ''
+    let valorB = b[ordenarPor] || ''
+    
+    if (typeof valorA === 'string') valorA = valorA.toLowerCase()
+    if (typeof valorB === 'string') valorB = valorB.toLowerCase()
+    
+    if (valorA < valorB) return ordenAscendente ? -1 : 1
+    if (valorA > valorB) return ordenAscendente ? 1 : -1
+    return 0
   })
 
   const toggleSeleccion = (id: string) => {
@@ -533,7 +559,7 @@ export default function ActualizarServiciosPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filtros y Controles */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
             {/* Búsqueda */}
             <div className="md:col-span-2">
               <div className="relative">
@@ -542,10 +568,24 @@ export default function ActualizarServiciosPage() {
                   type="text"
                   value={busqueda}
                   onChange={(e) => setBusqueda(e.target.value)}
-                  placeholder="Buscar por nombre o ciudad..."
+                  placeholder="Buscar por nombre, ciudad, dirección, país..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 />
               </div>
+            </div>
+
+            {/* Filtro País */}
+            <div>
+              <select
+                value={paisFiltro}
+                onChange={(e) => setPaisFiltro(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              >
+                <option value="todos">Todos los países</option>
+                {paises.map(pais => (
+                  <option key={pais} value={pais}>{pais}</option>
+                ))}
+              </select>
             </div>
 
             {/* Filtro Provincia */}
@@ -630,8 +670,23 @@ export default function ActualizarServiciosPage() {
                       className="w-4 h-4 text-sky-600 rounded focus:ring-sky-500"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Área
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100 select-none"
+                    onClick={() => {
+                      if (ordenarPor === 'nombre') {
+                        setOrdenAscendente(!ordenAscendente)
+                      } else {
+                        setOrdenarPor('nombre')
+                        setOrdenAscendente(true)
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      Área
+                      {ordenarPor === 'nombre' && (
+                        <span>{ordenAscendente ? '↑' : '↓'}</span>
+                      )}
+                    </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Web
@@ -659,7 +714,9 @@ export default function ActualizarServiciosPage() {
                     <td className="px-6 py-4">
                       <div>
                         <div className="text-sm font-medium text-gray-900">{area.nombre}</div>
-                        <div className="text-sm text-gray-500">{area.ciudad}, {area.provincia}</div>
+                        <div className="text-sm text-gray-500">
+                          {area.ciudad}, {area.provincia} • {area.pais}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">

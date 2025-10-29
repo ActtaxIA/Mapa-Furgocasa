@@ -24,6 +24,7 @@ export default function EnriquecerTextosPage() {
   const [processing, setProcessing] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedProvince, setSelectedProvince] = useState('Todas')
+  const [selectedPais, setSelectedPais] = useState('Todos')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [soloSinTexto, setSoloSinTexto] = useState(true)
   const [processLog, setProcessLog] = useState<string[]>([])
@@ -31,6 +32,8 @@ export default function EnriquecerTextosPage() {
     ready: boolean
     checks: any
   } | null>(null)
+  const [ordenarPor, setOrdenarPor] = useState<'nombre' | 'ciudad' | 'provincia' | 'pais'>('nombre')
+  const [ordenAscendente, setOrdenAscendente] = useState(true)
 
   const PROVINCIAS = [
     'Todas',
@@ -44,6 +47,9 @@ export default function EnriquecerTextosPage() {
     'Toledo', 'Valencia', 'Valladolid', 'Vizcaya', 'Zamora', 'Zaragoza'
   ]
 
+  // Extraer países únicos de las áreas cargadas
+  const PAISES = ['Todos', ...Array.from(new Set(areas.map(a => a.pais).filter(Boolean))).sort()]
+
   useEffect(() => {
     loadAreas()
     checkConfiguration()
@@ -51,7 +57,7 @@ export default function EnriquecerTextosPage() {
 
   useEffect(() => {
     filterAreas()
-  }, [areas, searchTerm, selectedProvince, soloSinTexto])
+  }, [areas, searchTerm, selectedProvince, selectedPais, soloSinTexto, ordenarPor, ordenAscendente])
 
   const checkConfiguration = async () => {
     try {
@@ -113,12 +119,14 @@ export default function EnriquecerTextosPage() {
   const filterAreas = () => {
     let filtered = [...areas]
 
-    // Filtrar por búsqueda
+    // Filtrar por búsqueda mejorada: buscar en nombre, ciudad, dirección, provincia y país
     if (searchTerm) {
       filtered = filtered.filter(area =>
         area.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         area.ciudad?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        area.provincia?.toLowerCase().includes(searchTerm.toLowerCase())
+        area.direccion?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        area.provincia?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        area.pais?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
@@ -127,10 +135,28 @@ export default function EnriquecerTextosPage() {
       filtered = filtered.filter(area => area.provincia === selectedProvince)
     }
 
+    // Filtrar por país
+    if (selectedPais !== 'Todos') {
+      filtered = filtered.filter(area => area.pais === selectedPais)
+    }
+
     // Filtrar solo sin texto (sin descripción = NULL, vacío, o < 50 caracteres)
     if (soloSinTexto) {
       filtered = filtered.filter(area => !area.descripcion || area.descripcion.trim().length < 50)
     }
+
+    // Ordenar por la columna seleccionada
+    filtered.sort((a, b) => {
+      let valorA = a[ordenarPor] || ''
+      let valorB = b[ordenarPor] || ''
+      
+      if (typeof valorA === 'string') valorA = valorA.toLowerCase()
+      if (typeof valorB === 'string') valorB = valorB.toLowerCase()
+      
+      if (valorA < valorB) return ordenAscendente ? -1 : 1
+      if (valorA > valorB) return ordenAscendente ? 1 : -1
+      return 0
+    })
 
     setFilteredAreas(filtered)
   }
@@ -536,9 +562,9 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
 
         {/* Filtros */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             {/* Búsqueda */}
-            <div>
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Buscar área
               </label>
@@ -546,12 +572,28 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
                 <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Nombre o ciudad..."
+                  placeholder="Nombre, ciudad, dirección, país..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
+            </div>
+
+            {/* País */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                País
+              </label>
+              <select
+                value={selectedPais}
+                onChange={(e) => setSelectedPais(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                {PAISES.map(pais => (
+                  <option key={pais} value={pais}>{pais}</option>
+                ))}
+              </select>
             </div>
 
             {/* Provincia */}
@@ -569,22 +611,19 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
                 ))}
               </select>
             </div>
+          </div>
 
-            {/* Solo sin texto */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Filtrar
-              </label>
-              <label className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={soloSinTexto}
-                  onChange={(e) => setSoloSinTexto(e.target.checked)}
-                  className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700">Solo áreas sin descripción</span>
-              </label>
-            </div>
+          {/* Filtro Solo sin texto */}
+          <div className="mb-4">
+            <label className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg cursor-pointer w-fit">
+              <input
+                type="checkbox"
+                checked={soloSinTexto}
+                onChange={(e) => setSoloSinTexto(e.target.checked)}
+                className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+              />
+              <span className="text-sm text-gray-700">Solo áreas sin descripción</span>
+            </label>
           </div>
 
           {/* Acciones de selección */}
@@ -630,11 +669,41 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
                       className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Área
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                    onClick={() => {
+                      if (ordenarPor === 'nombre') {
+                        setOrdenAscendente(!ordenAscendente)
+                      } else {
+                        setOrdenarPor('nombre')
+                        setOrdenAscendente(true)
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      Área
+                      {ordenarPor === 'nombre' && (
+                        <span>{ordenAscendente ? '↑' : '↓'}</span>
+                      )}
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ubicación
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                    onClick={() => {
+                      if (ordenarPor === 'ciudad') {
+                        setOrdenAscendente(!ordenAscendente)
+                      } else {
+                        setOrdenarPor('ciudad')
+                        setOrdenAscendente(true)
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      Ubicación
+                      {ordenarPor === 'ciudad' && (
+                        <span>{ordenAscendente ? '↑' : '↓'}</span>
+                      )}
+                    </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Estado
@@ -670,7 +739,9 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
                         <div className="text-sm font-medium text-gray-900">{area.nombre}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-600">{area.ciudad}, {area.provincia}</div>
+                        <div className="text-sm text-gray-600">
+                          {area.ciudad}, {area.provincia} • {area.pais}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         {area.descripcion && area.descripcion.trim().length >= 50 ? (
