@@ -100,6 +100,8 @@ export default function EnriquecerTextosPage() {
       }
 
       console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
+      console.log('🌍 Países únicos encontrados:', [...new Set(allAreas.map(a => a.pais).filter(Boolean))])
+      console.log('📝 Áreas sin descripción:', allAreas.filter(a => !a.descripcion || a.descripcion.trim().length < 50).length)
       setAreas(allAreas)
     } catch (error) {
       console.error('Error cargando áreas:', error)
@@ -111,6 +113,13 @@ export default function EnriquecerTextosPage() {
 
   const filterAreas = () => {
     let filtered = [...areas]
+    
+    console.log('🔍 Iniciando filtrado...')
+    console.log('  📊 Total áreas:', areas.length)
+    console.log('  🔎 Búsqueda:', searchTerm)
+    console.log('  🏛️ Provincia:', selectedProvince)
+    console.log('  🌍 País:', selectedPais)
+    console.log('  📝 Solo sin texto:', soloSinTexto)
 
     // Filtrar por búsqueda mejorada: buscar en nombre, ciudad, dirección, provincia y país
     if (searchTerm) {
@@ -121,21 +130,43 @@ export default function EnriquecerTextosPage() {
         area.provincia?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         area.pais?.toLowerCase().includes(searchTerm.toLowerCase())
       )
+      console.log('  ✅ Después de búsqueda:', filtered.length)
     }
 
     // Filtrar por provincia
     if (selectedProvince !== 'Todas') {
       filtered = filtered.filter(area => area.provincia === selectedProvince)
+      console.log('  ✅ Después de provincia:', filtered.length)
     }
 
     // Filtrar por país
     if (selectedPais !== 'Todos') {
+      const beforePais = filtered.length
       filtered = filtered.filter(area => area.pais === selectedPais)
+      console.log(`  ✅ Después de país (${selectedPais}):`, filtered.length, 'de', beforePais)
+      if (filtered.length === 0 && beforePais > 0) {
+        console.log('  ⚠️ Países únicos en las áreas filtradas:', [...new Set(areas.map(a => a.pais))])
+      }
     }
 
-    // Filtrar solo sin texto (sin descripción = NULL, vacío, o < 50 caracteres)
+    // Filtrar solo sin texto (sin descripción = NULL, vacío, placeholder o < 200 caracteres)
+    // Las descripciones de IA deben ser textos largos, no snippets cortos
+    const PLACEHOLDER_TEXT = 'Área encontrada mediante búsqueda en Google Maps. Requiere verificación y enriquecimiento.'
+    
     if (soloSinTexto) {
-      filtered = filtered.filter(area => !area.descripcion || area.descripcion.trim().length < 50)
+      const beforeSinTexto = filtered.length
+      filtered = filtered.filter(area => {
+        if (!area.descripcion) return true // Sin descripción
+        const desc = area.descripcion.trim()
+        
+        // Detectar texto placeholder por defecto
+        if (desc === PLACEHOLDER_TEXT) return true
+        if (desc.includes('Requiere verificación y enriquecimiento')) return true
+        
+        const length = desc.length
+        return length < 200 // Menos de 200 caracteres = descripción corta/incompleta
+      })
+      console.log('  ✅ Después de sin texto (<200 chars o placeholder):', filtered.length, 'de', beforeSinTexto)
     }
 
     // Ordenar por la columna seleccionada
@@ -615,7 +646,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
                 onChange={(e) => setSoloSinTexto(e.target.checked)}
                 className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
               />
-              <span className="text-sm text-gray-700">Solo áreas sin descripción</span>
+              <span className="text-sm text-gray-700">Solo áreas sin descripción completa (&lt;200 caracteres)</span>
             </label>
           </div>
 
@@ -737,15 +768,41 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        {area.descripcion && area.descripcion.trim().length >= 50 ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Con descripción
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                            Sin descripción
-                          </span>
-                        )}
+                        {(() => {
+                          const desc = area.descripcion?.trim() || ''
+                          const isPlaceholder = desc.includes('Requiere verificación y enriquecimiento')
+                          const length = desc.length
+                          
+                          if (isPlaceholder) {
+                            return (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                ✗ Placeholder Google Maps
+                              </span>
+                            )
+                          }
+                          
+                          if (length >= 200) {
+                            return (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                ✓ Con descripción ({length} chars)
+                              </span>
+                            )
+                          }
+                          
+                          if (length > 0) {
+                            return (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                ⚠ Descripción corta ({length} chars)
+                              </span>
+                            )
+                          }
+                          
+                          return (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                              ✗ Sin descripción
+                            </span>
+                          )
+                        })()}
                       </td>
                     </tr>
                   ))
