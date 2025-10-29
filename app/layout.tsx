@@ -22,10 +22,17 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Furgocasa' }],
   manifest: '/manifest.json',
-  themeColor: '#4b5668',
+  themeColor: '#0b3c74',
   icons: {
-    icon: '/favicon.png',
-    apple: '/favicon.png',
+    icon: [
+      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icon-192.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/favicon.png',
   },
   appleWebApp: {
     capable: true,
@@ -60,7 +67,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: '#4b5668',
+  themeColor: '#0b3c74',
 }
 
 export default function RootLayout({
@@ -70,6 +77,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
+      <head>
+        {/* Favicons adicionales para máxima compatibilidad */}
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icon-192.png" />
+        <link rel="shortcut icon" href="/favicon.png" />
+      </head>
       <body className="antialiased">
         {/* Google Analytics */}
         <Script
