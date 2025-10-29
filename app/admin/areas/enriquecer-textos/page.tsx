@@ -209,9 +209,14 @@ export default function EnriquecerTextosPage() {
       } else {
         console.log('  📝 Descripción actual:', area.descripcion ? `"${area.descripcion.trim()}" (${area.descripcion.trim().length} caracteres)` : 'NULL o vacío')
         
-        // Solo verificamos si NO viene del filtro (sin descripción = < 50 caracteres)
-        if (area.descripcion && area.descripcion.trim().length >= 50) {
-          console.log('⚠️ [ENRICH] El área ya tiene descripción válida (≥50 caracteres). No se sobrescribe.')
+        // Solo verificamos si NO viene del filtro (sin descripción = < 200 caracteres)
+        const PLACEHOLDER_TEXT = 'Área encontrada mediante búsqueda en Google Maps. Requiere verificación y enriquecimiento.'
+        const desc = area.descripcion?.trim() || ''
+        const isPlaceholder = desc.includes('Requiere verificación y enriquecimiento')
+        
+        // Si ya tiene descripción válida (≥200 caracteres y no es placeholder), no sobreescribir
+        if (area.descripcion && !isPlaceholder && desc.length >= 200) {
+          console.log('⚠️ [ENRICH] El área ya tiene descripción válida (≥200 caracteres). No se sobrescribe.')
           return false
         }
       }
