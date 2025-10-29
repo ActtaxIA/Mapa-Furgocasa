@@ -19,8 +19,8 @@ interface AreasRelacionadasProps {
 
 export function AreasRelacionadas({ areas }: AreasRelacionadasProps) {
   return (
-    <section className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
+    <section className="bg-white rounded-lg shadow-mobile p-6 border-t-4 border-[#0b3c74]">
+      <h2 className="text-2xl font-bold text-[#0b3c74] mb-6">
         Áreas Relacionadas
       </h2>
 
@@ -29,7 +29,7 @@ export function AreasRelacionadas({ areas }: AreasRelacionadasProps) {
           <Link
             key={area.id}
             href={`/area/${area.slug}`}
-            className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all"
+            className="group bg-white border-2 border-gray-200 rounded-lg overflow-hidden hover:shadow-xl hover:border-[#0b3c74] transition-all"
           >
             {/* Imagen */}
             <div className="relative w-full h-48 bg-gray-200">
@@ -59,7 +59,7 @@ export function AreasRelacionadas({ areas }: AreasRelacionadasProps) {
             {/* Contenido */}
             <div className="p-4 space-y-2">
               {/* Título */}
-              <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-primary-600 transition-colors">
+              <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-[#0b3c74] transition-colors">
                 {area.nombre}
               </h3>
 

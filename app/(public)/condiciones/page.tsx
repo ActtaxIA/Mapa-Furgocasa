@@ -9,20 +9,20 @@ export const metadata = {
 export default function CondicionesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <Link href="/" className="inline-block mb-4">
+      {/* Header Hero */}
+      <div className="bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] text-white shadow-xl">
+        <div className="max-w-4xl mx-auto px-4 py-12">
+          <Link href="/" className="inline-block mb-6 hover:opacity-80 transition-opacity">
             <Image 
-              src="/logo-negro.png" 
+              src="/logo-furgocasa.png" 
               alt="Furgocasa" 
               width={150} 
               height={60}
               className="h-12 w-auto"
             />
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Condiciones del Servicio</h1>
-          <p className="text-gray-600 mt-2">Última actualización: {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-3">Condiciones del Servicio</h1>
+          <p className="text-white/90 text-lg">Última actualización: {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
         </div>
       </div>
 
@@ -32,7 +32,7 @@ export default function CondicionesPage() {
           
           {/* Introducción */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Aceptación de los Términos</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">1. Aceptación de los Términos</h2>
             <p className="text-gray-700 leading-relaxed">
               Bienvenido a <strong>Mapa Furgocasa</strong>. Al acceder y utilizar nuestra plataforma web, aplicación móvil y servicios 
               relacionados (en adelante, "el Servicio"), aceptas estar sujeto a estos Términos y Condiciones de Uso (en adelante, "Términos"). 
@@ -42,7 +42,7 @@ export default function CondicionesPage() {
 
           {/* Descripción del servicio */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Descripción del Servicio</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">2. Descripción del Servicio</h2>
             <p className="text-gray-700 leading-relaxed mb-3">
               Mapa Furgocasa es una plataforma digital que permite a los usuarios:
             </p>
@@ -57,7 +57,7 @@ export default function CondicionesPage() {
 
           {/* Registro y cuenta */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">3. Registro y Cuenta de Usuario</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">3. Registro y Cuenta de Usuario</h2>
             <div className="space-y-4">
               <div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">3.1. Creación de cuenta</h3>
@@ -88,7 +88,7 @@ export default function CondicionesPage() {
 
           {/* Uso aceptable */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">4. Uso Aceptable del Servicio</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">4. Uso Aceptable del Servicio</h2>
             <p className="text-gray-700 mb-3">Te comprometes a utilizar el Servicio de manera responsable y a NO:</p>
             <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
               <li>Publicar contenido ilegal, difamatorio, obsceno, ofensivo, amenazante o que viole los derechos de terceros.</li>
@@ -104,7 +104,7 @@ export default function CondicionesPage() {
 
           {/* Contenido del usuario */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">5. Contenido del Usuario</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">5. Contenido del Usuario</h2>
             <div className="space-y-4">
               <div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">5.1. Propiedad del contenido</h3>
@@ -137,7 +137,7 @@ export default function CondicionesPage() {
 
           {/* Propiedad intelectual */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Propiedad Intelectual</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">6. Propiedad Intelectual</h2>
             <p className="text-gray-700">
               Todo el contenido del Servicio, incluyendo pero no limitado a textos, gráficos, logos, iconos, imágenes, clips de audio, 
               descargas digitales, compilaciones de datos y software, es propiedad de Mapa Furgocasa o de sus proveedores de contenido 
@@ -149,7 +149,7 @@ export default function CondicionesPage() {
 
           {/* Servicios de terceros */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">7. Servicios de Terceros</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">7. Servicios de Terceros</h2>
             <p className="text-gray-700 mb-3">
               El Servicio puede contener enlaces a sitios web o servicios de terceros (como Google Maps, Google Sign-In, etc.) que no 
               son propiedad ni están controlados por Mapa Furgocasa. No tenemos control sobre el contenido, políticas de privacidad o 
@@ -163,7 +163,7 @@ export default function CondicionesPage() {
 
           {/* Descargo de responsabilidad */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">8. Descargo de Responsabilidad</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">8. Descargo de Responsabilidad</h2>
             <div className="space-y-4">
               <div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">8.1. Uso bajo tu propio riesgo</h3>
@@ -196,7 +196,7 @@ export default function CondicionesPage() {
 
           {/* Limitación de responsabilidad */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">9. Limitación de Responsabilidad</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">9. Limitación de Responsabilidad</h2>
             <p className="text-gray-700">
               En ningún caso Mapa Furgocasa, sus directores, empleados, socios, agentes, proveedores o afiliados serán responsables 
               por daños indirectos, incidentales, especiales, consecuentes o punitivos, incluyendo sin limitación, pérdida de 
@@ -212,7 +212,7 @@ export default function CondicionesPage() {
 
           {/* Modificaciones del servicio */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">10. Modificaciones del Servicio</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">10. Modificaciones del Servicio</h2>
             <p className="text-gray-700">
               Nos reservamos el derecho de modificar, suspender o discontinuar el Servicio (o cualquier parte del mismo) en cualquier 
               momento, con o sin previo aviso. No seremos responsables ante ti ni ante terceros por cualquier modificación, suspensión 
@@ -222,7 +222,7 @@ export default function CondicionesPage() {
 
           {/* Terminación */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">11. Terminación</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">11. Terminación</h2>
             <p className="text-gray-700 mb-3">
               Podemos terminar o suspender tu acceso al Servicio de inmediato, sin previo aviso ni responsabilidad, por cualquier 
               motivo, incluyendo pero no limitado a una violación de estos Términos.
@@ -235,7 +235,7 @@ export default function CondicionesPage() {
 
           {/* Ley aplicable */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">12. Ley Aplicable y Jurisdicción</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">12. Ley Aplicable y Jurisdicción</h2>
             <p className="text-gray-700">
               Estos Términos se regirán e interpretarán de acuerdo con las leyes de España, sin tener en cuenta sus disposiciones 
               sobre conflictos de leyes. Cualquier disputa relacionada con estos Términos estará sujeta a la jurisdicción exclusiva 
@@ -245,7 +245,7 @@ export default function CondicionesPage() {
 
           {/* Cambios en los términos */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">13. Cambios en los Términos</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">13. Cambios en los Términos</h2>
             <p className="text-gray-700">
               Nos reservamos el derecho de modificar o reemplazar estos Términos en cualquier momento. Si una revisión es significativa, 
               te notificaremos con al menos 30 días de antelación antes de que los nuevos términos entren en vigor. Tu uso continuado 
@@ -255,7 +255,7 @@ export default function CondicionesPage() {
 
           {/* Contacto */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">14. Contacto</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">14. Contacto</h2>
             <p className="text-gray-700 mb-4">
               Si tienes preguntas sobre estos Términos y Condiciones, puedes contactarnos a través de:
             </p>

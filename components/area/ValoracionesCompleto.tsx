@@ -165,13 +165,13 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
           onClose={hideToast}
         />
       )}
-      <section className="bg-white rounded-lg shadow-mobile p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Valoraciones</h2>
+      <section className="bg-white rounded-lg shadow-mobile p-6 border-t-4 border-[#0b3c74]">
+        <h2 className="text-xl font-bold text-[#0b3c74] mb-4">Valoraciones</h2>
 
         {/* Resumen de valoraciones */}
         <div className="flex items-start gap-6 mb-6 pb-6 border-b border-gray-200">
           <div className="text-center">
-            <div className="text-4xl font-bold text-gray-900 mb-1">{ratingPromedio}</div>
+            <div className="text-4xl font-bold text-[#0b3c74] mb-1">{ratingPromedio}</div>
             <div className="flex items-center gap-1 mb-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <StarIcon
@@ -215,7 +215,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
         <div className="grid grid-cols-2 gap-3 mb-6">
           <button
             onClick={() => setShowVisitModal(true)}
-            className="py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+            className="py-3 bg-[#0b3c74] text-white rounded-lg font-semibold hover:bg-[#0d4a8f] hover:shadow-lg transition-all flex items-center justify-center gap-2"
           >
             <CheckCircleIcon className="w-5 h-5" />
             Registrar Visita
@@ -228,7 +228,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
                 setShowForm(!showForm)
               }
             }}
-            className="py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors"
+            className="py-3 bg-sky-500 text-white rounded-lg font-semibold hover:bg-sky-600 hover:shadow-lg transition-all"
           >
             ✍️ Escribir valoración
           </button>
@@ -236,8 +236,8 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
 
         {/* Formulario de valoración */}
         {showForm && user && (
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h3 className="font-semibold text-gray-900 mb-4">Tu valoración</h3>
+          <div className="mb-6 p-4 bg-sky-50 rounded-lg border-2 border-[#0b3c74]">
+            <h3 className="font-semibold text-[#0b3c74] mb-4">Tu valoración</h3>
             
             {/* Selector de estrellas */}
             <div className="mb-4">
@@ -272,7 +272,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
                 onChange={(e) => setFormData({ ...formData, comentario: e.target.value })}
                 placeholder="Comparte tu experiencia..."
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0b3c74] focus:border-transparent resize-none"
                 maxLength={1000}
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -284,7 +284,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
               <button
                 onClick={handleSubmitValoracion}
                 disabled={loading || formData.rating === 0}
-                className="flex-1 py-2 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-2 bg-[#0b3c74] text-white rounded-lg font-semibold hover:bg-[#0d4a8f] hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Publicando...' : 'Publicar Valoración'}
               </button>
@@ -374,7 +374,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
                   value={visitData.fecha_visita}
                   onChange={(e) => setVisitData({ ...visitData, fecha_visita: e.target.value })}
                   max={new Date().toISOString().split('T')[0]}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0b3c74] focus:border-transparent"
                 />
               </div>
 
@@ -387,7 +387,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
                   onChange={(e) => setVisitData({ ...visitData, notas: e.target.value })}
                   placeholder="¿Cómo fue tu experiencia? ¿Algún consejo?"
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0b3c74] focus:border-transparent resize-none"
                   maxLength={500}
                 />
               </div>
@@ -396,7 +396,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
                 <button
                   onClick={handleRegistrarVisita}
                   disabled={loading}
-                  className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 bg-[#0b3c74] text-white rounded-lg font-semibold hover:bg-[#0d4a8f] hover:shadow-lg transition-all disabled:opacity-50"
                 >
                   {loading ? 'Registrando...' : 'Registrar Visita'}
                 </button>

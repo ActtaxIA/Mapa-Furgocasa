@@ -35,8 +35,8 @@ export function ContactoInfo({ area }: Props) {
   }
 
   return (
-    <section className="bg-white rounded-lg shadow-mobile p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">Contacto</h2>
+    <section className="bg-white rounded-lg shadow-mobile p-6 border-t-4 border-[#0b3c74]">
+      <h2 className="text-xl font-bold text-[#0b3c74] mb-4">Contacto</h2>
 
       <div className="space-y-3">
         {/* Teléfono */}
@@ -44,10 +44,10 @@ export function ContactoInfo({ area }: Props) {
           <a
             href={`tel:${area.telefono}`}
             onClick={handlePhoneClick}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-sky-50 transition-colors group border border-transparent hover:border-[#0b3c74]"
           >
-            <div className="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
-              <PhoneIcon className="w-5 h-5 text-green-600" />
+            <div className="flex-shrink-0 w-10 h-10 bg-[#0b3c74] rounded-full flex items-center justify-center group-hover:shadow-lg transition-all">
+              <PhoneIcon className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1">
               <p className="text-xs text-gray-600 font-medium">Teléfono</p>
@@ -64,10 +64,10 @@ export function ContactoInfo({ area }: Props) {
           <a
             href={`mailto:${area.email}`}
             onClick={handleEmailClick}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-sky-50 transition-colors group border border-transparent hover:border-[#0b3c74]"
           >
-            <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-              <EnvelopeIcon className="w-5 h-5 text-blue-600" />
+            <div className="flex-shrink-0 w-10 h-10 bg-[#0b3c74] rounded-full flex items-center justify-center group-hover:shadow-lg transition-all">
+              <EnvelopeIcon className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs text-gray-600 font-medium">Email</p>
@@ -86,10 +86,10 @@ export function ContactoInfo({ area }: Props) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleWebsiteClick}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-sky-50 transition-colors group border border-transparent hover:border-[#0b3c74]"
           >
-            <div className="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-              <GlobeAltIcon className="w-5 h-5 text-purple-600" />
+            <div className="flex-shrink-0 w-10 h-10 bg-[#0b3c74] rounded-full flex items-center justify-center group-hover:shadow-lg transition-all">
+              <GlobeAltIcon className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs text-gray-600 font-medium">Sitio web</p>
@@ -108,10 +108,10 @@ export function ContactoInfo({ area }: Props) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleGoogleMapsClick}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-sky-50 transition-colors group border border-transparent hover:border-[#0b3c74]"
           >
-            <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center group-hover:bg-red-200 transition-colors">
-              <MapIcon className="w-5 h-5 text-red-600" />
+            <div className="flex-shrink-0 w-10 h-10 bg-[#0b3c74] rounded-full flex items-center justify-center group-hover:shadow-lg transition-all">
+              <MapIcon className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1">
               <p className="text-xs text-gray-600 font-medium">Google Maps</p>

@@ -9,20 +9,20 @@ export const metadata = {
 export default function PrivacidadPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <Link href="/" className="inline-block mb-4">
+      {/* Header Hero */}
+      <div className="bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] text-white shadow-xl">
+        <div className="max-w-4xl mx-auto px-4 py-12">
+          <Link href="/" className="inline-block mb-6 hover:opacity-80 transition-opacity">
             <Image 
-              src="/logo-negro.png" 
+              src="/logo-furgocasa.png" 
               alt="Furgocasa" 
               width={150} 
               height={60}
               className="h-12 w-auto"
             />
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Política de Privacidad</h1>
-          <p className="text-gray-600 mt-2">Última actualización: {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-3">Política de Privacidad</h1>
+          <p className="text-white/90 text-lg">Última actualización: {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
         </div>
       </div>
 
@@ -32,7 +32,7 @@ export default function PrivacidadPage() {
           
           {/* Introducción */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Introducción</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">1. Introducción</h2>
             <p className="text-gray-700 leading-relaxed">
               En <strong>Mapa Furgocasa</strong>, nos tomamos muy en serio la privacidad de nuestros usuarios. 
               Esta Política de Privacidad describe cómo recopilamos, usamos, almacenamos y protegemos tu información personal 
@@ -42,7 +42,7 @@ export default function PrivacidadPage() {
 
           {/* Información que recopilamos */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Información que Recopilamos</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">2. Información que Recopilamos</h2>
             <div className="space-y-4">
               <div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">2.1. Información proporcionada por el usuario</h3>
@@ -76,7 +76,7 @@ export default function PrivacidadPage() {
 
           {/* Cómo usamos tu información */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">3. Cómo Usamos tu Información</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">3. Cómo Usamos tu Información</h2>
             <p className="text-gray-700 mb-3">Utilizamos la información recopilada para los siguientes propósitos:</p>
             <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
               <li><strong>Proveer y mejorar nuestros servicios:</strong> gestionar tu cuenta, personalizar tu experiencia y desarrollar nuevas funcionalidades.</li>
@@ -90,7 +90,7 @@ export default function PrivacidadPage() {
 
           {/* Compartir información */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">4. Compartir tu Información</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">4. Compartir tu Información</h2>
             <p className="text-gray-700 mb-3">No vendemos ni alquilamos tu información personal a terceros. Podemos compartir tu información en los siguientes casos:</p>
             <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
               <li><strong>Proveedores de servicios:</strong> empresas que nos ayudan a operar la plataforma (hosting, análisis, almacenamiento).</li>
@@ -102,7 +102,7 @@ export default function PrivacidadPage() {
 
           {/* Cookies */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">5. Cookies y Tecnologías Similares</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">5. Cookies y Tecnologías Similares</h2>
             <p className="text-gray-700 mb-3">
               Utilizamos cookies y tecnologías similares para mejorar tu experiencia en nuestra plataforma. Las cookies son pequeños 
               archivos de texto almacenados en tu dispositivo que nos ayudan a:
@@ -120,7 +120,7 @@ export default function PrivacidadPage() {
 
           {/* Seguridad */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Seguridad de tu Información</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">6. Seguridad de tu Información</h2>
             <p className="text-gray-700">
               Implementamos medidas de seguridad técnicas, administrativas y físicas para proteger tu información personal contra 
               acceso no autorizado, alteración, divulgación o destrucción. Utilizamos cifrado SSL/TLS para proteger la transmisión 
@@ -131,7 +131,7 @@ export default function PrivacidadPage() {
 
           {/* Retención de datos */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">7. Retención de Datos</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">7. Retención de Datos</h2>
             <p className="text-gray-700">
               Conservamos tu información personal durante el tiempo necesario para cumplir con los propósitos descritos en esta política, 
               a menos que la ley requiera o permita un período de retención más largo. Si eliminas tu cuenta, eliminaremos o anonimizaremos 
@@ -141,7 +141,7 @@ export default function PrivacidadPage() {
 
           {/* Tus derechos */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">8. Tus Derechos</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">8. Tus Derechos</h2>
             <p className="text-gray-700 mb-3">
               De acuerdo con el Reglamento General de Protección de Datos (RGPD) y la legislación española aplicable, tienes los siguientes derechos:
             </p>
@@ -161,7 +161,7 @@ export default function PrivacidadPage() {
 
           {/* Menores de edad */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">9. Menores de Edad</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">9. Menores de Edad</h2>
             <p className="text-gray-700">
               Nuestra plataforma no está dirigida a menores de 16 años. No recopilamos intencionalmente información personal de menores. 
               Si descubrimos que hemos recopilado información de un menor sin el consentimiento parental, eliminaremos esa información 
@@ -171,7 +171,7 @@ export default function PrivacidadPage() {
 
           {/* Transferencias internacionales */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">10. Transferencias Internacionales</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">10. Transferencias Internacionales</h2>
             <p className="text-gray-700">
               Tu información puede ser transferida y almacenada en servidores ubicados fuera del Espacio Económico Europeo (EEE). 
               En tal caso, nos aseguramos de que se implementen salvaguardas adecuadas para proteger tu información de acuerdo con 
@@ -181,7 +181,7 @@ export default function PrivacidadPage() {
 
           {/* Cambios en la política */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">11. Cambios en esta Política</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">11. Cambios en esta Política</h2>
             <p className="text-gray-700">
               Podemos actualizar esta Política de Privacidad periódicamente para reflejar cambios en nuestras prácticas o por razones 
               legales, operativas o regulatorias. Te notificaremos sobre cambios significativos publicando la nueva política en nuestra 
@@ -191,7 +191,7 @@ export default function PrivacidadPage() {
 
           {/* Contacto */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">12. Contacto</h2>
+            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">12. Contacto</h2>
             <p className="text-gray-700 mb-4">
               Si tienes preguntas, inquietudes o deseas ejercer tus derechos sobre tu información personal, puedes contactarnos a través de:
             </p>

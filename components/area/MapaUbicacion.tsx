@@ -48,7 +48,7 @@ export function MapaUbicacion({ latitud, longitud, nombre }: Props) {
 
           // Crear marcador
           const pin = new PinElement({
-            background: '#0284c7',
+            background: '#0b3c74',
             borderColor: '#ffffff',
             glyphColor: '#ffffff',
             scale: 1.5,
@@ -97,12 +97,12 @@ export function MapaUbicacion({ latitud, longitud, nombre }: Props) {
   }
 
   return (
-    <section className="bg-white rounded-lg shadow-mobile p-6">
+    <section className="bg-white rounded-lg shadow-mobile p-6 border-t-4 border-[#0b3c74]">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">Ubicación</h2>
+        <h2 className="text-xl font-bold text-[#0b3c74]">Ubicación</h2>
         <button
           onClick={handleComoLlegar}
-          className="text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1"
+          className="text-sm font-semibold text-[#0b3c74] hover:bg-sky-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 border border-[#0b3c74]"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -125,7 +125,7 @@ export function MapaUbicacion({ latitud, longitud, nombre }: Props) {
             navigator.clipboard.writeText(`${latitud},${longitud}`)
             alert('Coordenadas copiadas')
           }}
-          className="text-primary-600 hover:text-primary-700 font-medium"
+          className="text-[#0b3c74] hover:text-[#0d4a8f] font-semibold"
         >
           Copiar coordenadas
         </button>

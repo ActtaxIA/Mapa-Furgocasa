@@ -40,15 +40,15 @@ export function GaleriaFotos({ fotos, nombre }: Props) {
 
   return (
     <>
-      <section className="bg-white rounded-lg shadow-mobile p-6">
+      <section className="bg-white rounded-lg shadow-mobile p-6 border-t-4 border-[#0b3c74]">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-pink-500 to-rose-600 p-2 rounded-lg">
+            <div className="bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] p-2 rounded-lg shadow-lg">
               <PhotoIcon className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Galería de Imágenes</h2>
-              <p className="text-sm text-gray-500">{fotos.length} {fotos.length === 1 ? 'imagen' : 'imágenes'}</p>
+              <h2 className="text-xl font-bold text-[#0b3c74]">Galería de Imágenes</h2>
+              <p className="text-sm text-gray-600 font-medium">{fotos.length} {fotos.length === 1 ? 'imagen' : 'imágenes'}</p>
             </div>
           </div>
         </div>

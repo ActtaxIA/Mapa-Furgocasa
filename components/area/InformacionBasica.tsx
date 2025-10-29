@@ -6,8 +6,8 @@ interface Props {
 
 export function InformacionBasica({ area }: Props) {
   return (
-    <section className="bg-white rounded-lg shadow-mobile p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">Información</h2>
+    <section className="bg-white rounded-lg shadow-mobile p-6 border-t-4 border-[#0b3c74]">
+      <h2 className="text-xl font-bold text-[#0b3c74] mb-4">Información</h2>
 
       {/* Descripción */}
       {area.descripcion && (
@@ -25,35 +25,35 @@ export function InformacionBasica({ area }: Props) {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {/* Plazas */}
         {area.plazas_totales && (
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
+          <div className="text-center p-3 bg-sky-50 rounded-lg border border-sky-200">
             <div className="text-2xl mb-1">🚐</div>
-            <div className="text-xs text-gray-600 font-medium">Plazas</div>
-            <div className="text-sm font-semibold">{area.plazas_totales} total</div>
+            <div className="text-xs text-sky-700 font-medium">Plazas</div>
+            <div className="text-sm font-semibold text-sky-900">{area.plazas_totales} total</div>
           </div>
         )}
 
         {/* Acceso 24h */}
-        <div className="text-center p-3 bg-gray-50 rounded-lg">
+        <div className="text-center p-3 bg-sky-50 rounded-lg border border-sky-200">
           <div className="text-2xl mb-1">{area.acceso_24h ? '🕐' : '⏰'}</div>
-          <div className="text-xs text-gray-600 font-medium">Acceso</div>
-          <div className="text-sm font-semibold">{area.acceso_24h ? '24 horas' : 'Horario'}</div>
+          <div className="text-xs text-sky-700 font-medium">Acceso</div>
+          <div className="text-sm font-semibold text-sky-900">{area.acceso_24h ? '24 horas' : 'Horario'}</div>
         </div>
 
         {/* Altura máxima */}
         {area.barrera_altura && (
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
+          <div className="text-center p-3 bg-sky-50 rounded-lg border border-sky-200">
             <div className="text-2xl mb-1">📏</div>
-            <div className="text-xs text-gray-600 font-medium">Altura máx</div>
-            <div className="text-sm font-semibold">{area.barrera_altura}m</div>
+            <div className="text-xs text-sky-700 font-medium">Altura máx</div>
+            <div className="text-sm font-semibold text-sky-900">{area.barrera_altura}m</div>
           </div>
         )}
 
         {/* Precio */}
         {area.precio_noche !== null && (
-          <div className="text-center p-3 bg-primary-50 rounded-lg border border-primary-200">
+          <div className="text-center p-3 bg-[#0b3c74] rounded-lg shadow-lg">
             <div className="text-2xl mb-1">💰</div>
-            <div className="text-xs text-primary-700 font-medium">Precio</div>
-            <div className="text-sm font-bold text-primary-700">
+            <div className="text-xs text-white/80 font-medium">Precio</div>
+            <div className="text-sm font-bold text-white">
               {area.precio_noche === 0 ? 'Gratis' : `${area.precio_noche}€`}
             </div>
           </div>

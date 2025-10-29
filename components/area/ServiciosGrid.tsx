@@ -24,10 +24,10 @@ export function ServiciosGrid({ servicios }: Props) {
   const serviciosTotales = serviciosConfig.length
 
   return (
-    <section className="bg-white rounded-lg shadow-mobile p-6">
+    <section className="bg-white rounded-lg shadow-mobile p-6 border-t-4 border-[#0b3c74]">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">Servicios</h2>
-        <span className="text-sm text-gray-600">
+        <h2 className="text-xl font-bold text-[#0b3c74]">Servicios</h2>
+        <span className="text-sm font-semibold text-[#0b3c74] bg-sky-50 px-3 py-1 rounded-full">
           {serviciosDisponibles} de {serviciosTotales}
         </span>
       </div>
@@ -43,7 +43,7 @@ export function ServiciosGrid({ servicios }: Props) {
               className={`
                 flex items-center gap-2 p-3 rounded-lg border-2 transition-all
                 ${disponible 
-                  ? 'bg-green-50 border-green-200' 
+                  ? 'bg-sky-50 border-[#0b3c74] shadow-sm' 
                   : 'bg-gray-50 border-gray-200 opacity-50'
                 }
               `}
@@ -56,7 +56,7 @@ export function ServiciosGrid({ servicios }: Props) {
                   {label}
                 </p>
                 {disponible && (
-                  <p className="text-xs text-green-600 font-semibold">✓ Disponible</p>
+                  <p className="text-xs text-[#0b3c74] font-semibold">✓ Disponible</p>
                 )}
               </div>
             </div>
