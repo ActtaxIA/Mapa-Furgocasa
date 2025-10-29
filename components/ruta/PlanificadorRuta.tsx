@@ -78,6 +78,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
   const [calculandoRuta, setCalculandoRuta] = useState(false)
   const [progreso, setProgreso] = useState(0)
   const [mensajeProgreso, setMensajeProgreso] = useState('')
+  const cancelarCalculoRef = useRef(false)
   
   // Cargar estado del GPS desde localStorage DESPUÉS de montar (solo cliente)
   useEffect(() => {
@@ -379,11 +380,24 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
     }
   }, [])
 
+  const cancelarCalculo = () => {
+    console.log('🚫 Usuario canceló el cálculo de ruta')
+    cancelarCalculoRef.current = true
+    setCalculandoRuta(false)
+    setIsCalculating(false)
+    setProgreso(0)
+    setMensajeProgreso('')
+    showToast('Cálculo de ruta cancelado', 'info')
+  }
+
   const calcularRuta = async () => {
     if (!origen || !destino || !directionsService || !directionsRenderer || !map) {
       showToast('Por favor, selecciona origen y destino', 'error')
       return
     }
+
+    // Resetear flag de cancelación
+    cancelarCalculoRef.current = false
 
     // Iniciar sistema de progreso
     setIsCalculating(true)
@@ -416,6 +430,12 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       }
 
       directionsService.route(request, async (result: any, status: any) => {
+        // Verificar cancelación antes de procesar resultado
+        if (cancelarCalculoRef.current) {
+          console.log('🚫 Cálculo cancelado después de obtener ruta de Google')
+          return
+        }
+
         if (status === 'OK' && result) {
           setProgreso(40)
           setMensajeProgreso('Ruta calculada. Dibujando en el mapa...')
@@ -430,10 +450,22 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
           setMensajeProgreso('Analizando distancia y duración...')
           actualizarInfoRuta(result)
           
+          // Verificar cancelación antes de buscar áreas
+          if (cancelarCalculoRef.current) {
+            console.log('🚫 Cálculo cancelado antes de buscar áreas')
+            return
+          }
+          
           // Buscar áreas cercanas a la ruta
           setProgreso(60)
           setMensajeProgreso('Buscando áreas disponibles en la ruta...')
           await buscarAreasCercanasARuta(result.routes[0])
+          
+          // Verificar cancelación después de buscar áreas
+          if (cancelarCalculoRef.current) {
+            console.log('🚫 Cálculo cancelado después de buscar áreas')
+            return
+          }
           
           // Hacer zoom automático a la ruta
           setProgreso(95)
@@ -510,6 +542,12 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       console.log('📦 Cargando todas las áreas activas (con paginación)...')
 
       while (hasMore) {
+        // Verificar cancelación durante la carga
+        if (cancelarCalculoRef.current) {
+          console.log('🚫 Cálculo cancelado durante carga de áreas')
+          return
+        }
+
         const { data, error } = await supabase
           .from('areas')
           .select('*')
@@ -557,6 +595,12 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       console.log(`🔍 Iniciando filtrado de ${totalAreas} áreas en lotes de ${loteSize}`)
 
       for (let i = 0; i < totalAreas; i += loteSize) {
+        // Verificar cancelación durante el filtrado
+        if (cancelarCalculoRef.current) {
+          console.log('🚫 Cálculo cancelado durante filtrado de áreas')
+          return
+        }
+
         const lote = todasLasAreas.slice(i, Math.min(i + loteSize, totalAreas))
         
         // Procesar lote
@@ -1604,8 +1648,27 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
 
       {/* Modal de Progreso del Cálculo */}
       {calculandoRuta && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-fadeIn">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-scaleIn">
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-fadeIn"
+          onClick={(e) => {
+            // Permitir cerrar haciendo clic fuera del modal
+            if (e.target === e.currentTarget) {
+              cancelarCalculo()
+            }
+          }}
+        >
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-scaleIn relative">
+            {/* Botón X para cerrar */}
+            <button
+              onClick={cancelarCalculo}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors group"
+              title="Cancelar cálculo"
+            >
+              <svg className="w-5 h-5 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
             {/* Header */}
             <div className="flex items-center justify-center mb-6">
               <div className="bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] p-4 rounded-full animate-pulse">
