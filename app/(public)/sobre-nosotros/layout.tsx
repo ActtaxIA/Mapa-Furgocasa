@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Sobre Nosotros - Furgocasa | Líder en Autocaravanas y Camperización en Europa',
-  description: 'Conoce Mapa Furgocasa, parte de Furgocasa Campervans. Especialistas en venta, alquiler y camperización de furgonetas. Ayudamos a miles de viajeros a descubrir Europa en autocaravana con +1000 áreas verificadas.',
+  title: 'Sobre Nosotros - Furgocasa | Líder en Autocaravanas y Camperización',
+  description: 'Conoce Mapa Furgocasa, parte de Furgocasa Campervans. Especialistas en venta, alquiler y camperización de furgonetas. Ayudamos a miles de viajeros a descubrir el mundo en autocaravana con +1000 áreas verificadas.',
   keywords: [
     'furgocasa',
     'sobre furgocasa',

@@ -4,20 +4,21 @@ import './globals.css'
 import WelcomeModal from '@/components/ui/WelcomeModal'
 
 export const metadata: Metadata = {
-  title: 'Mapa Furgocasa - Encuentra Áreas para Autocaravanas en Europa | +1000 Ubicaciones',
-  description: 'Descubre más de 1000 áreas para autocaravanas en Europa (España, Portugal, Francia, Andorra). Planifica rutas, encuentra servicios, guarda favoritos y viaja con libertad. Información actualizada de parkings, campings y áreas públicas.',
+  title: 'Mapa Furgocasa - Encuentra Áreas para Autocaravanas | +1000 Ubicaciones en el Mundo',
+  description: 'Descubre más de 1000 áreas para autocaravanas en Europa, América y resto del mundo (España, Portugal, Francia, Andorra, Argentina...). Planifica rutas, encuentra servicios, guarda favoritos y viaja con libertad. Información actualizada de parkings, campings y áreas públicas.',
   keywords: [
+    'áreas autocaravanas',
+    'mapa autocaravanas mundial', 
+    'parkings autocaravanas',
+    'camping autocaravanas',
+    'pernocta autocaravanas',
+    'rutas autocaravanas',
     'áreas autocaravanas europa',
-    'mapa autocaravanas europa', 
-    'parkings autocaravanas españa portugal francia',
-    'camping autocaravanas europa',
-    'pernocta autocaravanas europa',
-    'rutas autocaravanas europa',
-    'áreas ac francia',
-    'áreas ac portugal',
+    'áreas autocaravanas américa',
+    'áreas autocaravanas argentina',
     'furgocasa',
     'autocaravanas españa',
-    'camper van europa'
+    'camper van'
   ],
   authors: [{ name: 'Furgocasa' }],
   manifest: '/manifest.json',
@@ -35,20 +36,20 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_ES',
     url: 'https://www.mapafurgocasa.com',
-    title: 'Mapa Furgocasa - Descubre +1000 Áreas para Autocaravanas en Europa',
-    description: 'Encuentra las mejores áreas para autocaravanas en Europa: España, Portugal, Francia y Andorra. Planifica rutas y viaja con libertad. Información completa de servicios, precios y ubicaciones actualizadas.',
+    title: 'Mapa Furgocasa - Descubre +1000 Áreas para Autocaravanas en el Mundo',
+    description: 'Encuentra las mejores áreas para autocaravanas en Europa, América y resto del mundo: España, Portugal, Francia, Andorra, Argentina... Planifica rutas y viaja con libertad. Información completa de servicios, precios y ubicaciones actualizadas.',
     siteName: 'Mapa Furgocasa',
     images: [{
       url: 'https://www.mapafurgocasa.com/og-image-v2.jpg',
       width: 1200,
       height: 630,
-      alt: 'Mapa Furgocasa - Planifica tu Ruta en Autocaravana por Europa'
+      alt: 'Mapa Furgocasa - Planifica tu Ruta en Autocaravana'
     }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Mapa Furgocasa - +1000 Áreas para Autocaravanas en Europa',
-    description: 'Descubre áreas para autocaravanas en España, Portugal, Francia y Andorra. Planifica rutas, encuentra servicios y viaja con libertad por toda Europa.',
+    title: 'Mapa Furgocasa - +1000 Áreas para Autocaravanas',
+    description: 'Descubre áreas para autocaravanas en Europa, América y resto del mundo. Planifica rutas, encuentra servicios y viaja con libertad.',
     images: ['https://www.mapafurgocasa.com/og-image-v2.jpg'],
     creator: '@furgocasa',
   },

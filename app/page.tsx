@@ -111,7 +111,7 @@ export default function HomePage() {
                 +600 Áreas Verificadas
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Áreas públicas, privadas, campings y parkings en toda España con información detallada de servicios y precios.
+                Áreas públicas, privadas, campings y parkings en el mundo con información detallada de servicios y precios.
               </p>
             </div>
 

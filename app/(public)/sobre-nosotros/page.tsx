@@ -39,7 +39,7 @@ export default function SobreNosotrosPage() {
             Sobre Nosotros
           </h1>
           <p className="text-xl text-gray-600">
-            Tu compañero de viaje en autocaravana por Europa
+            Tu compañero de viaje en autocaravana por el mundo
           </p>
         </div>
 
@@ -54,7 +54,7 @@ export default function SobreNosotrosPage() {
             <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
               <p>
                 <strong>Mapa Furgocasa</strong> nace de la pasión por viajar en autocaravana y la necesidad 
-                de contar con información actualizada y confiable sobre áreas de pernocta en Europa.
+                de contar con información actualizada y confiable sobre áreas de pernocta en todo el mundo.
               </p>
               <p>
                 Somos una empresa del grupo <a href="https://www.furgocasa.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 font-semibold">Furgocasa</a>, 
@@ -63,7 +63,7 @@ export default function SobreNosotrosPage() {
               </p>
               <p>
                 Decidimos crear esta plataforma para que todos los amantes del caravaning tengan acceso 
-                a información completa, verificada y actualizada sobre áreas de autocaravanas en toda Europa.
+                a información completa, verificada y actualizada sobre áreas de autocaravanas en todo el mundo.
               </p>
             </div>
           </section>
@@ -79,7 +79,7 @@ export default function SobreNosotrosPage() {
             <div className="bg-primary-50 border-l-4 border-primary-600 p-6 rounded-r-lg">
               <p className="text-lg text-gray-800 leading-relaxed">
                 Facilitar la experiencia de viajar en autocaravana proporcionando la plataforma más completa 
-                y actualizada de áreas de pernocta en Europa, ayudando a miles de viajeros a planificar 
+                y actualizada de áreas de pernocta en el mundo, ayudando a miles de viajeros a planificar 
                 sus rutas con confianza y libertad.
               </p>
             </div>
@@ -100,7 +100,7 @@ export default function SobreNosotrosPage() {
                   +{totalAreas} Áreas Verificadas
                 </h3>
                 <p className="text-gray-600">
-                  Base de datos actualizada de áreas en España, Portugal, Francia, Andorra y más países europeos.
+                  Base de datos actualizada de áreas en España, Portugal, Francia, Andorra, Argentina y más países en el mundo.
                 </p>
               </div>
 
@@ -156,7 +156,7 @@ export default function SobreNosotrosPage() {
                 <li>✅ Accesorios y equipamiento para campers</li>
               </ul>
               <p>
-                Con sede en España y presencia en toda Europa, en Furgocasa conocemos cada detalle 
+                Con sede en España y alcance mundial, en Furgocasa conocemos cada detalle 
                 del mundo del caravaning y queremos compartir nuestra experiencia con la comunidad.
               </p>
             </div>
