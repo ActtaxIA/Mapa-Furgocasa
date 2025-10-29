@@ -183,7 +183,8 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       // Configurar autocomplete para origen
       if (origenInputRef.current) {
         const origenAutocomplete = new google.maps.places.Autocomplete(origenInputRef.current, {
-          componentRestrictions: { country: ['es', 'fr', 'pt', 'it'] }
+          types: ['(cities)'], // Solo ciudades, no calles ni direcciones
+          componentRestrictions: { country: ['es', 'fr', 'pt', 'it', 'de', 'ar'] } // Añadido Alemania y Argentina
         })
 
         origenAutocomplete.addListener('place_changed', () => {
@@ -201,7 +202,8 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       // Configurar autocomplete para destino
       if (destinoInputRef.current) {
         const destinoAutocomplete = new google.maps.places.Autocomplete(destinoInputRef.current, {
-          componentRestrictions: { country: ['es', 'fr', 'pt', 'it'] }
+          types: ['(cities)'], // Solo ciudades, no calles ni direcciones
+          componentRestrictions: { country: ['es', 'fr', 'pt', 'it', 'de', 'ar'] } // Añadido Alemania y Argentina
         })
 
         destinoAutocomplete.addListener('place_changed', () => {
