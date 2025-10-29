@@ -80,7 +80,7 @@ export default function EnriquecerTextosPage() {
       while (hasMore) {
         const { data, error } = await supabase
           .from('areas')
-          .select('id, nombre, ciudad, provincia, descripcion')
+          .select('*')
           .eq('activo', true)
           .order('nombre')
           .range(page * pageSize, (page + 1) * pageSize - 1)
