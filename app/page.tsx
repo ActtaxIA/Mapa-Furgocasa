@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
+import { Footer } from '@/components/layout/Footer'
 import { 
   MapIcon, 
   MapPinIcon, 
@@ -332,54 +333,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            {/* Logo y descripción */}
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-3 mb-4">
-                <Image 
-                  src="/logo_gris.jpg" 
-                  alt="Furgocasa" 
-                  width={40} 
-                  height={40}
-                  className="rounded-lg"
-                />
-                <span className="text-xl font-bold text-white">Furgocasa</span>
-              </div>
-              <p className="text-gray-400 mb-4 max-w-md">
-                La plataforma más completa para encontrar áreas de autocaravanas en España. 
-                Más de 600 ubicaciones verificadas y actualizadas.
-              </p>
-            </div>
-
-            {/* Enlaces */}
-            <div>
-              <h3 className="text-white font-semibold mb-4">Explora</h3>
-              <ul className="space-y-2">
-                <li><Link href="/mapa" className="hover:text-white transition-colors">Mapa</Link></li>
-                <li><Link href="/ruta" className="hover:text-white transition-colors">Planificar Ruta</Link></li>
-                <li><Link href="/auth/register" className="hover:text-white transition-colors">Registrarse</Link></li>
-                <li><Link href="/auth/login" className="hover:text-white transition-colors">Iniciar Sesión</Link></li>
-              </ul>
-            </div>
-
-            {/* Contacto */}
-            <div>
-              <h3 className="text-white font-semibold mb-4">Contacto</h3>
-              <ul className="space-y-2">
-                <li className="text-gray-400">info@furgocasa.com</li>
-                <li><a href="https://www.furgocasa.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">www.furgocasa.com</a></li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Copyright */}
-          <div className="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
-            <p>© 2025 Furgocasa Campervans. Todos los derechos reservados.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
