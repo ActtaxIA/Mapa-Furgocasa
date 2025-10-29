@@ -522,10 +522,11 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
           todasLasAreas.push(...data)
           console.log(`   ✓ Página ${page + 1}: ${data.length} áreas cargadas`)
           
-          // Actualizar progreso: 60% base + 20% para carga de áreas (hasta 80%)
-          const progresoAreas = 60 + Math.min(20, (page * 4))
+          // Actualizar progreso: 60% base + 10% para carga de áreas (hasta 70%)
+          // Dejamos más margen para el filtrado que es lo más lento
+          const progresoAreas = 60 + Math.min(10, (page * 2))
           setProgreso(progresoAreas)
-          setMensajeProgreso(`Cargando áreas... ${todasLasAreas.length} encontradas`)
+          setMensajeProgreso(`Cargando base de datos... ${todasLasAreas.length} áreas`)
           
           page++
           if (data.length < pageSize) {
@@ -544,37 +545,47 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       console.log(`📊 Total en base de datos: ${todasLasAreas.length} áreas activas`)
 
       // Filtrar áreas que están dentro del radio de la ruta
-      setProgreso(82)
+      // Procesamiento en lotes para actualizar UI de forma fluida
+      setProgreso(70)
       setMensajeProgreso('Filtrando áreas cercanas a la ruta...')
       
       const areasCercanas: Area[] = []
       const radioMetros = radio * 1000
-      let procesadas = 0
+      const loteSize = 200 // Procesar 200 áreas a la vez
+      const totalAreas = todasLasAreas.length
+      
+      console.log(`🔍 Iniciando filtrado de ${totalAreas} áreas en lotes de ${loteSize}`)
 
-      todasLasAreas.forEach((area: Area) => {
-        const areaLatLng = new google.maps.LatLng(area.latitud, area.longitud)
+      for (let i = 0; i < totalAreas; i += loteSize) {
+        const lote = todasLasAreas.slice(i, Math.min(i + loteSize, totalAreas))
         
-        // Comprobar si el área está cerca de algún punto de la ruta
-        for (const point of path) {
-          const distancia = google.maps.geometry.spherical.computeDistanceBetween(
-            point,
-            areaLatLng
-          )
+        // Procesar lote
+        lote.forEach((area: Area) => {
+          const areaLatLng = new google.maps.LatLng(area.latitud, area.longitud)
           
-          if (distancia <= radioMetros) {
-            areasCercanas.push(area)
-            break
+          // Comprobar si el área está cerca de algún punto de la ruta
+          for (const point of path) {
+            const distancia = google.maps.geometry.spherical.computeDistanceBetween(
+              point,
+              areaLatLng
+            )
+            
+            if (distancia <= radioMetros) {
+              areasCercanas.push(area)
+              break
+            }
           }
-        }
+        })
         
-        // Actualizar progreso cada 500 áreas procesadas
-        procesadas++
-        if (procesadas % 500 === 0) {
-          const progresoFiltrado = 82 + Math.min(8, Math.floor((procesadas / todasLasAreas.length) * 8))
-          setProgreso(progresoFiltrado)
-          setMensajeProgreso(`Analizando áreas... ${areasCercanas.length} coincidencias`)
-        }
-      })
+        // Actualizar progreso después de cada lote (70% a 90%)
+        const porcentajeProcesado = ((i + loteSize) / totalAreas)
+        const progresoActual = 70 + Math.floor(porcentajeProcesado * 20)
+        setProgreso(Math.min(90, progresoActual))
+        setMensajeProgreso(`Analizando ${i + loteSize}/${totalAreas} áreas... ${areasCercanas.length} encontradas`)
+        
+        // Pequeña pausa para permitir que React actualice la UI
+        await new Promise(resolve => setTimeout(resolve, 0))
+      }
 
       // Log detallado para debugging
       const paisesCubiertos = [...new Set(areasCercanas.map(a => a.pais))].sort()
@@ -582,10 +593,13 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       console.log(`🌍 Países cubiertos: ${paisesCubiertos.join(', ')}`)
       
       setProgreso(92)
-      setMensajeProgreso(`Mostrando ${areasCercanas.length} áreas en el mapa...`)
+      setMensajeProgreso(`Colocando ${areasCercanas.length} áreas en el mapa...`)
       
       setAreasEnRuta(areasCercanas)
       mostrarAreasEnMapa(areasCercanas)
+      
+      // Pequeña pausa para que el usuario vea el mensaje final
+      await new Promise(resolve => setTimeout(resolve, 300))
     } catch (error) {
       console.error('Error buscando áreas:', error)
     }
@@ -1617,24 +1631,36 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
               </div>
               <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
                 <div 
-                  className="h-full bg-gradient-to-r from-[#0b3c74] to-[#0d4a8f] rounded-full transition-all duration-500 ease-out shadow-lg"
+                  className="h-full bg-gradient-to-r from-[#0b3c74] to-[#0d4a8f] rounded-full transition-all duration-300 ease-linear shadow-lg relative"
                   style={{ width: `${progreso}%` }}
                 >
-                  {progreso > 10 && (
-                    <div className="w-full h-full animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                  {progreso > 10 && progreso < 100 && (
+                    <div className="absolute inset-0 w-full h-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Mensaje informativo */}
-            {progreso < 30 && (
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 text-center">
+            {/* Mensaje informativo - más tiempo visible */}
+            {progreso < 70 && (
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 text-center animate-pulse">
                 <p className="text-sm text-blue-800 font-semibold">
                   ⏱️ Las rutas largas pueden tardar unos momentos...
                 </p>
                 <p className="text-xs text-blue-600 mt-1">
                   Estamos analizando miles de áreas para encontrar las mejores opciones en tu camino.
+                </p>
+              </div>
+            )}
+            
+            {/* Mensaje durante el filtrado */}
+            {progreso >= 70 && progreso < 92 && (
+              <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-4 text-center">
+                <p className="text-sm text-orange-800 font-semibold">
+                  🔍 Analizando áreas cercanas a tu ruta...
+                </p>
+                <p className="text-xs text-orange-600 mt-1">
+                  Este proceso puede tardar un poco más en rutas largas. ¡Ya casi terminamos!
                 </p>
               </div>
             )}
