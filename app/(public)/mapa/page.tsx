@@ -28,25 +28,50 @@ export default function MapaPage() {
     caracteristicas: []
   })
 
-  // Cargar áreas desde Supabase
+  // Cargar áreas desde Supabase (CON PAGINACIÓN)
   useEffect(() => {
     const loadAreas = async () => {
       try {
         const supabase = createClient()
-        const { data, error } = await supabase
-          .from('areas')
-          .select('*')
-          .eq('activo', true)
-          .order('nombre')
+        const allAreas: Area[] = []
+        const pageSize = 1000
+        let page = 0
+        let hasMore = true
 
-        if (error) throw error
+        console.log('🔄 Cargando áreas...')
 
-        setAreas(data || [])
+        // Cargar en lotes de 1000 hasta obtener todas
+        while (hasMore) {
+          const { data, error } = await supabase
+            .from('areas')
+            .select('*')
+            .eq('activo', true)
+            .order('nombre')
+            .range(page * pageSize, (page + 1) * pageSize - 1)
+
+          if (error) throw error
+
+          if (data && data.length > 0) {
+            allAreas.push(...data)
+            console.log(`📦 Cargadas ${data.length} áreas (página ${page + 1})`)
+            page++
+            
+            // Si recibimos menos de 1000, ya no hay más
+            if (data.length < pageSize) {
+              hasMore = false
+            }
+          } else {
+            hasMore = false
+          }
+        }
+
+        setAreas(allAreas)
+        console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
         
         // Log de depuración para ver distribución de países
         if (process.env.NODE_ENV === 'development') {
           const porPais: Record<string, number> = {}
-          data?.forEach(area => {
+          allAreas.forEach(area => {
             const pais = area.pais?.trim() || 'Sin país'
             porPais[pais] = (porPais[pais] || 0) + 1
           })
