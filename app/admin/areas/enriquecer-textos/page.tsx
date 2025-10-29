@@ -5,14 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
 import { createClient } from '@/lib/supabase/client'
 import { SparklesIcon, MagnifyingGlassIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
-
-interface Area {
-  id: string
-  nombre: string
-  ciudad: string
-  provincia: string
-  descripcion: string | null
-}
+import type { Area } from '@/types/database.types'
 
 export default function EnriquecerTextosPage() {
   const router = useRouter()
