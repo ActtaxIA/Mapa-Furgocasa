@@ -103,6 +103,7 @@ export default function EnriquecerImagenesPage() {
           const errorData = await respImages.json().catch(() => ({ error: 'Error desconocido' }))
           console.log('  ⚠️ Error con el proxy de SerpAPI:', errorData)
           setProcessLog(prev => [...prev, `  ⚠️ Error SerpAPI: ${errorData.error || 'HTTP ' + respImages.status}`])
+          setProcessLog(prev => [...prev, `  ⚠️ Detalles: ${JSON.stringify(errorData.debug || {})}`])
           // NO retornar false, seguir intentando otras fuentes
         } else {
           const resultImages = await respImages.json()
