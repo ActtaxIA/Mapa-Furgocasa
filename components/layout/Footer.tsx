@@ -170,11 +170,17 @@ export function Footer() {
         {/* Separador */}
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-            <p>
+            <p className="text-center md:text-left">
               © {currentYear} Mapa Furgocasa. Todos los derechos reservados.
             </p>
-            <p className="flex items-center gap-1">
-              Una empresa de <a href="https://www.furgocasa.com" target="_blank" rel="noopener noreferrer" className="text-primary-400 hover:text-primary-300 transition-colors">www.furgocasa.com</a> - Hecho con <span className="text-red-500">❤️</span> en España
+            <p className="flex flex-col sm:flex-row items-center gap-1 text-center md:text-right">
+              <span className="flex items-center gap-1">
+                Una empresa de <a href="https://www.furgocasa.com" target="_blank" rel="noopener noreferrer" className="text-primary-400 hover:text-primary-300 transition-colors">www.furgocasa.com</a>
+              </span>
+              <span className="hidden sm:inline">-</span>
+              <span className="flex items-center gap-1">
+                Hecho con <span className="text-red-500">❤️</span> en España
+              </span>
             </p>
           </div>
         </div>

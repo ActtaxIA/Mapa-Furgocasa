@@ -1,8 +1,8 @@
-# 🚐 Mapa Furgocasa - Plataforma de Áreas para Autocaravanas
+# 🚐 Mapa Furgocasa - Plataforma Global de Áreas para Autocaravanas
 
 **Versión: BETA 1.0** 🎉
 
-Plataforma web interactiva para descubrir y gestionar áreas de autocaravanas, campers y vehículos recreativos en España.
+Plataforma web interactiva para descubrir y gestionar áreas de autocaravanas, campers y vehículos recreativos en **25+ países de Europa, América y Oceanía**.
 
 ---
 
@@ -29,13 +29,17 @@ Plataforma web interactiva para descubrir y gestionar áreas de autocaravanas, c
 ### Para Administradores
 - ⚙️ **Panel de Administración** completo en `/admin`
 - ➕ **Crear, Editar y Borrar** áreas
+- 🔍 **Búsqueda Multi-campo** - Buscar por nombre, ciudad, dirección, provincia, país
+- 🌍 **Filtros por País** - Sistema global con 25+ países normalizados
+- 📊 **Ordenación de Columnas** - Click para ordenar cualquier columna
 - 🔍 **Búsqueda Masiva** - Importar múltiples áreas desde Google Places
 - 🛡️ **Detección Inteligente de Duplicados** - 7 criterios (GPS, nombre, dirección, fuzzy matching)
 - 🤖 **Actualización Automática de Servicios** con IA (OpenAI + SerpAPI)
-- ✨ **Enriquecimiento de Textos** con IA para descripciones
+- ✨ **Enriquecimiento de Textos** con IA para descripciones (200+ caracteres)
 - 📸 **Búsqueda Automática de Imágenes** para cada área
-- 📊 **Analytics** y estadísticas de uso
+- 📊 **Analytics Globales** - Estadísticas por país, región, contenido y crecimiento
 - 👥 **Gestión de Usuarios**
+- 🗄️ **Base de Datos Normalizada** - 100% áreas con país y región/CCAA correctos
 
 ---
 
@@ -544,10 +548,38 @@ Versión BETA 1.0 - Octubre 2025
 
 ---
 
+## 📊 Estadísticas del Sistema
+
+### Base de Datos Global
+- 🌍 **25+ países** con áreas normalizadas
+- 🗺️ **100+ regiones** administrativas mapeadas (CCAA, Länder, Regioni, States, etc.)
+- 📍 **13,850+ áreas** con datos geográficos estructurados
+- ✅ **100% cobertura** de país y región para todas las áreas activas
+
+### Países Incluidos
+**🇪🇺 Europa:** España, Francia, Alemania, Italia, Portugal, Austria, Suiza, Bélgica, Países Bajos, Reino Unido, Polonia, Chequia, Croacia, Noruega, Suecia, Dinamarca, Grecia, Eslovenia, y más
+
+**🌎 América:** Estados Unidos, México, Argentina, Chile, Brasil, Colombia, Perú
+
+**🌏 Oceanía:** Australia, Nueva Zelanda
+
+**🌍 África:** Marruecos
+
+---
+
+## 📚 Documentación Completa
+
+Para más información, consulta:
+- **[INDICE_DOCUMENTACION.md](./INDICE_DOCUMENTACION.md)** - Índice completo de 30+ documentos
+- **[CHANGELOG.md](./CHANGELOG.md)** - Registro detallado de cambios
+- **[MEJORAS_FILTROS_Y_NORMALIZACION.md](./MEJORAS_FILTROS_Y_NORMALIZACION.md)** - Última actualización (29-oct-2025)
+
+---
+
 ## 📞 Soporte
 
 Para dudas o problemas:
-- Revisa la documentación en `/docs`
+- Revisa la **[documentación completa](./INDICE_DOCUMENTACION.md)**
 - Consulta los scripts SQL en `/supabase`
 - Verifica la consola del navegador (F12)
 
@@ -555,4 +587,4 @@ Para dudas o problemas:
 
 **¡Feliz viaje! 🚐✨**
 
-*Mapa Furgocasa - BETA 1.0*
+*Mapa Furgocasa - BETA 1.0 - Sistema Global*
