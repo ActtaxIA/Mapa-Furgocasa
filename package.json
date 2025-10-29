@@ -15,7 +15,8 @@
     "db:migrate:areas": "node scripts/migrate-to-supabase.js",
     "db:migrate:users": "node scripts/migrate-users-to-supabase.js",
     "db:migrate:all": "node scripts/migrate-to-supabase.js --users",
-    "db:fix:services": "node scripts/fix-services-language.js"
+    "db:fix:services": "node scripts/fix-services-language.js",
+    "db:check:paises": "node scripts/check-paises-supabase.js"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.6",

@@ -468,10 +468,33 @@ export default function BusquedaMasivaPage() {
           // Extraer información de la dirección
           let ciudad = ''
           let provincia = ''
-          let pais = 'España'
+          let pais = 'España' // valor por defecto
           
           // Intentar extraer de la dirección formateada
           const addressParts = place.formatted_address.split(',').map(p => p.trim())
+          
+          // Detectar el país desde la dirección
+          // El país suele estar en la última parte de la dirección
+          if (addressParts.length > 0) {
+            const ultimaParte = addressParts[addressParts.length - 1].toLowerCase()
+            
+            if (ultimaParte.includes('spain') || ultimaParte.includes('españa')) {
+              pais = 'España'
+            } else if (ultimaParte.includes('portugal')) {
+              pais = 'Portugal'
+            } else if (ultimaParte.includes('andorra')) {
+              pais = 'Andorra'
+            } else if (ultimaParte.includes('france') || ultimaParte.includes('francia')) {
+              pais = 'Francia'
+            } else if (ultimaParte.includes('morocco') || ultimaParte.includes('marruecos')) {
+              pais = 'Marruecos'
+            } else {
+              // Si no se detecta, usar la última parte como país
+              pais = addressParts[addressParts.length - 1]
+            }
+          }
+          
+          // Extraer ciudad y provincia
           if (addressParts.length >= 2) {
             ciudad = addressParts[addressParts.length - 2] || ''
             provincia = addressParts[addressParts.length - 2] || ''

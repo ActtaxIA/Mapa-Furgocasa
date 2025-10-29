@@ -347,13 +347,21 @@ export default function NewAreaPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">País</label>
-                <input
-                  type="text"
+                <label className="block text-sm font-medium text-gray-700 mb-2">País *</label>
+                <select
                   value={area.pais}
                   onChange={(e) => setArea({ ...area, pais: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                />
+                  required
+                >
+                  <option value="España">España</option>
+                  <option value="Portugal">Portugal</option>
+                  <option value="Andorra">Andorra</option>
+                  <option value="Francia">Francia</option>
+                  <option value="Marruecos">Marruecos</option>
+                  <option value="Italia">Italia</option>
+                  <option value="Otro">Otro</option>
+                </select>
               </div>
 
               <div>

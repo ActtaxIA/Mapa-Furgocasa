@@ -42,6 +42,16 @@ export default function MapaPage() {
         if (error) throw error
 
         setAreas(data || [])
+        
+        // Log de depuración para ver distribución de países
+        if (process.env.NODE_ENV === 'development') {
+          const porPais: Record<string, number> = {}
+          data?.forEach(area => {
+            const pais = area.pais?.trim() || 'Sin país'
+            porPais[pais] = (porPais[pais] || 0) + 1
+          })
+          console.log('📊 Distribución de áreas por país:', porPais)
+        }
       } catch (err) {
         console.error('Error cargando áreas:', err)
       } finally {
@@ -76,7 +86,9 @@ export default function MapaPage() {
     const paises = new Set<string>()
     areas.forEach(area => {
       if (area.pais) {
-        paises.add(area.pais)
+        // Normalizar: trim y capitalización
+        const paisNormalizado = area.pais.trim()
+        paises.add(paisNormalizado)
       }
     })
     return Array.from(paises).sort()
@@ -97,9 +109,26 @@ export default function MapaPage() {
         if (!coincide) return false
       }
 
-      // Filtro de país
-      if (filtros.pais && area.pais !== filtros.pais) {
-        return false
+      // Filtro de país (normalizado)
+      if (filtros.pais) {
+        const paisArea = area.pais?.trim() || ''
+        const paisFiltro = filtros.pais.trim()
+        
+        // Log para depuración (solo en desarrollo)
+        if (process.env.NODE_ENV === 'development') {
+          if (paisArea !== paisFiltro && paisArea.toLowerCase().includes('port')) {
+            console.log('País no coincide:', {
+              areaNombre: area.nombre,
+              paisArea: `"${paisArea}"`,
+              paisFiltro: `"${paisFiltro}"`,
+              iguales: paisArea === paisFiltro
+            })
+          }
+        }
+        
+        if (paisArea !== paisFiltro) {
+          return false
+        }
       }
 
       // Filtro de provincia
