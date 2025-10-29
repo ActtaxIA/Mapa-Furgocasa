@@ -53,12 +53,36 @@ export default function AdminAnalyticsPage() {
     try {
       const supabase = createClient()
       
-      // Obtener todas las áreas
-      const { data: areas, error } = await supabase
-        .from('areas')
-        .select('*')
+      // Obtener todas las áreas (con paginación)
+      const allAreas: Area[] = []
+      const pageSize = 1000
+      let page = 0
+      let hasMore = true
 
-      if (error) throw error
+      console.log('📦 Cargando todas las áreas para analytics (con paginación)...')
+
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from('areas')
+          .select('*')
+          .range(page * pageSize, (page + 1) * pageSize - 1)
+
+        if (error) throw error
+
+        if (data && data.length > 0) {
+          allAreas.push(...data)
+          console.log(`   ✓ Página ${page + 1}: ${data.length} áreas cargadas`)
+          page++
+          if (data.length < pageSize) {
+            hasMore = false
+          }
+        } else {
+          hasMore = false
+        }
+      }
+
+      console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
+      const areas = allAreas
 
       // Calcular estadísticas
       const areasPorProvincia = areas?.reduce((acc: any, area) => {

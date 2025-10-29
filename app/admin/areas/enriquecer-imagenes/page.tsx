@@ -24,14 +24,36 @@ export default function EnriquecerImagenesPage() {
 
   const fetchAreas = async () => {
     try {
-      const { data, error } = await supabase
-        .from('areas')
-        .select('*')
-        .order('created_at', { ascending: false })
+      const allAreas: Area[] = []
+      const pageSize = 1000
+      let page = 0
+      let hasMore = true
 
-      if (error) throw error
+      console.log('📦 Cargando todas las áreas (con paginación)...')
 
-      setAreas(data || [])
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from('areas')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .range(page * pageSize, (page + 1) * pageSize - 1)
+
+        if (error) throw error
+
+        if (data && data.length > 0) {
+          allAreas.push(...data)
+          console.log(`   ✓ Página ${page + 1}: ${data.length} áreas cargadas`)
+          page++
+          if (data.length < pageSize) {
+            hasMore = false
+          }
+        } else {
+          hasMore = false
+        }
+      }
+
+      console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
+      setAreas(allAreas)
     } catch (error) {
       console.error('Error cargando áreas:', error)
     } finally {

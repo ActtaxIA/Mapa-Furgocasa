@@ -254,15 +254,38 @@ export default function ActualizarServiciosPage() {
   const loadAreas = async () => {
     try {
       const supabase = createClient()
-      const { data, error } = await supabase
-        .from('areas')
-        .select('*')
-        .eq('activo', true)
-        .order('nombre')
+      const allAreas: Area[] = []
+      const pageSize = 1000
+      let page = 0
+      let hasMore = true
 
-      if (error) throw error
+      console.log('📦 Cargando todas las áreas (con paginación)...')
 
-      const areasConEstado: AreaConCambios[] = (data || []).map(area => ({
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from('areas')
+          .select('*')
+          .eq('activo', true)
+          .order('nombre')
+          .range(page * pageSize, (page + 1) * pageSize - 1)
+
+        if (error) throw error
+
+        if (data && data.length > 0) {
+          allAreas.push(...data)
+          console.log(`   ✓ Página ${page + 1}: ${data.length} áreas cargadas`)
+          page++
+          if (data.length < pageSize) {
+            hasMore = false
+          }
+        } else {
+          hasMore = false
+        }
+      }
+
+      console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
+
+      const areasConEstado: AreaConCambios[] = allAreas.map(area => ({
         ...area,
         seleccionada: false,
         procesando: false,
@@ -273,7 +296,7 @@ export default function ActualizarServiciosPage() {
       setAreas(areasConEstado)
 
       // Extraer provincias únicas
-      const provinciasUnicas = [...new Set(data?.map(a => a.provincia).filter(Boolean))] as string[]
+      const provinciasUnicas = [...new Set(allAreas.map(a => a.provincia).filter(Boolean))] as string[]
       setProvincias(provinciasUnicas.sort())
 
     } catch (error) {

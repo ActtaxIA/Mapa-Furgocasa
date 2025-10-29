@@ -93,18 +93,39 @@ export default function AdminAreasPage() {
     try {
       console.log('📥 Cargando áreas desde Supabase...')
       const supabase = createClient()
-      const { data, error } = await supabase
-        .from('areas')
-        .select('*')
-        .order('created_at', { ascending: false })
+      const allAreas: Area[] = []
+      const pageSize = 1000
+      let page = 0
+      let hasMore = true
 
-      if (error) {
-        console.error('❌ Error de Supabase al cargar áreas:', error)
-        throw error
+      console.log('📦 Cargando todas las áreas (con paginación)...')
+
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from('areas')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .range(page * pageSize, (page + 1) * pageSize - 1)
+
+        if (error) {
+          console.error('❌ Error de Supabase al cargar áreas:', error)
+          throw error
+        }
+
+        if (data && data.length > 0) {
+          allAreas.push(...data)
+          console.log(`   ✓ Página ${page + 1}: ${data.length} áreas cargadas`)
+          page++
+          if (data.length < pageSize) {
+            hasMore = false
+          }
+        } else {
+          hasMore = false
+        }
       }
 
-      console.log(`✅ ${data?.length || 0} áreas cargadas`)
-      setAreas(data || [])
+      console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
+      setAreas(allAreas)
     } catch (error) {
       console.error('❌ Error cargando áreas:', error)
     } finally {

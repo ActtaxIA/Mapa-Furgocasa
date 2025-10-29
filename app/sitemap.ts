@@ -4,13 +4,38 @@ import { createClient } from '@/lib/supabase/server'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.mapafurgocasa.com'
   
-  // Obtener todas las áreas activas desde Supabase
+  // Obtener todas las áreas activas desde Supabase (con paginación)
   const supabase = await createClient()
-  const { data: areas } = await supabase
-    .from('areas')
-    .select('slug, updated_at')
-    .eq('activo', true)
-    .order('updated_at', { ascending: false })
+  const allAreas: Array<{ slug: string; updated_at: string | null }> = []
+  const pageSize = 1000
+  let page = 0
+  let hasMore = true
+
+  while (hasMore) {
+    const { data, error } = await supabase
+      .from('areas')
+      .select('slug, updated_at')
+      .eq('activo', true)
+      .order('updated_at', { ascending: false })
+      .range(page * pageSize, (page + 1) * pageSize - 1)
+
+    if (error) {
+      console.error('Error cargando áreas para sitemap:', error)
+      break
+    }
+
+    if (data && data.length > 0) {
+      allAreas.push(...data)
+      page++
+      if (data.length < pageSize) {
+        hasMore = false
+      }
+    } else {
+      hasMore = false
+    }
+  }
+
+  const areas = allAreas
 
   // URLs estáticas del sitio
   const staticPages: MetadataRoute.Sitemap = [

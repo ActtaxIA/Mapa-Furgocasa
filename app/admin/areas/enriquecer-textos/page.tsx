@@ -71,17 +71,37 @@ export default function EnriquecerTextosPage() {
     try {
       setLoading(true)
       
-      let query = supabase
-        .from('areas')
-        .select('id, nombre, ciudad, provincia, descripcion')
-        .eq('activo', true)
-        .order('nombre')
+      const allAreas: Area[] = []
+      const pageSize = 1000
+      let page = 0
+      let hasMore = true
 
-      const { data, error } = await query
+      console.log('📦 Cargando todas las áreas (con paginación)...')
 
-      if (error) throw error
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from('areas')
+          .select('id, nombre, ciudad, provincia, descripcion')
+          .eq('activo', true)
+          .order('nombre')
+          .range(page * pageSize, (page + 1) * pageSize - 1)
 
-      setAreas(data || [])
+        if (error) throw error
+
+        if (data && data.length > 0) {
+          allAreas.push(...data)
+          console.log(`   ✓ Página ${page + 1}: ${data.length} áreas cargadas`)
+          page++
+          if (data.length < pageSize) {
+            hasMore = false
+          }
+        } else {
+          hasMore = false
+        }
+      }
+
+      console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
+      setAreas(allAreas)
     } catch (error) {
       console.error('Error cargando áreas:', error)
       alert('Error al cargar las áreas')

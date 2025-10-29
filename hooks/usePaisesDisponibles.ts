@@ -17,23 +17,37 @@ export function usePaisesDisponibles() {
     const loadPaises = async () => {
       try {
         const supabase = createClient()
-        const { data, error } = await supabase
-          .from('areas')
-          .select('pais')
-          .not('pais', 'is', null)
         
-        if (!error && data) {
-          // Obtener países únicos, limpiar y ordenar
-          const paisesUnicos = Array.from(
-            new Set(
-              data
-                .map(a => a.pais?.trim())
-                .filter(Boolean) as string[]
-            )
-          ).sort()
-          
-          setPaises(paisesUnicos)
+        // Obtener todos los países (con paginación para evitar límite de 1000)
+        const allPaises: string[] = []
+        const pageSize = 1000
+        let page = 0
+        let hasMore = true
+
+        while (hasMore) {
+          const { data, error } = await supabase
+            .from('areas')
+            .select('pais')
+            .not('pais', 'is', null)
+            .range(page * pageSize, (page + 1) * pageSize - 1)
+
+          if (error) throw error
+
+          if (data && data.length > 0) {
+            allPaises.push(...data.map(a => a.pais?.trim()).filter(Boolean) as string[])
+            page++
+            if (data.length < pageSize) {
+              hasMore = false
+            }
+          } else {
+            hasMore = false
+          }
         }
+        
+        // Obtener países únicos y ordenar
+        const paisesUnicos = Array.from(new Set(allPaises)).sort()
+        setPaises(paisesUnicos)
+        
       } catch (err) {
         console.error('Error cargando países:', err)
       } finally {
