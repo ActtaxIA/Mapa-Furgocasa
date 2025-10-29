@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter, useParams } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
 import { DeleteConfirmModal } from '@/components/ui/DeleteConfirmModal'
+import { usePaisesDisponibles } from '@/hooks/usePaisesDisponibles'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { 
@@ -42,10 +43,13 @@ const SERVICIOS_DISPONIBLES = [
 export default function EditAreaPage() {
   const params = useParams()
   const router = useRouter()
+  const { paises } = usePaisesDisponibles()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [customPais, setCustomPais] = useState('')
+  const [showCustomPais, setShowCustomPais] = useState(false)
   const [deleteImageModal, setDeleteImageModal] = useState<{
     isOpen: boolean
     index: number | null
@@ -406,20 +410,67 @@ export default function EditAreaPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">País *</label>
-                <select
-                  value={area.pais || 'España'}
-                  onChange={(e) => setArea({ ...area, pais: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                  required
-                >
-                  <option value="España">España</option>
-                  <option value="Portugal">Portugal</option>
-                  <option value="Andorra">Andorra</option>
-                  <option value="Francia">Francia</option>
-                  <option value="Marruecos">Marruecos</option>
-                  <option value="Italia">Italia</option>
-                  <option value="Otro">Otro</option>
-                </select>
+                {!showCustomPais ? (
+                  <div className="flex gap-2">
+                    <select
+                      value={paises.includes(area.pais || '') ? area.pais : '__custom__'}
+                      onChange={(e) => {
+                        if (e.target.value === '__custom__') {
+                          setShowCustomPais(true)
+                          setCustomPais('')
+                        } else {
+                          setArea({ ...area, pais: e.target.value })
+                        }
+                      }}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                      required
+                    >
+                      {paises.map(p => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                      <option value="__custom__">➕ Otro país...</option>
+                    </select>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={customPais}
+                      onChange={(e) => setCustomPais(e.target.value)}
+                      onBlur={() => {
+                        if (customPais.trim()) {
+                          setArea({ ...area, pais: customPais.trim() })
+                          setShowCustomPais(false)
+                          setCustomPais('')
+                        }
+                      }}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && customPais.trim()) {
+                          setArea({ ...area, pais: customPais.trim() })
+                          setShowCustomPais(false)
+                          setCustomPais('')
+                        }
+                      }}
+                      placeholder="Escribe el nombre del país"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                      autoFocus
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowCustomPais(false)
+                        setCustomPais('')
+                      }}
+                      className="px-3 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                )}
+                <p className="text-xs text-gray-500 mt-1">
+                  Los países se cargan dinámicamente de las áreas existentes. Puedes añadir cualquier país nuevo.
+                </p>
               </div>
 
               <div>
