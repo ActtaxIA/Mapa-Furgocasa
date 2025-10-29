@@ -6,6 +6,7 @@ import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
 export interface Filtros {
   busqueda: string
   pais: string
+  comunidad_autonoma: string
   provincia: string
   servicios: string[]
   precio: string
@@ -18,19 +19,9 @@ interface FiltrosMapaProps {
   onClose?: () => void
   totalResultados: number
   paisesDisponibles: string[]
+  comunidadesDisponibles: string[]
+  provinciasDisponibles: string[]
 }
-
-const PROVINCIAS = [
-  'Todas',
-  'Álava', 'Albacete', 'Alicante', 'Almería', 'Asturias', 'Ávila',
-  'Badajoz', 'Barcelona', 'Burgos', 'Cáceres', 'Cádiz', 'Cantabria',
-  'Castellón', 'Ciudad Real', 'Córdoba', 'Cuenca', 'Girona', 'Granada',
-  'Guadalajara', 'Guipúzcoa', 'Huelva', 'Huesca', 'Jaén', 'La Coruña',
-  'La Rioja', 'Las Palmas', 'León', 'Lérida', 'Lugo', 'Madrid', 'Málaga',
-  'Murcia', 'Navarra', 'Ourense', 'Palencia', 'Pontevedra', 'Salamanca',
-  'Segovia', 'Sevilla', 'Soria', 'Tarragona', 'Tenerife', 'Teruel',
-  'Toledo', 'Valencia', 'Valladolid', 'Vizcaya', 'Zamora', 'Zaragoza'
-]
 
 const SERVICIOS = [
   { id: 'agua', label: '💧 Agua' },
@@ -58,17 +49,32 @@ const CARACTERISTICAS = [
   { id: 'verificado', label: '✓ Verificado oficialmente' }
 ]
 
-export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados, paisesDisponibles }: FiltrosMapaProps) {
+export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados, paisesDisponibles, comunidadesDisponibles, provinciasDisponibles }: FiltrosMapaProps) {
   const handleBusquedaChange = (valor: string) => {
     onFiltrosChange({ ...filtros, busqueda: valor })
   }
 
   const handlePaisChange = (valor: string) => {
-    onFiltrosChange({ ...filtros, pais: valor === 'Todos los países' ? '' : valor })
+    // Al cambiar país, resetear comunidad y provincia
+    onFiltrosChange({ 
+      ...filtros, 
+      pais: valor, 
+      comunidad_autonoma: '',
+      provincia: '' 
+    })
+  }
+
+  const handleComunidadChange = (valor: string) => {
+    // Al cambiar comunidad, resetear provincia
+    onFiltrosChange({ 
+      ...filtros, 
+      comunidad_autonoma: valor,
+      provincia: '' 
+    })
   }
 
   const handleProvinciaChange = (valor: string) => {
-    onFiltrosChange({ ...filtros, provincia: valor === 'Todas' ? '' : valor })
+    onFiltrosChange({ ...filtros, provincia: valor })
   }
 
   const handlePrecioChange = (valor: string) => {
@@ -93,6 +99,7 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
     onFiltrosChange({
       busqueda: '',
       pais: '',
+      comunidad_autonoma: '',
       provincia: '',
       servicios: [],
       precio: '',
@@ -163,20 +170,46 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
           </select>
         </div>
 
-        {/* Provincia / Comunidad */}
+        {/* Comunidad Autónoma / Región */}
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-0.5">
-            Seleccione una comunidad primero
+            Comunidad / Región
           </label>
           <select
-            value={filtros.provincia || 'Todas'}
-            onChange={(e) => handleProvinciaChange(e.target.value)}
-            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-transparent bg-white"
+            value={filtros.comunidad_autonoma || ''}
+            onChange={(e) => handleComunidadChange(e.target.value)}
+            disabled={!filtros.pais}
+            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-transparent bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
-            {PROVINCIAS.map(provincia => (
+            <option value="">Todas las regiones</option>
+            {comunidadesDisponibles.map(comunidad => (
+              <option key={comunidad} value={comunidad}>{comunidad}</option>
+            ))}
+          </select>
+          {!filtros.pais && (
+            <p className="text-xs text-gray-500 mt-1">Seleccione un país primero</p>
+          )}
+        </div>
+
+        {/* Provincia */}
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-0.5">
+            Provincia
+          </label>
+          <select
+            value={filtros.provincia || ''}
+            onChange={(e) => handleProvinciaChange(e.target.value)}
+            disabled={!filtros.comunidad_autonoma}
+            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-transparent bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+          >
+            <option value="">Todas las provincias</option>
+            {provinciasDisponibles.map(provincia => (
               <option key={provincia} value={provincia}>{provincia}</option>
             ))}
           </select>
+          {!filtros.comunidad_autonoma && (
+            <p className="text-xs text-gray-500 mt-1">Seleccione una región primero</p>
+          )}
         </div>
 
         {/* Servicios */}
