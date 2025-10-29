@@ -500,7 +500,9 @@ export default function BusquedaMasivaPage() {
             provincia = addressParts[addressParts.length - 2] || ''
           }
 
-          const slug = generateSlug(place.name)
+          // Generar nombre único si el slug ya existe
+          let finalName = place.name
+          let slug = generateSlug(finalName)
 
           // Verificar si ya existe el slug
           const { data: existingSlug } = await supabase
@@ -510,14 +512,22 @@ export default function BusquedaMasivaPage() {
             .single()
 
           if (existingSlug) {
-            console.log(`⚠️ Ya existe un área con slug ${slug}, saltando...`)
-            errorCount++
-            errors.push(`${place.name}: Ya existe`)
-            continue
+            // Si el nombre ya existe, añadir la ciudad para hacerlo único
+            if (ciudad) {
+              finalName = `${place.name} ${ciudad}`
+              slug = generateSlug(finalName)
+              console.log(`🔄 Nombre duplicado detectado. Renombrado: "${place.name}" → "${finalName}"`)
+            } else {
+              // Si no hay ciudad, intentar con un sufijo numérico
+              console.log(`⚠️ Ya existe un área con slug ${slug}, saltando...`)
+              errorCount++
+              errors.push(`${place.name}: Ya existe`)
+              continue
+            }
           }
 
           const newArea = {
-            nombre: place.name,
+            nombre: finalName,
             slug: slug,
             descripcion: `Área encontrada mediante búsqueda en Google Maps. Requiere verificación y enriquecimiento.`,
             tipo_area: 'publica',
