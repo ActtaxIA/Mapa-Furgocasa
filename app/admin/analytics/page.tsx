@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
+import type { Area } from '@/types/database.types'
 import { 
   MapPinIcon,
   UserGroupIcon,
