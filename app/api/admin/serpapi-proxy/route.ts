@@ -15,19 +15,30 @@ export async function POST(request: NextRequest) {
     // Validar API key (intentar múltiples fuentes)
     const serpApiKey = process.env.SERPAPI_KEY || process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
     
+    // Log detallado de variables de entorno
+    console.log('🔍 [SERPAPI-PROXY] Verificando variables de entorno...')
+    console.log('  - SERPAPI_KEY existe:', !!process.env.SERPAPI_KEY)
+    console.log('  - NEXT_PUBLIC_SERPAPI_KEY_ADMIN existe:', !!process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN)
+    console.log('  - Valor seleccionado:', serpApiKey ? `${serpApiKey.substring(0, 10)}...` : 'NINGUNO')
+    
     if (!serpApiKey) {
       console.error('❌ SERPAPI_KEY no configurada en el servidor')
       console.error('Variables disponibles:', {
         SERPAPI_KEY: !!process.env.SERPAPI_KEY,
-        NEXT_PUBLIC_SERPAPI_KEY_ADMIN: !!process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
+        NEXT_PUBLIC_SERPAPI_KEY_ADMIN: !!process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN,
+        allEnvKeys: Object.keys(process.env).filter(k => k.includes('SERP'))
       })
       return NextResponse.json({
         error: 'SERPAPI_KEY no configurada',
-        details: 'Configura SERPAPI_KEY o NEXT_PUBLIC_SERPAPI_KEY_ADMIN en las variables de entorno de AWS'
+        details: 'Configura SERPAPI_KEY o NEXT_PUBLIC_SERPAPI_KEY_ADMIN en las variables de entorno de AWS',
+        debug: {
+          hasKey: !!serpApiKey,
+          envKeys: Object.keys(process.env).filter(k => k.includes('SERP'))
+        }
       }, { status: 500 })
     }
     
-    console.log('✅ [SERPAPI-PROXY] API key encontrada:', serpApiKey ? 'SÍ' : 'NO')
+    console.log('✅ [SERPAPI-PROXY] API key encontrada')
 
     // Construir URL de SerpAPI
     let serpUrl = ''
