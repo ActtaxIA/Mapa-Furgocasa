@@ -16,8 +16,9 @@ export default function EnriquecerTextosPage() {
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedProvince, setSelectedProvince] = useState('Todas')
   const [selectedPais, setSelectedPais] = useState('Todos')
+  const [selectedComunidad, setSelectedComunidad] = useState('Todas')
+  const [selectedProvince, setSelectedProvince] = useState('Todas')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [soloSinTexto, setSoloSinTexto] = useState(true)
   const [processLog, setProcessLog] = useState<string[]>([])
@@ -28,20 +29,26 @@ export default function EnriquecerTextosPage() {
   const [ordenarPor, setOrdenarPor] = useState<'nombre' | 'ciudad' | 'provincia' | 'pais'>('nombre')
   const [ordenAscendente, setOrdenAscendente] = useState(true)
 
-  const PROVINCIAS = [
-    'Todas',
-    'Álava', 'Albacete', 'Alicante', 'Almería', 'Asturias', 'Ávila',
-    'Badajoz', 'Barcelona', 'Burgos', 'Cáceres', 'Cádiz', 'Cantabria',
-    'Castellón', 'Ciudad Real', 'Córdoba', 'Cuenca', 'Girona', 'Granada',
-    'Guadalajara', 'Guipúzcoa', 'Huelva', 'Huesca', 'Jaén', 'La Coruña',
-    'La Rioja', 'Las Palmas', 'León', 'Lérida', 'Lugo', 'Madrid', 'Málaga',
-    'Murcia', 'Navarra', 'Ourense', 'Palencia', 'Pontevedra', 'Salamanca',
-    'Segovia', 'Sevilla', 'Soria', 'Tarragona', 'Tenerife', 'Teruel',
-    'Toledo', 'Valencia', 'Valladolid', 'Vizcaya', 'Zamora', 'Zaragoza'
-  ]
-
   // Extraer países únicos de las áreas cargadas
   const PAISES = ['Todos', ...Array.from(new Set(areas.map(a => a.pais).filter(Boolean))).sort()]
+
+  // Extraer comunidades del país seleccionado
+  const COMUNIDADES = selectedPais === 'Todos'
+    ? ['Todas']
+    : ['Todas', ...Array.from(new Set(
+        areas
+          .filter(a => a.pais === selectedPais && a.comunidad_autonoma)
+          .map(a => a.comunidad_autonoma!)
+      )).sort()]
+
+  // Extraer provincias de la comunidad seleccionada
+  const PROVINCIAS = selectedComunidad === 'Todas'
+    ? ['Todas']
+    : ['Todas', ...Array.from(new Set(
+        areas
+          .filter(a => a.pais === selectedPais && a.comunidad_autonoma === selectedComunidad && a.provincia)
+          .map(a => a.provincia!)
+      )).sort()]
 
   useEffect(() => {
     loadAreas()
@@ -50,7 +57,18 @@ export default function EnriquecerTextosPage() {
 
   useEffect(() => {
     filterAreas()
-  }, [areas, searchTerm, selectedProvince, selectedPais, soloSinTexto, ordenarPor, ordenAscendente])
+  }, [areas, searchTerm, selectedProvince, selectedPais, selectedComunidad, soloSinTexto, ordenarPor, ordenAscendente])
+
+  // Reset comunidad y provincia cuando cambia el país
+  useEffect(() => {
+    setSelectedComunidad('Todas')
+    setSelectedProvince('Todas')
+  }, [selectedPais])
+
+  // Reset provincia cuando cambia la comunidad
+  useEffect(() => {
+    setSelectedProvince('Todas')
+  }, [selectedComunidad])
 
   const checkConfiguration = async () => {
     try {
@@ -133,12 +151,6 @@ export default function EnriquecerTextosPage() {
       console.log('  ✅ Después de búsqueda:', filtered.length)
     }
 
-    // Filtrar por provincia
-    if (selectedProvince !== 'Todas') {
-      filtered = filtered.filter(area => area.provincia === selectedProvince)
-      console.log('  ✅ Después de provincia:', filtered.length)
-    }
-
     // Filtrar por país
     if (selectedPais !== 'Todos') {
       const beforePais = filtered.length
@@ -147,6 +159,18 @@ export default function EnriquecerTextosPage() {
       if (filtered.length === 0 && beforePais > 0) {
         console.log('  ⚠️ Países únicos en las áreas filtradas:', [...new Set(areas.map(a => a.pais))])
       }
+    }
+
+    // Filtrar por comunidad autónoma
+    if (selectedComunidad !== 'Todas') {
+      filtered = filtered.filter(area => area.comunidad_autonoma === selectedComunidad)
+      console.log('  ✅ Después de comunidad:', filtered.length)
+    }
+
+    // Filtrar por provincia
+    if (selectedProvince !== 'Todas') {
+      filtered = filtered.filter(area => area.provincia === selectedProvince)
+      console.log('  ✅ Después de provincia:', filtered.length)
     }
 
     // Filtrar solo sin texto (sin descripción = NULL, vacío, placeholder o < 200 caracteres)
@@ -620,6 +644,23 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
               </select>
             </div>
 
+            {/* Comunidad/Región */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Comunidad / Región
+              </label>
+              <select
+                value={selectedComunidad}
+                onChange={(e) => setSelectedComunidad(e.target.value)}
+                disabled={selectedPais === 'Todos'}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+              >
+                {COMUNIDADES.map(com => (
+                  <option key={com} value={com}>{com}</option>
+                ))}
+              </select>
+            </div>
+
             {/* Provincia */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -628,7 +669,8 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
               <select
                 value={selectedProvince}
                 onChange={(e) => setSelectedProvince(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                disabled={selectedComunidad === 'Todas'}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
                 {PROVINCIAS.map(prov => (
                   <option key={prov} value={prov}>{prov}</option>
