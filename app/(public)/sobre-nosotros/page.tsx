@@ -1,15 +1,33 @@
+'use client'
+
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-import Image from 'next/image'
 import Link from 'next/link'
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'Sobre Nosotros | Mapa Furgocasa',
-  description: 'Conoce la historia detrás de Mapa Furgocasa, tu guía completa para encontrar áreas de autocaravanas en Europa.',
-}
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 export default function SobreNosotrosPage() {
+  const [totalAreas, setTotalAreas] = useState(800) // valor por defecto
+
+  useEffect(() => {
+    const loadTotalAreas = async () => {
+      try {
+        const supabase = createClient()
+        const { count, error } = await supabase
+          .from('areas')
+          .select('*', { count: 'exact', head: true })
+          .eq('activo', true)
+        
+        if (!error && count) {
+          setTotalAreas(count)
+        }
+      } catch (err) {
+        console.error('Error cargando total de áreas:', err)
+      }
+    }
+
+    loadTotalAreas()
+  }, [])
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -79,7 +97,7 @@ export default function SobreNosotrosPage() {
               <div className="bg-gray-50 p-6 rounded-lg">
                 <div className="text-3xl mb-3">📍</div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  +800 Áreas Verificadas
+                  +{totalAreas} Áreas Verificadas
                 </h3>
                 <p className="text-gray-600">
                   Base de datos actualizada de áreas en España, Portugal, Francia, Andorra y más países europeos.
