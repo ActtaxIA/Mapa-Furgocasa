@@ -22,8 +22,6 @@ export default function MapaPage() {
   const [filtros, setFiltros] = useState<Filtros>({
     busqueda: '',
     pais: '',
-    comunidad_autonoma: '',
-    provincia: '',
     servicios: [],
     precio: '',
     caracteristicas: []
@@ -119,33 +117,7 @@ export default function MapaPage() {
     return Array.from(paises).sort()
   }, [areas])
 
-  // Obtener comunidades/regiones del país seleccionado
-  const comunidadesDisponibles = useMemo(() => {
-    if (!filtros.pais) return []
-    
-    const comunidades = new Set<string>()
-    areas.forEach(area => {
-      if (area.pais === filtros.pais && area.comunidad_autonoma) {
-        comunidades.add(area.comunidad_autonoma.trim())
-      }
-    })
-    return Array.from(comunidades).sort()
-  }, [areas, filtros.pais])
-
-  // Obtener provincias de la comunidad seleccionada
-  const provinciasDisponibles = useMemo(() => {
-    if (!filtros.comunidad_autonoma) return []
-    
-    const provincias = new Set<string>()
-    areas.forEach(area => {
-      if (area.pais === filtros.pais && 
-          area.comunidad_autonoma === filtros.comunidad_autonoma && 
-          area.provincia) {
-        provincias.add(area.provincia.trim())
-      }
-    })
-    return Array.from(provincias).sort()
-  }, [areas, filtros.pais, filtros.comunidad_autonoma])
+  // Ya no necesitamos comunidades ni provincias
 
   // Filtrar áreas según los filtros aplicados
   const areasFiltradas = useMemo(() => {
@@ -182,16 +154,6 @@ export default function MapaPage() {
         if (paisArea !== paisFiltro) {
           return false
         }
-      }
-
-      // Filtro de comunidad autónoma
-      if (filtros.comunidad_autonoma && area.comunidad_autonoma !== filtros.comunidad_autonoma) {
-        return false
-      }
-
-      // Filtro de provincia
-      if (filtros.provincia && area.provincia !== filtros.provincia) {
-        return false
       }
 
       // Filtro de precio
@@ -270,8 +232,6 @@ export default function MapaPage() {
             onClose={() => {}}
             totalResultados={areasFiltradas.length}
             paisesDisponibles={paisesDisponibles}
-            comunidadesDisponibles={comunidadesDisponibles}
-            provinciasDisponibles={provinciasDisponibles}
           />
         </aside>
 
@@ -317,8 +277,6 @@ export default function MapaPage() {
           onClose={() => setMostrarFiltros(false)}
           totalResultados={areasFiltradas.length}
           paisesDisponibles={paisesDisponibles}
-          comunidadesDisponibles={comunidadesDisponibles}
-          provinciasDisponibles={provinciasDisponibles}
         />
       </BottomSheet>
 

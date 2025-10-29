@@ -46,10 +46,6 @@ export default function ActualizarServiciosPage() {
   const [busqueda, setBusqueda] = useState('')
   const [paisFiltro, setPaisFiltro] = useState('todos')
   const [paises, setPaises] = useState<string[]>([])
-  const [comunidadFiltro, setComunidadFiltro] = useState('todas')
-  const [comunidades, setComunidades] = useState<string[]>([])
-  const [provinciaFiltro, setProvinciaFiltro] = useState('todas')
-  const [provincias, setProvincias] = useState<string[]>([])
   const [soloSinWeb, setSoloSinWeb] = useState(false)
   const [progreso, setProgreso] = useState({ actual: 0, total: 0 })
   const [configStatus, setConfigStatus] = useState<{
@@ -312,37 +308,7 @@ export default function ActualizarServiciosPage() {
     }
   }
 
-  // Obtener comunidades del país seleccionado
-  const comunidadesDelPais = paisFiltro === 'todos' 
-    ? []
-    : [...new Set(areas
-        .filter(a => a.pais === paisFiltro && a.comunidad_autonoma)
-        .map(a => a.comunidad_autonoma)
-      )].sort() as string[]
-
-  // Actualizar comunidades disponibles cuando cambia el país
-  useEffect(() => {
-    setComunidades(comunidadesDelPais)
-    if (comunidadFiltro !== 'todas' && !comunidadesDelPais.includes(comunidadFiltro)) {
-      setComunidadFiltro('todas')
-    }
-  }, [paisFiltro, areas])
-
-  // Obtener provincias de la comunidad seleccionada
-  const provinciasDelaComunidad = comunidadFiltro === 'todas'
-    ? []
-    : [...new Set(areas
-        .filter(a => a.pais === paisFiltro && a.comunidad_autonoma === comunidadFiltro && a.provincia)
-        .map(a => a.provincia)
-      )].sort() as string[]
-
-  // Actualizar provincias disponibles cuando cambia la comunidad
-  useEffect(() => {
-    setProvincias(provinciasDelaComunidad)
-    if (provinciaFiltro !== 'todas' && !provinciasDelaComunidad.includes(provinciaFiltro)) {
-      setProvinciaFiltro('todas')
-    }
-  }, [comunidadFiltro, paisFiltro, areas])
+  // Ya no necesitamos filtros de comunidad ni provincia
 
   const areasFiltradas = areas.filter(area => {
     // Búsqueda mejorada: buscar en nombre, ciudad, dirección, provincia y país
@@ -355,13 +321,9 @@ export default function ActualizarServiciosPage() {
     
     const matchPais = paisFiltro === 'todos' || area.pais === paisFiltro
     
-    const matchComunidad = comunidadFiltro === 'todas' || area.comunidad_autonoma === comunidadFiltro
-    
-    const matchProvincia = provinciaFiltro === 'todas' || area.provincia === provinciaFiltro
-    
     const matchWeb = !soloSinWeb || !area.website || area.website === ''
 
-    return matchBusqueda && matchPais && matchComunidad && matchProvincia && matchWeb
+    return matchBusqueda && matchPais && matchWeb
   }).sort((a, b) => {
     // Ordenar por la columna seleccionada
     let valorA = a[ordenarPor] || ''
@@ -591,7 +553,7 @@ export default function ActualizarServiciosPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filtros y Controles */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             {/* Búsqueda */}
             <div className="md:col-span-2">
               <div className="relative">
@@ -610,49 +572,12 @@ export default function ActualizarServiciosPage() {
             <div>
               <select
                 value={paisFiltro}
-                onChange={(e) => {
-                  setPaisFiltro(e.target.value)
-                  setComunidadFiltro('todas')
-                  setProvinciaFiltro('todas')
-                }}
+                onChange={(e) => setPaisFiltro(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               >
                 <option value="todos">Todos los países</option>
                 {paises.map(pais => (
                   <option key={pais} value={pais}>{pais}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Filtro Comunidad/Región */}
-            <div>
-              <select
-                value={comunidadFiltro}
-                onChange={(e) => {
-                  setComunidadFiltro(e.target.value)
-                  setProvinciaFiltro('todas')
-                }}
-                disabled={paisFiltro === 'todos'}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-              >
-                <option value="todas">Todas las regiones</option>
-                {comunidades.map(com => (
-                  <option key={com} value={com}>{com}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Filtro Provincia */}
-            <div>
-              <select
-                value={provinciaFiltro}
-                onChange={(e) => setProvinciaFiltro(e.target.value)}
-                disabled={comunidadFiltro === 'todas'}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-              >
-                <option value="todas">Todas las provincias</option>
-                {provincias.map(prov => (
-                  <option key={prov} value={prov}>{prov}</option>
                 ))}
               </select>
             </div>

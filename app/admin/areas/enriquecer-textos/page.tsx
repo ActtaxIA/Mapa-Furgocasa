@@ -17,8 +17,6 @@ export default function EnriquecerTextosPage() {
   const [processing, setProcessing] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedPais, setSelectedPais] = useState('Todos')
-  const [selectedComunidad, setSelectedComunidad] = useState('Todas')
-  const [selectedProvince, setSelectedProvince] = useState('Todas')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [soloSinTexto, setSoloSinTexto] = useState(true)
   const [processLog, setProcessLog] = useState<string[]>([])
@@ -32,24 +30,6 @@ export default function EnriquecerTextosPage() {
   // Extraer países únicos de las áreas cargadas
   const PAISES = ['Todos', ...Array.from(new Set(areas.map(a => a.pais).filter(Boolean))).sort()]
 
-  // Extraer comunidades del país seleccionado
-  const COMUNIDADES = selectedPais === 'Todos'
-    ? ['Todas']
-    : ['Todas', ...Array.from(new Set(
-        areas
-          .filter(a => a.pais === selectedPais && a.comunidad_autonoma)
-          .map(a => a.comunidad_autonoma!)
-      )).sort()]
-
-  // Extraer provincias de la comunidad seleccionada
-  const PROVINCIAS = selectedComunidad === 'Todas'
-    ? ['Todas']
-    : ['Todas', ...Array.from(new Set(
-        areas
-          .filter(a => a.pais === selectedPais && a.comunidad_autonoma === selectedComunidad && a.provincia)
-          .map(a => a.provincia!)
-      )).sort()]
-
   useEffect(() => {
     loadAreas()
     checkConfiguration()
@@ -57,18 +37,7 @@ export default function EnriquecerTextosPage() {
 
   useEffect(() => {
     filterAreas()
-  }, [areas, searchTerm, selectedProvince, selectedPais, selectedComunidad, soloSinTexto, ordenarPor, ordenAscendente])
-
-  // Reset comunidad y provincia cuando cambia el país
-  useEffect(() => {
-    setSelectedComunidad('Todas')
-    setSelectedProvince('Todas')
-  }, [selectedPais])
-
-  // Reset provincia cuando cambia la comunidad
-  useEffect(() => {
-    setSelectedProvince('Todas')
-  }, [selectedComunidad])
+  }, [areas, searchTerm, selectedPais, soloSinTexto, ordenarPor, ordenAscendente])
 
   const checkConfiguration = async () => {
     try {
@@ -135,7 +104,6 @@ export default function EnriquecerTextosPage() {
     console.log('🔍 Iniciando filtrado...')
     console.log('  📊 Total áreas:', areas.length)
     console.log('  🔎 Búsqueda:', searchTerm)
-    console.log('  🏛️ Provincia:', selectedProvince)
     console.log('  🌍 País:', selectedPais)
     console.log('  📝 Solo sin texto:', soloSinTexto)
 
@@ -159,18 +127,6 @@ export default function EnriquecerTextosPage() {
       if (filtered.length === 0 && beforePais > 0) {
         console.log('  ⚠️ Países únicos en las áreas filtradas:', [...new Set(areas.map(a => a.pais))])
       }
-    }
-
-    // Filtrar por comunidad autónoma
-    if (selectedComunidad !== 'Todas') {
-      filtered = filtered.filter(area => area.comunidad_autonoma === selectedComunidad)
-      console.log('  ✅ Después de comunidad:', filtered.length)
-    }
-
-    // Filtrar por provincia
-    if (selectedProvince !== 'Todas') {
-      filtered = filtered.filter(area => area.provincia === selectedProvince)
-      console.log('  ✅ Después de provincia:', filtered.length)
     }
 
     // Filtrar solo sin texto (sin descripción = NULL, vacío, placeholder o < 200 caracteres)
@@ -610,7 +566,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
 
         {/* Filtros */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             {/* Búsqueda */}
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -640,40 +596,6 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
               >
                 {PAISES.map(pais => (
                   <option key={pais} value={pais}>{pais}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Comunidad/Región */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Comunidad / Región
-              </label>
-              <select
-                value={selectedComunidad}
-                onChange={(e) => setSelectedComunidad(e.target.value)}
-                disabled={selectedPais === 'Todos'}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-              >
-                {COMUNIDADES.map(com => (
-                  <option key={com} value={com}>{com}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Provincia */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Provincia
-              </label>
-              <select
-                value={selectedProvince}
-                onChange={(e) => setSelectedProvince(e.target.value)}
-                disabled={selectedComunidad === 'Todas'}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-              >
-                {PROVINCIAS.map(prov => (
-                  <option key={prov} value={prov}>{prov}</option>
                 ))}
               </select>
             </div>

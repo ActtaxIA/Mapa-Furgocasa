@@ -15,8 +15,6 @@ export default function EnriquecerImagenesPage() {
   const [processLog, setProcessLog] = useState<string[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [filterPais, setFilterPais] = useState('')
-  const [filterComunidad, setFilterComunidad] = useState('')
-  const [filterProvincia, setFilterProvincia] = useState('')
   const [ordenarPor, setOrdenarPor] = useState<'nombre' | 'ciudad' | 'provincia' | 'pais'>('nombre')
   const [ordenAscendente, setOrdenAscendente] = useState(true)
 
@@ -291,20 +289,6 @@ export default function EnriquecerImagenesPage() {
   }
 
   const paises = Array.from(new Set(areas.map(a => a.pais).filter((p): p is string => p !== null))).sort()
-  
-  const comunidades = filterPais === ''
-    ? []
-    : Array.from(new Set(areas
-        .filter(a => a.pais === filterPais && a.comunidad_autonoma)
-        .map(a => a.comunidad_autonoma!)
-      )).sort()
-
-  const provincias = filterComunidad === ''
-    ? []
-    : Array.from(new Set(areas
-        .filter(a => a.pais === filterPais && a.comunidad_autonoma === filterComunidad && a.provincia)
-        .map(a => a.provincia!)
-      )).sort()
 
   const areasFiltradas = areas.filter(area => {
     // Búsqueda mejorada: buscar en nombre, ciudad, dirección, provincia y país
@@ -316,10 +300,8 @@ export default function EnriquecerImagenesPage() {
       area.pais?.toLowerCase().includes(searchTerm.toLowerCase())
 
     const matchPais = filterPais === '' || area.pais === filterPais
-    const matchComunidad = filterComunidad === '' || area.comunidad_autonoma === filterComunidad
-    const matchProvincia = filterProvincia === '' || area.provincia === filterProvincia
 
-    return matchSearch && matchPais && matchComunidad && matchProvincia
+    return matchSearch && matchPais
   }).sort((a, b) => {
     // Ordenar por la columna seleccionada
     let valorA = a[ordenarPor] || ''
@@ -361,7 +343,7 @@ export default function EnriquecerImagenesPage() {
 
         {/* Filtros */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">Buscar área</label>
               <input
@@ -377,49 +359,12 @@ export default function EnriquecerImagenesPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">País</label>
               <select
                 value={filterPais}
-                onChange={(e) => {
-                  setFilterPais(e.target.value)
-                  setFilterComunidad('')
-                  setFilterProvincia('')
-                }}
+                onChange={(e) => setFilterPais(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">Todos los países</option>
                 {paises.map(pais => (
                   <option key={pais} value={pais}>{pais}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Comunidad / Región</label>
-              <select
-                value={filterComunidad}
-                onChange={(e) => {
-                  setFilterComunidad(e.target.value)
-                  setFilterProvincia('')
-                }}
-                disabled={filterPais === ''}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-              >
-                <option value="">Todas las regiones</option>
-                {comunidades.map(com => (
-                  <option key={com} value={com}>{com}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Provincia</label>
-              <select
-                value={filterProvincia}
-                onChange={(e) => setFilterProvincia(e.target.value)}
-                disabled={filterComunidad === ''}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-              >
-                <option value="">Todas las provincias</option>
-                {provincias.map(prov => (
-                  <option key={prov} value={prov}>{prov}</option>
                 ))}
               </select>
             </div>
