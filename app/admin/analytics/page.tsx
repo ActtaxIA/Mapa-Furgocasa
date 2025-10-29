@@ -186,7 +186,7 @@ export default function AdminAnalyticsPage() {
       ).length || 0
 
       const areasConImagenes = areas?.filter(a => 
-        a.foto_principal || (a.fotos && Array.isArray(a.fotos) && a.fotos.length > 0)
+        a.foto_principal || (a.fotos_urls && Array.isArray(a.fotos_urls) && a.fotos_urls.length > 0)
       ).length || 0
 
       // ========== CRECIMIENTO MENSUAL (últimos 6 meses) ==========
