@@ -73,6 +73,11 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
   })
   
   const [loadedRuta, setLoadedRuta] = useState<Ruta | null>(null)
+
+  // Estados de progreso del cálculo
+  const [calculandoRuta, setCalculandoRuta] = useState(false)
+  const [progreso, setProgreso] = useState(0)
+  const [mensajeProgreso, setMensajeProgreso] = useState('')
   
   // Cargar estado del GPS desde localStorage DESPUÉS de montar (solo cliente)
   useEffect(() => {
@@ -380,18 +385,28 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       return
     }
 
+    // Iniciar sistema de progreso
     setIsCalculating(true)
+    setCalculandoRuta(true)
+    setProgreso(0)
+    setMensajeProgreso('Preparando cálculo de ruta...')
 
     const google = (window as any).google
 
     try {
       // Preparar waypoints para Google Maps
+      setProgreso(10)
+      setMensajeProgreso('Configurando puntos intermedios...')
+      
       const waypointsFormatted = waypoints.map((wp: any) => ({
         location: new google.maps.LatLng(wp.lat, wp.lng),
         stopover: true
       }))
 
       // Calcular ruta
+      setProgreso(20)
+      setMensajeProgreso('Calculando ruta óptima...')
+      
       const request: GoogleDirectionsRequest = {
         origin: new google.maps.LatLng(origen.lat, origen.lng),
         destination: new google.maps.LatLng(destino.lat, destino.lng),
@@ -402,18 +417,27 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
 
       directionsService.route(request, async (result: any, status: any) => {
         if (status === 'OK' && result) {
+          setProgreso(40)
+          setMensajeProgreso('Ruta calculada. Dibujando en el mapa...')
+          
           directionsRenderer.setDirections(result)
           
           // Guardar la ruta actual
           setCurrentRoute(result.routes[0])
           
           // Actualizar info de la ruta
+          setProgreso(50)
+          setMensajeProgreso('Analizando distancia y duración...')
           actualizarInfoRuta(result)
           
           // Buscar áreas cercanas a la ruta
+          setProgreso(60)
+          setMensajeProgreso('Buscando áreas disponibles en la ruta...')
           await buscarAreasCercanasARuta(result.routes[0])
           
           // Hacer zoom automático a la ruta
+          setProgreso(95)
+          setMensajeProgreso('Ajustando vista del mapa...')
           const bounds = new google.maps.LatLngBounds()
           result.routes[0].legs.forEach((leg: any) => {
             bounds.extend(leg.start_location)
@@ -421,12 +445,21 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
           })
           map.fitBounds(bounds, { padding: 100 })
           
+          setProgreso(100)
+          setMensajeProgreso('¡Ruta lista!')
+          
           // En móvil, cambiar a vista mapa automáticamente
           if (onRutaCalculada) {
             onRutaCalculada()
           }
+          
+          // Cerrar modal de progreso después de un breve delay
+          setTimeout(() => {
+            setCalculandoRuta(false)
+          }, 800)
         } else {
           showToast('No se pudo calcular la ruta', 'error')
+          setCalculandoRuta(false)
         }
         setIsCalculating(false)
       })
@@ -434,6 +467,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       console.error('Error calculando ruta:', error)
       showToast('Error al calcular la ruta', 'error')
       setIsCalculating(false)
+      setCalculandoRuta(false)
     }
   }
 
@@ -487,6 +521,12 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         if (data && data.length > 0) {
           todasLasAreas.push(...data)
           console.log(`   ✓ Página ${page + 1}: ${data.length} áreas cargadas`)
+          
+          // Actualizar progreso: 60% base + 20% para carga de áreas (hasta 80%)
+          const progresoAreas = 60 + Math.min(20, (page * 4))
+          setProgreso(progresoAreas)
+          setMensajeProgreso(`Cargando áreas... ${todasLasAreas.length} encontradas`)
+          
           page++
           if (data.length < pageSize) {
             hasMore = false
@@ -504,8 +544,12 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       console.log(`📊 Total en base de datos: ${todasLasAreas.length} áreas activas`)
 
       // Filtrar áreas que están dentro del radio de la ruta
+      setProgreso(82)
+      setMensajeProgreso('Filtrando áreas cercanas a la ruta...')
+      
       const areasCercanas: Area[] = []
       const radioMetros = radio * 1000
+      let procesadas = 0
 
       todasLasAreas.forEach((area: Area) => {
         const areaLatLng = new google.maps.LatLng(area.latitud, area.longitud)
@@ -522,12 +566,23 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
             break
           }
         }
+        
+        // Actualizar progreso cada 500 áreas procesadas
+        procesadas++
+        if (procesadas % 500 === 0) {
+          const progresoFiltrado = 82 + Math.min(8, Math.floor((procesadas / todasLasAreas.length) * 8))
+          setProgreso(progresoFiltrado)
+          setMensajeProgreso(`Analizando áreas... ${areasCercanas.length} coincidencias`)
+        }
       })
 
       // Log detallado para debugging
       const paisesCubiertos = [...new Set(areasCercanas.map(a => a.pais))].sort()
       console.log(`✅ Encontradas ${areasCercanas.length} áreas en un radio de ${radio}km`)
       console.log(`🌍 Países cubiertos: ${paisesCubiertos.join(', ')}`)
+      
+      setProgreso(92)
+      setMensajeProgreso(`Mostrando ${areasCercanas.length} áreas en el mapa...`)
       
       setAreasEnRuta(areasCercanas)
       mostrarAreasEnMapa(areasCercanas)
@@ -1533,6 +1588,71 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         />
       </aside>
 
+      {/* Modal de Progreso del Cálculo */}
+      {calculandoRuta && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-scaleIn">
+            {/* Header */}
+            <div className="flex items-center justify-center mb-6">
+              <div className="bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] p-4 rounded-full animate-pulse">
+                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-bold text-gray-900 text-center mb-2">
+              {progreso === 100 ? '¡Ruta Calculada!' : 'Calculando Ruta'}
+            </h3>
+            
+            <p className="text-center text-gray-600 mb-6 min-h-[24px] font-medium">
+              {mensajeProgreso}
+            </p>
+
+            {/* Barra de Progreso */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-gray-700">Progreso</span>
+                <span className="text-sm font-bold text-[#0b3c74]">{progreso}%</span>
+              </div>
+              <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+                <div 
+                  className="h-full bg-gradient-to-r from-[#0b3c74] to-[#0d4a8f] rounded-full transition-all duration-500 ease-out shadow-lg"
+                  style={{ width: `${progreso}%` }}
+                >
+                  {progreso > 10 && (
+                    <div className="w-full h-full animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Mensaje informativo */}
+            {progreso < 30 && (
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 text-center">
+                <p className="text-sm text-blue-800 font-semibold">
+                  ⏱️ Las rutas largas pueden tardar unos momentos...
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  Estamos analizando miles de áreas para encontrar las mejores opciones en tu camino.
+                </p>
+              </div>
+            )}
+
+            {/* Check de completado */}
+            {progreso === 100 && (
+              <div className="flex items-center justify-center">
+                <div className="bg-green-100 text-green-700 p-3 rounded-full animate-bounce">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Toast Notifications */}
       {toast && (
         <div className={`toast toast-${toast.type}`}>
@@ -1540,6 +1660,37 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
           <button onClick={hideToast} className="toast-close">×</button>
         </div>
       )}
+
+      {/* Estilos para animaciones */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+          from { 
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          to { 
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+        .animate-scaleIn {
+          animation: scaleIn 0.3s ease-out;
+        }
+        .animate-shimmer {
+          animation: shimmer 1.5s infinite;
+        }
+      `}</style>
     </div>
   )
 }
