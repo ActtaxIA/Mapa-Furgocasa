@@ -505,7 +505,7 @@ export default function BusquedaMasivaPage() {
           let slug = generateSlug(finalName)
 
           // Verificar si ya existe el slug
-          const { data: existingSlug } = await supabase
+          let { data: existingSlug } = await supabase
             .from('areas')
             .select('id')
             .eq('slug', slug)
@@ -517,9 +517,42 @@ export default function BusquedaMasivaPage() {
               finalName = `${place.name} ${ciudad}`
               slug = generateSlug(finalName)
               console.log(`🔄 Nombre duplicado detectado. Renombrado: "${place.name}" → "${finalName}"`)
+              
+              // Verificar de nuevo si el nuevo slug también existe
+              const { data: existingSlugWithCity } = await supabase
+                .from('areas')
+                .select('id')
+                .eq('slug', slug)
+                .single()
+              
+              if (existingSlugWithCity) {
+                // Si aún existe, añadir un número
+                let counter = 2
+                let uniqueSlug = `${slug}-${counter}`
+                let uniqueName = `${finalName} ${counter}`
+                
+                while (counter < 100) {
+                  const { data: exists } = await supabase
+                    .from('areas')
+                    .select('id')
+                    .eq('slug', uniqueSlug)
+                    .single()
+                  
+                  if (!exists) {
+                    finalName = uniqueName
+                    slug = uniqueSlug
+                    console.log(`🔄 Añadido sufijo numérico: "${finalName}"`)
+                    break
+                  }
+                  
+                  counter++
+                  uniqueSlug = `${slug}-${counter}`
+                  uniqueName = `${finalName} ${counter}`
+                }
+              }
             } else {
-              // Si no hay ciudad, intentar con un sufijo numérico
-              console.log(`⚠️ Ya existe un área con slug ${slug}, saltando...`)
+              // Si no hay ciudad, saltar
+              console.log(`⚠️ Ya existe un área con slug ${slug} y no hay ciudad disponible, saltando...`)
               errorCount++
               errors.push(`${place.name}: Ya existe`)
               continue
