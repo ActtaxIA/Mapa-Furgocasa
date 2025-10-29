@@ -445,8 +445,26 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       markers.forEach((marker: any) => marker.setMap(null))
       setMarkers([])
 
-      // Obtener puntos de la ruta
-      const path = route.overview_path
+      // Obtener TODOS los puntos detallados de la ruta (no solo overview)
+      // Esto incluye todos los steps de cada leg para rutas largas
+      const allPoints: any[] = []
+      
+      route.legs.forEach((leg: any) => {
+        leg.steps.forEach((step: any) => {
+          // Añadir puntos del path de cada step
+          if (step.path && step.path.length > 0) {
+            allPoints.push(...step.path)
+          }
+          // También añadir start y end de cada step como respaldo
+          allPoints.push(step.start_location)
+          allPoints.push(step.end_location)
+        })
+      })
+
+      // Si no hay puntos detallados, usar overview_path como fallback
+      const path = allPoints.length > 0 ? allPoints : route.overview_path
+      
+      console.log(`🗺️ Analizando ruta con ${path.length} puntos (radio: ${radio}km)`)
       
       // Obtener todas las áreas activas de Supabase
       const supabase = createClient()
@@ -462,8 +480,9 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         return
       }
 
+      console.log(`📊 Base de datos: ${todasLasAreas.length} áreas activas`)
+
       // Filtrar áreas que están dentro del radio de la ruta
-      const google = (window as any).google
       const areasCercanas: Area[] = []
       const radioMetros = radio * 1000
 
@@ -484,7 +503,10 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         }
       })
 
+      // Log detallado para debugging
+      const paisesCubiertos = [...new Set(areasCercanas.map(a => a.pais))].sort()
       console.log(`✅ Encontradas ${areasCercanas.length} áreas en un radio de ${radio}km`)
+      console.log(`🌍 Países cubiertos: ${paisesCubiertos.join(', ')}`)
       
       setAreasEnRuta(areasCercanas)
       mostrarAreasEnMapa(areasCercanas)
