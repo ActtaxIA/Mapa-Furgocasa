@@ -16,7 +16,8 @@ interface ListaResultadosProps {
 type SortOption = 'relevancia' | 'valoracion' | 'precio' | 'proximidad' | 'nombre'
 type SortDirection = 'asc' | 'desc'
 
-const MAX_RESULTS = 50
+// Sin límite en rutas - mostrar todas las áreas encontradas
+const MAX_RESULTS = Infinity
 
 const getServicioIcon = (servicio: string): string => {
   const iconos: Record<string, string> = {
