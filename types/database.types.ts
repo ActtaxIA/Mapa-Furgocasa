@@ -22,6 +22,7 @@ export interface Database {
           ciudad: string | null
           provincia: string | null
           comunidad: string | null
+          comunidad_autonoma: string | null
           pais: string
           telefono: string | null
           email: string | null
@@ -58,6 +59,7 @@ export interface Database {
           ciudad?: string | null
           provincia?: string | null
           comunidad?: string | null
+          comunidad_autonoma?: string | null
           pais?: string
           telefono?: string | null
           email?: string | null
@@ -94,6 +96,7 @@ export interface Database {
           ciudad?: string | null
           provincia?: string | null
           comunidad?: string | null
+          comunidad_autonoma?: string | null
           pais?: string
           telefono?: string | null
           email?: string | null
