@@ -562,7 +562,7 @@ export default function BusquedaMasivaPage() {
           const newArea = {
             nombre: finalName,
             slug: slug,
-            descripcion: `Área encontrada mediante búsqueda en Google Maps. Requiere verificación y enriquecimiento.`,
+            descripcion: null, // Se dejará NULL para ser enriquecido posteriormente con IA
             tipo_area: 'publica',
             pais: pais,
             provincia: provincia,
