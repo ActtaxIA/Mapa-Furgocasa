@@ -1,7 +1,7 @@
 # 📚 Índice de Documentación - Mapa Furgocasa
 
 **Versión:** BETA 1.0  
-**Última actualización:** 28 de octubre de 2025
+**Última actualización:** 29 de octubre de 2025
 
 ---
 
@@ -37,6 +37,7 @@
 | [BUSQUEDA_MASIVA_AREAS.md](./BUSQUEDA_MASIVA_AREAS.md) | Búsqueda e importación masiva desde Google Places | ✅ Vigente |
 | [OPTIMIZACION_CACHE_RUTAS.md](./OPTIMIZACION_CACHE_RUTAS.md) | Sistema de caché para rutas guardadas | ✅ Vigente |
 | [MEJORAS_COMPLETAS_SISTEMA_IA.md](./MEJORAS_COMPLETAS_SISTEMA_IA.md) | Mejoras en sistema de IA (textos, servicios, imágenes) | ✅ Vigente |
+| [MEJORAS_FILTROS_Y_NORMALIZACION.md](./MEJORAS_FILTROS_Y_NORMALIZACION.md) | **Mejoras de filtros admin + normalización global de países y regiones** | ✅ Vigente |
 
 ### 3️⃣ Soluciones y Fixes Aplicados
 
