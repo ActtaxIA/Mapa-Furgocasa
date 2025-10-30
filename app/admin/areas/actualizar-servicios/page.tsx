@@ -54,13 +54,49 @@ export default function ActualizarServiciosPage() {
   } | null>(null)
   const [ordenarPor, setOrdenarPor] = useState<'nombre' | 'ciudad' | 'provincia' | 'pais'>('nombre')
   const [ordenAscendente, setOrdenAscendente] = useState(true)
+  const [metricas, setMetricas] = useState({
+    totalProcesadas: 0,
+    exitosas: 0,
+    errores: 0,
+    serviciosPromedio: 0,
+    tiempoPromedio: 0,
+    tiempos: [] as number[]
+  })
 
-  // Función para analizar servicios directamente desde el cliente
+  // Función auxiliar para reintentos con backoff exponencial
+  const fetchWithRetry = async (url: string, options: any, maxRetries = 3) => {
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        const response = await fetch(url, options)
+        if (response.ok) return response
+        
+        // Si es rate limit, esperar más
+        if (response.status === 429) {
+          const waitTime = Math.pow(2, i) * 5000 // Backoff exponencial: 5s, 10s, 20s
+          console.log(`⏸️ Rate limit detectado, esperando ${waitTime/1000}s...`)
+          await new Promise(r => setTimeout(r, waitTime))
+          continue
+        }
+        
+        return response // Otros errores, retornar directamente
+      } catch (error) {
+        if (i === maxRetries - 1) throw error
+        console.log(`🔄 Reintento ${i + 1}/${maxRetries}...`)
+        await new Promise(r => setTimeout(r, 2000))
+      }
+    }
+    throw new Error('Máximo de reintentos alcanzado')
+  }
+
+  // Función para analizar servicios con búsqueda multi-etapa y caché
   const analizarServiciosArea = async (areaId: string): Promise<Record<string, boolean> | null> => {
+    const startTime = Date.now()
+    
     try {
       console.log('🔎 [SCRAPE] Analizando servicios para área:', areaId)
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
       
-      // 1. Obtener datos del área
+      // 1. Obtener datos del área con updated_at
       const { data: area, error: areaError } = await supabase
         .from('areas')
         .select('*')
@@ -72,46 +108,104 @@ export default function ActualizarServiciosPage() {
         return null
       }
 
+      // 2. CACHÉ: Verificar si se actualizó recientemente (últimas 24 horas)
+      const horasDesdeUpdate = (Date.now() - new Date(area.updated_at || 0).getTime()) / (1000 * 60 * 60)
+      if (horasDesdeUpdate < 24 && area.servicios && Object.keys(area.servicios).length > 0) {
+        const serviciosActuales = Object.values(area.servicios).filter(v => v === true).length
+        if (serviciosActuales > 0) {
+          console.log(`⏭️  Área actualizada hace ${horasDesdeUpdate.toFixed(1)} horas, usando caché`)
+          console.log(`   Servicios en caché: ${serviciosActuales}`)
+          return area.servicios
+        }
+      }
+
       const openaiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
-
-      // 2. Buscar información con SerpAPI (a través del proxy del servidor)
-      const query = `"${area.nombre}" ${area.ciudad} ${area.provincia} servicios autocaravanas camping agua electricidad`
-      
-      console.log('🔍 Llamando a SerpAPI (vía proxy)...')
-      const serpResponse = await fetch('/api/admin/serpapi-proxy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, engine: 'google' })
-      })
-
-      if (!serpResponse.ok) {
-        console.error('❌ Error del proxy de SerpAPI:', serpResponse.status)
-        return null
-      }
-
-      const serpResult = await serpResponse.json()
-      
-      if (!serpResult.success) {
-        console.error('❌ Error de SerpAPI:', serpResult.error)
-        return null
-      }
-
-      const serpData = serpResult.data
-
-      // 3. Construir texto para analizar
       let textoParaAnalizar = `INFORMACIÓN DEL ÁREA: ${area.nombre}, ${area.ciudad}, ${area.provincia}\n\n`
 
-      if (serpData.organic_results) {
-        serpData.organic_results.forEach((result: any) => {
-          textoParaAnalizar += `${result.title}\n${result.snippet}\n\n`
+      // 3. BÚSQUEDA MULTI-ETAPA: 3 búsquedas especializadas
+      
+      // BÚSQUEDA 1: Información general y web oficial
+      console.log('🔍 [1/3] Búsqueda general y web oficial...')
+      const query1 = `"${area.nombre}" ${area.ciudad} ${area.provincia} servicios autocaravanas`
+      try {
+        const resp1 = await fetchWithRetry('/api/admin/serpapi-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: query1, engine: 'google' })
         })
+
+        if (resp1.ok) {
+          const result1 = await resp1.json()
+          if (result1.success && result1.data.organic_results) {
+            textoParaAnalizar += `=== INFORMACIÓN GENERAL ===\n`
+            result1.data.organic_results.slice(0, 5).forEach((r: any) => {
+              textoParaAnalizar += `${r.title}\n${r.snippet}\n\n`
+            })
+            console.log(`  ✅ ${result1.data.organic_results.length} resultados generales`)
+          }
+          if (result1.data.answer_box) {
+            textoParaAnalizar += `${result1.data.answer_box.snippet || result1.data.answer_box.answer}\n\n`
+          }
+        }
+      } catch (e) {
+        console.warn('  ⚠️  Error en búsqueda 1:', e)
       }
 
-      if (serpData.answer_box) {
-        textoParaAnalizar += `${serpData.answer_box.snippet || serpData.answer_box.answer}\n\n`
+      // Pausa breve entre búsquedas
+      await new Promise(r => setTimeout(r, 500))
+
+      // BÚSQUEDA 2: Plataformas especializadas (Park4night, Campercontact, etc.)
+      console.log('🏕️  [2/3] Búsqueda en plataformas especializadas...')
+      const query2 = `"${area.nombre}" ${area.ciudad} Park4night Campercontact servicios camping`
+      try {
+        const resp2 = await fetchWithRetry('/api/admin/serpapi-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: query2, engine: 'google' })
+        })
+
+        if (resp2.ok) {
+          const result2 = await resp2.json()
+          if (result2.success && result2.data.organic_results) {
+            textoParaAnalizar += `\n=== INFORMACIÓN DE PLATAFORMAS ESPECIALIZADAS ===\n`
+            result2.data.organic_results.slice(0, 5).forEach((r: any) => {
+              textoParaAnalizar += `${r.title}\n${r.snippet}\n\n`
+            })
+            console.log(`  ✅ ${result2.data.organic_results.length} resultados de plataformas`)
+          }
+        }
+      } catch (e) {
+        console.warn('  ⚠️  Error en búsqueda 2:', e)
       }
 
-      console.log(`📊 Información recopilada: ${textoParaAnalizar.length} caracteres`)
+      // Pausa breve
+      await new Promise(r => setTimeout(r, 500))
+
+      // BÚSQUEDA 3: Google Maps y opiniones de usuarios
+      console.log('⭐ [3/3] Búsqueda de opiniones y reviews...')
+      const query3 = `"${area.nombre}" ${area.ciudad} Google Maps opiniones reseñas reviews`
+      try {
+        const resp3 = await fetchWithRetry('/api/admin/serpapi-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: query3, engine: 'google' })
+        })
+
+        if (resp3.ok) {
+          const result3 = await resp3.json()
+          if (result3.success && result3.data.organic_results) {
+            textoParaAnalizar += `\n=== OPINIONES Y REVIEWS ===\n`
+            result3.data.organic_results.slice(0, 5).forEach((r: any) => {
+              textoParaAnalizar += `${r.title}\n${r.snippet}\n\n`
+            })
+            console.log(`  ✅ ${result3.data.organic_results.length} resultados de opiniones`)
+          }
+        }
+      } catch (e) {
+        console.warn('  ⚠️  Error en búsqueda 3:', e)
+      }
+
+      console.log(`📊 Total información recopilada: ${textoParaAnalizar.length} caracteres`)
 
       // 4. Obtener configuración del agente
       const { data: configData } = await supabase
@@ -123,13 +217,56 @@ export default function ActualizarServiciosPage() {
       const config = configData?.config_value || {
         model: 'gpt-4o-mini',
         temperature: 0.1,
-        max_tokens: 300,
+        max_tokens: 400,
         prompts: [
           {
             id: 'sys-1',
             role: 'system',
-            content: 'Eres un auditor crítico que analiza información sobre áreas de autocaravanas. Solo confirmas servicios con evidencia explícita. Respondes únicamente con JSON válido, sin texto adicional.',
+            content: `Eres un auditor experto en áreas de autocaravanas y campings.
+
+INSTRUCCIONES ESTRICTAS:
+- Solo confirmas un servicio si hay EVIDENCIA EXPLÍCITA y CLARA
+- No asumas servicios por el tipo de lugar
+- Si hay duda o información ambigua, marca como false
+- Responde ÚNICAMENTE con JSON válido, sin texto adicional
+
+SERVICIOS A DETECTAR:
+- agua: Suministro de agua potable
+- electricidad: Conexión eléctrica o enchufes
+- vaciado_aguas_negras: Vaciado de aguas negras/WC químico
+- vaciado_aguas_grises: Vaciado de aguas grises
+- wifi: Conexión WiFi/Internet
+- duchas: Duchas disponibles
+- wc: Baños/WC
+- lavanderia: Lavandería o lavadoras
+- restaurante: Restaurante, bar o cafetería
+- supermercado: Supermercado o tienda
+- zona_mascotas: Área específica para mascotas`,
             order: 1,
+            required: true
+          },
+          {
+            id: 'user-1',
+            role: 'user',
+            content: `Analiza la siguiente información sobre "{{area_nombre}}" en {{area_ciudad}}, {{area_provincia}}:
+
+{{texto_analizar}}
+
+Responde con JSON con esta estructura exacta:
+{
+  "agua": true/false,
+  "electricidad": true/false,
+  "vaciado_aguas_negras": true/false,
+  "vaciado_aguas_grises": true/false,
+  "wifi": true/false,
+  "duchas": true/false,
+  "wc": true/false,
+  "lavanderia": true/false,
+  "restaurante": true/false,
+  "supermercado": true/false,
+  "zona_mascotas": true/false
+}`,
+            order: 2,
             required: true
           }
         ]
@@ -151,9 +288,9 @@ export default function ActualizarServiciosPage() {
           }
         })
 
-      // 6. Llamar a OpenAI
-      console.log('🤖 Llamando a OpenAI...')
-      const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      // 6. Llamar a OpenAI con retry logic
+      console.log('🤖 Llamando a OpenAI con reintentos automáticos...')
+      const openaiResponse = await fetchWithRetry('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -168,12 +305,14 @@ export default function ActualizarServiciosPage() {
       })
 
       if (!openaiResponse.ok) {
-        console.error('❌ Error de OpenAI:', openaiResponse.status)
-        return null
+        const errorData = await openaiResponse.json()
+        console.error('❌ Error de OpenAI:', openaiResponse.status, errorData)
+        throw new Error(`OpenAI error: ${errorData.error?.message || 'Unknown error'}`)
       }
 
       const openaiData = await openaiResponse.json()
       const respuestaIA = openaiData.choices[0].message.content || '{}'
+      console.log(`  ✅ Respuesta recibida (${openaiData.usage?.total_tokens || '?'} tokens)`)
 
       // 7. Parsear respuesta
       let serviciosDetectados: Record<string, boolean> = {}
@@ -210,11 +349,20 @@ export default function ActualizarServiciosPage() {
         return null
       }
 
+      const tiempoProcesamiento = ((Date.now() - startTime) / 1000).toFixed(1)
+      const totalServiciosDetectados = Object.values(serviciosFinales).filter(v => v === true).length
+      
       console.log('✅ Servicios actualizados exitosamente!')
+      console.log(`   📊 ${totalServiciosDetectados} servicios detectados`)
+      console.log(`   ⏱️  Tiempo: ${tiempoProcesamiento}s`)
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+      
       return serviciosFinales
 
     } catch (error) {
       console.error('❌ Error analizando servicios:', error)
+      const tiempoProcesamiento = ((Date.now() - startTime) / 1000).toFixed(1)
+      console.log(`   ⏱️  Tiempo hasta error: ${tiempoProcesamiento}s`)
       return null
     }
   }
@@ -238,18 +386,92 @@ export default function ActualizarServiciosPage() {
 
   const checkConfiguration = async () => {
     try {
-      const openaiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
+      console.log('🔧 Verificando configuración de API keys...')
       
-      // SerpAPI ahora se usa a través del proxy del servidor, no necesitamos verificarla aquí
+      const checks: any = {
+        openaiKeyValid: false,
+        serpApiKeyValid: false,
+        openaiError: null,
+        serpApiError: null
+      }
+      
+      // 1. Verificar OpenAI Key con una petición de prueba
+      const openaiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
+      if (openaiKey) {
+        try {
+          console.log('  🔍 Probando OpenAI API Key...')
+          const testResponse = await fetch('https://api.openai.com/v1/models', {
+            headers: { 'Authorization': `Bearer ${openaiKey}` }
+          })
+          
+          if (testResponse.ok) {
+            checks.openaiKeyValid = true
+            console.log('  ✅ OpenAI API Key válida')
+          } else {
+            const error = await testResponse.json()
+            checks.openaiError = error.error?.message || 'Key inválida'
+            console.error('  ❌ OpenAI Key inválida:', checks.openaiError)
+          }
+        } catch (e: any) {
+          checks.openaiError = e.message
+          console.error('  ❌ Error probando OpenAI:', e.message)
+        }
+      } else {
+        checks.openaiError = 'NEXT_PUBLIC_OPENAI_API_KEY_ADMIN no configurada'
+        console.error('  ❌', checks.openaiError)
+      }
+      
+      // 2. Verificar SerpAPI (a través del proxy) con búsqueda de prueba
+      try {
+        console.log('  🔍 Probando SerpAPI...')
+        const testSerp = await fetch('/api/admin/serpapi-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: 'test' })
+        })
+        
+        if (testSerp.ok) {
+          const result = await testSerp.json()
+          if (result.success) {
+            checks.serpApiKeyValid = true
+            console.log('  ✅ SerpAPI Key válida')
+          } else {
+            checks.serpApiError = result.error || 'Error desconocido'
+            console.error('  ❌ SerpAPI error:', checks.serpApiError)
+          }
+        } else {
+          const error = await testSerp.json()
+          checks.serpApiError = error.error || 'Error del servidor'
+          console.error('  ❌ Error del proxy:', checks.serpApiError)
+        }
+      } catch (e: any) {
+        checks.serpApiError = e.message
+        console.error('  ❌ Error probando SerpAPI:', e.message)
+      }
+      
+      const isReady = checks.openaiKeyValid && checks.serpApiKeyValid
+      
       setConfigStatus({
-        ready: !!openaiKey,
+        ready: isReady,
+        checks: checks
+      })
+      
+      if (isReady) {
+        console.log('✅ Configuración verificada correctamente')
+      } else {
+        console.warn('⚠️  Configuración incompleta')
+      }
+      
+    } catch (error) {
+      console.error('❌ Error verificando configuración:', error)
+      setConfigStatus({
+        ready: false,
         checks: {
-          openaiKeyValid: !!openaiKey,
-          serpApiKeyValid: true // Asumimos que está en el servidor
+          openaiKeyValid: false,
+          serpApiKeyValid: false,
+          error: 'Error general de validación'
         }
       })
-    } catch (error) {
-      console.error('Error verificando configuración:', error)
     }
   }
 
@@ -373,34 +595,54 @@ export default function ActualizarServiciosPage() {
       return
     }
 
-    // Estimación de tiempo y costo
-    const estimatedMinutes = Math.ceil((areasSeleccionadas.length * 5) / 60)
-    const estimatedCost = (areasSeleccionadas.length * 0.0002).toFixed(4)
+    // Estimación de tiempo y costo mejorada
+    const estimatedMinutes = Math.ceil((areasSeleccionadas.length * 8) / 60) // 8s por área (búsqueda múltiple)
+    const estimatedCost = (areasSeleccionadas.length * 0.0003).toFixed(4) // Ajustado para 3 búsquedas
     
     if (!confirm(
       `¿Deseas actualizar los servicios de ${areasSeleccionadas.length} área(s)?\n\n` +
       `⏱️ Tiempo estimado: ${estimatedMinutes} minuto(s)\n` +
       `💰 Costo aproximado: $${estimatedCost} USD\n\n` +
-      `El proceso incluye pausas entre peticiones para evitar límites de rate.`
+      `✨ El proceso incluye:\n` +
+      `  • 3 búsquedas especializadas por área\n` +
+      `  • Caché para áreas actualizadas recientemente\n` +
+      `  • Reintentos automáticos en caso de error\n` +
+      `  • Pausas inteligentes para evitar límites`
     )) {
       return
     }
 
     setProcesando(true)
     setProgreso({ actual: 0, total: areasSeleccionadas.length })
+    
+    // Resetear métricas
+    setMetricas({
+      totalProcesadas: 0,
+      exitosas: 0,
+      errores: 0,
+      serviciosPromedio: 0,
+      tiempoPromedio: 0,
+      tiempos: []
+    })
+
+    const tiempoInicio = Date.now()
 
     for (let i = 0; i < areasSeleccionadas.length; i++) {
       const area = areasSeleccionadas[i]
+      const tiempoAreaInicio = Date.now()
       
       setAreas(prev => prev.map(a => 
         a.id === area.id ? { ...a, procesando: true } : a
       ))
 
       try {
-        // Llamar directamente a la lógica desde el cliente
+        // Llamar a la función mejorada con multi-búsqueda y caché
         const servicios = await analizarServiciosArea(area.id)
         
         if (servicios) {
+          const totalServicios = Object.values(servicios).filter(v => v === true).length
+          const tiempoArea = (Date.now() - tiempoAreaInicio) / 1000
+          
           setAreas(prev => prev.map(a => 
             a.id === area.id ? {
               ...a,
@@ -410,6 +652,22 @@ export default function ActualizarServiciosPage() {
               error: null
             } : a
           ))
+          
+          // Actualizar métricas
+          setMetricas(prev => {
+            const nuevosTiempos = [...prev.tiempos, tiempoArea]
+            const totalServ = prev.exitosas * prev.serviciosPromedio + totalServicios
+            const exitosas = prev.exitosas + 1
+            
+            return {
+              totalProcesadas: prev.totalProcesadas + 1,
+              exitosas: exitosas,
+              errores: prev.errores,
+              serviciosPromedio: exitosas > 0 ? totalServ / exitosas : 0,
+              tiempoPromedio: nuevosTiempos.reduce((a, b) => a + b, 0) / nuevosTiempos.length,
+              tiempos: nuevosTiempos
+            }
+          })
         } else {
           throw new Error('No se pudieron analizar los servicios')
         }
@@ -422,6 +680,13 @@ export default function ActualizarServiciosPage() {
             error: error.message
           } : a
         ))
+        
+        // Actualizar métricas de error
+        setMetricas(prev => ({
+          ...prev,
+          totalProcesadas: prev.totalProcesadas + 1,
+          errores: prev.errores + 1
+        }))
 
         // Si hay un error de configuración crítico, detener todo el proceso
         if (error.message.includes('API Key') || error.message.includes('configurada')) {
@@ -439,8 +704,20 @@ export default function ActualizarServiciosPage() {
 
       setProgreso({ actual: i + 1, total: areasSeleccionadas.length })
 
-      // Pausa inteligente entre peticiones (más larga si es un lote grande)
-      const delayMs = areasSeleccionadas.length > 20 ? 3000 : 2000
+      // RATE LIMITING ADAPTATIVO: pausas según el tamaño del lote
+      const delayMs = (() => {
+        const total = areasSeleccionadas.length
+        if (total > 100) return 5000  // 5 segundos para lotes muy grandes
+        if (total > 50) return 4000   // 4 segundos
+        if (total > 20) return 3000   // 3 segundos
+        return 2000                    // 2 segundos base
+      })()
+      
+      // Pausa extra cada 10 áreas para prevenir rate limits
+      if ((i + 1) % 10 === 0 && i < areasSeleccionadas.length - 1) {
+        console.log('⏸️  Pausa de seguridad (cada 10 áreas) - 10 segundos...')
+        await new Promise(resolve => setTimeout(resolve, 10000))
+      }
       
       // No pausar después de la última
       if (i < areasSeleccionadas.length - 1) {
@@ -448,8 +725,17 @@ export default function ActualizarServiciosPage() {
       }
     }
 
+    const tiempoTotal = ((Date.now() - tiempoInicio) / 1000 / 60).toFixed(1)
+
     setProcesando(false)
-    alert('✅ Proceso completado. Revisa los resultados.')
+    alert(
+      `✅ Proceso completado en ${tiempoTotal} minutos\n\n` +
+      `📊 Resumen:\n` +
+      `  • Exitosas: ${metricas.exitosas}\n` +
+      `  • Errores: ${metricas.errores}\n` +
+      `  • Servicios promedio: ${metricas.serviciosPromedio.toFixed(1)}\n` +
+      `  • Tiempo promedio: ${metricas.tiempoPromedio.toFixed(1)}s por área`
+    )
   }
 
   const areasSeleccionadas = areas.filter(a => a.seleccionada).length
@@ -853,9 +1139,9 @@ export default function ActualizarServiciosPage() {
                 </div>
               </div>
 
-              {/* Footer con Estadísticas */}
+              {/* Footer con Estadísticas Mejoradas */}
               <div className="bg-gray-100 px-6 py-4 border-t border-gray-200">
-                <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="grid grid-cols-3 gap-4 text-center mb-4">
                   <div>
                     <div className="text-2xl font-bold text-green-600">
                       {areas.filter(a => a.procesada && !a.error).length}
@@ -875,6 +1161,35 @@ export default function ActualizarServiciosPage() {
                     <div className="text-xs text-gray-600">Progreso</div>
                   </div>
                 </div>
+                
+                {/* Métricas adicionales en tiempo real */}
+                {metricas.totalProcesadas > 0 && (
+                  <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                    <div className="text-xs font-semibold text-blue-900 mb-2">📊 Métricas en Tiempo Real</div>
+                    <div className="grid grid-cols-3 gap-3 text-xs">
+                      <div>
+                        <span className="text-blue-700 font-medium">Tasa de éxito:</span>
+                        <div className="text-lg font-bold text-blue-900">
+                          {metricas.totalProcesadas > 0 
+                            ? ((metricas.exitosas / metricas.totalProcesadas) * 100).toFixed(1) 
+                            : '0'}%
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-blue-700 font-medium">Servicios promedio:</span>
+                        <div className="text-lg font-bold text-blue-900">
+                          {metricas.serviciosPromedio.toFixed(1)}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-blue-700 font-medium">Tiempo promedio:</span>
+                        <div className="text-lg font-bold text-blue-900">
+                          {metricas.tiempoPromedio.toFixed(1)}s
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
