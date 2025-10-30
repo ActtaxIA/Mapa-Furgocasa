@@ -88,23 +88,24 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
     initMap()
   }, [])
 
-  // Añadir marcadores al mapa con clustering
+  // Añadir marcadores al mapa con clustering INCREMENTAL (sin parpadeo)
   useEffect(() => {
     if (!map || areas.length === 0) return
 
     const google = (window as any).google
 
-    // Limpiar clusterer anterior
-    if (markerClustererRef.current) {
-      markerClustererRef.current.clearMarkers()
-    }
+    // Número de markers existentes
+    const existingCount = markersRef.current.length
 
-    // Limpiar marcadores anteriores
-    markersRef.current.forEach(marker => marker.setMap(null))
-    markersRef.current = []
+    // Si ya tenemos todos los markers, no hacer nada
+    if (existingCount === areas.length) return
 
-    // Crear nuevos marcadores (sin animación)
-    const newMarkers = areas.map((area) => {
+    // Solo crear markers para las áreas NUEVAS (incrementales)
+    const newAreas = areas.slice(existingCount)
+    
+    console.log(`📍 Añadiendo ${newAreas.length} markers nuevos (total: ${areas.length}, existentes: ${existingCount})`)
+
+    const newMarkers = newAreas.map((area) => {
       const pinColor = getTipoAreaColor(area.tipo_area)
       
       const marker = new google.maps.Marker({
@@ -143,41 +144,50 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
       return marker
     })
 
-    markersRef.current = newMarkers
+    // AÑADIR los nuevos markers al array existente (sin borrar los anteriores)
+    markersRef.current = [...markersRef.current, ...newMarkers]
 
-    // Crear clusterer con los marcadores
-    markerClustererRef.current = new MarkerClusterer({
-      map,
-      markers: newMarkers,
-      renderer: {
-        render: ({ count, position }) => {
-          // Crear un marcador personalizado para el cluster
-          return new google.maps.Marker({
-            position,
-            icon: {
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 25,
-              fillColor: '#0284c7',
-              fillOpacity: 0.8,
-              strokeColor: '#ffffff',
-              strokeWeight: 3,
-            },
-            label: {
-              text: String(count),
-              color: '#ffffff',
-              fontSize: '14px',
-              fontWeight: 'bold',
-            },
-            zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count,
-          })
+    // Actualizar clusterer: añadir solo los nuevos markers
+    if (!markerClustererRef.current) {
+      // Primera vez: crear clusterer
+      markerClustererRef.current = new MarkerClusterer({
+        map,
+        markers: markersRef.current,
+        renderer: {
+          render: ({ count, position }) => {
+            return new google.maps.Marker({
+              position,
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 25,
+                fillColor: '#0284c7',
+                fillOpacity: 0.8,
+                strokeColor: '#ffffff',
+                strokeWeight: 3,
+              },
+              label: {
+                text: String(count),
+                color: '#ffffff',
+                fontSize: '14px',
+                fontWeight: 'bold',
+              },
+              zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count,
+            })
+          },
         },
-      },
-    })
+      })
+    } else {
+      // Ya existe: solo añadir los nuevos markers al clusterer
+      markerClustererRef.current.addMarkers(newMarkers)
+    }
 
-    // Cleanup
+    console.log(`✅ Total markers en mapa: ${markersRef.current.length}`)
+
+    // Cleanup solo al desmontar el componente completo
     return () => {
       if (markerClustererRef.current) {
         markerClustererRef.current.clearMarkers()
+        markerClustererRef.current = null
       }
       markersRef.current.forEach(marker => marker.setMap(null))
       markersRef.current = []
