@@ -17,13 +17,14 @@ Plataforma web interactiva para descubrir y gestionar áreas de autocaravanas, c
 - 💙 **Favoritos** para guardar tus áreas preferidas
 - 🗺️ **Planificador de Rutas** 🔒 - La herramienta más potente (requiere registro)
 - 💾 **Rutas Guardadas** - Guarda y reutiliza tus rutas favoritas
+- 🤖 **Asistente IA con Chatbot** 🔒 - Búsqueda inteligente en lenguaje natural (requiere registro)
 - 👤 **Dashboard de Perfil** completo con:
   - Mis Visitas (con mapa interactivo)
   - Mis Valoraciones
   - Mis Favoritos
   - Mis Rutas Guardadas
 - 📱 **Responsive Design** - Funciona en móvil, tablet y desktop
-- 🌐 **Acceso Público** - Mapa y áreas sin registro, planificador con registro
+- 🌐 **Acceso Público** - Mapa y áreas sin registro, herramientas avanzadas con registro
 - 🔔 **Notificaciones Toast** - Feedback elegante en todas las acciones
 
 ### Para Administradores
@@ -50,7 +51,7 @@ Plataforma web interactiva para descubrir y gestionar áreas de autocaravanas, c
 - **Base de Datos:** Supabase (PostgreSQL)
 - **Autenticación:** Supabase Auth
 - **Mapas:** Google Maps API (con Directions API para rutas)
-- **IA:** OpenAI GPT-4o-mini
+- **IA:** OpenAI GPT-4o-mini (Chatbot + Function Calling)
 - **Búsqueda Web:** SerpAPI
 - **Lugares:** Google Places API
 
@@ -271,6 +272,51 @@ NEW MAPA FURGOCASA/
 - 💾 Guardar tus rutas personalizadas
 - 📊 Acceso a estadísticas de uso
 - 🎯 Mejor experiencia personalizada
+- 🔄 Sincronización entre dispositivos
+
+---
+
+## 🤖 Asistente IA con Chatbot (NUEVO) 🔒
+
+**Búsqueda inteligente en lenguaje natural - Requiere registro gratuito**
+
+### Características
+- 💬 **Conversación Natural** - Pregunta en español como a un amigo
+- 🔍 **Búsqueda Inteligente** - Encuentra áreas con IA (OpenAI GPT-4o-mini)
+- 📍 **Geolocalización** - Busca "áreas cerca de mí"
+- 🎯 **Recomendaciones Personalizadas** - Basadas en tus necesidades
+- 🌍 **Búsqueda por País** - "¿Qué hay en Portugal?"
+- 💡 **Respuestas Instantáneas** - 24/7 disponible
+- 📱 **Botón Flotante** - Accesible desde cualquier página
+- 🔒 **Acceso Exclusivo** - Solo para usuarios registrados
+
+### Lo que PUEDE hacer
+- ✅ Buscar áreas por ubicación específica
+- ✅ Recomendar áreas según servicios (agua, electricidad, WiFi, etc.)
+- ✅ Filtrar por precio ("áreas gratuitas", "máximo 10€")
+- ✅ Listar mejores áreas de un país
+- ✅ Obtener detalles completos de un área
+- ✅ Responder preguntas sobre servicios
+
+### Lo que NO hace (usa el Planificador de Rutas para esto)
+- ❌ NO planifica rutas entre ciudades
+- ❌ NO calcula distancias
+- ❌ NO encuentra áreas a lo largo de una ruta
+- 🔀 **Redirige** al Planificador de Rutas cuando preguntas sobre rutas
+
+### Ejemplos de Preguntas
+- "Áreas cerca de Barcelona con electricidad"
+- "Busco áreas gratuitas en Portugal"
+- "¿Qué hay cerca de mí?"
+- "Mejores áreas de España"
+- "Áreas con WiFi y mascotas permitidas"
+- "Cuéntame sobre el Área Camping del Mar"
+
+### ¿Por qué requiere registro?
+- 💬 Historial de conversaciones
+- 📍 Geolocalización personalizada
+- 🎯 Recomendaciones basadas en tu perfil
+- 💾 Guardar áreas recomendadas como favoritas
 - 🔄 Sincronización entre dispositivos
 
 ---

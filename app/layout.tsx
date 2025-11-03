@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import './globals.css'
 import WelcomeModal from '@/components/ui/WelcomeModal'
+import ChatbotWidget from '@/components/chatbot/ChatbotWidget'
 
 export const metadata: Metadata = {
   title: 'Mapa Furgocasa - Encuentra Áreas para Autocaravanas | +1000 Ubicaciones en el Mundo',
@@ -101,6 +102,7 @@ export default function RootLayout({
         </Script>
         
         <WelcomeModal />
+        <ChatbotWidget />
         {children}
       </body>
     </html>
