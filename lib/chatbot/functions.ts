@@ -117,7 +117,7 @@ export async function searchAreas(params: BusquedaAreasParams): Promise<AreaResu
       // Filtro por servicios
       if (params.servicios && params.servicios.length > 0) {
         console.log('🔧 Filtrando por servicios:', params.servicios)
-        filtered = filtered.filter(area => 
+        filtered = filtered.filter((area: any) => 
           params.servicios!.every(servicio => 
             area.servicios && area.servicios[servicio] === true
           )
@@ -127,12 +127,12 @@ export async function searchAreas(params: BusquedaAreasParams): Promise<AreaResu
       // Filtro por precio
       if (params.solo_gratuitas) {
         console.log('💰 Filtrando solo gratuitas')
-        filtered = filtered.filter(area => 
+        filtered = filtered.filter((area: any) => 
           !area.precio_noche || area.precio_noche === 0
         )
       } else if (params.precio_max) {
         console.log(`💰 Filtrando precio máximo: ${params.precio_max}€`)
-        filtered = filtered.filter(area => 
+        filtered = filtered.filter((area: any) => 
           !area.precio_noche || area.precio_noche <= params.precio_max!
         )
       }
@@ -140,7 +140,7 @@ export async function searchAreas(params: BusquedaAreasParams): Promise<AreaResu
       // Filtro por tipo
       if (params.tipo_area) {
         console.log('🏷️ Filtrando por tipo:', params.tipo_area)
-        filtered = filtered.filter(area => 
+        filtered = filtered.filter((area: any) => 
           area.tipo_area === params.tipo_area
         )
       }
