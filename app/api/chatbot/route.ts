@@ -359,11 +359,17 @@ export async function POST(req: NextRequest) {
         }
         
         // Actualizar conversación
+        const { data: conversacion } = await supabase
+          .from('chatbot_conversaciones')
+          .select('total_mensajes')
+          .eq('id', conversacionId)
+          .single()
+        
         await supabase
           .from('chatbot_conversaciones')
           .update({
             ultimo_mensaje_at: new Date().toISOString(),
-            total_mensajes: supabase.raw('total_mensajes + 1')
+            total_mensajes: (conversacion?.total_mensajes || 0) + 1
           })
           .eq('id', conversacionId)
       }
@@ -410,11 +416,17 @@ export async function POST(req: NextRequest) {
           temperatura_usada: config.temperature
         })
       
+      const { data: conversacionFinal } = await supabase
+        .from('chatbot_conversaciones')
+        .select('total_mensajes')
+        .eq('id', conversacionId)
+        .single()
+      
       await supabase
         .from('chatbot_conversaciones')
         .update({
           ultimo_mensaje_at: new Date().toISOString(),
-          total_mensajes: supabase.raw('total_mensajes + 1')
+          total_mensajes: (conversacionFinal?.total_mensajes || 0) + 1
         })
         .eq('id', conversacionId)
     }
