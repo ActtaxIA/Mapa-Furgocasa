@@ -15,7 +15,7 @@ Plataforma web interactiva para descubrir y gestionar áreas de autocaravanas, c
 - ⭐ **Sistema de Valoraciones** y comentarios
 - 📝 **Registro de Visitas** con notas personales
 - 💙 **Favoritos** para guardar tus áreas preferidas
-- 🗺️ **Planificador de Rutas** con búsqueda de áreas cercanas
+- 🗺️ **Planificador de Rutas** 🔒 - La herramienta más potente (requiere registro)
 - 💾 **Rutas Guardadas** - Guarda y reutiliza tus rutas favoritas
 - 👤 **Dashboard de Perfil** completo con:
   - Mis Visitas (con mapa interactivo)
@@ -23,7 +23,7 @@ Plataforma web interactiva para descubrir y gestionar áreas de autocaravanas, c
   - Mis Favoritos
   - Mis Rutas Guardadas
 - 📱 **Responsive Design** - Funciona en móvil, tablet y desktop
-- 🌐 **Acceso Público** - No requiere registro para consultar áreas
+- 🌐 **Acceso Público** - Mapa y áreas sin registro, planificador con registro
 - 🔔 **Notificaciones Toast** - Feedback elegante en todas las acciones
 
 ### Para Administradores
@@ -216,15 +216,16 @@ NEW MAPA FURGOCASA/
 - ✅ Ver mapa con todas las áreas activas
 - ✅ Ver detalles de áreas
 - ✅ Usar filtros y búsqueda
-- ✅ Planificar rutas
+- 🔒 **PLANIFICADOR DE RUTAS BLOQUEADO** - Requiere registro (la herramienta más potente)
 - ❌ No puede valorar, favoritar, registrar visitas o guardar rutas
 
 ### Usuario Registrado
 - ✅ Todo lo anterior
+- ✅ **Acceso completo al Planificador de Rutas** 🎉
+- ✅ Guardar rutas personalizadas
 - ✅ Crear valoraciones y comentarios
 - ✅ Guardar áreas favoritas
 - ✅ Registrar visitas con notas
-- ✅ Guardar rutas personalizadas
 - ✅ Dashboard de perfil completo con estadísticas
 - ✅ Ver historial de visitas en mapa
 - ✅ Recargar rutas guardadas
@@ -240,7 +241,9 @@ NEW MAPA FURGOCASA/
 
 ---
 
-## 🗺️ Planificador de Rutas (NUEVO)
+## 🗺️ Planificador de Rutas (NUEVO) 🔒
+
+**La herramienta más potente de la app - Requiere registro gratuito**
 
 ### Características
 - 📍 **Origen, Destino y Paradas** - Planifica rutas complejas
@@ -251,16 +254,24 @@ NEW MAPA FURGOCASA/
 - 🔄 **Recargar Rutas** - Abre cualquier ruta guardada en el mapa
 - 📊 **Información Detallada** - Distancia, duración, paradas
 - 🗺️ **Google Maps Directions** - Rutas optimizadas
+- 🔒 **Acceso Exclusivo** - Solo para usuarios registrados
 
 ### Cómo Usar
-1. Ve a `/ruta`
-2. Introduce origen y destino (usa el autocompletado)
-3. (Opcional) Añade paradas intermedias
-4. Ajusta el radio de búsqueda
-5. Haz clic en "Calcular Ruta"
-6. Revisa las áreas encontradas en la ruta
-7. (Opcional) Guarda la ruta para uso futuro
-8. Desde tu perfil, puedes recargar cualquier ruta guardada
+1. **Regístrate gratis** en la plataforma (si no lo has hecho)
+2. Ve a `/ruta`
+3. Introduce origen y destino (usa el autocompletado)
+4. (Opcional) Añade paradas intermedias
+5. Ajusta el radio de búsqueda
+6. Haz clic en "Calcular Ruta"
+7. Revisa las áreas encontradas en la ruta
+8. (Opcional) Guarda la ruta para uso futuro
+9. Desde tu perfil, puedes recargar cualquier ruta guardada
+
+### ¿Por qué requiere registro?
+- 💾 Guardar tus rutas personalizadas
+- 📊 Acceso a estadísticas de uso
+- 🎯 Mejor experiencia personalizada
+- 🔄 Sincronización entre dispositivos
 
 ---
 
