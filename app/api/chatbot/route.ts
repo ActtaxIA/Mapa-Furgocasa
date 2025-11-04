@@ -728,20 +728,28 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
 // ============================================
 
 export async function GET() {
-  const hasOpenAI = !!process.env.OPENAI_API_KEY
-  const hasSupabase = !!process.env.SUPABASE_SERVICE_ROLE_KEY
+  const hasOpenAI = !!(process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN)
+  const hasSupabase = !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY)
   
   // Logs para debugging
   console.log('🔍 [GET /api/chatbot] Verificando variables de entorno...')
-  console.log('  OPENAI_API_KEY:', hasOpenAI ? '✅ Presente' : '❌ NO encontrada')
-  console.log('  SUPABASE_SERVICE_ROLE_KEY:', hasSupabase ? '✅ Presente' : '❌ NO encontrada')
+  console.log('  OPENAI (OPENAI_API_KEY || NEXT_PUBLIC_OPENAI_API_KEY_ADMIN):', hasOpenAI ? '✅ Presente' : '❌ NO encontrada')
+  console.log('  SUPABASE (SERVICE_ROLE_KEY):', hasSupabase ? '✅ Presente' : '❌ NO encontrada')
+  const envVars = Object.keys(process.env).filter(k => k.includes('OPENAI') || k.includes('SUPABASE') || k.includes('GOOGLE'))
+  console.log('  🔑 Variables encontradas:', envVars)
   
   return NextResponse.json({
     service: 'Chatbot Furgocasa',
-    version: '2.0',
+    version: '2.2-debug',
     status: hasOpenAI ? 'active' : 'error',
     openai_configured: hasOpenAI,
     supabase_configured: hasSupabase,
+    debug: {
+      env_vars_found: envVars,
+      node_env: process.env.NODE_ENV,
+      has_openai_key: hasOpenAI,
+      openai_key_length: (process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN)?.length || 0
+    },
     endpoints: {
       POST: '/api/chatbot - Enviar mensaje al chatbot'
     },
