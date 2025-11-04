@@ -24,11 +24,6 @@ import { getCityAndProvinceFromCoords, GeocodeResult, formatLocation } from '@/l
 // CONFIGURACIÓN
 // ============================================
 
-// Cliente OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || ''
-})
-
 // Cliente Supabase (service role para acceso completo)
 function getSupabaseClient() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -38,6 +33,16 @@ function getSupabaseClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
   )
+}
+
+// Cliente OpenAI (se crea bajo demanda para asegurar que las env vars estén cargadas)
+function getOpenAIClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY no está configurada')
+  }
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+  })
 }
 
 // ============================================
@@ -432,6 +437,9 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
     
     console.log(`📝 Total mensajes en contexto: ${fullMessages.length} (system: 1, historial: ${historialPrevio.length}, nuevos: ${messages.length})`)
     
+    // Crear cliente OpenAI (bajo demanda para asegurar que las env vars estén cargadas)
+    const openai = getOpenAIClient()
+    
     // PRIMERA LLAMADA A OPENAI
     console.log('🔮 Llamando a OpenAI (primera llamada)...')
     const completion = await openai.chat.completions.create({
@@ -693,10 +701,20 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
 // ============================================
 
 export async function GET() {
+  const hasOpenAI = !!process.env.OPENAI_API_KEY
+  const hasSupabase = !!process.env.SUPABASE_SERVICE_ROLE_KEY
+  
+  // Logs para debugging
+  console.log('🔍 [GET /api/chatbot] Verificando variables de entorno...')
+  console.log('  OPENAI_API_KEY:', hasOpenAI ? '✅ Presente' : '❌ NO encontrada')
+  console.log('  SUPABASE_SERVICE_ROLE_KEY:', hasSupabase ? '✅ Presente' : '❌ NO encontrada')
+  
   return NextResponse.json({
     service: 'Chatbot Furgocasa',
-    version: '1.0',
-    status: 'active',
+    version: '2.0',
+    status: hasOpenAI ? 'active' : 'error',
+    openai_configured: hasOpenAI,
+    supabase_configured: hasSupabase,
     endpoints: {
       POST: '/api/chatbot - Enviar mensaje al chatbot'
     },
