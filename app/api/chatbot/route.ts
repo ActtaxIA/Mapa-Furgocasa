@@ -824,28 +824,46 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
 // ============================================
 
 export async function GET() {
-  const hasOpenAI = !!(process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN)
-  const hasSupabase = !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY)
+  // Verificar todas las posibles variables
+  const openaiKey = process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY
   
-  // Logs reducidos
-  const envVars = Object.keys(process.env).filter(k => k.includes('OPENAI') || k.includes('SUPABASE') || k.includes('GOOGLE'))
+  const hasOpenAI = !!openaiKey
+  const hasSupabase = !!(supabaseUrl && supabaseServiceRole)
+  
+  // Obtener TODAS las variables de entorno disponibles
+  const allEnvKeys = Object.keys(process.env)
+  const envVars = allEnvKeys.filter(k => k.includes('OPENAI') || k.includes('SUPABASE') || k.includes('GOOGLE'))
+  
   logger.debug('GET /api/chatbot - Verificando variables', {
     hasOpenAI,
     hasSupabase,
-    envVarsCount: envVars.length
+    envVarsCount: envVars.length,
+    totalEnvVars: allEnvKeys.length
   })
   
   return NextResponse.json({
     service: 'Chatbot Furgocasa',
-    version: '2.2-debug',
+    version: '2.3-enhanced-debug',
     status: hasOpenAI ? 'active' : 'error',
     openai_configured: hasOpenAI,
     supabase_configured: hasSupabase,
     debug: {
       env_vars_found: envVars,
+      total_env_vars: allEnvKeys.length,
       node_env: process.env.NODE_ENV,
       has_openai_key: hasOpenAI,
-      openai_key_length: (process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN)?.length || 0
+      openai_key_length: openaiKey?.length || 0,
+      has_supabase_url: !!supabaseUrl,
+      supabase_url_length: supabaseUrl?.length || 0,
+      has_supabase_service_role: !!supabaseServiceRole,
+      supabase_service_role_length: supabaseServiceRole?.length || 0,
+      // Mostrar primeros caracteres para debug (solo en dev)
+      ...(process.env.NODE_ENV === 'development' && {
+        supabase_url_preview: supabaseUrl?.substring(0, 30) || 'undefined',
+        openai_key_preview: openaiKey?.substring(0, 10) || 'undefined'
+      })
     },
     endpoints: {
       POST: '/api/chatbot - Enviar mensaje al chatbot'
