@@ -216,6 +216,7 @@ export default function ChatbotWidget() {
             <div className="space-y-3">
               <Link
                 href="/auth/register"
+                onClick={() => setIsOpen(false)}
                 className="block w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white text-center py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl"
               >
                 🚀 Registrarme Gratis
@@ -223,6 +224,7 @@ export default function ChatbotWidget() {
               
               <Link
                 href="/auth/login"
+                onClick={() => setIsOpen(false)}
                 className="block w-full bg-white border-2 border-gray-300 text-gray-700 text-center py-3 rounded-lg font-semibold hover:bg-gray-50 transition-all"
               >
                 Ya tengo cuenta
