@@ -870,7 +870,7 @@ export default function ConfiguracionPage() {
               </div>
 
               {/* Configuración de Prompts */}
-              {editedChatbotConfig.prompts ? (
+              {editedChatbotConfig.prompts && editedChatbotConfig.prompts.prompts && Array.isArray(editedChatbotConfig.prompts.prompts) ? (
                 <div className="border-t pt-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">🎨 Configuración de Prompts</h3>
                   
