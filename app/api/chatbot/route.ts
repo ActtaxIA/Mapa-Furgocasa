@@ -26,13 +26,17 @@ import { getCityAndProvinceFromCoords, GeocodeResult, formatLocation } from '@/l
 
 // Cliente Supabase (service role para acceso completo)
 function getSupabaseClient() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
+  
+  if (!supabaseUrl || !serviceRoleKey) {
+    console.error('❌ Supabase URL:', supabaseUrl ? '✅' : '❌ FALTA')
+    console.error('❌ Service Role Key:', serviceRoleKey ? '✅' : '❌ FALTA')
+    console.error('❌ Variables Supabase encontradas:', Object.keys(process.env).filter(k => k.includes('SUPABASE')))
     throw new Error('Missing Supabase credentials')
   }
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  )
+  
+  return createClient(supabaseUrl, serviceRoleKey)
 }
 
 // Cliente OpenAI (se crea bajo demanda para asegurar que las env vars estén cargadas)
