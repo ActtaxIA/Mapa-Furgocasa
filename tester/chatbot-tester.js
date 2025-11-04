@@ -124,7 +124,7 @@ class ChatbotTester {
   }
 
   async screenshot(name) {
-    const filename = `tester/screenshots/${Date.now()}-${name}.png`
+    const filename = `screenshots/${Date.now()}-${name}.png`
     await this.page.screenshot({ path: filename, fullPage: true })
     this.screenshots.push(filename)
     this.log(`Screenshot guardado: ${filename}`, 'info')
@@ -135,11 +135,36 @@ class ChatbotTester {
     this.log('🔐 Iniciando sesión como admin...', 'test')
     
     try {
-      // Ir a la página de login
-      await this.page.goto(`${this.url}/auth/login`, { waitUntil: 'networkidle2' })
+      // Ir a la home primero
+      await this.page.goto(this.url, { waitUntil: 'networkidle2' })
+      
+      // Buscar y hacer clic en "Ya tengo cuenta" o "Iniciar sesión"
+      const loginLinkClicked = await this.page.evaluate(() => {
+        const links = Array.from(document.querySelectorAll('a'))
+        const loginLink = links.find(link => 
+          link.textContent.includes('Ya tengo cuenta') ||
+          link.textContent.includes('Iniciar sesión') ||
+          link.textContent.includes('Iniciar Sesión') ||
+          link.href.includes('/auth/login')
+        )
+        if (loginLink) {
+          loginLink.click()
+          return true
+        }
+        return false
+      })
+      
+      if (!loginLinkClicked) {
+        // Si no encontró el link, ir directo a /auth/login
+        await this.page.goto(`${this.url}/auth/login`, { waitUntil: 'networkidle2' })
+      } else {
+        // Esperar navegación después del click
+        await this.page.waitForNavigation({ waitUntil: 'networkidle2' })
+      }
+      
       await this.screenshot('01-login-page')
       
-      // Esperar formulario
+      // Esperar formulario de login
       await this.page.waitForSelector('input[type="email"]', { timeout: 10000 })
       
       // Llenar formulario
@@ -148,18 +173,38 @@ class ChatbotTester {
       
       await this.screenshot('02-login-filled')
       
-      // Click en login
-      await this.page.click('button[type="submit"]')
+      // Click en login y esperar respuesta
+      const [response] = await Promise.all([
+        this.page.waitForResponse(response => 
+          response.url().includes('/auth/') && response.request().method() === 'POST',
+          { timeout: 10000 }
+        ).catch(() => null),
+        this.page.click('button[type="submit"]')
+      ])
       
-      // Esperar navegación
-      await this.page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 15000 })
+      // Esperar un poco
+      await this.page.waitForTimeout(3000)
       
-      await this.screenshot('03-after-login')
+      await this.screenshot('03-after-login-attempt')
       
       // Verificar que estamos logueados
       const currentUrl = this.page.url()
+      
+      // Buscar mensajes de error en la página
+      const errorMessage = await this.page.evaluate(() => {
+        const errorElements = document.querySelectorAll('[role="alert"], .error, .text-red-600, .text-red-500')
+        if (errorElements.length > 0) {
+          return Array.from(errorElements).map(el => el.textContent).join('; ')
+        }
+        return null
+      })
+      
+      if (errorMessage) {
+        this.log(`Error de login visible: ${errorMessage}`, 'error')
+      }
+      
       if (currentUrl.includes('/auth/login')) {
-        throw new Error('Login falló - aún estamos en /auth/login')
+        throw new Error(`Login falló - aún en /auth/login${errorMessage ? ` - ${errorMessage}` : ''}`)
       }
       
       this.log('Login exitoso', 'success')
@@ -167,6 +212,7 @@ class ChatbotTester {
       
     } catch (error) {
       this.log(`Error en login: ${error.message}`, 'error')
+      this.log('⚠️  Continuando tests sin login (como usuario anónimo)', 'warning')
       await this.screenshot('error-login')
       this.errors.push({
         timestamp: new Date().toISOString(),
@@ -184,39 +230,89 @@ class ChatbotTester {
     try {
       // Ir al mapa (donde está el chatbot)
       await this.page.goto(`${this.url}/mapa`, { waitUntil: 'networkidle2' })
+      await this.page.waitForTimeout(2000) // Esperar a que cargue completamente
       await this.screenshot('04-mapa-page')
       
-      // Esperar que el botón del chatbot esté visible
-      await this.page.waitForSelector('[data-testid="chatbot-button"], button[aria-label*="chat"], button:has-text("Tío Viajero")', { 
-        timeout: 10000 
-      })
+      this.log('Buscando el widget del chatbot (esquina inferior derecha)...', 'info')
       
-      // Click en el botón del chatbot (buscar varios selectores posibles)
+      // Esperar y buscar el botón flotante del chatbot
+      // El chatbot está en la esquina inferior derecha, generalmente con position: fixed
       const chatbotOpened = await this.page.evaluate(() => {
-        // Buscar botón por texto
-        const buttons = Array.from(document.querySelectorAll('button'))
-        const chatButton = buttons.find(btn => 
-          btn.textContent.includes('Tío Viajero') || 
-          btn.textContent.includes('Chat') ||
-          btn.getAttribute('aria-label')?.includes('chat')
-        )
+        // Buscar todos los botones, especialmente los que están fixed/absolute
+        const allButtons = Array.from(document.querySelectorAll('button, div[role="button"]'))
+        
+        // Buscar por:
+        // 1. Texto que contenga "Tío", "Viajero", "Chat", etc
+        // 2. Posición fixed o absolute en la esquina inferior derecha
+        // 3. z-index alto (widgets flotantes)
+        const chatButton = allButtons.find(btn => {
+          const text = btn.textContent || ''
+          const style = window.getComputedStyle(btn)
+          const parent = btn.parentElement
+          const parentStyle = parent ? window.getComputedStyle(parent) : null
+          
+          // Verificar si es el botón del chat
+          const hasKeywords = text.includes('Tío') || 
+                             text.includes('Viajero') || 
+                             text.includes('Chat') ||
+                             text.includes('IA') ||
+                             btn.getAttribute('aria-label')?.toLowerCase().includes('chat')
+          
+          // Verificar si está posicionado como widget flotante (fixed, bottom, right)
+          const isFloating = (style.position === 'fixed' || parentStyle?.position === 'fixed') &&
+                            (style.bottom !== '' || parentStyle?.bottom !== '') &&
+                            (style.right !== '' || parentStyle?.right !== '')
+          
+          const hasHighZIndex = parseInt(style.zIndex || '0') > 10 || 
+                               parseInt(parentStyle?.zIndex || '0') > 10
+          
+          return (hasKeywords || isFloating || hasHighZIndex)
+        })
         
         if (chatButton) {
+          console.log('✅ Botón del chatbot encontrado:', chatButton.textContent)
           chatButton.click()
           return true
         }
+        
+        // Si no encontró, intentar buscar por clases comunes de chatbots
+        const chatWidget = document.querySelector('[class*="chatbot"], [class*="chat-widget"], [id*="chatbot"]')
+        if (chatWidget) {
+          const btnInWidget = chatWidget.querySelector('button')
+          if (btnInWidget) {
+            console.log('✅ Botón dentro de widget encontrado')
+            btnInWidget.click()
+            return true
+          }
+        }
+        
         return false
       })
       
       if (!chatbotOpened) {
-        throw new Error('No se encontró el botón del chatbot')
+        this.log('⚠️ No se encontró el botón del chatbot automáticamente', 'warning')
+        this.log('Intentando hacer clic en esquina inferior derecha...', 'info')
+        
+        // Plan B: hacer clic en la esquina inferior derecha donde suelen estar los chatbots
+        await this.page.mouse.click(1850, 1000) // Esquina inferior derecha
+        await this.page.waitForTimeout(1000)
       }
       
       // Esperar que el chat se abra
-      await this.page.waitForTimeout(1000)
+      await this.page.waitForTimeout(2000)
       await this.screenshot('05-chatbot-opened')
       
-      this.log('Chatbot abierto', 'success')
+      // Verificar que se abrió buscando el input del chat
+      const chatIsOpen = await this.page.evaluate(() => {
+        const chatInput = document.querySelector('input[placeholder*="mensaje"], textarea[placeholder*="mensaje"], input[type="text"]')
+        return chatInput !== null
+      })
+      
+      if (!chatIsOpen) {
+        throw new Error('El chatbot no se abrió - no se encontró el input de mensajes')
+      }
+      
+      this.log('Chatbot abierto correctamente', 'success')
       return true
       
     } catch (error) {
@@ -416,13 +512,13 @@ class ChatbotTester {
     }
     
     // Guardar reporte JSON
-    const reportPath = `tester/reports/report-${Date.now()}.json`
+    const reportPath = `reports/report-${Date.now()}.json`
     fs.mkdirSync(path.dirname(reportPath), { recursive: true })
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2))
     
     // Generar reporte HTML
     const htmlReport = this.generateHTMLReport(report)
-    const htmlPath = `tester/reports/report-${Date.now()}.html`
+    const htmlPath = `reports/report-${Date.now()}.html`
     fs.writeFileSync(htmlPath, htmlReport)
     
     this.log(`✅ Reporte guardado: ${reportPath}`, 'success')
@@ -539,15 +635,15 @@ class ChatbotTester {
     
     await this.init()
     
-    // Test 1: Login
+    // Test 1: Login (opcional - continua sin login si falla)
     this.results.totalTests++
-    if (await this.login()) {
+    const loginSuccess = await this.login()
+    if (loginSuccess) {
       this.results.passed++
     } else {
       this.results.failed++
-      this.log('❌ Tests abortados - login falló', 'error')
-      await this.cleanup()
-      return
+      this.log('⚠️  Login falló, continuando con tests del chatbot (puede requerir login)', 'warning')
+      // NO abortar - intentar tests de API que no requieren login
     }
     
     // Test 2: Abrir chatbot
