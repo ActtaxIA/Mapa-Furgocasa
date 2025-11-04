@@ -64,32 +64,17 @@ export default function ChatbotWidget() {
     }
   }, [isOpen, user, ubicacion])
   
-  // Iniciar conversación
+  // Iniciar conversación (ahora lo hace la API)
   const iniciarConversacion = async () => {
     if (!user) return
     
-    const sesionId = user.id || `anon_${Date.now()}`
+    // Mensaje de bienvenida inmediato
+    setMessages([{
+      rol: 'assistant',
+      contenido: '¡Hola! 👋 Soy tu asistente de Furgocasa. ¿En qué puedo ayudarte hoy?\n\nPuedo ayudarte a:\n🔍 Encontrar áreas para tu autocaravana\n📍 Recomendar las mejores ubicaciones\n💡 Responder dudas sobre servicios y precios\n🌍 Buscar áreas por país o región\n\n💡 **Tip:** Si quieres planificar una ruta completa, usa nuestra herramienta 🗺️ **Planificador de Rutas** en /ruta\n\n¡Pregúntame lo que necesites! 🚐'
+    }])
     
-    const { data, error } = await supabase
-      .from('chatbot_conversaciones')
-      .insert({
-        user_id: user.id,
-        sesion_id: sesionId,
-        titulo: 'Nueva conversación',
-        ubicacion_usuario: ubicacion ? { lat: ubicacion.lat, lng: ubicacion.lng } : null
-      })
-      .select()
-      .single()
-    
-    if (data) {
-      setConversacionId(data.id)
-      
-      // Mensaje de bienvenida
-      setMessages([{
-        rol: 'assistant',
-        contenido: '¡Hola! 👋 Soy tu asistente de Furgocasa. ¿En qué puedo ayudarte hoy?\n\nPuedo ayudarte a:\n🔍 Encontrar áreas para tu autocaravana\n📍 Recomendar las mejores ubicaciones\n💡 Responder dudas sobre servicios y precios\n🌍 Buscar áreas por país o región\n\n💡 **Tip:** Si quieres planificar una ruta completa, usa nuestra herramienta 🗺️ **Planificador de Rutas** en /ruta\n\n¡Pregúntame lo que necesites! 🚐'
-      }])
-    }
+    // La conversación se creará en el API al enviar el primer mensaje
   }
   
   // Abrir chat
@@ -109,15 +94,6 @@ export default function ChatbotWidget() {
     setInput('')
     setSending(true)
     
-    // Guardar mensaje del usuario en BD
-    if (conversacionId) {
-      await supabase.from('chatbot_mensajes').insert({
-        conversacion_id: conversacionId,
-        rol: 'user',
-        contenido: input
-      })
-    }
-    
     try {
       const response = await fetch('/api/chatbot', {
         method: 'POST',
@@ -128,26 +104,34 @@ export default function ChatbotWidget() {
             content: m.contenido 
           })),
           conversacionId,
-          ubicacionUsuario: ubicacion
+          ubicacionUsuario: ubicacion,
+          userId: user.id // Enviar user ID para que la API cree la conversación
         })
       })
       
       if (!response.ok) {
-        throw new Error('Error en la respuesta')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Error API:', errorData)
+        throw new Error(errorData.error || 'Error en la respuesta')
       }
       
       const data = await response.json()
+      
+      // Si es el primer mensaje y retorna conversacionId, guardarlo
+      if (data.conversacionId && !conversacionId) {
+        setConversacionId(data.conversacionId)
+      }
       
       setMessages(prev => [...prev, {
         rol: 'assistant',
         contenido: data.message,
         areas: data.areas
       }])
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error)
       setMessages(prev => [...prev, {
         rol: 'assistant',
-        contenido: 'Lo siento, ha ocurrido un error. Por favor, inténtalo de nuevo.'
+        contenido: `Lo siento, ha ocurrido un error: ${error.message}\n\nPor favor, inténtalo de nuevo.`
       }])
     } finally {
       setSending(false)

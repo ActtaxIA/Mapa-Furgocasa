@@ -164,6 +164,7 @@ interface ChatbotRequest {
     lat: number
     lng: number
   }
+  userId?: string
 }
 
 // ============================================
@@ -187,10 +188,11 @@ export async function POST(req: NextRequest) {
     
     // Parsear request
     const body: ChatbotRequest = await req.json()
-    const { messages, conversacionId, ubicacionUsuario } = body
+    let { messages, conversacionId, ubicacionUsuario, userId } = body
     
     console.log('📨 Mensajes:', messages.length)
     console.log('🗺️ Ubicación usuario:', ubicacionUsuario ? 'Sí' : 'No')
+    console.log('👤 User ID:', userId || 'No proporcionado')
     
     // Validar mensajes
     if (!messages || messages.length === 0) {
@@ -201,6 +203,44 @@ export async function POST(req: NextRequest) {
     }
     
     const supabase = getSupabaseClient()
+    
+    // Si NO hay conversacionId pero SÍ hay userId, crear conversación
+    if (!conversacionId && userId) {
+      console.log('🆕 Creando nueva conversación...')
+      const sesionId = userId || `anon_${Date.now()}`
+      
+      const { data: nuevaConv, error: convError } = await supabase
+        .from('chatbot_conversaciones')
+        .insert({
+          user_id: userId,
+          sesion_id: sesionId,
+          titulo: 'Nueva conversación',
+          ubicacion_usuario: ubicacionUsuario || null,
+          total_mensajes: 0
+        })
+        .select()
+        .single()
+      
+      if (convError) {
+        console.error('❌ Error creando conversación:', convError)
+      } else if (nuevaConv) {
+        conversacionId = nuevaConv.id
+        console.log('✅ Conversación creada:', conversacionId)
+      }
+    }
+    
+    // Guardar mensaje del usuario en BD (si hay conversación)
+    if (conversacionId && messages.length > 0) {
+      const lastUserMessage = messages[messages.length - 1]
+      if (lastUserMessage.role === 'user') {
+        console.log('💾 Guardando mensaje del usuario...')
+        await supabase.from('chatbot_mensajes').insert({
+          conversacion_id: conversacionId,
+          rol: 'user',
+          contenido: lastUserMessage.content
+        })
+      }
+    }
     
     // Cargar configuración del chatbot
     console.log('⚙️ Cargando configuración del chatbot...')
@@ -403,6 +443,7 @@ export async function POST(req: NextRequest) {
       
       return NextResponse.json({
         message: finalResponse,
+        conversacionId: conversacionId, // Retornar conversacionId para que el frontend lo guarde
         functionCalled: functionName,
         functionArgs: functionArgs,
         areas: areasEncontradas,
@@ -448,6 +489,7 @@ export async function POST(req: NextRequest) {
     
     return NextResponse.json({
       message: response.content,
+      conversacionId: conversacionId, // Retornar conversacionId
       tokensUsados: tokensUsados,
       modelo: config.modelo,
       duration: duration
