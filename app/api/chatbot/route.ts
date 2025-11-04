@@ -18,6 +18,7 @@ import {
   BusquedaAreasParams,
   AreaResumen
 } from '@/lib/chatbot/functions'
+import { getCityAndProvinceFromCoords, GeocodeResult, formatLocation } from '@/lib/google/geocoding'
 
 // ============================================
 // CONFIGURACIÓN
@@ -167,6 +168,76 @@ interface ChatbotRequest {
   userId?: string
 }
 
+interface EstadisticasBD {
+  totalAreas: number
+  totalPaises: number
+  totalCiudades: number
+  areasEuropa: number
+  areasLatam: number
+}
+
+// ============================================
+// FUNCIONES AUXILIARES
+// ============================================
+
+/**
+ * Obtiene estadísticas de la base de datos para contexto
+ */
+async function getEstadisticasBD(supabase: any): Promise<EstadisticasBD> {
+  try {
+    // Total de áreas activas
+    const { count: totalAreas } = await supabase
+      .from('areas')
+      .select('id', { count: 'exact', head: true })
+      .eq('activo', true)
+    
+    // Contar países únicos
+    const { data: paises } = await supabase
+      .from('areas')
+      .select('pais')
+      .eq('activo', true)
+    const paisesUnicos = new Set(paises?.map((a: any) => a.pais).filter(Boolean))
+    
+    // Contar ciudades únicas
+    const { data: ciudades } = await supabase
+      .from('areas')
+      .select('ciudad')
+      .eq('activo', true)
+    const ciudadesUnicas = new Set(ciudades?.map((a: any) => a.ciudad).filter(Boolean))
+    
+    // Áreas en Europa (aproximación por países principales)
+    const { count: areasEuropa } = await supabase
+      .from('areas')
+      .select('id', { count: 'exact', head: true })
+      .eq('activo', true)
+      .in('pais', ['España', 'Francia', 'Portugal', 'Italia', 'Alemania'])
+    
+    // Áreas en LATAM (aproximación)
+    const { count: areasLatam } = await supabase
+      .from('areas')
+      .select('id', { count: 'exact', head: true })
+      .eq('activo', true)
+      .in('pais', ['Argentina', 'Chile', 'Uruguay', 'Brasil', 'Colombia', 'Perú'])
+    
+    return {
+      totalAreas: totalAreas || 0,
+      totalPaises: paisesUnicos.size,
+      totalCiudades: ciudadesUnicas.size,
+      areasEuropa: areasEuropa || 0,
+      areasLatam: areasLatam || 0
+    }
+  } catch (error) {
+    console.error('❌ Error obteniendo estadísticas:', error)
+    return {
+      totalAreas: 0,
+      totalPaises: 0,
+      totalCiudades: 0,
+      areasEuropa: 0,
+      areasLatam: 0
+    }
+  }
+}
+
 // ============================================
 // ENDPOINT POST
 // ============================================
@@ -265,17 +336,101 @@ export async function POST(req: NextRequest) {
     
     console.log('✅ Configuración cargada:', config.modelo)
     
-    // Preparar mensajes con system prompt
+    // ============================================
+    // ENRIQUECER CONTEXTO
+    // ============================================
+    
+    // 1. GEOCODING: Convertir GPS a ciudad/provincia
+    let ubicacionDetectada: GeocodeResult | null = null
+    if (ubicacionUsuario?.lat && ubicacionUsuario?.lng) {
+      console.log('🌍 Ejecutando geocoding reverso...')
+      ubicacionDetectada = await getCityAndProvinceFromCoords(
+        ubicacionUsuario.lat,
+        ubicacionUsuario.lng
+      )
+      if (ubicacionDetectada) {
+        console.log('✅ Ubicación detectada:', formatLocation(ubicacionDetectada))
+      }
+    }
+    
+    // 2. ESTADÍSTICAS: Obtener datos de la BD
+    console.log('📊 Obteniendo estadísticas de la BD...')
+    const stats = await getEstadisticasBD(supabase)
+    console.log('✅ Estadísticas:', stats)
+    
+    // 3. HISTORIAL: Cargar mensajes previos de la conversación
+    let historialPrevio: Array<{ rol: string, contenido: string }> = []
+    if (conversacionId) {
+      console.log('📜 Cargando historial de conversación...')
+      const { data: historial, error: historialError } = await supabase
+        .from('chatbot_mensajes')
+        .select('rol, contenido')
+        .eq('conversacion_id', conversacionId)
+        .order('created_at', { ascending: true })
+        .limit(10) // Últimos 10 mensajes
+      
+      if (!historialError && historial) {
+        historialPrevio = historial
+        console.log(`✅ Cargados ${historial.length} mensajes del historial`)
+      }
+    }
+    
+    // 4. CONSTRUIR SYSTEM PROMPT ENRIQUECIDO
+    let systemPromptEnriquecido = config.system_prompt
+    
+    // Añadir información de ubicación si está disponible
+    if (ubicacionDetectada) {
+      systemPromptEnriquecido += `\n\n═══════════════════════════════════════
+📍 UBICACIÓN ACTUAL DEL USUARIO
+═══════════════════════════════════════
+✅ GPS COMPARTIDO
+- Ciudad: ${ubicacionDetectada.city}
+- Provincia: ${ubicacionDetectada.province}
+- Región: ${ubicacionDetectada.region}
+- País: ${ubicacionDetectada.country}
+- Coordenadas: ${ubicacionUsuario!.lat.toFixed(4)}, ${ubicacionUsuario!.lng.toFixed(4)}
+
+REGLAS DE UBICACIÓN:
+1. Cuando el usuario pregunte por "áreas cerca", "áreas aquí", "cerca de mí", o no mencione ciudad específica → USA su ubicación GPS (${ubicacionDetectada.city})
+2. Si el usuario menciona EXPLÍCITAMENTE otra ciudad ("áreas en Barcelona"), IGNORA su GPS y busca en esa ciudad
+3. Siempre incluye las distancias cuando uses búsqueda por GPS (el campo "distancia_km" estará disponible)
+4. Radio de búsqueda:
+   - Si dice "cerca", "aquí", "cerca de mí" → Radio 10-20km
+   - Si es genérico ("áreas", "buscar") → Radio 50km
+   - Si menciona ciudad específica → Búsqueda por nombre de ciudad (sin radio)`
+    }
+    
+    // Añadir estadísticas de la plataforma
+    systemPromptEnriquecido += `\n\n═══════════════════════════════════════
+📊 ESTADÍSTICAS DE LA PLATAFORMA
+═══════════════════════════════════════
+- Total de áreas: ${stats.totalAreas} áreas verificadas
+- Países disponibles: ${stats.totalPaises} países
+- Ciudades cubiertas: ${stats.totalCiudades} ciudades
+- Áreas en Europa: ${stats.areasEuropa} áreas
+- Áreas en LATAM: ${stats.areasLatam} áreas
+
+Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónde están", etc.`
+    
+    // 5. PREPARAR MENSAJES COMPLETOS
     const fullMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [
       { 
         role: 'system', 
-        content: config.system_prompt 
+        content: systemPromptEnriquecido 
       },
+      // Añadir historial previo
+      ...historialPrevio.map(h => ({
+        role: h.rol as 'user' | 'assistant',
+        content: h.contenido
+      })),
+      // Añadir nuevos mensajes
       ...messages.map(m => ({
         role: m.role as 'user' | 'assistant' | 'system',
         content: m.content
       }))
     ]
+    
+    console.log(`📝 Total mensajes en contexto: ${fullMessages.length} (system: 1, historial: ${historialPrevio.length}, nuevos: ${messages.length})`)
     
     // PRIMERA LLAMADA A OPENAI
     console.log('🔮 Llamando a OpenAI (primera llamada)...')
