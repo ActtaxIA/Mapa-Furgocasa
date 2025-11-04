@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import Link from 'next/link'
+import { formatErrorForUser } from '@/lib/chatbot/errors'
 
 interface Message {
   rol: 'user' | 'assistant'
@@ -129,9 +130,13 @@ export default function ChatbotWidget() {
       }])
     } catch (error: any) {
       console.error('Error:', error)
+      
+      // Usar mensaje de error amigable y específico
+      const errorMessage = formatErrorForUser(error)
+      
       setMessages(prev => [...prev, {
         rol: 'assistant',
-        contenido: `Lo siento, ha ocurrido un error: ${error.message}\n\nPor favor, inténtalo de nuevo.`
+        contenido: errorMessage
       }])
     } finally {
       setSending(false)

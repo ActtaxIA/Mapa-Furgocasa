@@ -3,10 +3,15 @@ frontend:
   phases:
     preBuild:
       commands:
+        - nvm use 18
+        - node --version
+        - npm --version
         - npm ci
     build:
       commands:
+        - echo "Building Next.js app..."
         - npm run build
+        - echo "Build completed successfully"
   artifacts:
     baseDirectory: .next
     files:
@@ -15,6 +20,19 @@ frontend:
     paths:
       - node_modules/**/*
       - .next/cache/**/*
-  buildSettings:
-    outputDirectory: .next
 
+# Variables de entorno requeridas (configurar en AWS Amplify Console):
+# CRITICAL (Chatbot):
+# - OPENAI_API_KEY
+# - SUPABASE_SERVICE_ROLE_KEY (o NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY)
+# - GOOGLE_MAPS_API_KEY
+#
+# OPTIONAL (Rate Limiting - FIX #2):
+# - UPSTASH_REDIS_REST_URL
+# - UPSTASH_REDIS_REST_TOKEN
+#
+# Already configured (verificar):
+# - NEXT_PUBLIC_SUPABASE_URL
+# - NEXT_PUBLIC_SUPABASE_ANON_KEY
+# - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+# - NEXT_PUBLIC_GOOGLE_PLACES_API_KEY

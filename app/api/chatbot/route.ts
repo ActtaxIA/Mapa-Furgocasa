@@ -20,6 +20,16 @@ import {
 } from '@/lib/chatbot/functions'
 import { getCityAndProvinceFromCoords, GeocodeResult, formatLocation } from '@/lib/google/geocoding'
 
+// Rate Limiting
+import { Ratelimit } from "@upstash/ratelimit"
+import { Redis } from "@upstash/redis"
+
+// Cache
+import { getCached, CACHE_TTL } from '@/lib/cache/redis'
+
+// Logger
+import { logger } from '@/lib/logger'
+
 // ============================================
 // CONFIGURACIÓN
 // ============================================
@@ -58,6 +68,35 @@ function getOpenAIClient() {
     throw new Error('OPENAI_API_KEY no está configurada')
   }
   return new OpenAI({ apiKey })
+}
+
+// ============================================
+// RATE LIMITING
+// ============================================
+
+// Inicializar rate limiter (solo si están configuradas las variables)
+let ratelimit: Ratelimit | null = null
+
+if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+  try {
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+    
+    ratelimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(10, "1 m"), // 10 peticiones por minuto
+      analytics: true,
+      prefix: "chatbot",
+    })
+    
+    logger.info('Rate limiting habilitado')
+  } catch (error) {
+    logger.error('Error inicializando rate limiter', error)
+  }
+} else {
+  logger.warn('Rate limiting deshabilitado: faltan UPSTASH_REDIS_REST_URL o UPSTASH_REDIS_REST_TOKEN')
 }
 
 // ============================================
@@ -201,61 +240,67 @@ interface EstadisticasBD {
 // ============================================
 
 /**
- * Obtiene estadísticas de la base de datos para contexto
+ * Obtiene estadísticas de la base de datos para contexto (con caché)
  */
 async function getEstadisticasBD(supabase: any): Promise<EstadisticasBD> {
-  try {
-    // Total de áreas activas
-    const { count: totalAreas } = await supabase
-      .from('areas')
-      .select('id', { count: 'exact', head: true })
-      .eq('activo', true)
-    
-    // Contar países únicos
-    const { data: paises } = await supabase
-      .from('areas')
-      .select('pais')
-      .eq('activo', true)
-    const paisesUnicos = new Set(paises?.map((a: any) => a.pais).filter(Boolean))
-    
-    // Contar ciudades únicas
-    const { data: ciudades } = await supabase
-      .from('areas')
-      .select('ciudad')
-      .eq('activo', true)
-    const ciudadesUnicas = new Set(ciudades?.map((a: any) => a.ciudad).filter(Boolean))
-    
-    // Áreas en Europa (aproximación por países principales)
-    const { count: areasEuropa } = await supabase
-      .from('areas')
-      .select('id', { count: 'exact', head: true })
-      .eq('activo', true)
-      .in('pais', ['España', 'Francia', 'Portugal', 'Italia', 'Alemania'])
-    
-    // Áreas en LATAM (aproximación)
-    const { count: areasLatam } = await supabase
-      .from('areas')
-      .select('id', { count: 'exact', head: true })
-      .eq('activo', true)
-      .in('pais', ['Argentina', 'Chile', 'Uruguay', 'Brasil', 'Colombia', 'Perú'])
-    
-    return {
-      totalAreas: totalAreas || 0,
-      totalPaises: paisesUnicos.size,
-      totalCiudades: ciudadesUnicas.size,
-      areasEuropa: areasEuropa || 0,
-      areasLatam: areasLatam || 0
+  return getCached(
+    'chatbot:stats',
+    CACHE_TTL.STATS,
+    async () => {
+      try {
+        // Total de áreas activas
+        const { count: totalAreas } = await supabase
+          .from('areas')
+          .select('id', { count: 'exact', head: true })
+          .eq('activo', true)
+        
+        // Contar países únicos
+        const { data: paises } = await supabase
+          .from('areas')
+          .select('pais')
+          .eq('activo', true)
+        const paisesUnicos = new Set(paises?.map((a: any) => a.pais).filter(Boolean))
+        
+        // Contar ciudades únicas
+        const { data: ciudades } = await supabase
+          .from('areas')
+          .select('ciudad')
+          .eq('activo', true)
+        const ciudadesUnicas = new Set(ciudades?.map((a: any) => a.ciudad).filter(Boolean))
+        
+        // Áreas en Europa (aproximación por países principales)
+        const { count: areasEuropa } = await supabase
+          .from('areas')
+          .select('id', { count: 'exact', head: true })
+          .eq('activo', true)
+          .in('pais', ['España', 'Francia', 'Portugal', 'Italia', 'Alemania'])
+        
+        // Áreas en LATAM (aproximación)
+        const { count: areasLatam } = await supabase
+          .from('areas')
+          .select('id', { count: 'exact', head: true })
+          .eq('activo', true)
+          .in('pais', ['Argentina', 'Chile', 'Uruguay', 'Brasil', 'Colombia', 'Perú'])
+        
+        return {
+          totalAreas: totalAreas || 0,
+          totalPaises: paisesUnicos.size,
+          totalCiudades: ciudadesUnicas.size,
+          areasEuropa: areasEuropa || 0,
+          areasLatam: areasLatam || 0
+        }
+      } catch (error) {
+        console.error('❌ Error obteniendo estadísticas:', error)
+        return {
+          totalAreas: 0,
+          totalPaises: 0,
+          totalCiudades: 0,
+          areasEuropa: 0,
+          areasLatam: 0
+        }
+      }
     }
-  } catch (error) {
-    console.error('❌ Error obteniendo estadísticas:', error)
-    return {
-      totalAreas: 0,
-      totalPaises: 0,
-      totalCiudades: 0,
-      areasEuropa: 0,
-      areasLatam: 0
-    }
-  }
+  )
 }
 
 // ============================================
@@ -264,18 +309,60 @@ async function getEstadisticasBD(supabase: any): Promise<EstadisticasBD> {
 
 export async function POST(req: NextRequest) {
   const startTime = Date.now()
+  const endTimer = logger.start('Chatbot Request')
   
   try {
-    console.log('🤖 [CHATBOT] Nueva petición recibida')
-    console.log('🔑 [CHATBOT] Verificando OPENAI_API_KEY...')
+    logger.info('Nueva petición recibida')
+    
+    // Parsear body primero
+    const body: ChatbotRequest = await req.json()
+    let { messages, conversacionId, ubicacionUsuario, userId } = body
+    
+    // ============================================
+    // RATE LIMITING
+    // ============================================
+    if (ratelimit) {
+      const identifier = userId || req.headers.get('x-forwarded-for') || 'anonymous'
+      
+      logger.debug('Verificando rate limit', { identifier })
+      
+      const { success, limit, reset, remaining } = await ratelimit.limit(identifier)
+      
+      if (!success) {
+        const waitSeconds = Math.ceil((reset - Date.now()) / 1000)
+        logger.warn(`Rate limit excedido para ${identifier}`, { waitSeconds, limit })
+        
+        return NextResponse.json({
+          error: 'Demasiadas peticiones',
+          message: `Has realizado muchas consultas. Por favor, espera ${waitSeconds} segundos antes de volver a intentarlo.`,
+          tip: 'Mientras tanto, puedes explorar el mapa o buscar manualmente áreas.',
+          retryAfter: waitSeconds
+        }, { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': limit.toString(),
+            'X-RateLimit-Remaining': remaining.toString(),
+            'X-RateLimit-Reset': new Date(reset).toISOString(),
+            'Retry-After': waitSeconds.toString()
+          }
+        })
+      }
+      
+      logger.debug(`Rate limit OK. Restantes: ${remaining}/${limit}`)
+    }
+    
+    // ============================================
+    // VALIDACIONES
+    // ============================================
+    logger.debug('Verificando OPENAI_API_KEY')
     
     // Validar variables de entorno
     const apiKey = process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
     if (!apiKey) {
       const allEnvVars = Object.keys(process.env)
-      console.error('❌ OPENAI_API_KEY no configurada')
-      console.error('🔍 Variables con OPENAI:', allEnvVars.filter(k => k.includes('OPENAI')))
-      console.error('🔍 TODAS las variables:', allEnvVars)
+      logger.error('OPENAI_API_KEY no configurada', null, { 
+        openaiVars: allEnvVars.filter(k => k.includes('OPENAI'))
+      })
       return NextResponse.json(
         { 
           error: 'Chatbot no configurado: falta OPENAI_API_KEY',
@@ -285,15 +372,13 @@ export async function POST(req: NextRequest) {
       )
     }
     
-    console.log('✅ [CHATBOT] OPENAI_API_KEY encontrada')
+    logger.debug('OPENAI_API_KEY encontrada')
     
-    // Parsear request
-    const body: ChatbotRequest = await req.json()
-    let { messages, conversacionId, ubicacionUsuario, userId } = body
-    
-    console.log('📨 Mensajes:', messages.length)
-    console.log('🗺️ Ubicación usuario:', ubicacionUsuario ? 'Sí' : 'No')
-    console.log('👤 User ID:', userId || 'No proporcionado')
+    logger.info('Procesando petición', {
+      messageCount: messages.length,
+      hasLocation: !!ubicacionUsuario,
+      userId: userId || 'anonymous'
+    })
     
     // Validar mensajes
     if (!messages || messages.length === 0) {
@@ -363,43 +448,47 @@ export async function POST(req: NextRequest) {
     console.log('✅ Configuración cargada:', config.modelo)
     
     // ============================================
-    // ENRIQUECER CONTEXTO
+    // ENRIQUECER CONTEXTO (PARALELIZADO)
     // ============================================
     
-    // 1. GEOCODING: Convertir GPS a ciudad/provincia
-    let ubicacionDetectada: GeocodeResult | null = null
-    if (ubicacionUsuario?.lat && ubicacionUsuario?.lng) {
-      console.log('🌍 Ejecutando geocoding reverso...')
-      ubicacionDetectada = await getCityAndProvinceFromCoords(
-        ubicacionUsuario.lat,
-        ubicacionUsuario.lng
-      )
-      if (ubicacionDetectada) {
-        console.log('✅ Ubicación detectada:', formatLocation(ubicacionDetectada))
-      }
-    }
+    logger.debug('Cargando contexto en paralelo (geocoding + stats + historial)')
+    const contextStartTime = Date.now()
     
-    // 2. ESTADÍSTICAS: Obtener datos de la BD
-    console.log('📊 Obteniendo estadísticas de la BD...')
-    const stats = await getEstadisticasBD(supabase)
-    console.log('✅ Estadísticas:', stats)
-    
-    // 3. HISTORIAL: Cargar mensajes previos de la conversación
-    let historialPrevio: Array<{ rol: string, contenido: string }> = []
-    if (conversacionId) {
-      console.log('📜 Cargando historial de conversación...')
-      const { data: historial, error: historialError } = await supabase
-        .from('chatbot_mensajes')
-        .select('rol, contenido')
-        .eq('conversacion_id', conversacionId)
-        .order('created_at', { ascending: true })
-        .limit(10) // Últimos 10 mensajes
+    // Ejecutar las 3 operaciones en paralelo
+    const [ubicacionDetectada, stats, historialData] = await Promise.all([
+      // 1. GEOCODING: Convertir GPS a ciudad/provincia (con caché)
+      ubicacionUsuario?.lat && ubicacionUsuario?.lng
+        ? getCached(
+            `geocoding:${ubicacionUsuario.lat.toFixed(4)},${ubicacionUsuario.lng.toFixed(4)}`,
+            CACHE_TTL.GEOCODING,
+            () => getCityAndProvinceFromCoords(ubicacionUsuario.lat, ubicacionUsuario.lng)
+          )
+        : Promise.resolve(null),
       
-      if (!historialError && historial) {
-        historialPrevio = historial
-        console.log(`✅ Cargados ${historial.length} mensajes del historial`)
-      }
-    }
+      // 2. ESTADÍSTICAS: Obtener datos de la BD (con caché)
+      getEstadisticasBD(supabase),
+      
+      // 3. HISTORIAL: Cargar mensajes previos de la conversación
+      conversacionId
+        ? supabase
+            .from('chatbot_mensajes')
+            .select('rol, contenido')
+            .eq('conversacion_id', conversacionId)
+            .order('created_at', { ascending: true })
+            .limit(10)
+        : Promise.resolve({ data: null, error: null })
+    ])
+    
+    const contextDuration = Date.now() - contextStartTime
+    logger.metric('Context Load', contextDuration)
+    
+    logger.debug('Contexto cargado', {
+      location: ubicacionDetectada ? formatLocation(ubicacionDetectada) : 'none',
+      stats,
+      historyCount: historialData.data?.length || 0
+    })
+    
+    const historialPrevio: Array<{ rol: string, contenido: string }> = historialData.data || []
     
     // 4. CONSTRUIR SYSTEM PROMPT ENRIQUECIDO
     let systemPromptEnriquecido = config.system_prompt
@@ -711,14 +800,21 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
       }, { status: 400 })
     }
     
-    // Error genérico - MOSTRAR TODO EN PRODUCCIÓN TEMPORALMENTE PARA DEBUG
+    // Error genérico - Seguro para producción
     return NextResponse.json({
       error: 'Error interno del servidor',
-      details: error.message || 'Error desconocido',
-      errorName: error.name,
-      errorCode: error.code,
-      stack: error.stack, // TEMPORAL: mostrar siempre para debugging
-      fullError: String(error)
+      message: 'Estamos trabajando en solucionarlo. Por favor, inténtalo de nuevo en unos momentos.',
+      support: 'Si el problema persiste, contacta con soporte@mapafurgocasa.com',
+      timestamp: new Date().toISOString(),
+      // Solo en desarrollo: mostrar detalles técnicos
+      ...(process.env.NODE_ENV === 'development' && {
+        debug: {
+          message: error.message,
+          name: error.name,
+          code: error.code,
+          stack: error.stack
+        }
+      })
     }, { status: 500 })
   }
 }
@@ -731,12 +827,13 @@ export async function GET() {
   const hasOpenAI = !!(process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN)
   const hasSupabase = !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY)
   
-  // Logs para debugging
-  console.log('🔍 [GET /api/chatbot] Verificando variables de entorno...')
-  console.log('  OPENAI (OPENAI_API_KEY || NEXT_PUBLIC_OPENAI_API_KEY_ADMIN):', hasOpenAI ? '✅ Presente' : '❌ NO encontrada')
-  console.log('  SUPABASE (SERVICE_ROLE_KEY):', hasSupabase ? '✅ Presente' : '❌ NO encontrada')
+  // Logs reducidos
   const envVars = Object.keys(process.env).filter(k => k.includes('OPENAI') || k.includes('SUPABASE') || k.includes('GOOGLE'))
-  console.log('  🔑 Variables encontradas:', envVars)
+  logger.debug('GET /api/chatbot - Verificando variables', {
+    hasOpenAI,
+    hasSupabase,
+    envVarsCount: envVars.length
+  })
   
   return NextResponse.json({
     service: 'Chatbot Furgocasa',
