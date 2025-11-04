@@ -1,0 +1,18 @@
+{
+  "name": "chatbot-tester",
+  "version": "1.0.0",
+  "description": "Sistema automatizado de testing para el chatbot de Mapa Furgocasa",
+  "main": "chatbot-tester.js",
+  "scripts": {
+    "test": "node chatbot-tester.js",
+    "test:watch": "nodemon chatbot-tester.js",
+    "test:headless": "HEADLESS=true node chatbot-tester.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
+
