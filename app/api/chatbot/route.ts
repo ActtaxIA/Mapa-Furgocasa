@@ -176,15 +176,19 @@ export async function POST(req: NextRequest) {
   
   try {
     console.log('🤖 [CHATBOT] Nueva petición recibida')
+    console.log('🔑 [CHATBOT] Verificando OPENAI_API_KEY...')
     
     // Validar variables de entorno
     if (!process.env.OPENAI_API_KEY) {
       console.error('❌ OPENAI_API_KEY no configurada')
+      console.error('🔍 Variables disponibles:', Object.keys(process.env).filter(k => k.includes('OPENAI')))
       return NextResponse.json(
         { error: 'Chatbot no configurado: falta OPENAI_API_KEY' },
         { status: 500 }
       )
     }
+    
+    console.log('✅ [CHATBOT] OPENAI_API_KEY encontrada')
     
     // Parsear request
     const body: ChatbotRequest = await req.json()
