@@ -37,12 +37,12 @@ function getSupabaseClient() {
 
 // Cliente OpenAI (se crea bajo demanda para asegurar que las env vars estén cargadas)
 function getOpenAIClient() {
-  if (!process.env.OPENAI_API_KEY) {
+  const apiKey = process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
+  if (!apiKey) {
+    console.error('❌ Variables OpenAI disponibles:', Object.keys(process.env).filter(k => k.includes('OPENAI')))
     throw new Error('OPENAI_API_KEY no está configurada')
   }
-  return new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-  })
+  return new OpenAI({ apiKey })
 }
 
 // ============================================
@@ -255,11 +255,17 @@ export async function POST(req: NextRequest) {
     console.log('🔑 [CHATBOT] Verificando OPENAI_API_KEY...')
     
     // Validar variables de entorno
-    if (!process.env.OPENAI_API_KEY) {
+    const apiKey = process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
+    if (!apiKey) {
+      const allEnvVars = Object.keys(process.env)
       console.error('❌ OPENAI_API_KEY no configurada')
-      console.error('🔍 Variables disponibles:', Object.keys(process.env).filter(k => k.includes('OPENAI')))
+      console.error('🔍 Variables con OPENAI:', allEnvVars.filter(k => k.includes('OPENAI')))
+      console.error('🔍 TODAS las variables:', allEnvVars)
       return NextResponse.json(
-        { error: 'Chatbot no configurado: falta OPENAI_API_KEY' },
+        { 
+          error: 'Chatbot no configurado: falta OPENAI_API_KEY',
+          debug: { env_vars: allEnvVars }
+        },
         { status: 500 }
       )
     }
