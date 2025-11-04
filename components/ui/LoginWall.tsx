@@ -70,6 +70,13 @@ export default function LoginWall({ onClose, feature = 'ruta' }: LoginWallProps)
           >
             Ya tengo cuenta
           </Link>
+
+          <Link
+            href="/"
+            className="block w-full text-gray-600 text-center py-2 rounded-lg font-medium hover:text-gray-900 hover:bg-gray-50 transition-all"
+          >
+            ← Volver al inicio
+          </Link>
         </div>
 
         {/* Texto pequeño */}
