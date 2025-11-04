@@ -670,6 +670,9 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
     
   } catch (error: any) {
     console.error('❌ [CHATBOT] Error general:', error)
+    console.error('❌ [CHATBOT] Error message:', error.message)
+    console.error('❌ [CHATBOT] Error stack:', error.stack)
+    console.error('❌ [CHATBOT] Error completo:', JSON.stringify(error, null, 2))
     
     // Errors específicos de OpenAI
     if (error.status === 401) {
@@ -693,11 +696,14 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
       }, { status: 400 })
     }
     
-    // Error genérico
+    // Error genérico - MOSTRAR TODO EN PRODUCCIÓN TEMPORALMENTE PARA DEBUG
     return NextResponse.json({
       error: 'Error interno del servidor',
       details: error.message || 'Error desconocido',
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      errorName: error.name,
+      errorCode: error.code,
+      stack: error.stack, // TEMPORAL: mostrar siempre para debugging
+      fullError: String(error)
     }, { status: 500 })
   }
 }
