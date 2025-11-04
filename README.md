@@ -97,6 +97,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_supabase_anon_key
 # Google Maps (Requerido)
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=tu_google_maps_api_key
 
+# Google Geocoding (Requerido para Chatbot - convierte GPS a ciudad/provincia)
+GOOGLE_MAPS_API_KEY=tu_google_maps_api_key
+
 # Google Places (Opcional - para búsqueda de lugares)
 NEXT_PUBLIC_GOOGLE_PLACES_API_KEY=tu_google_places_key
 
@@ -276,19 +279,28 @@ NEW MAPA FURGOCASA/
 
 ---
 
-## 🤖 Asistente IA con Chatbot (NUEVO) 🔒
+## 🤖 Tío Viajero IA - Asistente Chatbot (NUEVO) 🔒
 
 **Búsqueda inteligente en lenguaje natural - Requiere registro gratuito**
 
-### Características
+### Características Principales
 - 💬 **Conversación Natural** - Pregunta en español como a un amigo
 - 🔍 **Búsqueda Inteligente** - Encuentra áreas con IA (OpenAI GPT-4o-mini)
-- 📍 **Geolocalización** - Busca "áreas cerca de mí"
+- 📍 **Geolocalización GPS** - Busca "áreas cerca de mí" con tu ubicación real
+- 🌍 **Geocoding Automático** - Convierte tu GPS en ciudad/provincia
+- 🧠 **Memoria de Conversación** - Recuerda lo que hablasteis antes
 - 🎯 **Recomendaciones Personalizadas** - Basadas en tus necesidades
 - 🌍 **Búsqueda por País** - "¿Qué hay en Portugal?"
 - 💡 **Respuestas Instantáneas** - 24/7 disponible
 - 📱 **Botón Flotante** - Accesible desde cualquier página
 - 🔒 **Acceso Exclusivo** - Solo para usuarios registrados
+
+### Tecnología Avanzada
+- **Function Calling de OpenAI** - La IA decide qué funciones usar
+- **Geocoding Reverso** - GPS → Ciudad automáticamente (Google Maps API)
+- **Historial Contextual** - Carga últimos 10 mensajes de la conversación
+- **Estadísticas en Tiempo Real** - Sabe cuántas áreas hay en cada país
+- **Contexto Enriquecido** - Ubicación del usuario, estadísticas de BD, historial
 
 ### Lo que PUEDE hacer
 - ✅ Buscar áreas por ubicación específica
