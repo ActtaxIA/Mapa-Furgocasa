@@ -73,7 +73,7 @@ export default function HomePage() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium mb-6 border border-white/20">
               <GlobeAltIcon className="w-4 h-4" />
-              <span>+{totalAreas} áreas en todo el mundo</span>
+              <span>+{totalAreas} áreas verificadas</span>
             </div>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
@@ -86,7 +86,7 @@ export default function HomePage() {
             
             <p className="text-xl md:text-2xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed">
               Descubre, planifica y viaja. Toda la información que necesitas sobre áreas de pernocta,
-              campings y parkings para autocaravanas en <strong className="text-sky-200">Europa, América y resto del mundo</strong>.
+              campings y parkings para autocaravanas en <strong className="text-sky-200">Europa y Latinoamérica</strong>.
             </p>
             
             {/* CTAs */}

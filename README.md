@@ -1,8 +1,8 @@
-# 🚐 Mapa Furgocasa - Plataforma Global de Áreas para Autocaravanas
+# 🚐 Mapa Furgocasa - Plataforma de Áreas para Autocaravanas en Europa y LATAM
 
 **Versión: BETA 1.0** 🎉
 
-Plataforma web interactiva para descubrir y gestionar áreas de autocaravanas, campers y vehículos recreativos en **25+ países de Europa, América y Oceanía**.
+Plataforma web interactiva para descubrir y gestionar áreas de autocaravanas, campers y vehículos recreativos en **Europa y Latinoamérica** (España, Portugal, Francia, Italia, Alemania, Argentina, Chile, Uruguay, Brasil, Colombia, Perú y más).
 
 ---
 

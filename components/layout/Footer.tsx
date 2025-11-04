@@ -47,7 +47,7 @@ export function Footer() {
               />
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Tu guía completa de áreas para autocaravanas, campers y furgonetas camperizadas en el mundo.
+              Tu guía completa de áreas para autocaravanas, campers y furgonetas camperizadas en Europa y Latinoamérica.
             </p>
             <div className="mt-4 flex gap-3">
               {/* Redes sociales */}
@@ -151,7 +151,7 @@ export function Footer() {
                 </div>
                 <div>
                   <div className="text-white font-semibold">+{totalAreas} Áreas</div>
-                  <div className="text-xs text-gray-500">En el mundo</div>
+                  <div className="text-xs text-gray-500">Europa y LATAM</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
