@@ -39,7 +39,11 @@ function getSupabaseClient() {
   if (!supabaseUrl || !serviceRoleKey) {
     console.error('❌ Supabase URL:', supabaseUrl ? '✅' : '❌ FALTA')
     console.error('❌ Service Role Key:', serviceRoleKey ? '✅' : '❌ FALTA')
-    throw new Error('Missing Supabase credentials')
+    // Incluir diagnóstico en el mensaje de error para que llegue al cliente
+    const supabaseEnvKeys = Object.keys(process.env).filter(k => k.includes('SUPABASE'))
+    throw new Error(
+      `Missing Supabase credentials | keys_seen=${JSON.stringify(supabaseEnvKeys)} | has_url=${!!supabaseUrl} | has_service_role=${!!serviceRoleKey}`
+    )
   }
   
   console.log('✅ [SUPABASE] Credenciales encontradas correctamente')
