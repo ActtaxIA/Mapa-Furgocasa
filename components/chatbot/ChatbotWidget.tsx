@@ -45,6 +45,45 @@ export default function ChatbotWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
   
+  // Función para convertir URLs en links clicables
+  const renderMessageWithLinks = (text: string) => {
+    // Detectar URLs de Google Maps
+    const googleMapsRegex = /(Ver en Google Maps:\s*)(https:\/\/(?:www\.)?google\.com\/maps[^\s)]+)/gi;
+    
+    // Si no hay URLs, retornar texto normal
+    if (!googleMapsRegex.test(text)) {
+      return <span className="whitespace-pre-wrap">{text}</span>;
+    }
+
+    // Dividir el texto por URLs de Google Maps
+    const parts = text.split(/(Ver en Google Maps:\s*https:\/\/(?:www\.)?google\.com\/maps[^\s)]+)/gi);
+    
+    return (
+      <span className="whitespace-pre-wrap">
+        {parts.map((part, index) => {
+          const match = part.match(/Ver en Google Maps:\s*(https:\/\/(?:www\.)?google\.com\/maps[^\s)]+)/i);
+          
+          if (match) {
+            const url = match[1];
+            return (
+              <a
+                key={index}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 underline font-medium"
+              >
+                🗺️ Ver en Google Maps
+              </a>
+            );
+          }
+          
+          return <span key={index}>{part}</span>;
+        })}
+      </span>
+    );
+  }
+  
   // Obtener geolocalización
   useEffect(() => {
     if (isOpen && user && !ubicacion) {
@@ -303,7 +342,9 @@ export default function ChatbotWidget() {
                     ? 'bg-gradient-to-r from-blue-600 to-gray-700 text-white' 
                     : 'bg-white text-gray-900 shadow-md border border-blue-100'
                 }`}>
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.contenido}</p>
+                  <div className="text-sm leading-relaxed">
+                    {renderMessageWithLinks(msg.contenido)}
+                  </div>
                   
                   {/* Mostrar áreas si las hay */}
                   {msg.areas && msg.areas.length > 0 && (
