@@ -144,3 +144,5 @@ export function formatLocation(location: GeocodeResult): string {
   return `${location.city}, ${location.province}, ${location.region}, ${location.country}`
 }
 
+
+

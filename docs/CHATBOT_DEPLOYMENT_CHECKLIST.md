@@ -235,3 +235,5 @@ Si algo no funciona después de seguir todos los pasos:
 **Última actualización:** 2024-11-04
 **Versión del chatbot:** 2.0 (con Geocoding, Historial y Estadísticas)
 
+
+

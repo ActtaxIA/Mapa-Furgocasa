@@ -313,3 +313,5 @@ Asegúrate de que estas están en AWS Amplify:
 **Versión del chatbot:** 2.0 (con Geocoding, Historial y Estadísticas)  
 **Desarrollado por:** Asistente IA siguiendo ejemplo de Casi Cinco App
 
+
+
