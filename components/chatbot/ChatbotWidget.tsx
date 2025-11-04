@@ -71,7 +71,7 @@ export default function ChatbotWidget() {
     // Mensaje de bienvenida inmediato
     setMessages([{
       rol: 'assistant',
-      contenido: '¡Hola! 👋 Soy tu asistente de Furgocasa. ¿En qué puedo ayudarte hoy?\n\nPuedo ayudarte a:\n🔍 Encontrar áreas para tu autocaravana\n📍 Recomendar las mejores ubicaciones\n💡 Responder dudas sobre servicios y precios\n🌍 Buscar áreas por país o región\n\n💡 **Tip:** Si quieres planificar una ruta completa, usa nuestra herramienta 🗺️ **Planificador de Rutas** en /ruta\n\n¡Pregúntame lo que necesites! 🚐'
+      contenido: '¡Hola! 👋 Soy el Tío Viajero IA, tu compañero de aventuras en autocaravana. ¿En qué puedo ayudarte hoy?\n\nPuedo ayudarte a:\n🔍 Encontrar áreas para tu autocaravana\n📍 Recomendar las mejores ubicaciones\n💡 Responder dudas sobre servicios y precios\n🌍 Buscar áreas por país o región\n🚐 Consejos para tu viaje\n\n💡 **Tip:** Si quieres planificar una ruta completa, usa nuestra herramienta 🗺️ **Planificador de Rutas** en /ruta\n\n¡Pregúntame lo que necesites! Estoy aquí para ayudarte. 🚐✨'
     }])
     
     // La conversación se creará en el API al enviar el primer mensaje
@@ -150,9 +150,13 @@ export default function ChatbotWidget() {
         {/* Botón difuminado */}
         <button
           onClick={() => setIsOpen(false)}
-          className="fixed bottom-6 right-6 bg-gray-400 text-white rounded-full p-4 shadow-2xl z-50 blur-sm"
+          className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-gray-700 rounded-full p-2 shadow-2xl z-50 blur-sm"
         >
-          <span className="text-2xl">💬</span>
+          <img 
+            src="/tio-viajero-avatar.png" 
+            alt="Tío Viajero IA" 
+            className="w-14 h-14 object-cover rounded-full border-2 border-white"
+          />
         </button>
         
         {/* Modal de bloqueo */}
@@ -168,14 +172,18 @@ export default function ChatbotWidget() {
               </svg>
             </button>
             
-            {/* Icono de candado con chatbot */}
-            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-6">
-              <span className="text-3xl">💬</span>
+            {/* Avatar Tío Viajero */}
+            <div className="mx-auto w-24 h-24 mb-4">
+              <img 
+                src="/tio-viajero-avatar.png" 
+                alt="Tío Viajero IA" 
+                className="w-full h-full object-cover rounded-full border-4 border-blue-500 shadow-lg"
+              />
             </div>
 
             {/* Título */}
             <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">
-              Asistente IA Bloqueado
+              Tío Viajero IA Bloqueado
             </h2>
 
             {/* Descripción */}
@@ -185,9 +193,9 @@ export default function ChatbotWidget() {
             </p>
 
             {/* Beneficios */}
-            <div className="bg-purple-50 rounded-lg p-4 mb-6 space-y-2">
-              <p className="text-sm font-semibold text-purple-900 mb-2">✨ Con el asistente IA podrás:</p>
-              <ul className="text-sm text-purple-800 space-y-1">
+            <div className="bg-blue-50 rounded-lg p-4 mb-6 space-y-2">
+              <p className="text-sm font-semibold text-blue-900 mb-2">✨ Con el Tío Viajero IA podrás:</p>
+              <ul className="text-sm text-blue-800 space-y-1">
                 <li>🤖 Búsqueda inteligente con IA</li>
                 <li>💬 Conversación natural en español</li>
                 <li>🎯 Recomendaciones personalizadas</li>
@@ -201,7 +209,7 @@ export default function ChatbotWidget() {
               <Link
                 href="/auth/register"
                 onClick={() => setIsOpen(false)}
-                className="block w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white text-center py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl"
+                className="block w-full bg-gradient-to-r from-blue-600 to-gray-700 text-white text-center py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-gray-800 transition-all shadow-lg hover:shadow-xl"
               >
                 🚀 Registrarme Gratis
               </Link>
@@ -209,7 +217,7 @@ export default function ChatbotWidget() {
               <Link
                 href="/auth/login"
                 onClick={() => setIsOpen(false)}
-                className="block w-full bg-white border-2 border-gray-300 text-gray-700 text-center py-3 rounded-lg font-semibold hover:bg-gray-50 transition-all"
+                className="block w-full bg-white border-2 border-blue-300 text-gray-700 text-center py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all"
               >
                 Ya tengo cuenta
               </Link>
@@ -227,14 +235,22 @@ export default function ChatbotWidget() {
   
   return (
     <>
-      {/* Botón flotante */}
+      {/* Botón flotante con avatar */}
       {!isOpen && (
         <button
           onClick={handleOpen}
-          className="fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full p-4 shadow-2xl hover:scale-110 transition-transform z-50 animate-bounce"
-          title="Asistente IA"
+          className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-gray-700 rounded-full p-2 shadow-2xl hover:scale-110 transition-transform z-50 group"
+          title="Tío Viajero IA"
         >
-          <span className="text-2xl">💬</span>
+          <img 
+            src="/tio-viajero-avatar.png" 
+            alt="Tío Viajero IA" 
+            className="w-14 h-14 object-cover rounded-full border-2 border-white"
+          />
+          {/* Badge "IA" */}
+          <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg">
+            IA
+          </span>
         </button>
       )}
       
@@ -242,13 +258,19 @@ export default function ChatbotWidget() {
       {isOpen && user && (
         <div className="fixed bottom-6 right-6 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col z-50 border border-gray-200 max-w-[calc(100vw-3rem)] max-h-[calc(100vh-3rem)]">
           {/* Header */}
-          <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-t-2xl flex justify-between items-center">
-            <div>
-              <h3 className="font-bold flex items-center gap-2">
-                <span>🤖</span>
-                Asistente Furgocasa
-              </h3>
-              <p className="text-xs opacity-90">IA · Respuestas en tiempo real</p>
+          <div className="bg-gradient-to-r from-blue-600 to-gray-700 text-white p-4 rounded-t-2xl flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <img 
+                src="/tio-viajero-avatar.png" 
+                alt="Tío Viajero IA" 
+                className="w-10 h-10 object-cover rounded-full border-2 border-white"
+              />
+              <div>
+                <h3 className="font-bold">
+                  Tío Viajero IA
+                </h3>
+                <p className="text-xs opacity-90">IA · Respuestas en tiempo real</p>
+              </div>
             </div>
             <button 
               onClick={() => setIsOpen(false)} 
@@ -261,11 +283,20 @@ export default function ChatbotWidget() {
           {/* Mensajes */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
             {messages.map((msg, i) => (
-              <div key={i} className={`flex ${msg.rol === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div key={i} className={`flex ${msg.rol === 'user' ? 'justify-end' : 'justify-start gap-2'}`}>
+                {/* Avatar del Tío Viajero para mensajes del asistente */}
+                {msg.rol === 'assistant' && (
+                  <img 
+                    src="/tio-viajero-avatar.png" 
+                    alt="Tío Viajero IA" 
+                    className="w-8 h-8 object-cover rounded-full border-2 border-blue-500 flex-shrink-0 mt-1"
+                  />
+                )}
+                
                 <div className={`max-w-[80%] rounded-2xl p-3 ${
                   msg.rol === 'user' 
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white' 
-                    : 'bg-white text-gray-900 shadow-md border border-gray-100'
+                    ? 'bg-gradient-to-r from-blue-600 to-gray-700 text-white' 
+                    : 'bg-white text-gray-900 shadow-md border border-blue-100'
                 }`}>
                   <p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.contenido}</p>
                   
@@ -276,11 +307,11 @@ export default function ChatbotWidget() {
                         <Link
                           key={area.id}
                           href={`/area/${area.slug}`}
-                          className="block bg-purple-50 hover:bg-purple-100 p-2 rounded-lg text-xs transition-colors"
+                          className="block bg-blue-50 hover:bg-blue-100 p-2 rounded-lg text-xs transition-colors"
                           target="_blank"
                         >
-                          <strong className="text-purple-900">{area.nombre}</strong>
-                          <div className="text-purple-700 text-xs mt-1">
+                          <strong className="text-blue-900">{area.nombre}</strong>
+                          <div className="text-gray-700 text-xs mt-1">
                             📍 {area.ciudad}, {area.pais}
                             {area.precio_noche !== null && area.precio_noche > 0 && (
                               <span className="ml-2">💰 {area.precio_noche}€</span>
@@ -298,12 +329,17 @@ export default function ChatbotWidget() {
             ))}
             
             {sending && (
-              <div className="flex justify-start">
+              <div className="flex justify-start gap-2">
+                <img 
+                  src="/tio-viajero-avatar.png" 
+                  alt="Tío Viajero IA" 
+                  className="w-8 h-8 object-cover rounded-full border-2 border-blue-500 flex-shrink-0"
+                />
                 <div className="bg-white rounded-2xl p-3 shadow-md">
                   <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                   </div>
                 </div>
               </div>
@@ -319,14 +355,14 @@ export default function ChatbotWidget() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && enviarMensaje()}
-                placeholder="Pregunta lo que necesites..."
-                className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                placeholder="Pregunta al Tío Viajero..."
+                className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 disabled={sending}
               />
               <button
                 onClick={enviarMensaje}
                 disabled={sending || !input.trim()}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full px-6 py-2 hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium text-sm"
+                className="bg-gradient-to-r from-blue-600 to-gray-700 text-white rounded-full px-6 py-2 hover:from-blue-700 hover:to-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium text-sm shadow-md"
               >
                 {sending ? '...' : 'Enviar'}
               </button>
