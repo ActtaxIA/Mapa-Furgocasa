@@ -4,9 +4,13 @@ import Link from 'next/link'
 
 interface LoginWallProps {
   onClose?: () => void
+  feature?: 'ruta' | 'mapa'
 }
 
-export default function LoginWall({ onClose }: LoginWallProps) {
+export default function LoginWall({ onClose, feature = 'ruta' }: LoginWallProps) {
+  const isRuta = feature === 'ruta'
+  const isMapa = feature === 'mapa'
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="relative max-w-md w-full mx-4 bg-white rounded-2xl shadow-2xl p-8 animate-fade-in">
@@ -19,13 +23,24 @@ export default function LoginWall({ onClose }: LoginWallProps) {
 
         {/* Título */}
         <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">
-          Planificador de Rutas Bloqueado
+          {isRuta && 'Planificador de Rutas Bloqueado'}
+          {isMapa && 'Mapa Interactivo Bloqueado'}
         </h2>
 
         {/* Descripción */}
         <p className="text-gray-600 text-center mb-6 leading-relaxed">
-          Para usar la herramienta de <span className="font-semibold text-blue-600">Planificación de Rutas</span>, 
-          la más potente de nuestra app, es necesario registrarse e iniciar sesión.
+          {isRuta && (
+            <>
+              Para usar la herramienta de <span className="font-semibold text-blue-600">Planificación de Rutas</span>, 
+              la más potente de nuestra app, es necesario registrarse e iniciar sesión.
+            </>
+          )}
+          {isMapa && (
+            <>
+              Para usar el <span className="font-semibold text-blue-600">Mapa Interactivo</span> y acceder 
+              a todas las áreas de autocaravanas, es necesario registrarse e iniciar sesión.
+            </>
+          )}
         </p>
 
         {/* Beneficios */}

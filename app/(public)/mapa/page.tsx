@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import type { Area } from '@/types/database.types'
 import { useEffect, useState, useMemo } from 'react'
 import { MapIcon, FunnelIcon, ListBulletIcon } from '@heroicons/react/24/outline'
+import LoginWall from '@/components/ui/LoginWall'
 
 export default function MapaPage() {
   const [areas, setAreas] = useState<Area[]>([])
@@ -19,6 +20,8 @@ export default function MapaPage() {
   const [mostrarLista, setMostrarLista] = useState(false)
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const [gpsActive, setGpsActive] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  const [authLoading, setAuthLoading] = useState(true)
   
   const [filtros, setFiltros] = useState<Filtros>({
     busqueda: '',
@@ -27,6 +30,26 @@ export default function MapaPage() {
     precio: '',
     caracteristicas: []
   })
+
+  // Verificar autenticación
+  useEffect(() => {
+    const supabase = createClient()
+    
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      setAuthLoading(false)
+    }
+    
+    getUser()
+
+    // Suscribirse a cambios de autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   // Cargar áreas desde Supabase (CON CARGA PROGRESIVA)
   useEffect(() => {
@@ -211,6 +234,21 @@ export default function MapaPage() {
     // En móvil se muestra el InfoWindow del mapa, no se abre la lista
   }
 
+  // Mostrar loading mientras comprobamos autenticación
+  if (authLoading) {
+    return (
+      <div className="h-screen flex flex-col overflow-hidden">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Cargando...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (loading && areas.length === 0) {
     return (
       <div className="h-screen flex flex-col overflow-hidden bg-gray-100">
@@ -276,12 +314,12 @@ export default function MapaPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-screen flex flex-col overflow-hidden relative">
       {/* Navbar - siempre visible */}
       <Navbar />
       
-      {/* Layout principal */}
-      <main className="flex-1 relative flex overflow-hidden min-h-0">
+      {/* Layout principal - difuminado si no hay usuario */}
+      <main className={`flex-1 relative flex overflow-hidden min-h-0 ${!user ? 'blur-sm pointer-events-none select-none' : ''}`}>
         {/* Panel de Filtros - Desktop y Tablet */}
         <aside className="hidden md:block md:w-72 lg:w-80 bg-white shadow-lg border-r overflow-y-auto">
           <FiltrosMapa
@@ -327,6 +365,9 @@ export default function MapaPage() {
           />
         </aside>
       </main>
+
+      {/* Modal de bloqueo si no hay usuario */}
+      {!user && <LoginWall feature="mapa" />}
 
       {/* Bottom Sheet - Filtros (solo móvil) */}
       <BottomSheet

@@ -55,7 +55,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 lg:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/mapa" className="flex items-center hover:opacity-90 transition-opacity">
+          <Link href={user ? "/mapa" : "/"} className="flex items-center hover:opacity-90 transition-opacity">
             <Image 
               src="/logo-furgocasa.png" 
               alt="Furgocasa" 

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -22,18 +21,9 @@ import {
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid'
 
 export default function HomePage() {
-  const router = useRouter()
   const [totalAreas, setTotalAreas] = useState(1000)
   
   useEffect(() => {
-    // Detectar si se está ejecutando como PWA instalada
-    const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
-                  (window as any).navigator?.standalone === true
-    
-    if (isPWA) {
-      router.replace('/mapa')
-    }
-
     // Cargar contador dinámico de áreas
     const loadTotalAreas = async () => {
       try {
@@ -52,7 +42,7 @@ export default function HomePage() {
     }
 
     loadTotalAreas()
-  }, [router])
+  }, [])
 
   return (
     <div className="min-h-screen bg-white">
@@ -92,17 +82,16 @@ export default function HomePage() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Link
-                href="/mapa"
+                href="/auth/register"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-[#0b3c74] text-lg font-bold rounded-xl hover:bg-gray-50 transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
               >
-                <MapIcon className="w-6 h-6" />
-                Explorar Mapa Gratis
+                Crear Cuenta Gratis
               </Link>
               <Link
-                href="/auth/register"
+                href="/auth/login"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent text-white text-lg font-bold rounded-xl border-2 border-white hover:bg-white/10 transition-all"
               >
-                Crear Cuenta Gratis
+                Ya tengo cuenta
               </Link>
             </div>
 
@@ -337,23 +326,21 @@ export default function HomePage() {
               </h2>
               <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
                 Únete a miles de autocaravanistas que ya planifican sus viajes con Mapa Furgocasa. 
-                <strong className="text-sky-200"> Gratis, sin registros obligatorios</strong>.
+                <strong className="text-sky-200"> 100% gratis para siempre</strong>.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                 <Link
-                  href="/mapa"
+                  href="/auth/register"
                   className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-white text-[#0b3c74] text-xl font-bold rounded-xl hover:bg-gray-50 transition-all shadow-xl transform hover:-translate-y-1"
                 >
-                  <MapIcon className="w-7 h-7" />
-                  Explorar Mapa Ahora
+                  Registrarme Gratis
                 </Link>
                 <Link
-                  href="/ruta"
+                  href="/auth/login"
                   className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-transparent text-white text-xl font-bold rounded-xl border-2 border-white hover:bg-white/10 transition-all"
                 >
-                  <ArrowPathIcon className="w-7 h-7" />
-                  Planificar Mi Ruta
+                  Iniciar Sesión
                 </Link>
               </div>
 
