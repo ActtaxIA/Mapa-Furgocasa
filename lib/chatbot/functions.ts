@@ -320,15 +320,14 @@ export async function getAreasPopulares(limit: number = 10): Promise<AreaResumen
       .select(`
         id, nombre, slug, ciudad, provincia, pais, 
         latitud, longitud, precio_noche, 
-        servicios, tipo_area, valoracion_media,
-        total_valoraciones, plazas_totales, 
-        google_maps_url, fotos
+        servicios, tipo_area, google_rating,
+        plazas_totales, 
+        google_maps_url, fotos_urls
       `)
       .eq('activo', true)
-      .not('valoracion_media', 'is', null)
-      .gte('total_valoraciones', 5) // Al menos 5 valoraciones
-      .order('valoracion_media', { ascending: false })
-      .order('total_valoraciones', { ascending: false })
+      .not('google_rating', 'is', null)
+      .gte('google_rating', 3) // Al menos rating de 3
+      .order('google_rating', { ascending: false })
       .limit(limit)
     
     if (error) {
@@ -363,13 +362,13 @@ export async function buscarAreasPorNombre(nombre: string, limit: number = 5): P
       .select(`
         id, nombre, slug, ciudad, provincia, pais, 
         latitud, longitud, precio_noche, 
-        servicios, tipo_area, valoracion_media,
-        total_valoraciones, plazas_totales, 
-        google_maps_url, fotos
+        servicios, tipo_area, google_rating,
+        plazas_totales, 
+        google_maps_url, fotos_urls
       `)
       .eq('activo', true)
       .ilike('nombre', `%${nombre}%`)
-      .order('valoracion_media', { ascending: false, nullsFirst: false })
+      .order('google_rating', { ascending: false, nullsFirst: false })
       .limit(limit)
     
     if (error) {
