@@ -29,13 +29,20 @@ function getSupabaseClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
   
+  console.log('🔍 [SUPABASE] Buscando credenciales...')
+  console.log('  - NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl ? '✅ Encontrada' : '❌ FALTA')
+  console.log('  - SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅ Encontrada' : '❌ FALTA')
+  console.log('  - NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY ? '✅ Encontrada' : '❌ FALTA')
+  console.log('  - Variables con SUPABASE:', Object.keys(process.env).filter(k => k.includes('SUPABASE')))
+  console.log('  - TODAS las variables:', Object.keys(process.env).sort())
+  
   if (!supabaseUrl || !serviceRoleKey) {
     console.error('❌ Supabase URL:', supabaseUrl ? '✅' : '❌ FALTA')
     console.error('❌ Service Role Key:', serviceRoleKey ? '✅' : '❌ FALTA')
-    console.error('❌ Variables Supabase encontradas:', Object.keys(process.env).filter(k => k.includes('SUPABASE')))
     throw new Error('Missing Supabase credentials')
   }
   
+  console.log('✅ [SUPABASE] Credenciales encontradas correctamente')
   return createClient(supabaseUrl, serviceRoleKey)
 }
 
