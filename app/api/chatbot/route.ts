@@ -25,14 +25,17 @@ import {
 
 // Cliente OpenAI
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!
+  apiKey: process.env.OPENAI_API_KEY || ''
 })
 
 // Cliente Supabase (service role para acceso completo)
 function getSupabaseClient() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('Missing Supabase credentials')
+  }
   return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
   )
 }
 
@@ -172,6 +175,15 @@ export async function POST(req: NextRequest) {
   
   try {
     console.log('🤖 [CHATBOT] Nueva petición recibida')
+    
+    // Validar variables de entorno
+    if (!process.env.OPENAI_API_KEY) {
+      console.error('❌ OPENAI_API_KEY no configurada')
+      return NextResponse.json(
+        { error: 'Chatbot no configurado: falta OPENAI_API_KEY' },
+        { status: 500 }
+      )
+    }
     
     // Parsear request
     const body: ChatbotRequest = await req.json()

@@ -34,10 +34,15 @@ export default function ChatbotWidget() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      // Cerrar modal si el usuario se autentica
+      if (session?.user && isOpen) {
+        setIsOpen(false)
+        setTimeout(() => setIsOpen(true), 100) // Reabrir para mostrar el chat real
+      }
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase])
+  }, [supabase, isOpen])
   
   // Auto-scroll al último mensaje
   useEffect(() => {
