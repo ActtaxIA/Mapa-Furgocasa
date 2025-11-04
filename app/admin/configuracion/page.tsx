@@ -14,19 +14,45 @@ interface IAConfig {
   updated_at: string
 }
 
+interface ChatbotConfig {
+  id: string
+  nombre: string
+  descripcion: string
+  modelo: string
+  temperature: number
+  max_tokens: number
+  system_prompt: string
+  contexto_inicial: string | null
+  instrucciones_busqueda: string | null
+  puede_geolocalizar: boolean
+  puede_buscar_areas: boolean
+  puede_obtener_detalles: boolean
+  puede_buscar_por_pais: boolean
+  max_mensajes_por_sesion: number
+  max_areas_por_respuesta: number
+  radio_busqueda_default_km: number
+  activo: boolean
+  version: number
+  created_at: string
+  updated_at: string
+}
+
 export default function ConfiguracionPage() {
   const supabase = createClient()
   
   const [configs, setConfigs] = useState<IAConfig[]>([])
+  const [chatbotConfig, setChatbotConfig] = useState<ChatbotConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [activeTab, setActiveTab] = useState<string>('scrape_services')
   const [editedConfig, setEditedConfig] = useState<IAConfig | null>(null)
+  const [editedChatbotConfig, setEditedChatbotConfig] = useState<ChatbotConfig | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const [apiStatus, setApiStatus] = useState<{
     openai: boolean
     serpapi: boolean
     supabase: boolean
+    chatbotOpenAI: boolean
   } | null>(null)
 
   useEffect(() => {
@@ -43,32 +69,55 @@ export default function ConfiguracionPage() {
       const { data, error } = await supabase.from('areas').select('id').limit(1)
       const supabaseOk = !error && !!data
 
+      // Check Chatbot API (servidor)
+      let chatbotOpenAIOk = false
+      try {
+        const response = await fetch('/api/chatbot')
+        if (response.ok) {
+          const data = await response.json()
+          chatbotOpenAIOk = data.status === 'active'
+        }
+      } catch {
+        chatbotOpenAIOk = false
+      }
+
       setApiStatus({
         openai: !!openaiKey,
         serpapi: !!serpApiKey,
-        supabase: supabaseOk
+        supabase: supabaseOk,
+        chatbotOpenAI: chatbotOpenAIOk
       })
     } catch (error) {
       console.error('Error checking APIs:', error)
       setApiStatus({
         openai: false,
         serpapi: false,
-        supabase: false
+        supabase: false,
+        chatbotOpenAI: false
       })
     }
   }
 
   useEffect(() => {
-    const active = configs.find(c => c.config_key === activeTab)
-    if (active) {
-      setEditedConfig(JSON.parse(JSON.stringify(active)))
+    if (activeTab === 'chatbot') {
+      if (chatbotConfig) {
+        setEditedChatbotConfig(JSON.parse(JSON.stringify(chatbotConfig)))
+      }
+      setEditedConfig(null)
+    } else {
+      const active = configs.find(c => c.config_key === activeTab)
+      if (active) {
+        setEditedConfig(JSON.parse(JSON.stringify(active)))
+      }
+      setEditedChatbotConfig(null)
     }
-  }, [activeTab, configs])
+  }, [activeTab, configs, chatbotConfig])
 
   const loadConfigs = async () => {
     try {
       setLoading(true)
       
+      // Cargar configs de IA normales
       const { data, error } = await supabase
         .from('ia_config')
         .select('*')
@@ -77,6 +126,19 @@ export default function ConfiguracionPage() {
       if (error) throw error
 
       setConfigs(data || [])
+      
+      // Cargar config del chatbot
+      const { data: chatbotData, error: chatbotError } = await supabase
+        .from('chatbot_config')
+        .select('*')
+        .eq('nombre', 'asistente_principal')
+        .eq('activo', true)
+        .single()
+      
+      if (!chatbotError && chatbotData) {
+        setChatbotConfig(chatbotData)
+      }
+      
       if (data && data.length > 0 && !activeTab) {
         setActiveTab(data[0].config_key)
       }
@@ -94,20 +156,44 @@ export default function ConfiguracionPage() {
   }
 
   const handleSave = async () => {
-    if (!editedConfig) return
-
     try {
       setSaving(true)
 
-      const { error } = await supabase
-        .from('ia_config')
-        .update({
-          config_value: editedConfig.config_value,
-          updated_at: new Date().toISOString()
-        })
-        .eq('config_key', editedConfig.config_key)
+      if (activeTab === 'chatbot' && editedChatbotConfig) {
+        // Guardar configuración del chatbot
+        const { error } = await supabase
+          .from('chatbot_config')
+          .update({
+            modelo: editedChatbotConfig.modelo,
+            temperature: editedChatbotConfig.temperature,
+            max_tokens: editedChatbotConfig.max_tokens,
+            system_prompt: editedChatbotConfig.system_prompt,
+            contexto_inicial: editedChatbotConfig.contexto_inicial,
+            instrucciones_busqueda: editedChatbotConfig.instrucciones_busqueda,
+            puede_geolocalizar: editedChatbotConfig.puede_geolocalizar,
+            puede_buscar_areas: editedChatbotConfig.puede_buscar_areas,
+            puede_obtener_detalles: editedChatbotConfig.puede_obtener_detalles,
+            puede_buscar_por_pais: editedChatbotConfig.puede_buscar_por_pais,
+            max_mensajes_por_sesion: editedChatbotConfig.max_mensajes_por_sesion,
+            max_areas_por_respuesta: editedChatbotConfig.max_areas_por_respuesta,
+            radio_busqueda_default_km: editedChatbotConfig.radio_busqueda_default_km,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', editedChatbotConfig.id)
 
-      if (error) throw error
+        if (error) throw error
+      } else if (editedConfig) {
+        // Guardar configuración normal
+        const { error } = await supabase
+          .from('ia_config')
+          .update({
+            config_value: editedConfig.config_value,
+            updated_at: new Date().toISOString()
+          })
+          .eq('config_key', editedConfig.config_key)
+
+        if (error) throw error
+      }
 
       showMessage('success', '✓ Configuración guardada correctamente')
       await loadConfigs()
@@ -138,6 +224,15 @@ export default function ConfiguracionPage() {
         ...editedConfig.config_value,
         [field]: value
       }
+    })
+  }
+
+  const updateChatbotConfigValue = (field: keyof ChatbotConfig, value: any) => {
+    if (!editedChatbotConfig) return
+    
+    setEditedChatbotConfig({
+      ...editedChatbotConfig,
+      [field]: value
     })
   }
 
@@ -194,7 +289,8 @@ export default function ConfiguracionPage() {
 
   const configTabs = [
     { key: 'scrape_services', label: '🔍 Actualizar Servicios', icon: '🤖' },
-    { key: 'enrich_description', label: '✨ Enriquecer Textos', icon: '📝' }
+    { key: 'enrich_description', label: '✨ Enriquecer Textos', icon: '📝' },
+    { key: 'chatbot', label: '🧳 Tío Viajero IA (Chatbot)', icon: '💬' }
   ]
 
   if (loading) {
@@ -233,7 +329,7 @@ export default function ConfiguracionPage() {
         {apiStatus && (
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">🔌 Estado de Conexiones API</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* OpenAI */}
               <div className={`flex items-center gap-3 p-4 rounded-lg border-2 ${
                 apiStatus.openai 
@@ -305,6 +401,31 @@ export default function ConfiguracionPage() {
                     apiStatus.supabase ? 'text-green-700' : 'text-red-700'
                   }`}>
                     {apiStatus.supabase ? 'Conectado' : 'Error de conexión'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Chatbot OpenAI (Servidor) */}
+              <div className={`flex items-center gap-3 p-4 rounded-lg border-2 ${
+                apiStatus.chatbotOpenAI 
+                  ? 'bg-green-50 border-green-200' 
+                  : 'bg-red-50 border-red-200'
+              }`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  apiStatus.chatbotOpenAI ? 'bg-green-500' : 'bg-red-500'
+                }`}>
+                  {apiStatus.chatbotOpenAI ? (
+                    <CheckIcon className="w-6 h-6 text-white" />
+                  ) : (
+                    <span className="text-white text-xl">✕</span>
+                  )}
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Chatbot API</p>
+                  <p className={`text-sm ${
+                    apiStatus.chatbotOpenAI ? 'text-green-700' : 'text-red-700'
+                  }`}>
+                    {apiStatus.chatbotOpenAI ? 'Conectado' : 'Error: falta OPENAI_API_KEY'}
                   </p>
                 </div>
               </div>
@@ -591,6 +712,220 @@ export default function ConfiguracionPage() {
               </div>
             </div>
           )}
+
+          {/* Chatbot Config Form */}
+          {editedChatbotConfig && activeTab === 'chatbot' && (
+            <div className="p-6 space-y-6">
+              {/* Descripción */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-900">
+                  <strong>Función:</strong> {editedChatbotConfig.descripcion}
+                </p>
+                <p className="text-xs text-blue-700 mt-2">
+                  Última actualización: {new Date(editedChatbotConfig.updated_at).toLocaleString('es-ES')}
+                </p>
+                <p className="text-xs text-blue-700 mt-1">
+                  Versión: {editedChatbotConfig.version}
+                </p>
+              </div>
+
+              {/* Modelo */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Modelo de OpenAI
+                </label>
+                <select
+                  value={editedChatbotConfig.modelo}
+                  onChange={(e) => updateChatbotConfigValue('modelo', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="gpt-4o-mini">gpt-4o-mini (Recomendado - Rápido y económico)</option>
+                  <option value="gpt-4o">gpt-4o (Más potente)</option>
+                  <option value="gpt-4-turbo">gpt-4-turbo (Muy potente pero lento)</option>
+                  <option value="gpt-3.5-turbo">gpt-3.5-turbo (Más económico pero menos preciso)</option>
+                </select>
+              </div>
+
+              {/* Temperature */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Temperature: {editedChatbotConfig.temperature}
+                  <span className="ml-2 text-xs text-gray-500">
+                    (0 = muy conservador, 1 = muy creativo)
+                  </span>
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={editedChatbotConfig.temperature}
+                  onChange={(e) => updateChatbotConfigValue('temperature', parseFloat(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>Conservador (0.0)</span>
+                  <span>Equilibrado (0.5)</span>
+                  <span>Creativo (1.0)</span>
+                </div>
+              </div>
+
+              {/* Max Tokens */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tokens máximos
+                </label>
+                <input
+                  type="number"
+                  min="100"
+                  max="4000"
+                  step="100"
+                  value={editedChatbotConfig.max_tokens}
+                  onChange={(e) => updateChatbotConfigValue('max_tokens', parseInt(e.target.value))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Longitud máxima de la respuesta (más tokens = respuestas más largas pero más costosas)
+                </p>
+              </div>
+
+              {/* System Prompt */}
+              <div className="border-t pt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  System Prompt (Instrucciones del Tío Viajero IA)
+                </label>
+                <textarea
+                  value={editedChatbotConfig.system_prompt}
+                  onChange={(e) => updateChatbotConfigValue('system_prompt', e.target.value)}
+                  rows={15}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm resize-y"
+                  placeholder="Define el comportamiento y personalidad del chatbot..."
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Este prompt define la personalidad, tono y comportamiento del Tío Viajero IA
+                </p>
+              </div>
+
+              {/* Capacidades */}
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">🎯 Capacidades Funcionales</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <label className="flex items-center gap-3 p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editedChatbotConfig.puede_geolocalizar}
+                      onChange={(e) => updateChatbotConfigValue('puede_geolocalizar', e.target.checked)}
+                      className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                    <div>
+                      <p className="font-medium text-gray-900">📍 Geolocalización</p>
+                      <p className="text-xs text-gray-500">Buscar áreas cerca del usuario</p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-3 p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editedChatbotConfig.puede_buscar_areas}
+                      onChange={(e) => updateChatbotConfigValue('puede_buscar_areas', e.target.checked)}
+                      className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                    <div>
+                      <p className="font-medium text-gray-900">🔍 Buscar Áreas</p>
+                      <p className="text-xs text-gray-500">Función principal de búsqueda</p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-3 p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editedChatbotConfig.puede_obtener_detalles}
+                      onChange={(e) => updateChatbotConfigValue('puede_obtener_detalles', e.target.checked)}
+                      className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                    <div>
+                      <p className="font-medium text-gray-900">📋 Detalles de Áreas</p>
+                      <p className="text-xs text-gray-500">Obtener información completa</p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-3 p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editedChatbotConfig.puede_buscar_por_pais}
+                      onChange={(e) => updateChatbotConfigValue('puede_buscar_por_pais', e.target.checked)}
+                      className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                    <div>
+                      <p className="font-medium text-gray-900">🌍 Buscar por País</p>
+                      <p className="text-xs text-gray-500">Filtrar por ubicación</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Límites y Configuración */}
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">⚙️ Límites y Configuración</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Mensajes máximos por sesión
+                    </label>
+                    <input
+                      type="number"
+                      min="10"
+                      max="200"
+                      value={editedChatbotConfig.max_mensajes_por_sesion}
+                      onChange={(e) => updateChatbotConfigValue('max_mensajes_por_sesion', parseInt(e.target.value))}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Áreas máximas por respuesta
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="20"
+                      value={editedChatbotConfig.max_areas_por_respuesta}
+                      onChange={(e) => updateChatbotConfigValue('max_areas_por_respuesta', parseInt(e.target.value))}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Radio de búsqueda (km)
+                    </label>
+                    <input
+                      type="number"
+                      min="10"
+                      max="500"
+                      step="10"
+                      value={editedChatbotConfig.radio_busqueda_default_km}
+                      onChange={(e) => updateChatbotConfigValue('radio_busqueda_default_km', parseInt(e.target.value))}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-4 border-t border-gray-200">
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-gray-700 hover:from-blue-700 hover:to-gray-800 text-white rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <CheckIcon className="w-5 h-5" />
+                  {saving ? 'Guardando...' : 'Guardar Cambios'}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Info sobre agentes y tipos de prompts */}
@@ -602,6 +937,7 @@ export default function ConfiguracionPage() {
             <ul className="list-disc list-inside space-y-1 ml-2">
               <li><strong>🔍 Actualizar Servicios:</strong> Usa OpenAI para analizar texto web y detectar servicios (agua, electricidad, etc.)</li>
               <li><strong>✨ Enriquecer Textos:</strong> Usa OpenAI para generar descripciones detalladas de áreas</li>
+              <li><strong>🧳 Tío Viajero IA (Chatbot):</strong> Asistente conversacional con IA que ayuda a usuarios a encontrar áreas usando Function Calling</li>
             </ul>
           </div>
 
