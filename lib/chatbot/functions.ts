@@ -425,8 +425,8 @@ export function formatAreaParaChat(area: AreaResumen): string {
     texto += `✨ Servicios: ${serviciosDisponibles.join(', ')}\n`
   }
   
-  if (area.valoracion_media && area.total_valoraciones > 0) {
-    texto += `⭐ ${area.valoracion_media.toFixed(1)}/5 (${area.total_valoraciones} valoraciones)\n`
+  if (area.google_rating && area.google_rating > 0) {
+    texto += `⭐ ${area.google_rating.toFixed(1)}/5 (Google)\n`
   }
   
   if (area.plazas_totales) {
