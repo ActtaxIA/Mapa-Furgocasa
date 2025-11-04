@@ -102,7 +102,15 @@ export default function ConfiguracionPage() {
   useEffect(() => {
     if (activeTab === 'chatbot') {
       if (chatbotConfig) {
-        setEditedChatbotConfig(JSON.parse(JSON.stringify(chatbotConfig)))
+        const config = JSON.parse(JSON.stringify(chatbotConfig))
+        
+        // Debug: ver estructura de prompts
+        console.log('🔍 Chatbot Config:', config)
+        console.log('🔍 Prompts:', config.prompts)
+        console.log('🔍 Prompts.prompts:', config.prompts?.prompts)
+        console.log('🔍 Es array?:', Array.isArray(config.prompts?.prompts))
+        
+        setEditedChatbotConfig(config)
       }
       setEditedConfig(null)
     } else {
