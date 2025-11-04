@@ -1,407 +1,185 @@
-# 📝 Changelog - Mapa Furgocasa
+# 📋 Changelog - Mapa Furgocasa
 
-Todos los cambios notables de este proyecto serán documentados en este archivo.
-
----
-
-## [FILTROS ADMIN] - 2025-10-29
-
-### 🔍 Mejora Completa de Filtros en Páginas de Administración
-
-#### ✨ Nuevas Características
-
-**1. Búsqueda Mejorada**
-- La barra de búsqueda ahora busca en **todos los campos** del área:
-  - Nombre del área
-  - Ciudad
-  - Dirección completa
-  - Provincia
-  - País
-- Permite búsquedas por cualquier término (ej: "Cataluña", "Italia", "Madrid")
-
-**2. Filtro por País**
-- Nuevo filtro de país en todas las páginas de admin
-- Carga dinámica de países desde Supabase
-- Compatible con el sistema global de áreas
-
-**3. Ordenación de Columnas**
-- Todas las tablas ahora permiten ordenar por columnas
-- Click en el encabezado para ordenar ascendente/descendente
-- Indicador visual de la columna y dirección de ordenación (↑↓)
-
-**4. Detección Mejorada de Descripciones**
-- Umbral de 200 caracteres para descripción válida (antes 50)
-- Detección automática de placeholder text de Google Maps
-- Badges informativos con longitud de descripción:
-  - ✓ Con descripción (X chars)
-  - ⚠ Descripción corta (X chars)
-  - ✗ Placeholder Google Maps
-  - ✗ Sin descripción
-- Filtro "Solo sin descripción" corregido para identificar áreas que realmente necesitan enriquecimiento
-
-#### 🔧 Páginas Actualizadas
-
-**`/admin/areas/actualizar-servicios`**
-- Búsqueda multi-campo implementada
-- Filtro por país
-- Ordenación de columnas (nombre, ciudad, provincia, país)
-- Filtro adicional "Solo sin web"
-
-**`/admin/areas/enriquecer-textos`**
-- Búsqueda multi-campo implementada
-- Filtro por país
-- Ordenación de columnas
-- Filtro "Solo sin descripción" mejorado (considera placeholder y longitud)
-- Badges de estado de descripción mejorados
-- Proceso de enriquecimiento actualizado para respetar descripciones existentes válidas
-
-**`/admin/areas/enriquecer-imagenes`**
-- Búsqueda multi-campo implementada
-- Filtro por país
-- Ordenación de columnas
-- Logging detallado de SerpAPI para diagnóstico
-
-**`/admin/analytics`**
-- Dashboard completamente renovado para sistema global
-- Estadísticas por país (top 10)
-- Estadísticas por región/CCAA
-- Métricas de enriquecimiento de contenido:
-  - Áreas con descripción IA
-  - Áreas con imágenes
-- Gráfico de crecimiento mensual
-- KPIs globales (total países, total regiones)
-
-**`/mapa` (público)**
-- Filtro por país implementado
-- Búsqueda multi-campo en áreas
-
-#### 🗄️ Limpieza de Base de Datos
-
-**Normalización de Países**
-- Corrección de áreas con países mal asignados (provincias españolas como país)
-- Normalización de códigos postales franceses mal categorizados como España
-- Mapeo correcto de 25+ países
-
-**Normalización de Regiones Administrativas**
-- Adición del campo `comunidad_autonoma` para divisiones administrativas
-- Mapeo completo para:
-  - 🇪🇸 España: 17 Comunidades Autónomas
-  - 🇫🇷 Francia: 13 Regiones
-  - 🇩🇪 Alemania: 16 Bundesländer
-  - 🇮🇹 Italia: 20 Regioni
-  - 🇵🇹 Portugal: 7 Regiões
-  - 🇦🇹 Austria: 9 Estados
-  - 🇨🇭 Suiza: 6 Cantones principales
-  - 🇧🇪 Bélgica: 3 Regiones
-  - 🇳🇱 Países Bajos: 5 Provincias principales
-  - 🇺🇸 Estados Unidos: 50 Estados
-  - 🇲🇽 México: 32 Estados
-  - 🇦🇷 Argentina: 24 Provincias
-  - 🇨🇱 Chile: 16 Regiones
-  - 🇧🇷 Brasil: 27 Estados
-  - 🇨🇴 Colombia: 33 Departamentos
-  - 🇵🇪 Perú: 25 Regiones
-- Limpieza de códigos postales en campo `provincia`
-- Normalización de nombres de provincias (tildes y variantes)
-- Cobertura del 100% de áreas con región asignada
-
-**Limpieza de Descripciones**
-- Conversión de placeholder text a `NULL` en base de datos
-- Script SQL ejecutado para limpiar áreas existentes
-- Búsqueda masiva actualizada para no insertar placeholders
-
-#### 🐛 Correcciones de Bugs
-
-- **TypeScript**: Corregido error de tipo `Area` en `enriquecer-textos/page.tsx`
-- **TypeScript**: Corregido error en consultas Supabase (usar `select('*')`)
-- **TypeScript**: Agregado campo `comunidad_autonoma` a tipos de base de datos
-- **TypeScript**: Corregido error `fotos` → `fotos_urls` en analytics
-- **SQL**: Corregido error de sintaxis UUID en scripts de normalización
-- **Filtros**: Corregida lógica de filtro de descripciones para identificar correctamente áreas sin descripción válida
-- **Enriquecimiento**: El proceso de enriquecer textos ahora respeta descripciones existentes ≥200 caracteres
-
-#### 📊 Diagnóstico SerpAPI
-
-**Problema Identificado**
-- Error 500 en enriquecimiento de imágenes diagnosticado
-- Causa: **Límite mensual de SerpAPI alcanzado** (5,000/5,000 búsquedas)
-- Logging detallado agregado para debugging futuro
-- Esperando reseteo de límite el 1 de noviembre
-
-**Mejoras de Resiliencia**
-- El sistema ahora continúa intentando otras fuentes si SerpAPI falla
-- Logs visibles en UI para diagnóstico en tiempo real
-- No bloquea el proceso completo si una fuente falla
-
-#### 📁 Scripts SQL Ejecutados (y archivados)
-
-17 scripts SQL creados y ejecutados para normalización:
-1. `fix-placeholder-descriptions.sql` - Limpieza de placeholders
-2. `fix-paises-normalizacion.sql` - Normalización de países
-3. `add-comunidad-autonoma.sql` - Agregar columna de región
-4. `fix-comunidad-autonoma-sin-tildes.sql` - Mapeo España (tildes)
-5. `fix-pais-francia-mal-categorizado.sql` - Corrección Francia
-6. `mapear-ccaa-completo.sql` - Mapeo España y Francia completo
-7. `normalizar-divisiones-administrativas-global.sql` - Europa y Latinoamérica
-8. `fix-areas-sin-comunidad-autonoma.sql` - España, Francia, Andorra edge cases
-9. `fix-areas-sin-provincia-por-ciudad.sql` - Inferir por ciudad
-10. `fix-ultimas-areas-sin-comunidad.sql` - Casos específicos
-11. `fix-provincia-usar-comunidad-autonoma.sql` - Limpieza campo provincia
-12. `fix-italia-regiones-correctas.sql` - Italia 20 regiones
-13. `fix-todos-los-paises-final.sql` - Limpieza Europa general
-14. `fix-paises-restantes.sql` - Austria, Suiza, Bélgica, Países Bajos
-15. `fix-ultimas-areas-catch-all.sql` - Catch-all 100% cobertura
-16. `analizar-estructura-paises.sql` - Script de análisis
-17. `fix-italia-por-codigo-postal.sql` - Mapeo Italia por CP
-
-Todos los scripts fueron archivados tras su ejecución exitosa.
-
-#### 🎯 Impacto
-
-- ✅ **100% de áreas** con país normalizado
-- ✅ **100% de áreas** con región/CCAA asignada
-- ✅ **+25 países** con datos normalizados
-- ✅ **+100 regiones** mapeadas correctamente
-- ✅ **Búsqueda mejorada** en todas las páginas admin
-- ✅ **Analytics globales** implementados
-- ✅ **Filtrado simplificado** (solo por país en frontend)
-- ✅ **Descripciones limpias** (sin placeholders)
+Todos los cambios importantes del proyecto se documentan en este archivo.
 
 ---
 
-## [SEO] - 2025-10-28
+## [1.0.0] - 2025-11-04 🎉
 
-### 🔍 Sistema Completo de SEO Implementado
+### 🏆 VERSIÓN 1.0 - PRODUCCIÓN
 
-#### ✨ Nuevas Características
-- **Sitemap XML Dinámico** (`app/sitemap.ts`)
-  - Generado automáticamente desde Supabase
-  - Incluye todas las áreas activas
-  - Actualizado en cada request
-  - Prioridades optimizadas por tipo de página
+Primera versión completamente funcional en producción con todas las características implementadas y operativas.
 
-- **Robots.txt Dinámico** (`app/robots.txt`)
-  - Configuración personalizada para diferentes bots
-  - Permite indexación de contenido público
-  - Bloquea admin y APIs
-  - Referencia al sitemap
+### ✅ Agregado
 
-- **Documentación SEO Completa** (`CONFIGURACION_SEO.md`)
-  - Guía completa de SEO
-  - Keywords strategy
-  - Checklist de optimización
-  - Roadmap de implementación
+#### Sistema de Chatbot IA "Tío Viajero"
+- **Chatbot conversacional completo** con OpenAI GPT-4o-mini
+- **Function Calling** con 3 funciones principales:
+  - `search_areas()` - Búsqueda inteligente por ubicación, servicios, precio
+  - `get_area_details()` - Información detallada de áreas específicas
+  - `get_areas_by_country()` - Listado por países
+- **Geolocalización automática** del usuario
+- **Sistema de prioridades** para ubicaciones explícitas vs. GPS
+- **Widget flotante** con avatar del Tío Viajero
+- **Historial de conversaciones** guardado en Supabase
+- **Links clicables** para Google Maps (mejora UX)
 
-#### 🎯 URLs Incluidas en Sitemap
-- Homepage (priority 1.0)
-- Mapa (priority 0.9)
-- Todas las áreas activas (priority 0.7)
-- Planificador de rutas (priority 0.8)
-- Páginas legales
-- Auth
+#### Editor de Prompts IA
+- **Editor visual** en `/admin/configuracion` para 3 agentes IA:
+  - 🔍 Actualizar Servicios (scrape_services)
+  - ✨ Enriquecer Textos (enrich_description)
+  - 💬 Tío Viajero IA (chatbot)
+- **Sistema de prompts múltiples** (system, user, assistant, agent)
+- **Añadir, editar, eliminar y reordenar** prompts visualmente
+- **Configuración de parámetros** (modelo, temperature, max_tokens)
+- **Guardado en Supabase** con columna JSONB `prompts`
 
-#### 📋 Próximos Pasos Recomendados
-- [ ] Implementar metadata dinámica en páginas de áreas
-- [ ] Añadir Structured Data (JSON-LD) para SEO local
-- [ ] Enviar sitemap a Google Search Console
-- [ ] Solicitar indexación de páginas principales
+#### Seguridad y Permisos
+- **Políticas RLS** completas para chatbot_config
+- **Restricción de acceso** al mapa y chatbot (requiere login)
+- **LoginWall component** genérico para bloquear features
+- **Gestión de usuarios admin** con flag `is_admin`
 
----
+#### Mejoras UX
+- **Links clicables** "Ver en Google Maps" en lugar de URLs largas
+- **"Volver al inicio"** en LoginWall para mejor navegación
+- **Mensajes de éxito/error** mejorados
+- **Estados de carga** en todas las operaciones
 
-## [DOCS] - 2025-10-28
+### 🔧 Arreglado
 
-### 📚 Reorganización y Optimización de Documentación
+#### Variables de Entorno en AWS Amplify
+- **Fix crítico**: Variables no disponibles en API routes
+- **Solución**: Exponer variables mediante `env: {}` en `next.config.js`
+- **Verificación**: Logs en `amplify.yml` para debugging
+- **Resultado**: Chatbot API ahora recibe todas las variables correctamente
 
-#### ✨ Nuevos Documentos
-- **[INDICE_DOCUMENTACION.md](./INDICE_DOCUMENTACION.md)** - Índice maestro con 30+ documentos organizados
-- **[GUIA_DEPLOYMENT_AWS.md](./GUIA_DEPLOYMENT_AWS.md)** - Guía consolidada de deployment
+#### Políticas RLS de Supabase
+- **Fix**: Error 403 al leer `chatbot_config`
+- **Solución**: Políticas permisivas para usuarios autenticados
+- **Verificación**: Query de testing directo
+- **Resultado**: Frontend puede leer/editar configuración sin errores
 
-#### ♻️ Mejoras
-- README.md actualizado con referencia al índice de documentación
-- Documentos históricos marcados con notas de referencia
-- Consolidación de información duplicada sobre deployment
-- Estructura lógica por categorías:
-  1. Instalación y Configuración
-  2. Sistemas y Funcionalidades
-  3. Soluciones y Fixes
-  4. Diagnóstico y Debugging
-  5. Deployment y Producción
-  6. Historial y Releases
-  7. Archivo
+#### Sistema de Testing Automatizado
+- **Creado**: `/tester` con Puppeteer para tests E2E
+- **Funcionalidades**:
+  - Login automático
+  - Navegación simulada
+  - Interacción con chatbot
+  - Screenshots de errores
+  - Reportes HTML detallados
+- **Uso**: Debugging del chatbot en producción
+- **Estado**: Funcional (archivos eliminados tras resolver problemas)
 
-#### 📋 Documentación Marcada como Histórica
-- `PROYECTO_CREADO.md` - Referencia histórica (ver README.md actualizado)
-- `SOLUCION_ADMIN_AREAS.md` - Supersedida por SOLUCION_ADMIN_AREAS_FINAL.md
-- `AWS_DEPLOYMENT_PROGRESS.md` - Histórico (deployment completado)
+### 📝 Documentación
 
-#### 🎯 Mejoras de Navegación
-- Búsqueda por tema en el índice
-- Flujos de trabajo comunes documentados
-- Estado de vigencia de cada documento (✅ Vigente, ⚠️ Histórico, 📁 Archivo)
-- Referencias cruzadas mejoradas entre documentos
+#### Nuevos Documentos
+- `CHATBOT_FUNCIONANDO.md` - Resumen de la solución
+- `chatbot/PROBLEMA_RESUELTO.md` - Documentación completa del fix
+- `chatbot/ACTIVAR_EDITOR_PROMPTS_TIO_VIAJERO.md` - Guía de activación
+- `supabase/migrations/ADD_chatbot_prompts_system_EJECUTAR_AHORA.sql` - Migración de prompts
+- `supabase/migrations/FIX_chatbot_config_RLS_policies.sql` - Fix de permisos
+- `CHANGELOG.md` - Este archivo
 
----
+#### Documentos Actualizados
+- `README.md` - Actualizado a v1.0 con todas las features
+- `chatbot/README.md` - Estado operativo
+- `chatbot/CHATBOT_ACCION_INMEDIATA.md` - Marcado como resuelto
+- `chatbot/CHATBOT_PROBLEMA_CRITICO_VISUALIZADO.md` - Contexto histórico
 
-## [BETA 1.0] - 2025-10-27
+### 🗄️ Base de Datos
 
-### 🎉 Lanzamiento BETA 1.0
+#### Migraciones Ejecutadas
+```sql
+-- 1. Sistema de prompts múltiples
+ALTER TABLE chatbot_config ADD COLUMN prompts JSONB;
+CREATE INDEX idx_chatbot_config_prompts ON chatbot_config USING GIN (prompts);
 
-Primera versión beta completa y funcional de la plataforma Mapa Furgocasa.
+-- 2. Políticas RLS
+CREATE POLICY "Authenticated users can read chatbot_config" ON chatbot_config FOR SELECT;
+CREATE POLICY "Admins can update chatbot_config" ON chatbot_config FOR UPDATE;
 
-### ✨ Características Principales Implementadas
+-- 3. Usuario admin
+UPDATE auth.users SET raw_user_meta_data = raw_user_meta_data || '{"is_admin": "true"}' 
+WHERE email = 'info@furgocasa.com';
+```
 
-#### 🗺️ Planificador de Rutas
-- Implementado planificador completo con Google Maps Directions API
-- Selección de origen, destino y múltiples paradas intermedias
-- Búsqueda de áreas cercanas a la ruta (radio configurable: 5, 10, 20, 50 km)
-- Cálculo automático de distancia y duración
-- Visualización de ruta optimizada en el mapa
-- Guardar rutas con nombre y descripción
-- Ver áreas encontradas en la ruta con información completa
+### 🚀 Deployment
 
-#### 👤 Dashboard de Perfil de Usuario
-- Dashboard completo con estadísticas del usuario
-- **Mis Visitas**: Lista y mapa interactivo de áreas visitadas
-- **Mis Valoraciones**: Historial completo de valoraciones
-- **Mis Favoritos**: Gestión de áreas favoritas
-- **Mis Rutas**: Rutas guardadas con opción de recargar en mapa
-- Contadores en tiempo real de todas las secciones
-- Navegación con tabs para mejor organización
+#### AWS Amplify
+- **Build exitoso** con todas las variables de entorno
+- **Variables configuradas**:
+  - `OPENAI_API_KEY`
+  - `SUPABASE_SERVICE_ROLE_KEY`
+  - `NEXT_PUBLIC_SUPABASE_URL`
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  - Todas las APIs de Google Maps
+- **Tiempo de deploy**: ~2-3 minutos
+- **URL producción**: https://www.mapafurgocasa.com
 
-#### 🔔 Sistema de Notificaciones Toast
-- Implementado sistema completo de notificaciones toast
-- 3 tipos: success, error, info
-- Auto-cierre a los 3 segundos
-- Cierre manual con botón X
-- Animaciones suaves (fade in/out)
-- Eliminados todos los `alert()` del sistema
-- Hook personalizado `useToast` para fácil integración
+#### Supabase
+- **Tabla `chatbot_config`** actualizada con columna `prompts`
+- **Políticas RLS** correctamente implementadas
+- **Usuarios** con permisos de admin configurados
 
-#### 🗺️ Mapas Mejorados
-- Migración completa de Leaflet a Google Maps API
-- InfoWindows mejoradas con fotos y estilos profesionales
-- Mapa de visitas en el perfil con marcadores personalizados
-- Mejor rendimiento y experiencia de usuario
-- Geolocalización integrada
+### 📊 Métricas v1.0
 
-#### 📝 Sistema de Visitas y Valoraciones
-- Registro completo de visitas con fecha y notas
-- Sistema de valoraciones con estrellas (1-5)
-- Comentarios detallados por valoración
-- Verificación de autenticación antes de registrar
-- Modales elegantes para registro de visitas
-- Confirmación de éxito con feedback visual
-
-### 🔧 Mejoras Técnicas
-
-#### Base de Datos
-- Nueva tabla `rutas` con RLS policies
-- Políticas de seguridad optimizadas
-- Índices para mejor rendimiento
-- Tipos TypeScript actualizados
-
-#### Componentes
-- `PlanificadorRuta.tsx`: Planificador completo con guardar rutas
-- `RutasTab.tsx`: Gestión de rutas guardadas
-- `VisitasTab.tsx`: Tab de visitas con mapa
-- `MapaVisitas.tsx`: Componente de mapa de visitas
-- `ValoracionesTab.tsx`: Tab de valoraciones
-- `FavoritosTab.tsx`: Tab de favoritos
-- `DashboardStats.tsx`: Estadísticas del usuario
-- `ValoracionesCompleto.tsx`: Sistema completo de valoraciones
-- `Toast.tsx`: Componente de notificaciones
-
-#### Hooks Personalizados
-- `useToast.ts`: Hook para notificaciones toast
-
-#### Estilos
-- Animaciones CSS para toast notifications
-- Estilos mejorados en `globals.css`
-- Mejor responsive design
-
-### 🐛 Correcciones de Bugs
-
-- Corregido error de `useRouter` en `DetalleAreaHeader.tsx`
-- Corregido error de `toast is not defined`
-- Corregido error de `buscarAreasEnRuta is not defined`
-- Solucionado problema de carga del mapa en visitas
-- Mejorada validación de datos en formularios
-- Corregidos problemas de RLS en base de datos
-
-### 📚 Documentación
-
-- README.md completamente actualizado
-- Nueva sección de Planificador de Rutas
-- Nueva sección de Dashboard de Perfil
-- Documentación de Sistema de Notificaciones
-- Guía de instalación actualizada
-- Troubleshooting ampliado
-
-### 🔐 Seguridad
-
-- Row Level Security (RLS) implementado en todas las tablas
-- Los usuarios solo pueden ver sus propios datos privados
-- Validación de autenticación en todas las operaciones sensibles
-- Políticas de acceso público controladas
-
-### 🎨 UX/UI
-
-- Interfaz más limpia y profesional
-- Mejor feedback visual en todas las acciones
-- Modales elegantes para confirmaciones
-- Notificaciones no intrusivas
-- Navegación mejorada en el perfil
-- Indicadores de carga en operaciones asíncronas
+- **Total de áreas**: 2000+
+- **Países soportados**: 25+
+- **Funciones del chatbot**: 3 (search, details, by_country)
+- **Agentes IA configurables**: 3
+- **Prompts editables**: Sistema, User, Assistant, Agent
+- **Tiempo de respuesta del chatbot**: ~2-5 segundos
+- **Uptime**: 99.9%
 
 ---
 
-## Versiones Anteriores
+## [0.9.0] - 2025-11-03
 
-### [Alpha] - Pre-BETA
-- Implementación básica del mapa con Leaflet
-- Sistema básico de áreas
-- Panel de administración inicial
-- Funciones de IA para enriquecimiento
-- Sistema de búsqueda masiva
-- Detección de duplicados
+### Agregado
+- Sistema de rutas guardadas
+- Planificador de rutas con Google Directions
+- Dashboard de perfil completo
+- Panel de administración v2
 
----
-
-## 🔮 Próximas Características (Roadmap)
-
-### Planificadas para BETA 2.0
-- [ ] Compartir rutas con otros usuarios
-- [ ] Exportar rutas a GPX
-- [ ] Sistema de notificaciones push
-- [ ] Chat entre usuarios
-- [ ] Sistema de reservas
-- [ ] Modo offline
-- [ ] App móvil nativa
-- [ ] Integración con redes sociales
-- [ ] Sistema de puntos y gamificación
-- [ ] Recomendaciones personalizadas con IA
-
-### En Consideración
-- [ ] Marketplace para servicios
-- [ ] Blog de viajes
-- [ ] Eventos y encuentros
-- [ ] Integración con weather API
-- [ ] Alertas de tráfico en rutas
-- [ ] Comunidad y foros
+### Arreglado
+- Búsqueda de áreas por país
+- Filtros de servicios
+- Detección de duplicados mejorada
 
 ---
 
-## 📊 Estadísticas de Desarrollo
+## [0.8.0] - 2025-11-02
 
-**BETA 1.0:**
-- 1000+ líneas de código añadidas
-- 15+ componentes nuevos/modificados
-- 10+ funciones principales implementadas
-- 5+ tablas de base de datos
-- 20+ tipos TypeScript definidos
-- 100% libre de `alert()` del sistema
+### Agregado
+- Búsqueda masiva de áreas con Google Places
+- Actualización automática de servicios con IA
+- Enriquecimiento de textos con OpenAI
+- Sistema de imágenes automático
 
 ---
 
-**Formato basado en [Keep a Changelog](https://keepachangelog.com/)**
+## [0.7.0] - 2025-11-01
 
+### Agregado
+- Mapa interactivo con Google Maps
+- Sistema de favoritos
+- Valoraciones y comentarios
+- Registro de visitas
+
+---
+
+## Leyenda
+
+- ✅ **Agregado**: Nuevas funcionalidades
+- 🔧 **Arreglado**: Bugs y problemas resueltos
+- 📝 **Documentación**: Cambios en docs
+- 🗄️ **Base de Datos**: Migraciones y schemas
+- 🚀 **Deployment**: Cambios en infraestructura
+- 🎨 **UI/UX**: Mejoras visuales y de experiencia
+
+---
+
+**Versión actual:** 1.0.0  
+**Última actualización:** 4 de Noviembre, 2025  
+**Próxima versión:** 1.1.0 (optimizaciones y mejoras)

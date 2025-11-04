@@ -194,7 +194,7 @@ export default function ChatbotWidget() {
         {/* Botón difuminado */}
         <button
           onClick={() => setIsOpen(false)}
-          className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-gray-700 rounded-full p-2 shadow-2xl z-50 blur-sm"
+          className="fixed bottom-24 right-6 md:bottom-6 bg-gradient-to-r from-blue-600 to-gray-700 rounded-full p-2 shadow-2xl z-50 blur-sm"
         >
           <img 
             src="/tio-viajero-avatar.png" 
@@ -283,7 +283,7 @@ export default function ChatbotWidget() {
       {!isOpen && (
         <button
           onClick={handleOpen}
-          className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-gray-700 rounded-full p-2 shadow-2xl hover:scale-110 transition-transform z-50 group"
+          className="fixed bottom-24 right-6 md:bottom-6 bg-gradient-to-r from-blue-600 to-gray-700 rounded-full p-2 shadow-2xl hover:scale-110 transition-transform z-50 group"
           title="Tío Viajero IA"
         >
           <img 
@@ -300,7 +300,7 @@ export default function ChatbotWidget() {
       
       {/* Ventana del chat */}
       {isOpen && user && (
-        <div className="fixed bottom-6 right-6 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col z-50 border border-gray-200 max-w-[calc(100vw-3rem)] max-h-[calc(100vh-3rem)]">
+        <div className="fixed bottom-24 right-6 md:bottom-6 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col z-50 border border-gray-200 max-w-[calc(100vw-3rem)] max-h-[calc(100vh-3rem)]">
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-gray-700 text-white p-4 rounded-t-2xl flex justify-between items-center">
             <div className="flex items-center gap-3">
