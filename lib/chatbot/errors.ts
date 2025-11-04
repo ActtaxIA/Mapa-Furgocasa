@@ -66,7 +66,7 @@ export const ERROR_MESSAGES: Record<string, ErrorMessage> = {
           '💡 **Intenta:**\n' +
           '1. Recargar la página\n' +
           '2. Esperar unos segundos\n' +
-          '3. Si persiste: soporte@mapafurgocasa.com',
+          '3. Si persiste: info@furgocasa.com',
     admin: 'Supabase connection failed',
     action: 'Verificar estado de Supabase y credenciales'
   },
@@ -87,7 +87,7 @@ export const ERROR_MESSAGES: Record<string, ErrorMessage> = {
     user: '⚙️ **Asistente no disponible**\n\n' +
           'La configuración del chatbot no está completa.\n\n' +
           '💡 **Contacta con:**\n' +
-          'soporte@mapafurgocasa.com',
+          'info@furgocasa.com',
     admin: 'Falta configuración en chatbot_config',
     action: 'Verificar tabla chatbot_config en Supabase'
   },
@@ -153,7 +153,7 @@ export const ERROR_MESSAGES: Record<string, ErrorMessage> = {
           '💡 **Intenta:**\n' +
           '1. Recargar la página\n' +
           '2. Intentar de nuevo\n' +
-          '3. Si persiste, contacta: soporte@mapafurgocasa.com',
+          '3. Si persiste, contacta: info@furgocasa.com',
     admin: 'Unknown error',
     action: 'Revisar logs para más detalles'
   }

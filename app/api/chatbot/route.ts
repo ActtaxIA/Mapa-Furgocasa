@@ -804,7 +804,7 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
     return NextResponse.json({
       error: 'Error interno del servidor',
       message: 'Estamos trabajando en solucionarlo. Por favor, inténtalo de nuevo en unos momentos.',
-      support: 'Si el problema persiste, contacta con soporte@mapafurgocasa.com',
+      support: 'Si el problema persiste, contacta con info@furgocasa.com',
       timestamp: new Date().toISOString(),
       // Solo en desarrollo: mostrar detalles técnicos
       ...(process.env.NODE_ENV === 'development' && {
