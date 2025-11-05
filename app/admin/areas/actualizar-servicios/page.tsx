@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
+import { AdminTable, AdminTableColumn } from '@/components/admin/AdminTable'
 import Link from 'next/link'
 import type { Area } from '@/types/database.types'
 import {
@@ -52,8 +53,6 @@ export default function ActualizarServiciosPage() {
     ready: boolean
     checks: any
   } | null>(null)
-  const [ordenarPor, setOrdenarPor] = useState<'nombre' | 'ciudad' | 'provincia' | 'pais'>('nombre')
-  const [ordenAscendente, setOrdenAscendente] = useState(true)
   const [metricas, setMetricas] = useState({
     totalProcesadas: 0,
     exitosas: 0,
@@ -546,18 +545,121 @@ Responde con JSON con esta estructura exacta:
     const matchWeb = !soloSinWeb || !area.website || area.website === ''
 
     return matchBusqueda && matchPais && matchWeb
-  }).sort((a, b) => {
-    // Ordenar por la columna seleccionada
-    let valorA = a[ordenarPor] || ''
-    let valorB = b[ordenarPor] || ''
-    
-    if (typeof valorA === 'string') valorA = valorA.toLowerCase()
-    if (typeof valorB === 'string') valorB = valorB.toLowerCase()
-    
-    if (valorA < valorB) return ordenAscendente ? -1 : 1
-    if (valorA > valorB) return ordenAscendente ? 1 : -1
-    return 0
   })
+
+  // Definir columnas para la tabla
+  const columns: AdminTableColumn<AreaConCambios>[] = [
+    {
+      key: 'seleccion',
+      title: '',
+      sortable: false,
+      searchable: false,
+      render: (area) => (
+        <input
+          type="checkbox"
+          checked={area.seleccionada}
+          onChange={() => toggleSeleccion(area.id)}
+          disabled={procesando}
+          className="w-4 h-4 text-sky-600 rounded focus:ring-sky-500"
+        />
+      ),
+      exportValue: () => ''
+    },
+    {
+      key: 'nombre',
+      title: 'Área',
+      sortable: true,
+      render: (area) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">{area.nombre}</div>
+          <div className="text-sm text-gray-500">
+            {area.ciudad}, {area.provincia} • {area.pais}
+          </div>
+        </div>
+      ),
+      exportValue: (area) => area.nombre
+    },
+    {
+      key: 'website',
+      title: 'Web',
+      sortable: false,
+      searchable: false,
+      render: (area) => (
+        area.website ? (
+          <a href={area.website} target="_blank" className="text-sm text-sky-600 hover:underline">
+            Ver web →
+          </a>
+        ) : (
+          <span className="text-sm text-gray-400">Sin web</span>
+        )
+      ),
+      exportValue: (area) => area.website || 'Sin web'
+    },
+    {
+      key: 'servicios',
+      title: 'Servicios Actuales',
+      sortable: false,
+      searchable: false,
+      render: (area) => (
+        <div className="flex flex-wrap gap-1">
+          {area.servicios && typeof area.servicios === 'object' ? (
+            Object.entries(area.servicios)
+              .filter(([_, value]) => value === true)
+              .map(([key]) => (
+                <span key={key} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
+                  {key}
+                </span>
+              ))
+          ) : (
+            <span className="text-sm text-gray-400">Sin servicios</span>
+          )}
+        </div>
+      ),
+      exportValue: (area) => {
+        if (area.servicios && typeof area.servicios === 'object') {
+          return Object.entries(area.servicios)
+            .filter(([_, value]) => value === true)
+            .map(([key]) => key)
+            .join(', ')
+        }
+        return 'Sin servicios'
+      }
+    },
+    {
+      key: 'estado',
+      title: 'Estado',
+      sortable: false,
+      searchable: false,
+      render: (area) => (
+        <>
+          {area.procesando && (
+            <span className="inline-flex items-center gap-2 text-sm text-yellow-700">
+              <ArrowPathIcon className="w-4 h-4 animate-spin" />
+              Procesando...
+            </span>
+          )}
+          {area.procesada && !area.error && (
+            <span className="inline-flex items-center gap-2 text-sm text-green-700">
+              <CheckIcon className="w-4 h-4" />
+              Actualizado
+            </span>
+          )}
+          {area.error && (
+            <span className="inline-flex items-center gap-2 text-sm text-red-700">
+              <XMarkIcon className="w-4 h-4" />
+              {area.error}
+            </span>
+          )}
+        </>
+      ),
+      exportValue: (area) => {
+        if (area.procesando) return 'Procesando'
+        if (area.procesada && !area.error) return 'Actualizado'
+        if (area.error) return `Error: ${area.error}`
+        return ''
+      }
+    }
+  ]
 
   const toggleSeleccion = (id: string) => {
     setAreas(prev => prev.map(area => 
@@ -921,127 +1023,15 @@ Responde con JSON con esta estructura exacta:
           </div>
         </div>
 
-        {/* Lista de Áreas */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left">
-                    <input
-                      type="checkbox"
-                      checked={areasFiltradas.length > 0 && areasFiltradas.every(a => a.seleccionada)}
-                      onChange={(e) => e.target.checked ? seleccionarTodas() : deseleccionarTodas()}
-                      disabled={procesando}
-                      className="w-4 h-4 text-sky-600 rounded focus:ring-sky-500"
-                    />
-                  </th>
-                  <th 
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100 select-none"
-                    onClick={() => {
-                      if (ordenarPor === 'nombre') {
-                        setOrdenAscendente(!ordenAscendente)
-                      } else {
-                        setOrdenarPor('nombre')
-                        setOrdenAscendente(true)
-                      }
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      Área
-                      {ordenarPor === 'nombre' && (
-                        <span>{ordenAscendente ? '↑' : '↓'}</span>
-                      )}
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Web
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Servicios Actuales
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Estado
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {areasFiltradas.map((area) => (
-                  <tr key={area.id} className={area.procesando ? 'bg-yellow-50' : area.procesada ? 'bg-green-50' : ''}>
-                    <td className="px-4 py-4">
-                      <input
-                        type="checkbox"
-                        checked={area.seleccionada}
-                        onChange={() => toggleSeleccion(area.id)}
-                        disabled={procesando}
-                        className="w-4 h-4 text-sky-600 rounded focus:ring-sky-500"
-                      />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{area.nombre}</div>
-                        <div className="text-sm text-gray-500">
-                          {area.ciudad}, {area.provincia} • {area.pais}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {area.website ? (
-                        <a href={area.website} target="_blank" className="text-sm text-sky-600 hover:underline">
-                          Ver web →
-                        </a>
-                      ) : (
-                        <span className="text-sm text-gray-400">Sin web</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1">
-                        {area.servicios && typeof area.servicios === 'object' ? (
-                          Object.entries(area.servicios)
-                            .filter(([_, value]) => value === true)
-                            .map(([key]) => (
-                              <span key={key} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
-                                {key}
-                              </span>
-                            ))
-                        ) : (
-                          <span className="text-sm text-gray-400">Sin servicios</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {area.procesando && (
-                        <span className="inline-flex items-center gap-2 text-sm text-yellow-700">
-                          <ArrowPathIcon className="w-4 h-4 animate-spin" />
-                          Procesando...
-                        </span>
-                      )}
-                      {area.procesada && !area.error && (
-                        <span className="inline-flex items-center gap-2 text-sm text-green-700">
-                          <CheckIcon className="w-4 h-4" />
-                          Actualizado
-                        </span>
-                      )}
-                      {area.error && (
-                        <span className="inline-flex items-center gap-2 text-sm text-red-700">
-                          <XMarkIcon className="w-4 h-4" />
-                          {area.error}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {areasFiltradas.length === 0 && (
-            <div className="text-center py-12">
-              <FunnelIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">No hay áreas que coincidan con los filtros</p>
-            </div>
-          )}
-        </div>
+        {/* Lista de Áreas con AdminTable */}
+        <AdminTable
+          data={areasFiltradas}
+          columns={columns}
+          loading={loading}
+          emptyMessage="No hay áreas que coincidan con los filtros"
+          searchPlaceholder="Buscar por nombre, ciudad, provincia..."
+          exportFilename="areas_servicios"
+        />
 
         {/* Modal de Procesamiento */}
         {procesando && (

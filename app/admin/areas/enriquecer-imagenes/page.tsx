@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
+import { AdminTable, AdminTableColumn } from '@/components/admin/AdminTable'
 import { ArrowLeftIcon, PhotoIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import type { Area } from '@/types/database.types'
@@ -15,8 +16,6 @@ export default function EnriquecerImagenesPage() {
   const [processLog, setProcessLog] = useState<string[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [filterPais, setFilterPais] = useState('')
-  const [ordenarPor, setOrdenarPor] = useState<'nombre' | 'ciudad' | 'provincia' | 'pais'>('nombre')
-  const [ordenAscendente, setOrdenAscendente] = useState(true)
 
   const supabase = createClient()
 
@@ -317,18 +316,83 @@ export default function EnriquecerImagenesPage() {
     const matchPais = filterPais === '' || area.pais === filterPais
 
     return matchSearch && matchPais
-  }).sort((a, b) => {
-    // Ordenar por la columna seleccionada
-    let valorA = a[ordenarPor] || ''
-    let valorB = b[ordenarPor] || ''
-    
-    if (typeof valorA === 'string') valorA = valorA.toLowerCase()
-    if (typeof valorB === 'string') valorB = valorB.toLowerCase()
-    
-    if (valorA < valorB) return ordenAscendente ? -1 : 1
-    if (valorA > valorB) return ordenAscendente ? 1 : -1
-    return 0
   })
+
+  // Definir columnas para la tabla
+  const columns: AdminTableColumn<Area>[] = [
+    {
+      key: 'seleccion',
+      title: '',
+      sortable: false,
+      searchable: false,
+      render: (area) => (
+        <input
+          type="checkbox"
+          checked={selectedIds.includes(area.id)}
+          onChange={() => {
+            if (selectedIds.includes(area.id)) {
+              setSelectedIds(selectedIds.filter(id => id !== area.id))
+            } else {
+              setSelectedIds([...selectedIds, area.id])
+            }
+          }}
+          className="w-4 h-4 text-primary-600 rounded"
+        />
+      ),
+      exportValue: () => ''
+    },
+    {
+      key: 'nombre',
+      title: 'Área',
+      sortable: true,
+      render: (area) => (
+        <div>
+          <div className="font-medium text-gray-900">{area.nombre}</div>
+          <div className="text-sm text-gray-500">
+            {area.ciudad}, {area.provincia} • {area.pais}
+          </div>
+        </div>
+      ),
+      exportValue: (area) => area.nombre
+    },
+    {
+      key: 'foto_principal',
+      title: 'Imágenes',
+      sortable: false,
+      searchable: false,
+      render: (area) => (
+        area.foto_principal ? (
+          <div className="flex items-center gap-2">
+            <img src={area.foto_principal} alt="" className="w-16 h-12 object-cover rounded" />
+            <span className="text-sm text-gray-600">
+              {area.fotos_urls?.length || 0} foto(s)
+            </span>
+          </div>
+        ) : (
+          <span className="text-sm text-gray-400">Sin imágenes</span>
+        )
+      ),
+      exportValue: (area) => area.foto_principal ? `${area.fotos_urls?.length || 0} fotos` : 'Sin imágenes'
+    },
+    {
+      key: 'estado',
+      title: 'Estado',
+      sortable: true,
+      searchable: false,
+      render: (area) => (
+        area.foto_principal ? (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            ✓ Con imágenes
+          </span>
+        ) : (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+            ⚠ Sin imágenes
+          </span>
+        )
+      ),
+      exportValue: (area) => area.foto_principal ? 'Con imágenes' : 'Sin imágenes'
+    }
+  ]
 
   // Filtrar áreas sin foto_principal
   const areasSinImagenes = areasFiltradas.filter(a => !a.foto_principal)
@@ -417,114 +481,15 @@ export default function EnriquecerImagenesPage() {
           </button>
         </div>
 
-        {/* Lista de áreas */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.length === areasFiltradas.length && areasFiltradas.length > 0}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedIds(areasFiltradas.map(a => a.id))
-                        } else {
-                          setSelectedIds([])
-                        }
-                      }}
-                      className="w-4 h-4 text-primary-600 rounded"
-                    />
-                  </th>
-                  <th 
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:bg-gray-100 select-none"
-                    onClick={() => {
-                      if (ordenarPor === 'nombre') {
-                        setOrdenAscendente(!ordenAscendente)
-                      } else {
-                        setOrdenarPor('nombre')
-                        setOrdenAscendente(true)
-                      }
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      Área
-                      {ordenarPor === 'nombre' && (
-                        <span>{ordenAscendente ? '↑' : '↓'}</span>
-                      )}
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Imágenes</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {loading ? (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                      Cargando áreas...
-                    </td>
-                  </tr>
-                ) : areasFiltradas.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                      No hay áreas que coincidan con los filtros
-                    </td>
-                  </tr>
-                ) : (
-                  areasFiltradas.map((area) => (
-                    <tr key={area.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.includes(area.id)}
-                          onChange={() => {
-                            if (selectedIds.includes(area.id)) {
-                              setSelectedIds(selectedIds.filter(id => id !== area.id))
-                            } else {
-                              setSelectedIds([...selectedIds, area.id])
-                            }
-                          }}
-                          className="w-4 h-4 text-primary-600 rounded"
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-gray-900">{area.nombre}</div>
-                        <div className="text-sm text-gray-500">
-                          {area.ciudad}, {area.provincia} • {area.pais}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        {area.foto_principal ? (
-                          <div className="flex items-center gap-2">
-                            <img src={area.foto_principal} alt="" className="w-16 h-12 object-cover rounded" />
-                            <span className="text-sm text-gray-600">
-                              {area.fotos_urls?.length || 0} foto(s)
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-sm text-gray-400">Sin imágenes</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        {area.foto_principal ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            ✓ Con imágenes
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                            ⚠ Sin imágenes
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {/* Lista de áreas con AdminTable */}
+        <AdminTable
+          data={areasFiltradas}
+          columns={columns}
+          loading={loading}
+          emptyMessage="No hay áreas que coincidan con los filtros"
+          searchPlaceholder="Buscar por nombre, ciudad, provincia..."
+          exportFilename="areas_sin_imagenes"
+        />
 
         {/* Modal de procesamiento */}
         {processing && (

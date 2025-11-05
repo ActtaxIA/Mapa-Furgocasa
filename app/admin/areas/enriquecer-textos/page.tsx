@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
 import { createClient } from '@/lib/supabase/client'
+import { AdminTable, AdminTableColumn } from '@/components/admin/AdminTable'
 import { SparklesIcon, MagnifyingGlassIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 import type { Area } from '@/types/database.types'
 
@@ -24,8 +25,6 @@ export default function EnriquecerTextosPage() {
     ready: boolean
     checks: any
   } | null>(null)
-  const [ordenarPor, setOrdenarPor] = useState<'nombre' | 'ciudad' | 'provincia' | 'pais'>('nombre')
-  const [ordenAscendente, setOrdenAscendente] = useState(true)
 
   // Extraer países únicos de las áreas cargadas
   const PAISES = ['Todos', ...Array.from(new Set(areas.map(a => a.pais).filter(Boolean))).sort()]
@@ -37,7 +36,7 @@ export default function EnriquecerTextosPage() {
 
   useEffect(() => {
     filterAreas()
-  }, [areas, searchTerm, selectedPais, soloSinTexto, ordenarPor, ordenAscendente])
+  }, [areas, searchTerm, selectedPais, soloSinTexto])
 
   const checkConfiguration = async () => {
     try {
@@ -149,21 +148,94 @@ export default function EnriquecerTextosPage() {
       console.log('  ✅ Después de sin texto (<200 chars o placeholder):', filtered.length, 'de', beforeSinTexto)
     }
 
-    // Ordenar por la columna seleccionada
-    filtered.sort((a, b) => {
-      let valorA = a[ordenarPor] || ''
-      let valorB = b[ordenarPor] || ''
-      
-      if (typeof valorA === 'string') valorA = valorA.toLowerCase()
-      if (typeof valorB === 'string') valorB = valorB.toLowerCase()
-      
-      if (valorA < valorB) return ordenAscendente ? -1 : 1
-      if (valorA > valorB) return ordenAscendente ? 1 : -1
-      return 0
-    })
-
     setFilteredAreas(filtered)
   }
+
+  // Definir columnas para la tabla
+  const columns: AdminTableColumn<Area>[] = [
+    {
+      key: 'seleccion',
+      title: '',
+      sortable: false,
+      searchable: false,
+      render: (area) => (
+        <input
+          type="checkbox"
+          checked={selectedIds.includes(area.id)}
+          onChange={() => toggleSelection(area.id)}
+          disabled={processing}
+          className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+        />
+      ),
+      exportValue: () => ''
+    },
+    {
+      key: 'nombre',
+      title: 'Área',
+      sortable: true,
+      render: (area) => (
+        <div className="text-sm font-medium text-gray-900">{area.nombre}</div>
+      )
+    },
+    {
+      key: 'ciudad',
+      title: 'Ubicación',
+      sortable: true,
+      render: (area) => (
+        <div className="text-sm text-gray-600">
+          {area.ciudad}, {area.provincia} • {area.pais}
+        </div>
+      ),
+      exportValue: (area) => `${area.ciudad}, ${area.provincia} • ${area.pais}`
+    },
+    {
+      key: 'descripcion',
+      title: 'Estado',
+      sortable: true,
+      render: (area) => {
+        const desc = area.descripcion?.trim() || ''
+        const isPlaceholder = desc.includes('Requiere verificación y enriquecimiento')
+        const length = desc.length
+        
+        if (isPlaceholder) {
+          return (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+              ✗ Placeholder Google Maps
+            </span>
+          )
+        }
+        
+        if (length >= 200) {
+          return (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              ✓ Con descripción ({length} chars)
+            </span>
+          )
+        }
+        
+        if (length > 0) {
+          return (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+              ⚠ Descripción corta ({length} chars)
+            </span>
+          )
+        }
+        
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            ✗ Sin descripción
+          </span>
+        )
+      },
+      exportValue: (area) => {
+        const desc = area.descripcion?.trim() || ''
+        const length = desc.length
+        if (length >= 200) return 'Con descripción'
+        if (length > 0) return 'Descripción corta'
+        return 'Sin descripción'
+      }
+    }
+  ]
 
   const handleSelectAll = () => {
     const idsVisibles = filteredAreas.map(a => a.id)
@@ -647,139 +719,15 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
           </div>
         </div>
 
-        {/* Tabla de áreas */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="w-12 px-6 py-3 text-left">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.length === filteredAreas.length && filteredAreas.length > 0}
-                      onChange={(e) => e.target.checked ? handleSelectAll() : handleDeselectAll()}
-                      disabled={processing}
-                      className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                    />
-                  </th>
-                  <th 
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
-                    onClick={() => {
-                      if (ordenarPor === 'nombre') {
-                        setOrdenAscendente(!ordenAscendente)
-                      } else {
-                        setOrdenarPor('nombre')
-                        setOrdenAscendente(true)
-                      }
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      Área
-                      {ordenarPor === 'nombre' && (
-                        <span>{ordenAscendente ? '↑' : '↓'}</span>
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
-                    onClick={() => {
-                      if (ordenarPor === 'ciudad') {
-                        setOrdenAscendente(!ordenAscendente)
-                      } else {
-                        setOrdenarPor('ciudad')
-                        setOrdenAscendente(true)
-                      }
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      Ubicación
-                      {ordenarPor === 'ciudad' && (
-                        <span>{ordenAscendente ? '↑' : '↓'}</span>
-                      )}
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Estado
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {loading ? (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                      Cargando áreas...
-                    </td>
-                  </tr>
-                ) : filteredAreas.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                      No se encontraron áreas
-                    </td>
-                  </tr>
-                ) : (
-                  filteredAreas.map((area) => (
-                    <tr key={area.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.includes(area.id)}
-                          onChange={() => toggleSelection(area.id)}
-                          disabled={processing}
-                          className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">{area.nombre}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-600">
-                          {area.ciudad}, {area.provincia} • {area.pais}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        {(() => {
-                          const desc = area.descripcion?.trim() || ''
-                          const isPlaceholder = desc.includes('Requiere verificación y enriquecimiento')
-                          const length = desc.length
-                          
-                          if (isPlaceholder) {
-                            return (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                ✗ Placeholder Google Maps
-                              </span>
-                            )
-                          }
-                          
-                          if (length >= 200) {
-                            return (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                ✓ Con descripción ({length} chars)
-                              </span>
-                            )
-                          }
-                          
-                          if (length > 0) {
-                            return (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                ⚠ Descripción corta ({length} chars)
-                              </span>
-                            )
-                          }
-                          
-                          return (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                              ✗ Sin descripción
-                            </span>
-                          )
-                        })()}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {/* Tabla de áreas con AdminTable */}
+        <AdminTable
+          data={filteredAreas}
+          columns={columns}
+          loading={loading}
+          emptyMessage="No se encontraron áreas"
+          searchPlaceholder="Buscar por nombre, ciudad, provincia..."
+          exportFilename="areas_sin_descripcion"
+        />
 
         {/* Modal de Procesamiento */}
         {processing && (

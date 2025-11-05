@@ -19,13 +19,16 @@ import {
   SparklesIcon,
   PhotoIcon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline'
 import {
   WifiIcon,
   BoltIcon,
   HomeIcon,
-  FireIcon
+  FireIcon,
+  ChevronUpIcon,
+  ChevronDownIcon
 } from '@heroicons/react/24/solid'
 import type { Area } from '@/types/database.types'
 
@@ -50,6 +53,8 @@ export default function AdminAreasPage() {
   const [filtroVerificado, setFiltroVerificado] = useState<'all' | 'verified' | 'unverified'>('all')
   const [filtroActivo, setFiltroActivo] = useState<'all' | 'active' | 'inactive'>('all')
   const [paginaActual, setPaginaActual] = useState(1)
+  const [sortColumn, setSortColumn] = useState<string | null>(null)
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [modalState, setModalState] = useState<{
     isOpen: boolean
     type: 'success' | 'error'
@@ -250,7 +255,8 @@ export default function AdminAreasPage() {
     }
   }
 
-  const areasFiltradas = areas.filter(area => {
+  // Filtrar y ordenar
+  let areasFiltradas = areas.filter(area => {
     const matchBusqueda = area.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
                          area.ciudad?.toLowerCase().includes(busqueda.toLowerCase()) ||
                          area.provincia?.toLowerCase().includes(busqueda.toLowerCase())
@@ -266,6 +272,37 @@ export default function AdminAreasPage() {
     return matchBusqueda && matchVerificado && matchActivo
   })
 
+  // Aplicar ordenación si hay columna seleccionada
+  if (sortColumn) {
+    areasFiltradas = [...areasFiltradas].sort((a, b) => {
+      let aValue: any = a[sortColumn as keyof Area]
+      let bValue: any = b[sortColumn as keyof Area]
+
+      if (aValue == null) return 1
+      if (bValue == null) return -1
+
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        aValue = aValue.toLowerCase()
+        bValue = bValue.toLowerCase()
+      }
+
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+      return 0
+    })
+  }
+
+  // Función para manejar ordenación
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortColumn(column)
+      setSortDirection('asc')
+    }
+    setPaginaActual(1)
+  }
+
   // Paginación
   const totalPaginas = Math.ceil(areasFiltradas.length / itemsPorPagina)
   const indiceInicio = (paginaActual - 1) * itemsPorPagina
@@ -276,6 +313,78 @@ export default function AdminAreasPage() {
   useEffect(() => {
     setPaginaActual(1)
   }, [busqueda, filtroVerificado, filtroActivo])
+
+  // Función para exportar a CSV
+  const exportToCSV = () => {
+    const headers = ['Nombre', 'Ciudad', 'Provincia', 'País', 'Tipo', 'Precio', 'Verificado', 'Activo', 'Servicios']
+    const rows = areasFiltradas.map(area => {
+      const servicios = area.servicios && typeof area.servicios === 'object'
+        ? Object.entries(area.servicios)
+            .filter(([_, value]) => value === true)
+            .map(([key]) => key)
+            .join('; ')
+        : ''
+      
+      return [
+        area.nombre,
+        area.ciudad || '',
+        area.provincia || '',
+        area.pais || '',
+        area.tipo_area || '',
+        area.precio_noche !== null ? (area.precio_noche === 0 ? 'Gratis' : `${area.precio_noche}€`) : 'N/A',
+        area.verificado ? 'Sí' : 'No',
+        area.activo ? 'Sí' : 'No',
+        servicios
+      ]
+    })
+
+    const csvContent = [
+      headers.map(h => `"${h}"`).join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n')
+
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = `areas_${new Date().toISOString().split('T')[0]}.csv`
+    link.click()
+  }
+
+  // Función para exportar a Excel
+  const exportToExcel = () => {
+    const headers = ['Nombre', 'Ciudad', 'Provincia', 'País', 'Tipo', 'Precio', 'Verificado', 'Activo', 'Servicios']
+    const rows = areasFiltradas.map(area => {
+      const servicios = area.servicios && typeof area.servicios === 'object'
+        ? Object.entries(area.servicios)
+            .filter(([_, value]) => value === true)
+            .map(([key]) => key)
+            .join('; ')
+        : ''
+      
+      return [
+        area.nombre,
+        area.ciudad || '',
+        area.provincia || '',
+        area.pais || '',
+        area.tipo_area || '',
+        area.precio_noche !== null ? (area.precio_noche === 0 ? 'Gratis' : `${area.precio_noche}€`) : 'N/A',
+        area.verificado ? 'Sí' : 'No',
+        area.activo ? 'Sí' : 'No',
+        servicios
+      ]
+    })
+
+    const tsvContent = [
+      headers.join('\t'),
+      ...rows.map(row => row.join('\t'))
+    ].join('\n')
+
+    const blob = new Blob(['\uFEFF' + tsvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = `areas_${new Date().toISOString().split('T')[0]}.xls`
+    link.click()
+  }
 
   if (loading) {
     return (
@@ -348,7 +457,7 @@ export default function AdminAreasPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filtros */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             {/* Búsqueda */}
             <div className="md:col-span-2">
               <div className="relative">
@@ -389,6 +498,30 @@ export default function AdminAreasPage() {
               </select>
             </div>
           </div>
+
+          {/* Botones de exportación */}
+          <div className="flex gap-2 pt-4 border-t border-gray-200">
+            <button
+              onClick={exportToCSV}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
+              title="Exportar a CSV"
+            >
+              <ArrowDownTrayIcon className="w-4 h-4" />
+              Exportar CSV
+            </button>
+            <button
+              onClick={exportToExcel}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+              title="Exportar a Excel"
+            >
+              <ArrowDownTrayIcon className="w-4 h-4" />
+              Exportar Excel
+            </button>
+            <div className="flex-1" />
+            <span className="text-sm text-gray-600 self-center">
+              Exportando {areasFiltradas.length} área(s)
+            </span>
+          </div>
         </div>
 
         {/* Tabla mejorada de áreas */}
@@ -397,17 +530,49 @@ export default function AdminAreasPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-64">
-                    Área
+                  <th 
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-64 cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('nombre')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Área
+                      {sortColumn === 'nombre' && (
+                        sortDirection === 'asc' ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />
+                      )}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
-                    Ubicación
+                  <th 
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40 cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('ciudad')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Ubicación
+                      {sortColumn === 'ciudad' && (
+                        sortDirection === 'asc' ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />
+                      )}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
-                    Tipo
+                  <th 
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24 cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('tipo_area')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Tipo
+                      {sortColumn === 'tipo_area' && (
+                        sortDirection === 'asc' ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />
+                      )}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
-                    Precio
+                  <th 
+                    className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20 cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('precio_noche')}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      Precio
+                      {sortColumn === 'precio_noche' && (
+                        sortDirection === 'asc' ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />
+                      )}
+                    </div>
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
                     Servicios
