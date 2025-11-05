@@ -28,7 +28,7 @@ interface AdminTableProps<T> {
   searchPlaceholder?: string
   exportFilename?: string
   className?: string
-  initialSortColumn?: string
+  initialSortColumn?: string | null
   initialSortDirection?: 'asc' | 'desc'
 }
 
@@ -40,11 +40,11 @@ export function AdminTable<T extends Record<string, any>>({
   searchPlaceholder = 'Buscar en todos los campos...',
   exportFilename = 'datos',
   className = '',
-  initialSortColumn = null,
+  initialSortColumn,
   initialSortDirection = 'asc'
 }: AdminTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('')
-  const [sortColumn, setSortColumn] = useState<string | null>(initialSortColumn)
+  const [sortColumn, setSortColumn] = useState<string | null>(initialSortColumn ?? null)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>(initialSortDirection)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
