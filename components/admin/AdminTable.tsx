@@ -72,19 +72,31 @@ export function AdminTable<T extends Record<string, any>>({
       const aValue = a[sortColumn]
       const bValue = b[sortColumn]
 
-      if (aValue == null) return 1
-      if (bValue == null) return -1
-
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return aValue.toLowerCase().localeCompare(bValue.toLowerCase())
+      // Manejar valores null según la dirección de ordenación
+      if (sortDirection === 'desc') {
+        // En descendente, null va al final (después de los valores reales)
+        if (aValue == null && bValue == null) return 0
+        if (aValue == null) return 1
+        if (bValue == null) return -1
+      } else {
+        // En ascendente, null va al final también
+        if (aValue == null && bValue == null) return 0
+        if (aValue == null) return 1
+        if (bValue == null) return -1
       }
 
-      if (aValue < bValue) return -1
-      if (aValue > bValue) return 1
-      return 0
+      // Comparar valores según tipo
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        const comparison = aValue.toLowerCase().localeCompare(bValue.toLowerCase())
+        return sortDirection === 'desc' ? -comparison : comparison
+      }
+
+      // Para números y fechas
+      const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+      return sortDirection === 'desc' ? -comparison : comparison
     })
 
-    return sortDirection === 'desc' ? sorted.reverse() : sorted
+    return sorted
   }, [filteredData, sortColumn, sortDirection])
 
   // Paginación
