@@ -9,6 +9,7 @@ import {
   MagnifyingGlassIcon,
   ArrowDownTrayIcon
 } from '@heroicons/react/24/outline'
+import * as XLSX from 'xlsx'
 
 export interface AdminTableColumn<T> {
   key: string
@@ -139,29 +140,41 @@ export function AdminTable<T extends Record<string, any>>({
     link.click()
   }
 
-  // Exportar a Excel (formato CSV con extensión .xlsx)
+  // Exportar a Excel (formato XLSX real)
   const exportToExcel = () => {
-    const headers = columns.map(col => col.title).join(',')
+    // Crear la cabecera
+    const headers = columns.map(col => col.title)
+    
+    // Crear las filas de datos
     const rows = sortedData.map(item => {
-      return columns
-        .map(col => {
-          const value = col.exportValue
-            ? col.exportValue(item)
-            : item[col.key]
-          
-          // Escapar comillas y comas
-          const stringValue = String(value ?? '')
-          return `"${stringValue.replace(/"/g, '""')}"`
-        })
-        .join(',')
+      return columns.map(col => {
+        const value = col.exportValue
+          ? col.exportValue(item)
+          : item[col.key]
+        return value ?? ''
+      })
     })
 
-    const csv = [headers, ...rows].join('\n')
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.download = `${exportFilename}_${new Date().toISOString().split('T')[0]}.xlsx`
-    link.click()
+    // Combinar cabecera y filas
+    const data = [headers, ...rows]
+
+    // Crear libro de trabajo y hoja
+    const worksheet = XLSX.utils.aoa_to_sheet(data)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos')
+
+    // Ajustar ancho de columnas automáticamente
+    const colWidths = headers.map((_, colIndex) => {
+      const maxLength = Math.max(
+        headers[colIndex].length,
+        ...rows.map(row => String(row[colIndex] ?? '').length)
+      )
+      return { wch: Math.min(maxLength + 2, 50) } // Máximo 50 caracteres de ancho
+    })
+    worksheet['!cols'] = colWidths
+
+    // Generar archivo y descargar
+    XLSX.writeFile(workbook, `${exportFilename}_${new Date().toISOString().split('T')[0]}.xlsx`)
   }
 
   if (loading) {

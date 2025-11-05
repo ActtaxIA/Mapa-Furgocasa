@@ -7,6 +7,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { DeleteConfirmModal } from '@/components/ui/DeleteConfirmModal'
 import Link from 'next/link'
+import * as XLSX from 'xlsx'
 import { 
   MagnifyingGlassIcon,
   PlusIcon,
@@ -350,7 +351,7 @@ export default function AdminAreasPage() {
     link.click()
   }
 
-  // Función para exportar a Excel (formato CSV con extensión .xlsx)
+  // Función para exportar a Excel (formato XLSX real)
   const exportToExcel = () => {
     const headers = ['Nombre', 'Ciudad', 'Provincia', 'País', 'Tipo', 'Precio', 'Verificado', 'Activo', 'Servicios']
     const rows = areasFiltradas.map(area => {
@@ -374,16 +375,26 @@ export default function AdminAreasPage() {
       ]
     })
 
-    const csvContent = [
-      headers.map(h => `"${h}"`).join(','),
-      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-    ].join('\n')
+    // Combinar cabecera y filas
+    const data = [headers, ...rows]
 
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.download = `areas_${new Date().toISOString().split('T')[0]}.xlsx`
-    link.click()
+    // Crear libro de trabajo y hoja
+    const worksheet = XLSX.utils.aoa_to_sheet(data)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Áreas')
+
+    // Ajustar ancho de columnas automáticamente
+    const colWidths = headers.map((_, colIndex) => {
+      const maxLength = Math.max(
+        headers[colIndex].length,
+        ...rows.map(row => String(row[colIndex] ?? '').length)
+      )
+      return { wch: Math.min(maxLength + 2, 50) } // Máximo 50 caracteres de ancho
+    })
+    worksheet['!cols'] = colWidths
+
+    // Generar archivo y descargar
+    XLSX.writeFile(workbook, `areas_${new Date().toISOString().split('T')[0]}.xlsx`)
   }
 
   if (loading) {
