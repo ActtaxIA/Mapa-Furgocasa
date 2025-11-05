@@ -90,13 +90,20 @@ export default function AdminUsersPage() {
     }
   }
 
-  const usuariosFiltrados = users.filter(user => {
-    const matchAdmin = filtroAdmin === 'all' ||
-                      (filtroAdmin === 'admin' && user.user_metadata?.is_admin) ||
-                      (filtroAdmin === 'user' && !user.user_metadata?.is_admin)
+  const usuariosFiltrados = users
+    .filter(user => {
+      const matchAdmin = filtroAdmin === 'all' ||
+                        (filtroAdmin === 'admin' && user.user_metadata?.is_admin) ||
+                        (filtroAdmin === 'user' && !user.user_metadata?.is_admin)
 
-    return matchAdmin
-  })
+      return matchAdmin
+    })
+    .sort((a, b) => {
+      // Ordenar por último acceso, más recientes primero
+      const dateA = a.last_sign_in_at ? new Date(a.last_sign_in_at).getTime() : 0
+      const dateB = b.last_sign_in_at ? new Date(b.last_sign_in_at).getTime() : 0
+      return dateB - dateA // Descendente (más reciente primero)
+    })
 
   // Definir columnas para la tabla
   const columns: AdminTableColumn<UserProfile>[] = [
