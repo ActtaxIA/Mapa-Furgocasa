@@ -34,6 +34,11 @@ interface AnalyticsData {
   promedioRating: number
   distribucionPrecios: { rango: string; count: number }[]
   crecimientoMensual: { mes: string; nuevas: number }[]
+  
+  // Nuevas métricas
+  totalRutas: number
+  distanciaTotal: number
+  totalInteraccionesIA: number
 }
 
 export default function AdminAnalyticsPage() {
@@ -91,6 +96,40 @@ export default function AdminAnalyticsPage() {
 
       console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
       const areas = allAreas
+
+      // Obtener USUARIOS REALES desde la API de Auth
+      console.log('👥 Obteniendo usuarios desde Supabase Auth...')
+      let totalUsers = 0
+      try {
+        const usersResponse = await fetch(`/api/admin/users?t=${Date.now()}`, {
+          cache: 'no-store'
+        })
+        const usersData = await usersResponse.json()
+        totalUsers = usersData.total || 0
+        console.log(`✅ ${totalUsers} usuarios obtenidos`)
+      } catch (error) {
+        console.error('❌ Error obteniendo usuarios:', error)
+        totalUsers = 0
+      }
+
+      // Obtener métricas de RUTAS
+      console.log('🗺️ Obteniendo métricas de rutas...')
+      const { data: rutas, error: rutasError } = await supabase
+        .from('rutas')
+        .select('*')
+      
+      const totalRutas = rutas?.length || 0
+      const distanciaTotal = rutas?.reduce((sum, r) => sum + (r.distancia_km || 0), 0) || 0
+      console.log(`✅ ${totalRutas} rutas, ${distanciaTotal.toFixed(0)} km totales`)
+
+      // Obtener métricas de CHATBOT
+      console.log('🤖 Obteniendo métricas de chatbot...')
+      const { data: mensajes, error: mensajesError } = await supabase
+        .from('chatbot_mensajes')
+        .select('id, created_at')
+      
+      const totalInteraccionesIA = mensajes?.length || 0
+      console.log(`✅ ${totalInteraccionesIA} interacciones con IA`)
 
       // ========== ESTADÍSTICAS POR PAÍS ==========
       const areasPorPais = areas?.reduce((acc: any, area) => {
@@ -210,7 +249,7 @@ export default function AdminAnalyticsPage() {
 
       setAnalytics({
         totalAreas: areas?.length || 0,
-        totalUsers: 382,
+        totalUsers, // Usar valor real desde API
         totalPaises,
         totalComunidades,
         areasPorPais: areasPorPaisArray,
@@ -228,6 +267,10 @@ export default function AdminAnalyticsPage() {
           .map(([servicio, count]) => ({ servicio, count: count as number }))
           .sort((a, b) => b.count - a.count)
           .slice(0, 7),
+        // Nuevas métricas
+        totalRutas,
+        distanciaTotal,
+        totalInteraccionesIA,
         top10AreasPopulares: top10,
         promedioRating,
         distribucionPrecios: [
@@ -393,6 +436,33 @@ export default function AdminAnalyticsPage() {
             <p className="text-2xl font-bold text-amber-900 mt-2">{analytics.areasGratis.toLocaleString()}</p>
             <p className="text-xs text-amber-600 mt-1">
               {((analytics.areasGratis / analytics.totalAreas) * 100).toFixed(1)}% gratuitas
+            </p>
+          </div>
+        </div>
+
+        {/* KPIs de Uso - Rutas e Interacciones */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 border border-indigo-200">
+            <p className="text-sm font-medium text-indigo-700">🗺️ Rutas Calculadas</p>
+            <p className="text-2xl font-bold text-indigo-900 mt-2">{analytics.totalRutas.toLocaleString()}</p>
+            <p className="text-xs text-indigo-600 mt-1">
+              Planificadas por usuarios
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 border border-teal-200">
+            <p className="text-sm font-medium text-teal-700">🛣️ Distancia Total</p>
+            <p className="text-2xl font-bold text-teal-900 mt-2">{analytics.distanciaTotal.toLocaleString()} km</p>
+            <p className="text-xs text-teal-600 mt-1">
+              En todas las rutas
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+            <p className="text-sm font-medium text-purple-700">🤖 Interacciones IA</p>
+            <p className="text-2xl font-bold text-purple-900 mt-2">{analytics.totalInteraccionesIA.toLocaleString()}</p>
+            <p className="text-xs text-purple-600 mt-1">
+              Mensajes con el chatbot
             </p>
           </div>
         </div>
