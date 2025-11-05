@@ -350,7 +350,7 @@ export default function AdminAreasPage() {
     link.click()
   }
 
-  // Función para exportar a Excel
+  // Función para exportar a Excel (formato CSV con extensión .xlsx)
   const exportToExcel = () => {
     const headers = ['Nombre', 'Ciudad', 'Provincia', 'País', 'Tipo', 'Precio', 'Verificado', 'Activo', 'Servicios']
     const rows = areasFiltradas.map(area => {
@@ -374,15 +374,15 @@ export default function AdminAreasPage() {
       ]
     })
 
-    const tsvContent = [
-      headers.join('\t'),
-      ...rows.map(row => row.join('\t'))
+    const csvContent = [
+      headers.map(h => `"${h}"`).join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
     ].join('\n')
 
-    const blob = new Blob(['\uFEFF' + tsvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' })
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
     link.href = URL.createObjectURL(blob)
-    link.download = `areas_${new Date().toISOString().split('T')[0]}.xls`
+    link.download = `areas_${new Date().toISOString().split('T')[0]}.xlsx`
     link.click()
   }
 

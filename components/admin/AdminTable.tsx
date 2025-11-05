@@ -139,25 +139,28 @@ export function AdminTable<T extends Record<string, any>>({
     link.click()
   }
 
-  // Exportar a Excel (formato CSV pero con extensión .xls para que Excel lo abra)
+  // Exportar a Excel (formato CSV con extensión .xlsx)
   const exportToExcel = () => {
-    const headers = columns.map(col => col.title).join('\t')
+    const headers = columns.map(col => col.title).join(',')
     const rows = sortedData.map(item => {
       return columns
         .map(col => {
           const value = col.exportValue
             ? col.exportValue(item)
             : item[col.key]
-          return String(value ?? '')
+          
+          // Escapar comillas y comas
+          const stringValue = String(value ?? '')
+          return `"${stringValue.replace(/"/g, '""')}"`
         })
-        .join('\t')
+        .join(',')
     })
 
-    const tsv = [headers, ...rows].join('\n')
-    const blob = new Blob(['\uFEFF' + tsv], { type: 'application/vnd.ms-excel;charset=utf-8;' })
+    const csv = [headers, ...rows].join('\n')
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
     link.href = URL.createObjectURL(blob)
-    link.download = `${exportFilename}_${new Date().toISOString().split('T')[0]}.xls`
+    link.download = `${exportFilename}_${new Date().toISOString().split('T')[0]}.xlsx`
     link.click()
   }
 
