@@ -58,9 +58,19 @@ export async function POST(request: NextRequest) {
 
     if (data.error) {
       console.error('❌ [SERPAPI-PROXY] Error de SerpAPI:', data.error)
+      
+      // Detectar errores específicos
+      let userFriendlyMessage = data.error
+      if (data.error.toLowerCase().includes('credit') || 
+          data.error.toLowerCase().includes('limit exceeded') ||
+          data.error.toLowerCase().includes('search limit reached')) {
+        userFriendlyMessage = '⚠️ CRÉDITOS DE SERPAPI AGOTADOS. Recarga tu cuenta en https://serpapi.com/manage-api-key'
+      }
+      
       return NextResponse.json({
+        success: false,
         error: 'Error de SerpAPI',
-        details: data.error
+        details: userFriendlyMessage
       }, { status: 500 })
     }
 

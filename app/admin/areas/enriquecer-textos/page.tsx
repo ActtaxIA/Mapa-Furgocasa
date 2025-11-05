@@ -254,7 +254,7 @@ export default function EnriquecerTextosPage() {
     }
   }
 
-  const enrichArea = async (areaId: string, forceProcess: boolean = false): Promise<boolean> => {
+  const enrichArea = async (areaId: string, forceProcess: boolean = false): Promise<{ success: boolean; error?: string }> => {
     try {
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
       console.log('🚀 [ENRICH] Iniciando enriquecimiento de área:', areaId)
@@ -269,7 +269,7 @@ export default function EnriquecerTextosPage() {
 
       if (areaError || !area) {
         console.error('❌ [ENRICH] Error: Área no encontrada', areaError)
-        return false
+        return { success: false, error: 'Área no encontrada en la base de datos' }
       }
 
       console.log('✅ [ENRICH] Área encontrada:', area.nombre, '-', area.ciudad)
@@ -289,7 +289,7 @@ export default function EnriquecerTextosPage() {
         // Si ya tiene descripción válida (≥200 caracteres y no es placeholder), no sobreescribir
         if (area.descripcion && !isPlaceholder && desc.length >= 200) {
           console.log('⚠️ [ENRICH] El área ya tiene descripción válida (≥200 caracteres). No se sobrescribe.')
-          return false
+          return { success: false, error: 'Ya tiene descripción válida (≥200 caracteres)' }
         }
       }
 
@@ -304,15 +304,21 @@ export default function EnriquecerTextosPage() {
       })
 
       if (!serpResponse.ok) {
-        console.error('❌ [ENRICH] Error del proxy de SerpAPI:', serpResponse.status)
-        return false
+        const errorData = await serpResponse.json().catch(() => ({}))
+        console.error('❌ [ENRICH] Error del proxy de SerpAPI:', serpResponse.status, errorData)
+        return { success: false, error: `Error de SerpAPI (${serpResponse.status}): ${errorData.error || errorData.details || 'Error desconocido'}` }
       }
 
       const serpResult = await serpResponse.json()
       
       if (!serpResult.success) {
-        console.error('❌ [ENRICH] Error de SerpAPI:', serpResult.error)
-        return false
+        console.error('❌ [ENRICH] Error de SerpAPI:', serpResult.error, serpResult.details)
+        const errorMsg = serpResult.details || serpResult.error || 'Error desconocido'
+        // Detectar error de créditos excedidos
+        if (errorMsg.includes('credit') || errorMsg.includes('limit') || errorMsg.includes('exceeded')) {
+          return { success: false, error: '⚠️ CRÉDITOS DE SERPAPI EXCEDIDOS - Recarga tu cuenta en serpapi.com' }
+        }
+        return { success: false, error: `Error de SerpAPI: ${errorMsg}` }
       }
 
       const serpData = serpResult.data
@@ -435,8 +441,9 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
       })
 
       if (!openaiResponse.ok) {
-        console.error('❌ [ENRICH] Error de OpenAI:', openaiResponse.status)
-        return false
+        const errorData = await openaiResponse.json().catch(() => ({}))
+        console.error('❌ [ENRICH] Error de OpenAI:', openaiResponse.status, errorData)
+        return { success: false, error: `Error de OpenAI (${openaiResponse.status}): ${errorData.error?.message || 'Error desconocido'}` }
       }
 
       const openaiData = await openaiResponse.json()
@@ -456,19 +463,19 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
 
       if (updateError) {
         console.error('❌ [ENRICH] Error al guardar en BD:', updateError)
-        return false
+        return { success: false, error: `Error al guardar en base de datos: ${updateError.message}` }
       }
 
       console.log('✅ [ENRICH] ¡Descripción guardada exitosamente!')
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-      return true
+      return { success: true }
 
     } catch (error: any) {
       console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
       console.error('❌ [ENRICH] Error enriqueciendo área:', error)
       console.error('  Detalles:', error?.message || 'Sin detalles')
       console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-      return false
+      return { success: false, error: `Error inesperado: ${error.message}` }
     }
   }
 
@@ -520,6 +527,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
 
     let successCount = 0
     let failCount = 0
+    const errors: string[] = []
 
     for (let i = 0; i < selectedIds.length; i++) {
       const areaId = selectedIds[i]
@@ -529,16 +537,28 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
 
       setProcessLog(prev => [...prev, `[${i + 1}/${selectedIds.length}] Procesando: ${area.nombre}...`])
 
-      // Forzar procesamiento si el filtro "Solo sin descripción" está activo
-      const forceProcess = soloSinTexto
-      const success = await enrichArea(areaId, forceProcess)
+      // Siempre forzar procesamiento (el usuario ya seleccionó las áreas que quiere procesar)
+      const forceProcess = true
+      const result = await enrichArea(areaId, forceProcess)
 
-      if (success) {
+      if (result.success) {
         successCount++
         setProcessLog(prev => [...prev, `✓ ${area.nombre} - Descripción generada`])
       } else {
         failCount++
-        setProcessLog(prev => [...prev, `✗ ${area.nombre} - Error o ya tenía descripción`])
+        const errorMsg = result.error || 'Error desconocido'
+        setProcessLog(prev => [...prev, `✗ ${area.nombre} - ${errorMsg}`])
+        
+        // Si es error de créditos, detener el proceso
+        if (errorMsg.includes('CRÉDITOS') || errorMsg.includes('EXCEDIDOS')) {
+          setProcessLog(prev => [...prev, '', '🛑 PROCESO DETENIDO: Créditos de SerpAPI agotados', 'Recarga tu cuenta en https://serpapi.com/'])
+          errors.push(errorMsg)
+          break
+        }
+        
+        if (!errors.includes(errorMsg)) {
+          errors.push(errorMsg)
+        }
       }
 
       // Pequeña pausa entre requests para no saturar
@@ -548,7 +568,10 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
     setProcessLog(prev => [
       ...prev,
       '',
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
       `✓ Completado: ${successCount} éxitos, ${failCount} fallos`,
+      ...(errors.length > 0 ? ['', '⚠️ Errores encontrados:', ...errors.map(e => `  • ${e}`)] : []),
+      '',
       'Recargando áreas...'
     ])
 
