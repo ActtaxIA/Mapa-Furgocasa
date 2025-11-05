@@ -95,6 +95,7 @@ export async function GET(request: NextRequest) {
       confirmed_at: user.confirmed_at,
       user_metadata: user.user_metadata || {},
       app_metadata: user.app_metadata || {},
+      identities: (user as any).identities || [], // Incluir identities para saber el proveedor
     }))
 
     const response = NextResponse.json({
