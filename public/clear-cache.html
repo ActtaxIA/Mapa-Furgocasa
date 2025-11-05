@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpiar Caché - Mapa Furgocasa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status.info {
+            background: #ebf8ff;
+            color: #2c5282;
+            border: 1px solid #90cdf4;
+        }
+        
+        .status.success {
+            background: #f0fff4;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+        
+        .status.error {
+            background: #fff5f5;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #edf2f7;
+            color: #2d3748;
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .steps {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .step-icon.pending {
+            background: #e2e8f0;
+            color: #718096;
+        }
+        
+        .step-icon.done {
+            background: #48bb78;
+            color: white;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Limpiar Caché</h1>
+        <p class="subtitle">Limpia el caché y service worker para ver datos actualizados</p>
+        
+        <div id="status" class="status info">
+            ℹ️ Haz clic en el botón para limpiar toda la caché almacenada.
+        </div>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon pending" id="icon1">1</div>
+                <span>Desregistrar Service Worker</span>
+            </div>
+            <div class="step">
+                <div class="step-icon pending" id="icon2">2</div>
+                <span>Limpiar caché del navegador</span>
+            </div>
+            <div class="step">
+                <div class="step-icon pending" id="icon3">3</div>
+                <span>Limpiar almacenamiento local</span>
+            </div>
+            <div class="step">
+                <div class="step-icon pending" id="icon4">4</div>
+                <span>Recargar aplicación</span>
+            </div>
+        </div>
+        
+        <button id="clearBtn" class="btn btn-primary" onclick="clearAll()">
+            Limpiar Todo
+        </button>
+        
+        <button class="btn btn-secondary" onclick="goHome()">
+            Volver a la aplicación
+        </button>
+    </div>
+    
+    <script>
+        async function clearAll() {
+            const btn = document.getElementById('clearBtn');
+            const status = document.getElementById('status');
+            
+            btn.disabled = true;
+            btn.innerHTML = 'Limpiando...<span class="loading"></span>';
+            
+            status.className = 'status info';
+            status.textContent = '⏳ Limpiando caché...';
+            
+            try {
+                // Paso 1: Desregistrar service workers
+                updateStep(1, 'done');
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (let registration of registrations) {
+                        await registration.unregister();
+                    }
+                    console.log('✅ Service Workers desregistrados');
+                }
+                
+                await sleep(300);
+                
+                // Paso 2: Limpiar caché
+                updateStep(2, 'done');
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(
+                        cacheNames.map(cacheName => caches.delete(cacheName))
+                    );
+                    console.log('✅ Caché del navegador limpiada');
+                }
+                
+                await sleep(300);
+                
+                // Paso 3: Limpiar almacenamiento local
+                updateStep(3, 'done');
+                localStorage.clear();
+                sessionStorage.clear();
+                console.log('✅ Almacenamiento local limpiado');
+                
+                await sleep(300);
+                
+                // Paso 4: Listo para recargar
+                updateStep(4, 'done');
+                
+                status.className = 'status success';
+                status.textContent = '✅ ¡Caché limpiada exitosamente! Recargando...';
+                
+                // Recargar la página después de 1 segundo
+                setTimeout(() => {
+                    window.location.href = '/admin/users';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error limpiando caché:', error);
+                status.className = 'status error';
+                status.textContent = '❌ Error al limpiar caché: ' + error.message;
+                btn.disabled = false;
+                btn.textContent = 'Reintentar';
+            }
+        }
+        
+        function updateStep(stepNumber, status) {
+            const icon = document.getElementById('icon' + stepNumber);
+            icon.className = 'step-icon ' + status;
+            if (status === 'done') {
+                icon.textContent = '✓';
+            }
+        }
+        
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        function goHome() {
+            window.location.href = '/admin/users';
+        }
+        
+        // Mostrar info sobre service workers registrados
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                console.log('Service Workers registrados:', registrations.length);
+                registrations.forEach((reg, i) => {
+                    console.log(`SW ${i+1}:`, reg.scope);
+                });
+            });
+        }
+        
+        // Mostrar info sobre cachés
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                console.log('Cachés almacenadas:', names);
+            });
+        }
+    </script>
+</body>
+</html>
+

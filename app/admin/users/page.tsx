@@ -35,6 +35,18 @@ export default function AdminUsersPage() {
   const router = useRouter()
 
   useEffect(() => {
+    // Limpiar cualquier caché del Service Worker para esta ruta
+    if ('caches' in window) {
+      caches.keys().then(cacheNames => {
+        cacheNames.forEach(cacheName => {
+          if (cacheName.includes('supabase') || cacheName.includes('api')) {
+            caches.delete(cacheName)
+            console.log('🗑️ Caché eliminado:', cacheName)
+          }
+        })
+      })
+    }
+
     checkAdminAndLoadUsers()
   }, [])
 
@@ -55,7 +67,10 @@ export default function AdminUsersPage() {
       setLoading(true)
       
       // Llamar a la API del servidor que usa Service Role Key
-      const response = await fetch('/api/admin/users')
+      // Agregar un timestamp para evitar caché
+      const response = await fetch(`/api/admin/users?t=${Date.now()}`, {
+        cache: 'no-store'
+      })
       const data = await response.json()
 
       if (!response.ok) {
@@ -63,6 +78,7 @@ export default function AdminUsersPage() {
       }
 
       console.log(`✅ Cargados ${data.total} usuarios desde Supabase Auth`)
+      console.log('📊 Datos de usuarios:', data.users.slice(0, 3)) // Mostrar los primeros 3 para debug
       setUsers(data.users || [])
       
     } catch (error) {
@@ -165,19 +181,31 @@ export default function AdminUsersPage() {
       title: 'Último Acceso',
       sortable: true,
       render: (user) => (
-        <span className="text-sm text-gray-500">
+        <div className="text-sm text-gray-500">
           {user.last_sign_in_at ? (
-            new Date(user.last_sign_in_at).toLocaleDateString('es-ES', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric'
-            })
+            <div className="flex flex-col">
+              <span className="font-medium text-gray-900">
+                {new Date(user.last_sign_in_at).toLocaleDateString('es-ES', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </span>
+              <span className="text-xs text-gray-500">
+                {new Date(user.last_sign_in_at).toLocaleTimeString('es-ES', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </span>
+            </div>
           ) : (
             <span className="text-gray-400">Nunca</span>
           )}
-        </span>
+        </div>
       ),
-      exportValue: (user) => user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString('es-ES') : 'Nunca'
+      exportValue: (user) => user.last_sign_in_at 
+        ? `${new Date(user.last_sign_in_at).toLocaleDateString('es-ES')} ${new Date(user.last_sign_in_at).toLocaleTimeString('es-ES')}` 
+        : 'Nunca'
     },
     {
       key: 'confirmed_at',
@@ -230,18 +258,46 @@ export default function AdminUsersPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filtro Rol */}
+        {/* Filtro Rol y Acciones */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Filtrar por rol</label>
-          <select
-            value={filtroAdmin}
-            onChange={(e) => setFiltroAdmin(e.target.value as any)}
-            className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-          >
-            <option value="all">Todos los usuarios</option>
-            <option value="admin">Solo administradores</option>
-            <option value="user">Solo usuarios</option>
-          </select>
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end justify-between">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Filtrar por rol</label>
+              <select
+                value={filtroAdmin}
+                onChange={(e) => setFiltroAdmin(e.target.value as any)}
+                className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              >
+                <option value="all">Todos los usuarios</option>
+                <option value="admin">Solo administradores</option>
+                <option value="user">Solo usuarios</option>
+              </select>
+            </div>
+            
+            <div className="flex gap-2">
+              <a
+                href="/clear-cache.html"
+                className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors whitespace-nowrap flex items-center gap-2 text-sm font-medium"
+                title="Limpiar caché del navegador"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </svg>
+                Limpiar caché
+              </a>
+              
+              <button
+                onClick={loadUsers}
+                disabled={loading}
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors whitespace-nowrap"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+                {loading ? 'Cargando...' : 'Recargar datos'}
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Información sobre gestión de usuarios */}

@@ -16,14 +16,20 @@ const withPWA = require('next-pwa')({
       }
     },
     {
-      urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+      // NUNCA cachear las rutas de API - siempre datos frescos
+      urlPattern: /\/api\/.*/i,
+      handler: 'NetworkOnly'
+    },
+    {
+      // Solo cachear llamadas auth de Supabase (login/signup), no datos
+      urlPattern: /^https:\/\/.*\.supabase\.co\/auth\/.*/i,
       handler: 'NetworkFirst',
       options: {
-        cacheName: 'supabase-data',
+        cacheName: 'supabase-auth',
         networkTimeoutSeconds: 10,
         expiration: {
-          maxEntries: 128,
-          maxAgeSeconds: 24 * 60 * 60
+          maxEntries: 32,
+          maxAgeSeconds: 1 * 60 * 60 // 1 hora
         }
       }
     }
