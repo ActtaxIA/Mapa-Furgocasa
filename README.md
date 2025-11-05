@@ -1,10 +1,12 @@
 # 🚐 Mapa Furgocasa - Plataforma de Áreas para Autocaravanas en Europa y LATAM
 
-**Versión: 1.0.0 - PRODUCCIÓN** 🎉✅
+**Versión: 1.1.0 - PRODUCCIÓN** 🎉✅
 
 Plataforma web interactiva totalmente funcional para descubrir y gestionar áreas de autocaravanas, campers y vehículos recreativos en **Europa y Latinoamérica** (España, Portugal, Francia, Italia, Alemania, Argentina, Chile, Uruguay, Brasil, Colombia, Perú y más).
 
 **Estado:** 🟢 **100% OPERATIVO** - Chatbot IA funcionando, Editor de prompts activo, Sistema completo en producción.
+
+**Última actualización:** Noviembre 2025 - Panel de administración optimizado con datos en tiempo real.
 
 ---
 
@@ -42,9 +44,10 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 - 📸 **Búsqueda Automática de Imágenes** para cada área
 - 🎨 **Editor de Prompts IA** ✅ - Configuración visual de los 3 agentes de IA desde `/admin/configuracion`
 - 💬 **Configuración del Chatbot** ✅ - Editor completo de prompts múltiples para el Tío Viajero IA
-- 📊 **Analytics Globales** - Estadísticas por país, región, contenido y crecimiento
-- 👥 **Gestión de Usuarios**
+- 📊 **Analytics en Tiempo Real** ✨ **NUEVO v1.1** - Datos reales desde Supabase Auth + métricas de uso
+- 👥 **Gestión de Usuarios Mejorada** ✨ **NUEVO v1.1** - Tabla optimizada con iconos de proveedor y ordenación inteligente
 - 🗄️ **Base de Datos Normalizada** - 100% áreas con país y región/CCAA correctos
+- 🚫 **Sin Caché** ✨ **NUEVO v1.1** - Datos siempre actualizados en panel admin
 
 ---
 
@@ -558,9 +561,34 @@ Incluye:
 
 ---
 
-## 🎉 Novedades en BETA 1.0
+## 🎉 Novedades en v1.1 (Noviembre 2025)
 
-### ✨ Características Principales
+### ✨ Panel de Administración Optimizado
+
+1. **Gestión de Usuarios Mejorada** 👥
+   - Tabla reorganizada con columnas separadas: Tipo | Nombre | Email | ID | Rol | Fecha | Último Acceso | Estado
+   - Iconos visuales de proveedor (Google OAuth / Email)
+   - Ordenación inteligente: usuarios más recientes primero por defecto
+   - Todas las columnas ordenables individualmente
+   - Datos en tiempo real desde Supabase Auth API
+   - Sin caché: siempre muestra datos actualizados
+
+2. **Analytics en Tiempo Real** 📊
+   - Usuarios reales desde Supabase Auth (no hardcodeado)
+   - **Nueva métrica**: Rutas Calculadas 🗺️
+   - **Nueva métrica**: Distancia Total de rutas 🛣️ (en km)
+   - **Nueva métrica**: Interacciones con IA 🤖 (mensajes chatbot)
+   - Métricas de uso completas: ahora se mide TODO
+
+3. **Sistema Sin Caché** 🚫
+   - PWA configurado para no cachear APIs de admin
+   - Headers HTTP de no-cache en todas las respuestas
+   - Botón de recarga manual de datos
+   - Página de limpieza de caché (`/clear-cache.html`)
+   - Visualización de fecha Y hora en último acceso
+
+### ✨ Características Anteriores (BETA 1.0)
+
 1. **Planificador de Rutas Completo**
    - Integración con Google Maps Directions API
    - Búsqueda de áreas cercanas a la ruta
@@ -608,7 +636,8 @@ Este proyecto es de uso personal y educativo.
 ## 👨‍💻 Autor
 
 **Narciso Pardo Buendía**
-Versión BETA 1.0 - Octubre 2025
+- Versión 1.1 - Noviembre 2025
+- Versión BETA 1.0 - Octubre 2025
 
 ---
 
@@ -660,4 +689,4 @@ Para dudas o problemas:
 
 **¡Feliz viaje! 🚐✨**
 
-*Mapa Furgocasa - BETA 1.0 - Sistema Global*
+*Mapa Furgocasa - v1.1.0 - Sistema Global en Producción*

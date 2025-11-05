@@ -4,6 +4,79 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 ---
 
+## [1.1.0] - 2025-11-05 ✨
+
+### 🎯 OPTIMIZACIÓN DEL PANEL DE ADMINISTRACIÓN
+
+Versión enfocada en mejorar el panel de administración con datos en tiempo real y mejor UX.
+
+### ✅ Agregado
+
+#### Gestión de Usuarios Mejorada (`/admin/users`)
+- **Tabla reorganizada** con columnas separadas y ordenables:
+  - `Tipo` - Icono visual del proveedor (Google OAuth / Email)
+  - `Nombre` - Nombre completo del usuario
+  - `Email` - Correo electrónico
+  - `ID` - Identificador único (primeros 8 caracteres)
+  - `Rol` - Admin / Usuario
+  - `Fecha Registro` - Cuándo se registró
+  - `Último Acceso` - Fecha y hora del último inicio de sesión
+  - `Estado` - Confirmado / Pendiente
+- **Iconos de proveedor** - Logo de Google para OAuth, icono de email para password
+- **Ordenación inteligente** - Por defecto muestra usuarios más recientes primero
+- **Datos en tiempo real** - Obtiene usuarios reales desde Supabase Auth API
+- **Sin caché** - PWA configurado para no cachear `/api/admin/*`
+- **Botón de recarga manual** - Actualiza datos con un clic
+- **551 usuarios mostrados correctamente** (antes solo 505)
+
+#### Analytics en Tiempo Real (`/admin/analytics`)
+- **Usuarios reales** - Obtiene count desde API en lugar de valor hardcodeado
+- **Nueva métrica: Rutas Calculadas** 🗺️ - Total de rutas planificadas por usuarios
+- **Nueva métrica: Distancia Total** 🛣️ - Kilómetros acumulados de todas las rutas
+- **Nueva métrica: Interacciones IA** 🤖 - Total de mensajes con el chatbot
+- **Datos frescos** - Todas las métricas se calculan en tiempo real
+
+#### Sistema Anti-Caché
+- **Headers HTTP de no-cache** en todas las respuestas de `/api/admin/*`
+- **Configuración PWA** - `NetworkOnly` para APIs de administración
+- **Página de limpieza** - `/clear-cache.html` para limpiar service worker
+- **Visualización mejorada** - Fecha Y hora en columna "Último Acceso"
+- **Timestamp en URLs** - Evita caché del navegador con `?t=${Date.now()}`
+
+#### AdminTable Component Mejorado
+- **Props de ordenación inicial** - `initialSortColumn` e `initialSortDirection`
+- **Ordenación configurable** - Permite establecer columna y dirección por defecto
+- **Reutilizable** - Otros componentes pueden usar la ordenación personalizada
+
+### 🔧 Arreglado
+
+#### Problema de Caché
+- **Solución**: PWA ya no cachea APIs de administración
+- **Resultado**: Datos siempre actualizados sin necesidad de hard refresh
+
+#### Ordenación de Usuarios
+- **Problema**: Al hacer clic en "Último Acceso", ordenaba de más antiguo a más reciente
+- **Solución**: Ahora ordena por defecto más recientes primero (descendente)
+- **Comportamiento**: Click alterna entre descendente ↓ y ascendente ↑
+
+#### Conteo de Usuarios
+- **Problema**: Analytics mostraba 382 usuarios (hardcodeado)
+- **Solución**: Ahora obtiene usuarios reales desde Supabase Auth
+- **Resultado**: Muestra 551 usuarios correctamente
+
+#### Datos Desactualizados
+- **Problema**: Fechas de registro y último acceso no se actualizaban
+- **Causa**: Service Worker cacheaba peticiones por 24 horas
+- **Solución**: Sistema completo anti-caché implementado
+
+### 📚 Documentación
+
+- **INSTRUCCIONES_CACHE_USUARIOS.md** - Guía completa de solución del problema de caché
+- **README.md actualizado** - Versión 1.1.0 con nuevas características
+- **.dropboxignore creado** - Excluye `.git` de sincronización Dropbox
+
+---
+
 ## [1.0.0] - 2025-11-04 🎉
 
 ### 🏆 VERSIÓN 1.0 - PRODUCCIÓN
