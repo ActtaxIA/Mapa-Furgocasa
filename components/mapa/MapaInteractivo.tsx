@@ -664,7 +664,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
             ? 'bg-orange-500 text-white hover:bg-orange-600' 
             : 'bg-white text-gray-700 hover:bg-gray-50'
         }`}
-        aria-label={gpsActive ? 'Desactivar GPS' : 'Activar GPS'}
+        aria-label={gpsActive ? 'Desactivar GPS' : 'Ver ubicación'}
       >
         <svg
           className="w-5 h-5"
@@ -685,7 +685,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
           />
         </svg>
-        <span className="text-sm" suppressHydrationWarning>{gpsActive ? 'GPS Activo' : 'Activar GPS'}</span>
+        <span className="text-sm" suppressHydrationWarning>{gpsActive ? 'GPS Activo' : 'Ver ubicación'}</span>
       </button>
 
       {/* Botón de Información - Izquierda, altura de controles de zoom */}
