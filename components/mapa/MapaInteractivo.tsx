@@ -154,16 +154,6 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
         map,
         markers: markersRef.current,
         
-        // ✅ OPTIMIZACIÓN: Clustering más agresivo hasta zoom 11 (antes: 15)
-        // Esto reduce el número de círculos visibles en zooms alejados
-        maxZoom: 11,
-        
-        // ✅ OPTIMIZACIÓN: Mínimo 3 áreas para crear cluster (menos clusters pequeños)
-        minimumClusterSize: 3,
-        
-        // ✅ UX: Hacer zoom automático al hacer click en cluster
-        zoomOnClick: true,
-        
         renderer: {
           render: ({ count, position }) => {
             // ✅ OPTIMIZACIÓN: Escala dinámica según cantidad de áreas
@@ -172,7 +162,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
                          count < 50 ? 28 : 
                          count < 100 ? 35 : 42
             
-            return new google.maps.Marker({
+            const marker = new google.maps.Marker({
               position,
               icon: {
                 path: google.maps.SymbolPath.CIRCLE,
@@ -190,6 +180,17 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
               },
               zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count,
             })
+            
+            // ✅ UX: Hacer zoom automático al hacer click en cluster
+            marker.addListener('click', () => {
+              if (map) {
+                const currentZoom = map.getZoom() || 6
+                map.setZoom(currentZoom + 2)
+                map.panTo(position)
+              }
+            })
+            
+            return marker
           },
         },
       })
