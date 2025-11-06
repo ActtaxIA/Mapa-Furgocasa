@@ -192,7 +192,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
       markersRef.current.forEach(marker => marker.setMap(null))
       markersRef.current = []
     }
-  }, [map, areas, onAreaClick, currentZoom]) // ✅ Añadido currentZoom para lazy loading
+  }, [map, areas, onAreaClick])
 
   // Actualizar cuando se selecciona un área desde la lista
   useEffect(() => {
