@@ -149,26 +149,43 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
 
     // Actualizar clusterer: añadir solo los nuevos markers
     if (!markerClustererRef.current) {
-      // Primera vez: crear clusterer
+      // Primera vez: crear clusterer con optimizaciones de rendimiento
       markerClustererRef.current = new MarkerClusterer({
         map,
         markers: markersRef.current,
+        
+        // ✅ OPTIMIZACIÓN: Clustering más agresivo hasta zoom 11 (antes: 15)
+        // Esto reduce el número de círculos visibles en zooms alejados
+        maxZoom: 11,
+        
+        // ✅ OPTIMIZACIÓN: Mínimo 3 áreas para crear cluster (menos clusters pequeños)
+        minimumClusterSize: 3,
+        
+        // ✅ UX: Hacer zoom automático al hacer click en cluster
+        zoomOnClick: true,
+        
         renderer: {
           render: ({ count, position }) => {
+            // ✅ OPTIMIZACIÓN: Escala dinámica según cantidad de áreas
+            // Más áreas = círculo más grande (más visible y menos solapamiento)
+            const scale = count < 10 ? 20 : 
+                         count < 50 ? 28 : 
+                         count < 100 ? 35 : 42
+            
             return new google.maps.Marker({
               position,
               icon: {
                 path: google.maps.SymbolPath.CIRCLE,
-                scale: 25,
+                scale: scale,
                 fillColor: '#0284c7',
-                fillOpacity: 0.8,
+                fillOpacity: 0.85,
                 strokeColor: '#ffffff',
                 strokeWeight: 3,
               },
               label: {
                 text: String(count),
                 color: '#ffffff',
-                fontSize: '14px',
+                fontSize: count < 100 ? '14px' : '16px',
                 fontWeight: 'bold',
               },
               zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count,
