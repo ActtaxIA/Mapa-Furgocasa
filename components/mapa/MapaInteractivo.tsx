@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Loader } from '@googlemaps/js-api-loader'
-import { MarkerClusterer } from '@googlemaps/markerclusterer'
+import { MarkerClusterer, SuperClusterAlgorithm } from '@googlemaps/markerclusterer'
 import type { Area } from '@/types/database.types'
 import Link from 'next/link'
 
@@ -155,13 +155,20 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
         map,
         markers: markersRef.current,
         
+        // ✅ ALGORITMO OPTIMIZADO: Reduce solapamiento y mejora rendimiento
+        algorithm: new SuperClusterAlgorithm({
+          radius: 100,    // Radio de 100px (antes: 60px default) - menos clusters
+          minPoints: 3,   // Mínimo 3 áreas por cluster (antes: 2) - clusters más significativos
+          maxZoom: 13     // Agrupa hasta zoom 13 (antes: 15) - clustering más agresivo
+        }),
+        
         renderer: {
           render: ({ count, position }) => {
             // ✅ OPTIMIZACIÓN: Escala dinámica según cantidad de áreas
             // Más áreas = círculo más grande (más visible y menos solapamiento)
-            const scale = count < 10 ? 20 : 
-                         count < 50 ? 28 : 
-                         count < 100 ? 35 : 42
+            const scale = count < 10 ? 22 : 
+                         count < 50 ? 30 : 
+                         count < 100 ? 38 : 45
             
             const marker = new google.maps.Marker({
               position,
