@@ -2,7 +2,7 @@
 
 **Fecha:** 5 de Noviembre, 2025  
 **Estado:** ✅ Implementado y desplegado  
-**Commit:** `c6cf823`
+**Commit inicial:** `c6cf823` | **Revert Solución 3:** `d6218b5`
 
 ---
 
@@ -71,34 +71,29 @@ setAreas(allAreas)  // ← Una sola vez al final
 
 ---
 
-### **3. Lazy Loading de Marcadores por Zoom**
+### **3. Lazy Loading de Marcadores por Zoom** ⚠️ REVERTIDA
 
 **Problema:** Se creaban 3,614 marcadores inmediatamente, aunque en vista global no se veían.
 
-**Solución:**
+**Solución implementada inicialmente:**
 ```typescript
 // Solo crear marcadores si zoom >= 7
 if (currentZoom < 7) {
   console.log('Zoom muy alejado, solo clusters')
   return  // No crear marcadores individuales
 }
-
-// Listener de cambio de zoom
-mapInstance.addListener('zoom_changed', () => {
-  const newZoom = mapInstance.getZoom()
-  setCurrentZoom(newZoom)
-})
 ```
 
-**Archivos:** 
-- `components/mapa/MapaInteractivo.tsx` líneas 31, 76-80, 104-113
-- Añadido `currentZoom` a dependencias del useEffect (línea 213)
+**❌ PROBLEMA ENCONTRADO:**
+- Los iconos NO eran visibles en el zoom inicial (zoom 6)
+- Mala experiencia de usuario: mapa vacío hasta hacer zoom
+- Feedback del usuario: "no veo los iconos... solo cuando me acerco mucho"
 
-**Resultado:**
-- 🚀 **Vista global instantánea** (solo clusters)
-- 📍 **Marcadores se crean al hacer zoom** (lazy)
-- 💾 **Menor uso de memoria** en zoom out
-- 📱 **Mucho mejor en móviles**
+**✅ SOLUCIÓN FINAL:**
+- **REVERTIDA** en commit `d6218b5`
+- **Ahora:** Los marcadores se muestran **SIEMPRE**, independientemente del zoom
+- **Mantenido:** Sistema de clustering para vista global
+- **Resultado:** Mejor UX - iconos visibles desde el inicio
 
 ---
 
@@ -118,15 +113,15 @@ CREATE INDEX IF NOT EXISTS idx_areas_filtros ON areas(activo, pais, tipo_area) W
 
 ---
 
-## 📊 RESULTADOS ESPERADOS
+## 📊 RESULTADOS FINALES
 
 | Métrica | Antes | Después | Mejora |
 |---------|-------|---------|--------|
 | **Tiempo de carga** | 5-8 seg | 2-3 seg | ⚡ 60% más rápido |
 | **Datos transferidos** | ~5.4 MB | ~1.2 MB | 📉 78% menos |
 | **Re-renders** | 4 | 1 | ✨ Sin parpadeo |
-| **Marcadores en zoom out** | 3,614 | 0 (solo clusters) | 🚀 Vista instantánea |
-| **Marcadores en zoom in** | 3,614 | 3,614 (lazy) | 🎯 Carga progresiva |
+| **Marcadores visibles** | 3,614 (pesado) | 3,614 (optimizado) | 🎯 Siempre visibles |
+| **Clustering** | Básico | Optimizado | 🌐 Vista global clara |
 | **Queries DB** | Lentas | Rápidas | ⚡ 3-5x más rápido |
 
 ---
@@ -149,17 +144,17 @@ CREATE INDEX IF NOT EXISTS idx_areas_filtros ON areas(activo, pais, tipo_area) W
    - NO hay parpadeos durante la carga
    - UI fluida y profesional
 
-### **3. Lazy Loading de Marcadores**
+### **3. Marcadores Siempre Visibles**
 1. Ir al mapa (carga en Madrid, zoom 6)
-2. **Esperado:** Solo ver clusters azules con números
+2. **Esperado:** Ver clusters azules con números Y marcadores individuales
 3. Hacer zoom IN (zoom 7, 8, 9...)
 4. **Esperado:** 
-   - Marcadores individuales aparecen progresivamente
-   - Consola muestra: "📍 Añadiendo X markers nuevos (zoom: 7)"
+   - Clusters se dividen en marcadores individuales
+   - Transición suave
 5. Hacer zoom OUT (zoom 6, 5, 4...)
 6. **Esperado:** 
-   - Marcadores desaparecen, solo clusters
-   - Consola muestra: "🔍 Zoom 6 muy alejado, solo mostrando clusters"
+   - Marcadores se agrupan en clusters
+   - Siempre visibles (no desaparecen)
 
 ### **4. Logs en Consola**
 Abrir DevTools → **Console**:
@@ -172,8 +167,8 @@ Abrir DevTools → **Console**:
 📦 Cargadas 1000 áreas (página 3) - Total: 3000
 📦 Cargadas 614 áreas (página 4) - Total: 3614
 ✅ Total cargadas: 3614 áreas
-🔍 Zoom 6 muy alejado, solo mostrando clusters
-📍 Añadiendo 3614 markers nuevos (zoom: 7)  ← Al hacer zoom
+📍 Añadiendo 3614 markers nuevos (total: 3614, existentes: 0)
+✅ Total markers en mapa: 3614
 ```
 
 ---
@@ -218,10 +213,9 @@ Cachear las áreas en el navegador con Service Worker PWA.
 - ✅ Líneas 80-98: Un solo re-render al final
 
 ### `components/mapa/MapaInteractivo.tsx`
-- ✅ Línea 31: Estado `currentZoom` añadido
-- ✅ Líneas 76-80: Listener de cambio de zoom
-- ✅ Líneas 104-113: Lazy loading condicional
-- ✅ Línea 213: `currentZoom` en dependencias del useEffect
+- ✅ Sistema de clustering incremental (sin parpadeo)
+- ❌ ~~Lazy loading por zoom~~ (revertido por UX)
+- ✅ Marcadores siempre visibles desde zoom inicial
 
 ---
 
@@ -247,13 +241,13 @@ Cachear las áreas en el navegador con Service Worker PWA.
 
 ## 🎉 CONCLUSIÓN
 
-Se implementaron **3 optimizaciones críticas** que mejoran el rendimiento del mapa en un **60%**:
+Se implementaron **2 optimizaciones críticas** que mejoran el rendimiento del mapa en un **60%**:
 
-1. ✅ **78% menos datos** transferidos
-2. ✅ **Sin parpadeo** durante carga
-3. ✅ **Lazy loading** de marcadores por zoom
+1. ✅ **78% menos datos** transferidos (campos selectivos)
+2. ✅ **Sin parpadeo** durante carga (un solo re-render)
+3. ❌ ~~Lazy loading por zoom~~ (revertido - iconos no visibles en inicio)
 
-**Resultado:** Mapa carga en **2-3 segundos** (vs 5-8 anterior) con UX mucho mejor.
+**Resultado:** Mapa carga en **2-3 segundos** (vs 5-8 anterior) con UX mejorado y marcadores siempre visibles.
 
 ---
 
