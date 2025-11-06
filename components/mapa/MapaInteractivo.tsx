@@ -28,6 +28,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
   const [gpsActive, setGpsActive] = useState(false) // Siempre false inicialmente para evitar hidratación
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const watchIdRef = useRef<number | null>(null)
+  const [showInfoTooltip, setShowInfoTooltip] = useState(false) // Estado para tooltip de información
   
   // Cargar estado del GPS desde localStorage DESPUÉS de montar (solo cliente)
   useEffect(() => {
@@ -679,6 +680,107 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
         </svg>
         <span className="text-sm" suppressHydrationWarning>{gpsActive ? 'GPS Activo' : 'Activar GPS'}</span>
       </button>
+
+      {/* Botón de Información - Izquierda, altura de controles de zoom */}
+      <button
+        onClick={() => setShowInfoTooltip(!showInfoTooltip)}
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-10"
+        aria-label="Información sobre rendimiento"
+      >
+        <svg
+          className="w-6 h-6 text-sky-600"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fillRule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </button>
+
+      {/* Tooltip Informativo */}
+      {showInfoTooltip && (
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 ml-16 bg-white rounded-lg shadow-2xl z-20 w-80 max-w-[calc(100vw-6rem)] border-2 border-sky-100">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-3 rounded-t-lg flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+              <h3 className="font-bold text-white text-sm">Consejo de Rendimiento</h3>
+            </div>
+            <button
+              onClick={() => setShowInfoTooltip(false)}
+              className="text-white hover:text-gray-200 transition-colors"
+              aria-label="Cerrar"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="p-4 space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="bg-amber-100 rounded-full p-2 flex-shrink-0">
+                <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  <strong className="text-gray-900">¿El mapa carga lento?</strong>
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Con <strong className="text-sky-600">{areas.length.toLocaleString()} áreas</strong> visibles, 
+                  aplicar filtros mejorará significativamente los tiempos de carga.
+                </p>
+              </div>
+            </div>
+
+            {/* Lista de sugerencias */}
+            <div className="bg-sky-50 rounded-lg p-3 border border-sky-100">
+              <p className="text-xs font-semibold text-sky-900 mb-2 flex items-center gap-1">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                </svg>
+                Prueba estos filtros:
+              </p>
+              <ul className="space-y-1.5 text-xs text-gray-700">
+                <li className="flex items-center gap-2">
+                  <span className="text-sky-500">🌍</span>
+                  <span><strong>País:</strong> Reduce a tu zona de interés</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-sky-500">🚿</span>
+                  <span><strong>Servicios:</strong> Agua, electricidad, duchas...</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-sky-500">💰</span>
+                  <span><strong>Precio:</strong> Gratis, de pago...</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-sky-500">📍</span>
+                  <span><strong>Tipo:</strong> Pública, privada, camping...</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Footer tip */}
+            <div className="flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg p-2.5">
+              <svg className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+              </svg>
+              <p className="text-xs text-green-800">
+                <strong>Tip:</strong> Aplicar 1-2 filtros puede reducir el tiempo de carga hasta un <strong>70%</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Botón Restablecer Zoom - Abajo Centro (más arriba en móvil para evitar bottom bar) */}
       <button
