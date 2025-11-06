@@ -28,6 +28,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
   const [gpsActive, setGpsActive] = useState(false) // Siempre false inicialmente para evitar hidratación
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const watchIdRef = useRef<number | null>(null)
+  const [currentZoom, setCurrentZoom] = useState(6) // Estado para controlar zoom
   
   // Cargar estado del GPS desde localStorage DESPUÉS de montar (solo cliente)
   useEffect(() => {
@@ -72,6 +73,12 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
             ]
           })
 
+          // ✅ Listener de cambio de zoom para lazy loading
+          mapInstance.addListener('zoom_changed', () => {
+            const newZoom = mapInstance.getZoom()
+            setCurrentZoom(newZoom)
+          })
+
           setMap(mapInstance)
 
           // Crear InfoWindow única para reutilizar
@@ -88,11 +95,22 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
     initMap()
   }, [])
 
-  // Añadir marcadores al mapa con clustering INCREMENTAL (sin parpadeo)
+  // Añadir marcadores al mapa con clustering INCREMENTAL (sin parpadeo) + LAZY LOADING
   useEffect(() => {
     if (!map || areas.length === 0) return
 
     const google = (window as any).google
+
+    // ✅ LAZY LOADING: Solo crear marcadores si zoom >= 7
+    if (currentZoom < 7) {
+      console.log(`🔍 Zoom ${currentZoom} muy alejado, solo mostrando clusters`)
+      // Limpiar marcadores si existían
+      if (markersRef.current.length > 0 && markerClustererRef.current) {
+        markerClustererRef.current.clearMarkers()
+        markersRef.current = []
+      }
+      return
+    }
 
     // Número de markers existentes
     const existingCount = markersRef.current.length
@@ -103,7 +121,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
     // Solo crear markers para las áreas NUEVAS (incrementales)
     const newAreas = areas.slice(existingCount)
     
-    console.log(`📍 Añadiendo ${newAreas.length} markers nuevos (total: ${areas.length}, existentes: ${existingCount})`)
+    console.log(`📍 Añadiendo ${newAreas.length} markers nuevos (total: ${areas.length}, existentes: ${existingCount}, zoom: ${currentZoom})`)
 
     const newMarkers = newAreas.map((area) => {
       const pinColor = getTipoAreaColor(area.tipo_area)
@@ -192,7 +210,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
       markersRef.current.forEach(marker => marker.setMap(null))
       markersRef.current = []
     }
-  }, [map, areas, onAreaClick])
+  }, [map, areas, onAreaClick, currentZoom]) // ✅ Añadido currentZoom para lazy loading
 
   // Actualizar cuando se selecciona un área desde la lista
   useEffect(() => {

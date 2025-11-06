@@ -63,11 +63,11 @@ export default function MapaPage() {
 
         console.log('🔄 Cargando áreas progresivamente...')
 
-        // Cargar en lotes de 1000 e ir actualizando el estado
+        // Cargar en lotes de 1000 (OPTIMIZADO: solo campos necesarios)
         while (hasMore) {
           const { data, error } = await supabase
             .from('areas')
-            .select('*')
+            .select('id, nombre, slug, latitud, longitud, ciudad, provincia, pais, tipo_area, precio_noche, foto_principal, servicios, plazas_totales, acceso_24h, barrera_altura')
             .eq('activo', true)
             .order('nombre')
             .range(page * pageSize, (page + 1) * pageSize - 1)
@@ -77,9 +77,7 @@ export default function MapaPage() {
           if (data && data.length > 0) {
             allAreas.push(...data)
             
-            // 🎯 ACTUALIZAR ESTADO PROGRESIVAMENTE
-            setAreas([...allAreas]) // Mostrar áreas inmediatamente
-            setLoadingProgress({ loaded: allAreas.length, total: allAreas.length })
+            // ✅ SOLO LOGGEAR, NO ACTUALIZAR ESTADO (evita re-renders múltiples)
             console.log(`📦 Cargadas ${data.length} áreas (página ${page + 1}) - Total: ${allAreas.length}`)
             
             page++
@@ -94,6 +92,10 @@ export default function MapaPage() {
         }
 
         console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
+        
+        // ✅ ACTUALIZAR ESTADO UNA SOLA VEZ AL FINAL (evita parpadeo)
+        setAreas(allAreas)
+        setLoadingProgress({ loaded: allAreas.length, total: allAreas.length })
         
         // Log de depuración para ver distribución de países
         if (process.env.NODE_ENV === 'development') {
