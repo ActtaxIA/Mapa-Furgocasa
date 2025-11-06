@@ -43,62 +43,66 @@ export function ToastNotification({
 
   return (
     <div
-      className={`fixed top-20 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ${
+      className={`fixed top-4 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:top-20 z-50 transition-all duration-300 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
       }`}
     >
-      <div className="bg-white rounded-xl shadow-2xl border-2 border-sky-100 max-w-md mx-4">
-        {/* Header con gradiente */}
-        <div className="bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-3 rounded-t-xl flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <MapPinIcon className="w-5 h-5 text-white" />
-            <h3 className="font-bold text-white text-sm">GPS Activado</h3>
+      <div className="bg-white rounded-2xl shadow-2xl border-2 border-sky-100 md:max-w-md overflow-hidden">
+        {/* Header con gradiente - Más grande en móvil */}
+        <div className="bg-gradient-to-r from-sky-500 to-blue-600 px-5 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-white/20 rounded-full p-2">
+              <MapPinIcon className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="font-bold text-white text-base">GPS Activado</h3>
           </div>
           <button
             onClick={() => {
               setIsVisible(false)
               setTimeout(onClose, 300)
             }}
-            className="text-white hover:text-gray-200 transition-colors"
+            className="text-white/80 hover:text-white transition-colors p-1"
             aria-label="Cerrar"
           >
-            <XMarkIcon className="w-5 h-5" />
+            <XMarkIcon className="w-6 h-6" />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-4 space-y-3">
-          {/* Mensaje principal */}
-          <div className="flex items-start gap-3">
-            <div className="bg-sky-100 rounded-full p-2 flex-shrink-0">
-              <svg className="w-5 h-5 text-sky-600" fill="currentColor" viewBox="0 0 20 20">
+        {/* Content - Más espacioso */}
+        <div className="p-5 space-y-4">
+          {/* Mensaje principal con icono más grande */}
+          <div className="flex items-start gap-4">
+            <div className="bg-sky-100 rounded-full p-3 flex-shrink-0">
+              <svg className="w-6 h-6 text-sky-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/>
               </svg>
             </div>
-            <div className="flex-1">
-              <p className="text-sm text-gray-700 leading-relaxed">
-                <strong className="text-gray-900">Te hemos localizado en {country || 'tu ubicación'}</strong>
+            <div className="flex-1 min-w-0">
+              <p className="text-base font-semibold text-gray-900 mb-2">
+                Te hemos localizado en {country || 'tu ubicación'}
               </p>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-gray-600 leading-relaxed">
                 {message}
               </p>
             </div>
           </div>
 
-          {/* Info adicional */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-            <div className="flex items-start gap-2">
-              <svg className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
-              </svg>
-              <p className="text-xs text-green-800">
-                <strong>Filtro aplicado:</strong> Esto mejorará significativamente los tiempos de carga del mapa
+          {/* Info adicional con mejor diseño */}
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <div className="bg-green-500 rounded-full p-1 flex-shrink-0">
+                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                </svg>
+              </div>
+              <p className="text-sm text-green-900 leading-relaxed flex-1">
+                <strong className="font-bold">Filtro aplicado:</strong> El mapa cargará mucho más rápido mostrando solo áreas de tu país
               </p>
             </div>
           </div>
 
-          {/* Botones de acción */}
-          <div className="flex gap-2 pt-2">
+          {/* Botones de acción - Stack en móvil, lado a lado en desktop */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
             {onViewFilters && (
               <button
                 onClick={() => {
@@ -106,9 +110,9 @@ export function ToastNotification({
                   setIsVisible(false)
                   setTimeout(onClose, 300)
                 }}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors font-medium text-sm"
+                className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-sky-600 text-white rounded-xl hover:bg-sky-700 active:bg-sky-800 transition-colors font-semibold text-sm shadow-lg shadow-sky-200"
               >
-                <FunnelIcon className="w-4 h-4" />
+                <FunnelIcon className="w-5 h-5" />
                 Ver Filtros
               </button>
             )}
@@ -117,7 +121,7 @@ export function ToastNotification({
                 setIsVisible(false)
                 setTimeout(onClose, 300)
               }}
-              className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium text-sm"
+              className="flex-1 px-5 py-3.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 active:bg-gray-300 transition-colors font-semibold text-sm"
             >
               Entendido
             </button>
