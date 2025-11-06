@@ -75,7 +75,7 @@ export default function MapaPage() {
           if (error) throw error
 
           if (data && data.length > 0) {
-            allAreas.push(...data)
+            allAreas.push(...(data as Area[]))
             
             // ✅ SOLO LOGGEAR, NO ACTUALIZAR ESTADO (evita re-renders múltiples)
             console.log(`📦 Cargadas ${data.length} áreas (página ${page + 1}) - Total: ${allAreas.length}`)
