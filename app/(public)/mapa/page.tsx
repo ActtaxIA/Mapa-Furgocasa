@@ -409,14 +409,16 @@ export default function MapaPage() {
       {/* Modal de bloqueo si no hay usuario */}
       {!user && <LoginWall feature="mapa" />}
 
-      {/* Toast Notification para GPS */}
-      <ToastNotification
-        show={showToast}
-        message={toastMessage}
-        country={detectedCountry || undefined}
-        onClose={() => setShowToast(false)}
-        onViewFilters={() => setMostrarFiltros(true)}
-      />
+      {/* Toast Notification para GPS - Solo si está logueado */}
+      {user && (
+        <ToastNotification
+          show={showToast}
+          message={toastMessage}
+          country={detectedCountry || undefined}
+          onClose={() => setShowToast(false)}
+          onViewFilters={() => setMostrarFiltros(true)}
+        />
+      )}
 
       {/* Bottom Sheet - Filtros (solo móvil) */}
       <BottomSheet
