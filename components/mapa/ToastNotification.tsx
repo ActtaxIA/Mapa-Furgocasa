@@ -43,8 +43,8 @@ export function ToastNotification({
 
   return (
     <div
-      className={`fixed top-4 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:top-20 z-50 transition-all duration-300 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+      className={`fixed top-1/2 -translate-y-1/2 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-50 transition-all duration-300 ${
+        isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
       }`}
     >
       <div className="bg-white rounded-2xl shadow-2xl border-2 border-sky-100 md:max-w-md overflow-hidden">
