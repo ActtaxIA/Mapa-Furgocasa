@@ -21,14 +21,16 @@ export async function getCityAndProvinceFromCoords(
   lat: number, 
   lng: number
 ): Promise<GeocodeResult | null> {
-  // Verificar que existe la API key
-  if (!process.env.GOOGLE_MAPS_API_KEY) {
+  // Verificar que existe la API key (tanto en servidor como cliente)
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  
+  if (!apiKey) {
     console.warn('⚠️ GOOGLE_MAPS_API_KEY no configurada - Geocoding deshabilitado')
     return null
   }
 
   try {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&language=es&key=${process.env.GOOGLE_MAPS_API_KEY}`
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&language=es&key=${apiKey}`
     
     console.log('🌍 [Geocoding] Consultando ubicación:', lat, lng)
     
@@ -100,14 +102,16 @@ export async function getCityAndProvinceFromCoords(
  * Geocoding: "Granada, España" → (37.1773, -3.5985)
  */
 export async function geocodeAddress(address: string): Promise<{ lat: number, lng: number } | null> {
-  if (!process.env.GOOGLE_MAPS_API_KEY) {
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  
+  if (!apiKey) {
     console.warn('⚠️ GOOGLE_MAPS_API_KEY no configurada')
     return null
   }
 
   try {
     const encodedAddress = encodeURIComponent(address)
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&language=es&key=${process.env.GOOGLE_MAPS_API_KEY}`
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&language=es&key=${apiKey}`
     
     console.log('📍 [Geocoding] Buscando dirección:', address)
     
@@ -143,6 +147,11 @@ export function formatLocation(location: GeocodeResult): string {
   }
   return `${location.city}, ${location.province}, ${location.region}, ${location.country}`
 }
+
+/**
+ * Alias para getCityAndProvinceFromCoords (más intuitivo)
+ */
+export const reverseGeocode = getCityAndProvinceFromCoords
 
 
 

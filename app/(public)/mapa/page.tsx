@@ -10,6 +10,9 @@ import type { Area } from '@/types/database.types'
 import { useEffect, useState, useMemo } from 'react'
 import { MapIcon, FunnelIcon, ListBulletIcon } from '@heroicons/react/24/outline'
 import LoginWall from '@/components/ui/LoginWall'
+import { usePersistentFilters } from '@/hooks/usePersistentFilters'
+import { ToastNotification } from '@/components/mapa/ToastNotification'
+import { reverseGeocode } from '@/lib/google/geocoding'
 
 export default function MapaPage() {
   const [areas, setAreas] = useState<Area[]>([])
@@ -22,14 +25,12 @@ export default function MapaPage() {
   const [gpsActive, setGpsActive] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [authLoading, setAuthLoading] = useState(true)
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+  const [detectedCountry, setDetectedCountry] = useState<string | null>(null)
   
-  const [filtros, setFiltros] = useState<Filtros>({
-    busqueda: '',
-    pais: '',
-    servicios: [],
-    precio: '',
-    caracteristicas: []
-  })
+  // Hook de filtros persistentes (reemplaza el useState anterior)
+  const { filtros, setFiltros, metadata, setMetadata, limpiarFiltros, contarFiltrosActivos } = usePersistentFilters()
 
   // Verificar autenticación
   useEffect(() => {
@@ -116,16 +117,53 @@ export default function MapaPage() {
     loadAreas()
   }, [])
 
-  // Obtener ubicación del usuario
+  // Obtener ubicación del usuario CON REVERSE GEOCODING
   useEffect(() => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          })
+        async (position) => {
+          const lat = position.coords.latitude
+          const lng = position.coords.longitude
+          
+          setUserLocation({ lat, lng })
           setGpsActive(true)
+          
+          console.log('📍 GPS activado:', { lat, lng })
+          
+          // Reverse Geocoding para detectar país
+          try {
+            const locationData = await reverseGeocode(lat, lng)
+            
+            if (locationData?.country) {
+              console.log('🌍 País detectado:', locationData.country)
+              setDetectedCountry(locationData.country)
+              
+              // Actualizar metadata GPS
+              setMetadata({
+                gpsCountry: locationData.country,
+                gpsActive: true,
+                paisSource: filtros.pais ? metadata.paisSource : 'gps'
+              })
+              
+              // APLICAR FILTRO AUTOMÁTICO si no hay filtro de país previo
+              if (!filtros.pais) {
+                console.log('✅ Aplicando filtro automático de país:', locationData.country)
+                setFiltros({
+                  ...filtros,
+                  pais: locationData.country
+                })
+                
+                // Mostrar Toast Notification
+                setToastMessage(`Para mejorar los tiempos de carga, hemos aplicado un filtro del país donde te encuentras. Puedes cambiarlo en los filtros si lo deseas.`)
+                setShowToast(true)
+              } else {
+                console.log('ℹ️ Ya existe filtro de país:', filtros.pais, '- No se aplica automático')
+              }
+            }
+          } catch (error) {
+            console.error('❌ Error en reverse geocoding:', error)
+            // No es crítico, continuar sin filtro automático
+          }
         },
         (error) => {
           console.log('GPS no disponible:', error.message)
@@ -133,7 +171,7 @@ export default function MapaPage() {
         }
       )
     }
-  }, [])
+  }, []) // Solo ejecutar al montar
 
   // Obtener países únicos de las áreas
   const paisesDisponibles = useMemo(() => {
@@ -370,6 +408,15 @@ export default function MapaPage() {
 
       {/* Modal de bloqueo si no hay usuario */}
       {!user && <LoginWall feature="mapa" />}
+
+      {/* Toast Notification para GPS */}
+      <ToastNotification
+        show={showToast}
+        message={toastMessage}
+        country={detectedCountry || undefined}
+        onClose={() => setShowToast(false)}
+        onViewFilters={() => setMostrarFiltros(true)}
+      />
 
       {/* Bottom Sheet - Filtros (solo móvil) */}
       <BottomSheet
