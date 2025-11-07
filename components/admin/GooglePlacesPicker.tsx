@@ -105,86 +105,13 @@ export default function GooglePlacesPicker({ onPlaceSelected, initialLat, initia
         setMarker(markerInstance)
       }
 
-      // Configurar autocomplete
+      // Configurar autocomplete (sin restricciones de país por limitaciones de Google API)
+      // La restricción de múltiples países no funciona bien con la API actual
       if (searchInputRef.current) {
         const autocomplete = new google.maps.places.Autocomplete(searchInputRef.current, {
           fields: ['place_id', 'geometry', 'name', 'formatted_address', 'address_components', 'formatted_phone_number', 'website', 'photos', 'url'],
-          // Países de Europa + Latinoamérica (códigos ISO 3166-1 alpha-2)
-          componentRestrictions: { 
-            country: [
-              // 🇪🇺 EUROPA OCCIDENTAL
-              'es', // España
-              'pt', // Portugal
-              'fr', // Francia
-              'it', // Italia
-              'de', // Alemania
-              'nl', // Países Bajos
-              'be', // Bélgica
-              'lu', // Luxemburgo
-              'ch', // Suiza
-              'at', // Austria
-              'gb', // Reino Unido
-              'ie', // Irlanda
-              'ad', // Andorra
-              'mc', // Mónaco
-              
-              // 🇪🇺 EUROPA DEL NORTE
-              'no', // Noruega
-              'se', // Suecia
-              'dk', // Dinamarca
-              'fi', // Finlandia
-              'is', // Islandia
-              'ee', // Estonia
-              'lv', // Letonia
-              'lt', // Lituania
-              
-              // 🇪🇺 EUROPA DEL ESTE
-              'pl', // Polonia
-              'cz', // República Checa
-              'sk', // Eslovaquia
-              'hu', // Hungría
-              'ro', // Rumania
-              'bg', // Bulgaria
-              'hr', // Croacia
-              'si', // Eslovenia
-              'rs', // Serbia
-              'ba', // Bosnia y Herzegovina
-              'me', // Montenegro
-              'al', // Albania
-              
-              // 🇪🇺 EUROPA DEL SUR
-              'gr', // Grecia
-              'cy', // Chipre
-              'mt', // Malta
-              
-              // 🌎 SUDAMÉRICA
-              'ar', // Argentina
-              'cl', // Chile
-              'uy', // Uruguay
-              'py', // Paraguay
-              'br', // Brasil
-              'pe', // Perú
-              'bo', // Bolivia
-              'ec', // Ecuador
-              'co', // Colombia
-              've', // Venezuela
-              
-              // 🌎 CENTROAMÉRICA
-              'cr', // Costa Rica
-              'pa', // Panamá
-              'ni', // Nicaragua
-              'hn', // Honduras
-              'sv', // El Salvador
-              'gt', // Guatemala
-              'bz', // Belice
-              
-              // 🌎 CARIBE
-              'cu', // Cuba
-              'do', // República Dominicana
-              'pr', // Puerto Rico
-              'jm', // Jamaica
-            ]
-          },
+          // Sin componentRestrictions para permitir búsqueda global
+          // Los usuarios deben incluir el país en su búsqueda (ej: "Camping Municipal Navarro Argentina")
         })
 
         autocomplete.addListener('place_changed', () => {
@@ -382,7 +309,7 @@ export default function GooglePlacesPicker({ onPlaceSelected, initialLat, initia
         <input
           ref={searchInputRef}
           type="text"
-          placeholder="Buscar lugar, restaurante, camping, área de autocaravanas..."
+          placeholder="Buscar lugar + país (ej: Camping Municipal Navarro Argentina)..."
           className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-base"
           disabled={isLoading}
         />
@@ -394,7 +321,7 @@ export default function GooglePlacesPicker({ onPlaceSelected, initialLat, initia
           <strong>💡 Cómo usar:</strong>
         </p>
         <ul className="text-sm text-blue-800 mt-2 space-y-1 list-disc list-inside">
-          <li>Escribe el nombre del lugar en el buscador</li>
+          <li><strong>Incluye el país en tu búsqueda</strong> (ej: "Camping Municipal Navarro Argentina")</li>
           <li>Selecciona un resultado de la lista desplegable</li>
           <li>O haz clic directamente en el mapa para colocar un marcador</li>
           <li>Arrastra el marcador para ajustar la posición exacta</li>
