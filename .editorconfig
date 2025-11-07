@@ -43,4 +43,3 @@ indent_size = 2
 # Configuración para package.json (usar 2 espacios)
 [package.json]
 indent_size = 2
-
