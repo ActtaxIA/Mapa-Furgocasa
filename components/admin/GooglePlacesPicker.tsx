@@ -109,7 +109,82 @@ export default function GooglePlacesPicker({ onPlaceSelected, initialLat, initia
       if (searchInputRef.current) {
         const autocomplete = new google.maps.places.Autocomplete(searchInputRef.current, {
           fields: ['place_id', 'geometry', 'name', 'formatted_address', 'address_components', 'formatted_phone_number', 'website', 'photos', 'url'],
-          componentRestrictions: { country: ['es', 'fr', 'pt', 'it'] }, // España, Francia, Portugal, Italia
+          // Países de Europa + Latinoamérica (códigos ISO 3166-1 alpha-2)
+          componentRestrictions: { 
+            country: [
+              // 🇪🇺 EUROPA OCCIDENTAL
+              'es', // España
+              'pt', // Portugal
+              'fr', // Francia
+              'it', // Italia
+              'de', // Alemania
+              'nl', // Países Bajos
+              'be', // Bélgica
+              'lu', // Luxemburgo
+              'ch', // Suiza
+              'at', // Austria
+              'gb', // Reino Unido
+              'ie', // Irlanda
+              'ad', // Andorra
+              'mc', // Mónaco
+              
+              // 🇪🇺 EUROPA DEL NORTE
+              'no', // Noruega
+              'se', // Suecia
+              'dk', // Dinamarca
+              'fi', // Finlandia
+              'is', // Islandia
+              'ee', // Estonia
+              'lv', // Letonia
+              'lt', // Lituania
+              
+              // 🇪🇺 EUROPA DEL ESTE
+              'pl', // Polonia
+              'cz', // República Checa
+              'sk', // Eslovaquia
+              'hu', // Hungría
+              'ro', // Rumania
+              'bg', // Bulgaria
+              'hr', // Croacia
+              'si', // Eslovenia
+              'rs', // Serbia
+              'ba', // Bosnia y Herzegovina
+              'me', // Montenegro
+              'al', // Albania
+              
+              // 🇪🇺 EUROPA DEL SUR
+              'gr', // Grecia
+              'cy', // Chipre
+              'mt', // Malta
+              
+              // 🌎 SUDAMÉRICA
+              'ar', // Argentina
+              'cl', // Chile
+              'uy', // Uruguay
+              'py', // Paraguay
+              'br', // Brasil
+              'pe', // Perú
+              'bo', // Bolivia
+              'ec', // Ecuador
+              'co', // Colombia
+              've', // Venezuela
+              
+              // 🌎 CENTROAMÉRICA
+              'cr', // Costa Rica
+              'pa', // Panamá
+              'ni', // Nicaragua
+              'hn', // Honduras
+              'sv', // El Salvador
+              'gt', // Guatemala
+              'bz', // Belice
+              
+              // 🌎 CARIBE
+              'cu', // Cuba
+              'do', // República Dominicana
+              'pr', // Puerto Rico
+              'jm', // Jamaica
+            ]
+          },
         })
 
         autocomplete.addListener('place_changed', () => {
