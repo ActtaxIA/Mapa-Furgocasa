@@ -1,7 +1,10 @@
 # 🚀 Guía Completa de Deployment en AWS Amplify
 
-**Estado:** ✅ Actualizado y vigente  
-**Última actualización:** 28 de octubre de 2025
+**Estado:** ✅ PRODUCCIÓN ACTIVA EN AWS AMPLIFY  
+**Última actualización:** 7 de noviembre de 2025
+
+> ⚠️ **IMPORTANTE:** Esta aplicación está en PRODUCCIÓN en AWS Amplify.
+> NO hay servidor de desarrollo local. Todos los cambios se despliegan automáticamente al hacer push a `main`.
 
 ---
 

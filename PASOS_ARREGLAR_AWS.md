@@ -1,6 +1,9 @@
 # PASOS PARA ARREGLAR AWS AMPLIFY
 
-## El Problema
+> ⚠️ **NOTA:** Este documento es de referencia histórica para solución de problemas.
+> La aplicación está actualmente en **PRODUCCIÓN** y funcionando correctamente.
+
+## El Problema (RESUELTO)
 Las APIs devuelven HTML en lugar de JSON → Error 500
 
 ## Solución

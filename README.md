@@ -2,11 +2,16 @@
 
 **Versión: 1.1.0 - PRODUCCIÓN** 🎉✅
 
+> 🔴 **ENTORNO DE PRODUCCIÓN ACTIVA EN AWS AMPLIFY**
+> - **URL:** https://www.mapafurgocasa.com
+> - **Deploy automático:** Activado en cada push a `main`
+> - **NO hay servidor de desarrollo local** - Cambios se despliegan automáticamente a producción
+
 Plataforma web interactiva totalmente funcional para descubrir y gestionar áreas de autocaravanas, campers y vehículos recreativos en **Europa y Latinoamérica** (España, Portugal, Francia, Italia, Alemania, Argentina, Chile, Uruguay, Brasil, Colombia, Perú y más).
 
 **Estado:** 🟢 **100% OPERATIVO** - Chatbot IA funcionando, Editor de prompts activo, Sistema completo en producción.
 
-**Última actualización:** Noviembre 2025 - Panel de administración optimizado con datos en tiempo real.
+**Última actualización:** 7 de Noviembre 2025 - Búsqueda Google Places ampliada a 65 países (Europa + LATAM).
 
 ---
 
