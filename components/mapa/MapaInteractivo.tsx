@@ -15,9 +15,10 @@ interface MapaInteractivoProps {
   areas: Area[]
   areaSeleccionada: Area | null
   onAreaClick: (area: Area) => void
+  mapRef?: React.MutableRefObject<GoogleMap | null>
 }
 
-export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaInteractivoProps) {
+export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: externalMapRef }: MapaInteractivoProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const [map, setMap] = useState<GoogleMap | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -74,6 +75,11 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick }: MapaIn
           })
 
           setMap(mapInstance)
+
+          // Pasar el mapa a la referencia externa si existe
+          if (externalMapRef) {
+            externalMapRef.current = mapInstance
+          }
 
           // Crear InfoWindow única para reutilizar
           infoWindowRef.current = new google.maps.InfoWindow()

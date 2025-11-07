@@ -7,7 +7,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import BottomSheet from '@/components/mobile/BottomSheet'
 import { createClient } from '@/lib/supabase/client'
 import type { Area } from '@/types/database.types'
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { MapIcon, FunnelIcon, ListBulletIcon } from '@heroicons/react/24/outline'
 import LoginWall from '@/components/ui/LoginWall'
 import { usePersistentFilters } from '@/hooks/usePersistentFilters'
@@ -28,6 +28,7 @@ export default function MapaPage() {
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const [detectedCountry, setDetectedCountry] = useState<string | null>(null)
+  const mapRef = useRef<any>(null) // Referencia al mapa para controlarlo
   
   // Hook de filtros persistentes (reemplaza el useState anterior)
   const { filtros, setFiltros, metadata, setMetadata, limpiarFiltros, contarFiltrosActivos } = usePersistentFilters()
@@ -172,6 +173,85 @@ export default function MapaPage() {
       )
     }
   }, []) // Solo ejecutar al montar
+
+  // Centrar mapa cuando cambia el filtro de país
+  useEffect(() => {
+    if (!filtros.pais || !mapRef.current) return
+    
+    // Coordenadas centrales de cada país (Europa + LATAM)
+    const paisCoordenadas: Record<string, { lat: number, lng: number }> = {
+      // Europa Occidental
+      'España': { lat: 40.4168, lng: -3.7038 },
+      'Portugal': { lat: 39.3999, lng: -8.2245 },
+      'Francia': { lat: 46.2276, lng: 2.2137 },
+      'Italia': { lat: 41.8719, lng: 12.5674 },
+      'Alemania': { lat: 51.1657, lng: 10.4515 },
+      'Bélgica': { lat: 50.5039, lng: 4.4699 },
+      'Países Bajos': { lat: 52.1326, lng: 5.2913 },
+      'Luxemburgo': { lat: 49.8153, lng: 6.1296 },
+      'Suiza': { lat: 46.8182, lng: 8.2275 },
+      'Austria': { lat: 47.5162, lng: 14.5501 },
+      'Reino Unido': { lat: 55.3781, lng: -3.4360 },
+      'Irlanda': { lat: 53.1424, lng: -7.6921 },
+      'Andorra': { lat: 42.5063, lng: 1.5218 },
+      'Mónaco': { lat: 43.7384, lng: 7.4246 },
+      // Europa del Norte
+      'Noruega': { lat: 60.4720, lng: 8.4689 },
+      'Suecia': { lat: 60.1282, lng: 18.6435 },
+      'Dinamarca': { lat: 56.2639, lng: 9.5018 },
+      'Finlandia': { lat: 61.9241, lng: 25.7482 },
+      'Islandia': { lat: 64.9631, lng: -19.0208 },
+      // Europa del Este
+      'Polonia': { lat: 51.9194, lng: 19.1451 },
+      'República Checa': { lat: 49.8175, lng: 15.4730 },
+      'Eslovaquia': { lat: 48.6690, lng: 19.6990 },
+      'Hungría': { lat: 47.1625, lng: 19.5033 },
+      'Rumania': { lat: 45.9432, lng: 24.9668 },
+      'Bulgaria': { lat: 42.7339, lng: 25.4858 },
+      'Croacia': { lat: 45.1, lng: 15.2 },
+      'Eslovenia': { lat: 46.1512, lng: 14.9955 },
+      'Serbia': { lat: 44.0165, lng: 21.0059 },
+      'Bosnia y Herzegovina': { lat: 43.9159, lng: 17.6791 },
+      'Montenegro': { lat: 42.7087, lng: 19.3744 },
+      'Albania': { lat: 41.1533, lng: 20.1683 },
+      // Europa del Sur
+      'Grecia': { lat: 39.0742, lng: 21.8243 },
+      'Chipre': { lat: 35.1264, lng: 33.4299 },
+      'Malta': { lat: 35.9375, lng: 14.3754 },
+      // Sudamérica
+      'Argentina': { lat: -38.4161, lng: -63.6167 },
+      'Chile': { lat: -35.6751, lng: -71.5430 },
+      'Uruguay': { lat: -32.5228, lng: -55.7658 },
+      'Paraguay': { lat: -23.4425, lng: -58.4438 },
+      'Brasil': { lat: -14.2350, lng: -51.9253 },
+      'Perú': { lat: -9.1900, lng: -75.0152 },
+      'Bolivia': { lat: -16.2902, lng: -63.5887 },
+      'Ecuador': { lat: -1.8312, lng: -78.1834 },
+      'Colombia': { lat: 4.5709, lng: -74.2973 },
+      'Venezuela': { lat: 6.4238, lng: -66.5897 },
+      // Centroamérica
+      'Costa Rica': { lat: 9.7489, lng: -83.7534 },
+      'Panamá': { lat: 8.5380, lng: -80.7821 },
+      'Nicaragua': { lat: 12.8654, lng: -85.2072 },
+      'Honduras': { lat: 15.2000, lng: -86.2419 },
+      'El Salvador': { lat: 13.7942, lng: -88.8965 },
+      'Guatemala': { lat: 15.7835, lng: -90.2308 },
+      'Belice': { lat: 17.1899, lng: -88.4976 },
+      // Caribe
+      'Cuba': { lat: 21.5218, lng: -77.7812 },
+      'República Dominicana': { lat: 18.7357, lng: -70.1627 },
+      'Puerto Rico': { lat: 18.2208, lng: -66.5901 },
+      'Jamaica': { lat: 18.1096, lng: -77.2975 },
+    }
+    
+    const coordenadas = paisCoordenadas[filtros.pais]
+    
+    if (coordenadas && mapRef.current) {
+      console.log(`🗺️ Centrando mapa en ${filtros.pais}`)
+      // Solo centrar (panTo), sin cambiar zoom
+      mapRef.current.panTo({ lat: coordenadas.lat, lng: coordenadas.lng })
+    }
+  }, [filtros.pais])
 
   // Obtener países únicos de las áreas
   const paisesDisponibles = useMemo(() => {
@@ -377,6 +457,7 @@ export default function MapaPage() {
             areas={areasFiltradas}
             areaSeleccionada={areaSeleccionada}
             onAreaClick={handleAreaClick}
+            mapRef={mapRef}
           />
 
 
