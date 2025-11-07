@@ -1,0 +1,46 @@
+# EditorConfig - Configuración de editor para mantener consistencia de código
+# https://editorconfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# Configuración para todos los archivos
+[*]
+# Charset
+charset = utf-8
+
+# Usar espacios en lugar de tabs
+indent_style = space
+indent_size = 2
+
+# Final de línea
+end_of_line = lf
+
+# Insertar línea final en archivos
+insert_final_newline = true
+
+# Eliminar espacios en blanco al final de las líneas
+trim_trailing_whitespace = true
+
+# Configuración específica para Markdown (permite 2 espacios al final para saltos de línea)
+[*.md]
+trim_trailing_whitespace = false
+insert_final_newline = true
+
+# Configuración para archivos TypeScript/JavaScript
+[*.{ts,tsx,js,jsx}]
+indent_size = 2
+trim_trailing_whitespace = true
+
+# Configuración para archivos JSON
+[*.json]
+indent_size = 2
+
+# Configuración para archivos YAML
+[*.{yml,yaml}]
+indent_size = 2
+
+# Configuración para package.json (usar 2 espacios)
+[package.json]
+indent_size = 2
+
