@@ -13,6 +13,7 @@ import {
   PlusIcon,
   XCircleIcon
 } from '@heroicons/react/24/outline'
+import { MapaInteractivoAdmin } from '@/components/admin/MapaInteractivoAdmin'
 
 interface PlaceResult {
   place_id: string
@@ -143,7 +144,7 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   const R = 6371 // Radio de la Tierra en km
   const dLat = (lat2 - lat1) * Math.PI / 180
   const dLon = (lon2 - lon1) * Math.PI / 180
-  const a = 
+  const a =
     Math.sin(dLat/2) * Math.sin(dLat/2) +
     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
     Math.sin(dLon/2) * Math.sin(dLon/2)
@@ -154,48 +155,48 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 // Función COMPLETA para verificar si un lugar ya existe (TODOS LOS CRITERIOS)
 function checkIfPlaceExists(place: PlaceResult): boolean {
   const cache = window.existingAreasData
-  
+
   if (!cache || !cache.areas || cache.areas.length === 0) {
     console.log('⚠️ No hay cache de áreas existentes')
     return false
   }
-  
+
   // 1. VERIFICAR POR GOOGLE PLACE ID (criterio más fuerte)
   if (place.place_id && cache.placeIds.has(place.place_id)) {
     console.log(`✅ DUPLICADO por Google Place ID: ${place.name} (${place.place_id})`)
     return true
   }
-  
+
   // 2. VERIFICAR POR SLUG GENERADO
   const placeSlug = generateSlug(place.name)
   if (placeSlug && cache.slugs.has(placeSlug)) {
     console.log(`✅ DUPLICADO por Slug: ${place.name} → ${placeSlug}`)
     return true
   }
-  
+
   // 3. VERIFICAR POR NOMBRE NORMALIZADO (exacto)
   const placeNormalizedName = normalizeText(place.name)
   if (placeNormalizedName && cache.normalizedNames.has(placeNormalizedName)) {
     console.log(`✅ DUPLICADO por Nombre normalizado: ${place.name} → ${placeNormalizedName}`)
     return true
   }
-  
+
   // 4. VERIFICAR POR DIRECCIÓN NORMALIZADA (exacta)
   const placeNormalizedAddress = normalizeText(place.formatted_address)
   if (placeNormalizedAddress && cache.normalizedAddresses.has(placeNormalizedAddress)) {
     console.log(`✅ DUPLICADO por Dirección exacta: ${place.formatted_address}`)
     return true
   }
-  
+
   // 5. VERIFICAR POR COORDENADAS (mismo lugar físico, radio 500m)
   const lat = place.geometry?.location?.lat
   const lng = place.geometry?.location?.lng
-  
+
   if (lat && lng) {
     for (const area of cache.areas) {
       if (area.latitud !== null && area.longitud !== null) {
         const distance = calculateDistance(lat, lng, area.latitud, area.longitud)
-        
+
         // Si está a menos de 500 metros, es el mismo lugar
         if (distance < 0.5) {
           console.log(`✅ DUPLICADO por Coordenadas (${(distance * 1000).toFixed(0)}m): ${place.name} ≈ ${area.nombre}`)
@@ -204,14 +205,14 @@ function checkIfPlaceExists(place: PlaceResult): boolean {
       }
     }
   }
-  
+
   // 6. VERIFICAR POR SIMILITUD DE TOKENS DE NOMBRE (fuzzy matching)
   const placeTokens = tokenize(place.name)
-  
+
   if (placeTokens.length > 0) {
     for (const area of cache.areas) {
       const overlapScore = getTokenOverlapScore(placeTokens, area.nameTokens)
-      
+
       // Si comparten más del 80% de tokens significativos, probablemente es el mismo lugar
       if (overlapScore >= 0.8) {
         console.log(`✅ DUPLICADO por Similitud de Nombre (${(overlapScore * 100).toFixed(0)}%): ${place.name} ≈ ${area.nombre}`)
@@ -219,18 +220,18 @@ function checkIfPlaceExists(place: PlaceResult): boolean {
       }
     }
   }
-  
+
   // 7. VERIFICAR POR SIMILITUD DE DIRECCIÓN + PROXIMIDAD DE COORDENADAS
   const placeAddressTokens = tokenize(place.formatted_address)
-  
+
   if (placeAddressTokens.length > 0 && lat && lng) {
     for (const area of cache.areas) {
       // Combinar criterios: dirección similar + coordenadas cercanas
       const addressOverlap = getTokenOverlapScore(placeAddressTokens, area.addressTokens)
-      
+
       if (addressOverlap >= 0.6 && area.latitud !== null && area.longitud !== null) {
         const distance = calculateDistance(lat, lng, area.latitud, area.longitud)
-        
+
         // Si dirección es 60%+ similar Y está a menos de 2km, probablemente es el mismo
         if (distance < 2) {
           console.log(`✅ DUPLICADO por Dirección similar (${(addressOverlap * 100).toFixed(0)}%) + Proximidad (${distance.toFixed(1)}km): ${place.name} ≈ ${area.nombre}`)
@@ -239,7 +240,7 @@ function checkIfPlaceExists(place: PlaceResult): boolean {
       }
     }
   }
-  
+
   console.log(`✓ NUEVO lugar: ${place.name}`)
   return false
 }
@@ -254,6 +255,16 @@ export default function BusquedaMasivaPage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info', text: string } | null>(null)
   const [importing, setImporting] = useState(false)
 
+  // Estado para búsqueda en mapa
+  const [mapSearchQuery, setMapSearchQuery] = useState('')
+  const [mapSearching, setMapSearching] = useState(false)
+  const [mapResults, setMapResults] = useState<PlaceResult[]>([])
+  const [mapSelectedPlaces, setMapSelectedPlaces] = useState<Set<string>>(new Set())
+  const [mapMessage, setMapMessage] = useState<{ type: 'success' | 'error' | 'info', text: string } | null>(null)
+  const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null)
+  const [mapBounds, setMapBounds] = useState<google.maps.LatLngBounds | null>(null)
+  const [showMapSearchBtn, setShowMapSearchBtn] = useState(false)
+
   useEffect(() => {
     checkAdmin()
     loadExistingAreas()
@@ -262,7 +273,7 @@ export default function BusquedaMasivaPage() {
   const checkAdmin = async () => {
     const supabase = createClient()
     const { data: { session } } = await supabase.auth.getSession()
-    
+
     if (!session?.user || !session.user.user_metadata?.is_admin) {
       router.push('/mapa')
       return
@@ -295,7 +306,7 @@ export default function BusquedaMasivaPage() {
         // Convertir coordenadas a números
         const lat = toNumberOrNull(row.latitud)
         const lng = toNumberOrNull(row.longitud)
-        
+
         // Normalizar y tokenizar textos
         const normalizedName = normalizeText(row.nombre)
         const nameTokens = tokenize(row.nombre)
@@ -344,7 +355,7 @@ export default function BusquedaMasivaPage() {
       }
 
       window.existingAreasData = cache
-      
+
       // También guardar en state para tracking
       const allKeys = new Set<string>([
         ...placeIds,
@@ -378,7 +389,7 @@ export default function BusquedaMasivaPage() {
 
     try {
       console.log('🔍 Buscando:', searchQuery)
-      
+
       const response = await fetch('/api/admin/search-places', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -390,7 +401,7 @@ export default function BusquedaMasivaPage() {
       if (!response.ok) {
         throw new Error(data.error || `Error en la búsqueda: ${response.status}`)
       }
-      
+
       if (!data.results || data.results.length === 0) {
         setMessage({ type: 'info', text: 'No se encontraron resultados para esta búsqueda' })
         setSearching(false)
@@ -406,19 +417,92 @@ export default function BusquedaMasivaPage() {
       }))
 
       setResults(resultsWithStatus)
-      
+
       const existingCount = resultsWithStatus.filter((p: PlaceResult) => p.exists_in_db).length
       const newCount = resultsWithStatus.length - existingCount
-      
-      setMessage({ 
-        type: 'success', 
-        text: `✅ Se encontraron ${data.results.length} resultados (hasta 60 máx. de Google): ${newCount} nuevos y ${existingCount} ya en la base de datos` 
+
+      setMessage({
+        type: 'success',
+        text: `✅ Se encontraron ${data.results.length} resultados (hasta 60 máx. de Google): ${newCount} nuevos y ${existingCount} ya en la base de datos`
       })
     } catch (error: any) {
       console.error('Error en búsqueda:', error)
       setMessage({ type: 'error', text: error.message || 'Error al realizar la búsqueda' })
     } finally {
       setSearching(false)
+    }
+  }
+
+  const handleMapSearch = async () => {
+    if (!mapSearchQuery.trim()) {
+      setMapMessage({ type: 'error', text: 'Por favor, escribe un término de búsqueda' })
+      return
+    }
+
+    if (!mapBounds) {
+      setMapMessage({ type: 'error', text: 'Espera a que el mapa se cargue completamente' })
+      return
+    }
+
+    setMapSearching(true)
+    setMapMessage(null)
+    setMapResults([])
+    setMapSelectedPlaces(new Set())
+
+    try {
+      console.log('🗺️ Buscando en mapa:', mapSearchQuery)
+
+      // Obtener bounds del mapa visible
+      const bounds = {
+        north: mapBounds.getNorthEast().lat(),
+        south: mapBounds.getSouthWest().lat(),
+        east: mapBounds.getNorthEast().lng(),
+        west: mapBounds.getSouthWest().lng()
+      }
+
+      const response = await fetch('/api/admin/search-places-map', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: mapSearchQuery,
+          bounds: bounds
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || `Error en la búsqueda: ${response.status}`)
+      }
+
+      if (!data.results || data.results.length === 0) {
+        setMapMessage({ type: 'info', text: 'No se encontraron resultados en esta zona del mapa' })
+        setMapSearching(false)
+        return
+      }
+
+      console.log(`📊 Resultados en mapa recibidos: ${data.results.length}`)
+
+      // Marcar qué lugares ya existen en la base de datos
+      const resultsWithStatus = data.results.map((place: PlaceResult) => ({
+        ...place,
+        exists_in_db: checkIfPlaceExists(place)
+      }))
+
+      setMapResults(resultsWithStatus)
+
+      const existingCount = resultsWithStatus.filter((p: PlaceResult) => p.exists_in_db).length
+      const newCount = resultsWithStatus.length - existingCount
+
+      setMapMessage({
+        type: 'success',
+        text: `✅ Se encontraron ${data.results.length} resultados en esta zona: ${newCount} nuevos y ${existingCount} ya en la base de datos`
+      })
+    } catch (error: any) {
+      console.error('Error en búsqueda en mapa:', error)
+      setMapMessage({ type: 'error', text: error.message || 'Error al realizar la búsqueda' })
+    } finally {
+      setMapSearching(false)
     }
   }
 
@@ -446,6 +530,31 @@ export default function BusquedaMasivaPage() {
     setSelectedPlaces(new Set())
   }
 
+  // Funciones para búsqueda en mapa
+  const toggleMapSelection = (placeId: string) => {
+    const newSelection = new Set(mapSelectedPlaces)
+    if (newSelection.has(placeId)) {
+      newSelection.delete(placeId)
+    } else {
+      newSelection.add(placeId)
+    }
+    setMapSelectedPlaces(newSelection)
+  }
+
+  const selectAllMap = () => {
+    const newSelection = new Set<string>()
+    mapResults.forEach(place => {
+      if (!place.exists_in_db) {
+        newSelection.add(place.place_id)
+      }
+    })
+    setMapSelectedPlaces(newSelection)
+  }
+
+  const deselectAllMap = () => {
+    setMapSelectedPlaces(new Set())
+  }
+
   const handleImport = async () => {
     if (selectedPlaces.size === 0) {
       setMessage({ type: 'error', text: 'Por favor, selecciona al menos un lugar para importar' })
@@ -458,7 +567,7 @@ export default function BusquedaMasivaPage() {
     try {
       const supabase = createClient()
       const selectedResults = results.filter(r => selectedPlaces.has(r.place_id))
-      
+
       let successCount = 0
       let errorCount = 0
       const errors: string[] = []
@@ -469,15 +578,15 @@ export default function BusquedaMasivaPage() {
           let ciudad = ''
           let provincia = ''
           let pais = 'España' // valor por defecto
-          
+
           // Intentar extraer de la dirección formateada
           const addressParts = place.formatted_address.split(',').map(p => p.trim())
-          
+
           // Detectar el país desde la dirección
           // El país suele estar en la última parte de la dirección
           if (addressParts.length > 0) {
             const ultimaParte = addressParts[addressParts.length - 1].toLowerCase()
-            
+
             if (ultimaParte.includes('spain') || ultimaParte.includes('españa')) {
               pais = 'España'
             } else if (ultimaParte.includes('portugal')) {
@@ -493,7 +602,7 @@ export default function BusquedaMasivaPage() {
               pais = addressParts[addressParts.length - 1]
             }
           }
-          
+
           // Extraer ciudad y provincia
           if (addressParts.length >= 2) {
             ciudad = addressParts[addressParts.length - 2] || ''
@@ -517,34 +626,34 @@ export default function BusquedaMasivaPage() {
               finalName = `${place.name} ${ciudad}`
               slug = generateSlug(finalName)
               console.log(`🔄 Nombre duplicado detectado. Renombrado: "${place.name}" → "${finalName}"`)
-              
+
               // Verificar de nuevo si el nuevo slug también existe
               const { data: existingSlugWithCity } = await supabase
                 .from('areas')
                 .select('id')
                 .eq('slug', slug)
                 .single()
-              
+
               if (existingSlugWithCity) {
                 // Si aún existe, añadir un número
                 let counter = 2
                 let uniqueSlug = `${slug}-${counter}`
                 let uniqueName = `${finalName} ${counter}`
-                
+
                 while (counter < 100) {
                   const { data: exists } = await supabase
                     .from('areas')
                     .select('id')
                     .eq('slug', uniqueSlug)
                     .single()
-                  
+
                   if (!exists) {
                     finalName = uniqueName
                     slug = uniqueSlug
                     console.log(`🔄 Añadido sufijo numérico: "${finalName}"`)
                     break
                   }
-                  
+
                   counter++
                   uniqueSlug = `${slug}-${counter}`
                   uniqueName = `${finalName} ${counter}`
@@ -615,10 +724,10 @@ export default function BusquedaMasivaPage() {
       if (errorCount > 0) {
         messageText += `, ${errorCount} errores`
       }
-      
-      setMessage({ 
-        type: successCount > 0 ? 'success' : 'error', 
-        text: messageText 
+
+      setMessage({
+        type: successCount > 0 ? 'success' : 'error',
+        text: messageText
       })
 
       if (errors.length > 0 && errors.length <= 5) {
@@ -632,13 +741,195 @@ export default function BusquedaMasivaPage() {
     }
   }
 
+  const handleMapImport = async () => {
+    if (mapSelectedPlaces.size === 0) {
+      setMapMessage({ type: 'error', text: 'Por favor, selecciona al menos un lugar para importar' })
+      return
+    }
+
+    setImporting(true)
+    setMapMessage({ type: 'info', text: `Importando ${mapSelectedPlaces.size} áreas...` })
+
+    try {
+      const supabase = createClient()
+      const selectedResults = mapResults.filter(r => mapSelectedPlaces.has(r.place_id))
+
+      let successCount = 0
+      let errorCount = 0
+      const errors: string[] = []
+
+      for (const place of selectedResults) {
+        try {
+          // Extraer información de la dirección
+          let ciudad = ''
+          let provincia = ''
+          let pais = 'España' // valor por defecto
+
+          // Intentar extraer de la dirección formateada
+          const addressParts = place.formatted_address.split(',').map(p => p.trim())
+
+          // Detectar el país desde la dirección
+          if (addressParts.length > 0) {
+            const ultimaParte = addressParts[addressParts.length - 1].toLowerCase()
+
+            if (ultimaParte.includes('spain') || ultimaParte.includes('españa')) {
+              pais = 'España'
+            } else if (ultimaParte.includes('portugal')) {
+              pais = 'Portugal'
+            } else if (ultimaParte.includes('andorra')) {
+              pais = 'Andorra'
+            } else if (ultimaParte.includes('france') || ultimaParte.includes('francia')) {
+              pais = 'Francia'
+            } else if (ultimaParte.includes('morocco') || ultimaParte.includes('marruecos')) {
+              pais = 'Marruecos'
+            } else {
+              pais = addressParts[addressParts.length - 1]
+            }
+          }
+
+          // Extraer ciudad y provincia
+          if (addressParts.length >= 2) {
+            ciudad = addressParts[addressParts.length - 2] || ''
+            provincia = addressParts[addressParts.length - 2] || ''
+          }
+
+          // Generar nombre único si el slug ya existe
+          let finalName = place.name
+          let slug = generateSlug(finalName)
+
+          // Verificar si ya existe el slug
+          let { data: existingSlug } = await supabase
+            .from('areas')
+            .select('id')
+            .eq('slug', slug)
+            .single()
+
+          if (existingSlug) {
+            if (ciudad) {
+              finalName = `${place.name} ${ciudad}`
+              slug = generateSlug(finalName)
+              console.log(`🔄 Nombre duplicado detectado. Renombrado: "${place.name}" → "${finalName}"`)
+
+              const { data: existingSlugWithCity } = await supabase
+                .from('areas')
+                .select('id')
+                .eq('slug', slug)
+                .single()
+
+              if (existingSlugWithCity) {
+                let counter = 2
+                let uniqueSlug = `${slug}-${counter}`
+                let uniqueName = `${finalName} ${counter}`
+
+                while (counter < 100) {
+                  const { data: exists } = await supabase
+                    .from('areas')
+                    .select('id')
+                    .eq('slug', uniqueSlug)
+                    .single()
+
+                  if (!exists) {
+                    finalName = uniqueName
+                    slug = uniqueSlug
+                    console.log(`🔄 Añadido sufijo numérico: "${finalName}"`)
+                    break
+                  }
+
+                  counter++
+                  uniqueSlug = `${slug}-${counter}`
+                  uniqueName = `${finalName} ${counter}`
+                }
+              }
+            } else {
+              console.log(`⚠️ Ya existe un área con slug ${slug} y no hay ciudad disponible, saltando...`)
+              errorCount++
+              errors.push(`${place.name}: Ya existe`)
+              continue
+            }
+          }
+
+          const newArea = {
+            nombre: finalName,
+            slug: slug,
+            descripcion: null,
+            tipo_area: 'publica',
+            pais: pais,
+            provincia: provincia,
+            ciudad: ciudad,
+            direccion: place.formatted_address,
+            latitud: place.geometry.location.lat,
+            longitud: place.geometry.location.lng,
+            precio_noche: null,
+            plazas_camper: null,
+            google_place_id: place.place_id,
+            google_maps_url: `https://www.google.com/maps/place/?q=place_id:${place.place_id}`,
+            website: place.website || null,
+            telefono: place.phone || null,
+            google_rating: place.rating || null,
+            verificado: false,
+            activo: true,
+            servicios: {}
+          }
+
+          const { error } = await supabase
+            .from('areas')
+            .insert([newArea])
+
+          if (error) throw error
+
+          successCount++
+          console.log(`✅ Importada: ${place.name}`)
+        } catch (error: any) {
+          console.error(`❌ Error importando ${place.name}:`, error)
+          errorCount++
+          errors.push(`${place.name}: ${error.message}`)
+        }
+      }
+
+      // Recargar áreas existentes
+      await loadExistingAreas()
+
+      // Limpiar selección
+      setMapSelectedPlaces(new Set())
+
+      // Actualizar estado de resultados
+      const updatedResults = mapResults.map(place => ({
+        ...place,
+        exists_in_db: mapSelectedPlaces.has(place.place_id) ? true : place.exists_in_db
+      }))
+      setMapResults(updatedResults)
+
+      // Mostrar resumen
+      let messageText = `✅ Importación completada: ${successCount} áreas importadas`
+      if (errorCount > 0) {
+        messageText += `, ${errorCount} errores`
+      }
+
+      setMapMessage({
+        type: successCount > 0 ? 'success' : 'error',
+        text: messageText
+      })
+
+      if (errors.length > 0 && errors.length <= 5) {
+        console.log('Errores:', errors)
+      }
+    } catch (error: any) {
+      console.error('Error en importación masiva desde mapa:', error)
+      setMapMessage({ type: 'error', text: error.message || 'Error al importar áreas' })
+    } finally {
+      setImporting(false)
+    }
+  }
+
   const selectedCount = selectedPlaces.size
   const newPlacesCount = results.filter(p => !p.exists_in_db).length
+  const mapSelectedCount = mapSelectedPlaces.size
+  const mapNewPlacesCount = mapResults.filter(p => !p.exists_in_db).length
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-4">
@@ -662,8 +953,8 @@ export default function BusquedaMasivaPage() {
         {/* Mensaje */}
         {message && (
           <div className={`mb-6 p-4 rounded-lg ${
-            message.type === 'success' 
-              ? 'bg-green-50 text-green-800 border border-green-200' 
+            message.type === 'success'
+              ? 'bg-green-50 text-green-800 border border-green-200'
               : message.type === 'error'
               ? 'bg-red-50 text-red-800 border border-red-200'
               : 'bg-blue-50 text-blue-800 border border-blue-200'
@@ -675,7 +966,7 @@ export default function BusquedaMasivaPage() {
         {/* Buscador */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Buscar en Google Maps</h2>
-          
+
           <div className="flex gap-4">
             <div className="flex-1 relative">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -730,7 +1021,238 @@ export default function BusquedaMasivaPage() {
           </div>
         </div>
 
-        {/* Resultados */}
+        {/* Búsqueda en Mapa */}
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <MapPinIcon className="w-6 h-6 text-primary-600" />
+            <h2 className="text-xl font-semibold text-gray-900">Búsqueda en Mapa</h2>
+          </div>
+
+          <p className="text-sm text-gray-600 mb-4">
+            Navega por el mapa, haz zoom en la zona deseada y busca áreas solo en esa región visible
+          </p>
+
+          {/* Mensaje de mapa */}
+          {mapMessage && (
+            <div className={`mb-4 p-4 rounded-lg ${
+              mapMessage.type === 'success'
+                ? 'bg-green-50 text-green-800 border border-green-200'
+                : mapMessage.type === 'error'
+                ? 'bg-red-50 text-red-800 border border-red-200'
+                : 'bg-blue-50 text-blue-800 border border-blue-200'
+            }`}>
+              {mapMessage.text}
+            </div>
+          )}
+
+          {/* Campo de búsqueda para mapa */}
+          <div className="flex gap-4 mb-4">
+            <div className="flex-1 relative">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                value={mapSearchQuery}
+                onChange={(e) => setMapSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleMapSearch()}
+                placeholder="Ej: motorhome area, camping, parking..."
+                className="w-full pl-10 pr-12 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                disabled={mapSearching}
+              />
+              {mapSearchQuery && !mapSearching && (
+                <button
+                  onClick={() => setMapSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  aria-label="Limpiar búsqueda"
+                >
+                  <XCircleIcon className="w-5 h-5 text-gray-400" />
+                </button>
+              )}
+            </div>
+            <button
+              onClick={handleMapSearch}
+              disabled={mapSearching || !mapSearchQuery.trim() || !mapBounds}
+              className="px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
+            >
+              {mapSearching ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  Buscando...
+                </>
+              ) : (
+                <>
+                  <MagnifyingGlassIcon className="w-5 h-5" />
+                  Buscar en esta zona
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Mapa interactivo */}
+          <div className="relative h-[500px] rounded-lg overflow-hidden border-2 border-gray-200 mb-4">
+            <MapaInteractivoAdmin
+              onMapReady={(map) => {
+                setMapInstance(map)
+                console.log('✅ Mapa listo para búsqueda')
+              }}
+              onBoundsChanged={(bounds) => {
+                setMapBounds(bounds)
+                setShowMapSearchBtn(true)
+              }}
+              searchResults={mapResults}
+              existingAreas={window.existingAreasData?.areas || []}
+            />
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p className="text-sm text-blue-900">
+              <strong>💡 Cómo usar:</strong>
+            </p>
+            <ul className="text-sm text-blue-800 mt-2 space-y-1 list-disc list-inside">
+              <li>Navega y haz zoom en la zona del mapa que te interesa</li>
+              <li>Escribe un término de búsqueda (ej: "motorhome area", "camping")</li>
+              <li>Haz click en "Buscar en esta zona" para encontrar lugares solo en el área visible</li>
+              <li>Los resultados aparecerán como marcadores en el mapa y en la lista abajo</li>
+              <li>🟢 Verde = Nuevas áreas | ⚪ Gris = Ya existen en la base de datos</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Resultados de búsqueda en mapa */}
+        {mapResults.length > 0 && (
+          <>
+            {/* Acciones en masa para mapa */}
+            <div className="bg-white rounded-lg shadow p-4 mb-6 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-600">
+                  {mapSelectedCount} de {mapNewPlacesCount} áreas nuevas seleccionadas (búsqueda en mapa)
+                </span>
+                <button
+                  onClick={selectAllMap}
+                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  Seleccionar todas las nuevas
+                </button>
+                <button
+                  onClick={deselectAllMap}
+                  className="text-sm text-gray-600 hover:text-gray-700 font-medium"
+                >
+                  Deseleccionar todas
+                </button>
+              </div>
+              <button
+                onClick={handleMapImport}
+                disabled={mapSelectedCount === 0 || importing}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {importing ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    Importando...
+                  </>
+                ) : (
+                  <>
+                    <PlusIcon className="w-5 h-5" />
+                    Añadir {mapSelectedCount} áreas
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Lista de resultados del mapa */}
+            <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                        Seleccionar
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Nombre
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Dirección
+                      </th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                        Valoración
+                      </th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                        Estado
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {mapResults.map((place) => (
+                      <tr
+                        key={place.place_id}
+                        className={`${
+                          place.exists_in_db
+                            ? 'bg-gray-100 opacity-60'
+                            : mapSelectedPlaces.has(place.place_id)
+                            ? 'bg-primary-50'
+                            : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        <td className="px-4 py-3 text-center">
+                          {place.exists_in_db ? (
+                            <CheckCircleIcon className="w-5 h-5 text-gray-400 mx-auto" />
+                          ) : (
+                            <input
+                              type="checkbox"
+                              checked={mapSelectedPlaces.has(place.place_id)}
+                              onChange={() => toggleMapSelection(place.place_id)}
+                              className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                            />
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <MapPinIcon className="w-5 h-5 text-primary-600 flex-shrink-0" />
+                            <div>
+                              <div className="text-sm font-semibold text-gray-900">{place.name}</div>
+                              <div className="text-xs text-gray-500">{place.types?.[0]?.replace(/_/g, ' ')}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="text-sm text-gray-900">{place.formatted_address}</div>
+                          <div className="text-xs text-gray-500">
+                            {place.geometry.location.lat.toFixed(6)}, {place.geometry.location.lng.toFixed(6)}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {place.rating ? (
+                            <div>
+                              <div className="text-sm font-semibold text-gray-900">⭐ {place.rating}</div>
+                              <div className="text-xs text-gray-500">({place.user_ratings_total} opiniones)</div>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-gray-400">Sin valoración</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {place.exists_in_db ? (
+                            <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full bg-gray-200 text-gray-700">
+                              <CheckCircleIcon className="w-4 h-4" />
+                              Ya existe
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                              <PlusIcon className="w-4 h-4" />
+                              Nueva
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Resultados de búsqueda por texto */}
         {results.length > 0 && (
           <>
             {/* Acciones en masa */}
@@ -796,11 +1318,11 @@ export default function BusquedaMasivaPage() {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {results.map((place) => (
-                      <tr 
-                        key={place.place_id} 
+                      <tr
+                        key={place.place_id}
                         className={`${
-                          place.exists_in_db 
-                            ? 'bg-gray-100 opacity-60' 
+                          place.exists_in_db
+                            ? 'bg-gray-100 opacity-60'
                             : selectedPlaces.has(place.place_id)
                             ? 'bg-primary-50'
                             : 'hover:bg-gray-50'
@@ -879,4 +1401,3 @@ export default function BusquedaMasivaPage() {
     </div>
   )
 }
-
