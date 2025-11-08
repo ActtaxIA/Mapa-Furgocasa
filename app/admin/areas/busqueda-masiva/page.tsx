@@ -577,32 +577,81 @@ export default function BusquedaMasivaPage() {
           // Extraer información de la dirección
           let ciudad = ''
           let provincia = ''
-          let pais = 'España' // valor por defecto
-
+          let pais = ''
+          
           // Intentar extraer de la dirección formateada
           const addressParts = place.formatted_address.split(',').map(p => p.trim())
-
-          // Detectar el país desde la dirección
-          // El país suele estar en la última parte de la dirección
+          
+          // Detectar el país desde la dirección (última parte normalmente es el país)
           if (addressParts.length > 0) {
             const ultimaParte = addressParts[addressParts.length - 1].toLowerCase()
-
-            if (ultimaParte.includes('spain') || ultimaParte.includes('españa')) {
-              pais = 'España'
-            } else if (ultimaParte.includes('portugal')) {
-              pais = 'Portugal'
-            } else if (ultimaParte.includes('andorra')) {
-              pais = 'Andorra'
-            } else if (ultimaParte.includes('france') || ultimaParte.includes('francia')) {
-              pais = 'Francia'
-            } else if (ultimaParte.includes('morocco') || ultimaParte.includes('marruecos')) {
-              pais = 'Marruecos'
-            } else {
-              // Si no se detecta, usar la última parte como país
+            
+            // Mapa de detección de países
+            const countryMap: { [key: string]: string } = {
+              'spain': 'España',
+              'españa': 'España',
+              'portugal': 'Portugal',
+              'andorra': 'Andorra',
+              'france': 'Francia',
+              'francia': 'Francia',
+              'morocco': 'Marruecos',
+              'marruecos': 'Marruecos',
+              'italy': 'Italia',
+              'italia': 'Italia',
+              'germany': 'Alemania',
+              'alemania': 'Alemania',
+              'united kingdom': 'Reino Unido',
+              'uk': 'Reino Unido',
+              'belgium': 'Bélgica',
+              'bélgica': 'Bélgica',
+              'netherlands': 'Países Bajos',
+              'países bajos': 'Países Bajos',
+              'holanda': 'Países Bajos',
+              'switzerland': 'Suiza',
+              'suiza': 'Suiza',
+              'austria': 'Austria',
+              'denmark': 'Dinamarca',
+              'dinamarca': 'Dinamarca',
+              'norway': 'Noruega',
+              'noruega': 'Noruega',
+              'sweden': 'Suecia',
+              'suecia': 'Suecia',
+              'finland': 'Finlandia',
+              'finlandia': 'Finlandia',
+              'poland': 'Polonia',
+              'polonia': 'Polonia',
+              'czech republic': 'República Checa',
+              'czechia': 'República Checa',
+              'croatia': 'Croacia',
+              'croacia': 'Croacia',
+              'greece': 'Grecia',
+              'grecia': 'Grecia'
+            }
+            
+            // Buscar coincidencia en el mapa
+            let paisDetectado = false
+            for (const [key, value] of Object.entries(countryMap)) {
+              if (ultimaParte.includes(key)) {
+                pais = value
+                paisDetectado = true
+                break
+              }
+            }
+            
+            // Si no se detectó un país conocido, usar la última parte tal cual
+            if (!paisDetectado) {
               pais = addressParts[addressParts.length - 1]
             }
+            
+            console.log(`🌍 País detectado: ${pais} (desde "${place.formatted_address}")`)
           }
-
+          
+          // Si aún no hay país, usar España como fallback
+          if (!pais) {
+            pais = 'España'
+            console.log(`⚠️ No se pudo detectar país, usando España por defecto`)
+          }
+          
           // Extraer ciudad y provincia
           if (addressParts.length >= 2) {
             ciudad = addressParts[addressParts.length - 2] || ''
@@ -763,30 +812,81 @@ export default function BusquedaMasivaPage() {
           // Extraer información de la dirección
           let ciudad = ''
           let provincia = ''
-          let pais = 'España' // valor por defecto
-
+          let pais = ''
+          
           // Intentar extraer de la dirección formateada
           const addressParts = place.formatted_address.split(',').map(p => p.trim())
-
-          // Detectar el país desde la dirección
+          
+          // Detectar el país desde la dirección (última parte normalmente es el país)
           if (addressParts.length > 0) {
             const ultimaParte = addressParts[addressParts.length - 1].toLowerCase()
-
-            if (ultimaParte.includes('spain') || ultimaParte.includes('españa')) {
-              pais = 'España'
-            } else if (ultimaParte.includes('portugal')) {
-              pais = 'Portugal'
-            } else if (ultimaParte.includes('andorra')) {
-              pais = 'Andorra'
-            } else if (ultimaParte.includes('france') || ultimaParte.includes('francia')) {
-              pais = 'Francia'
-            } else if (ultimaParte.includes('morocco') || ultimaParte.includes('marruecos')) {
-              pais = 'Marruecos'
-            } else {
+            
+            // Mapa de detección de países
+            const countryMap: { [key: string]: string } = {
+              'spain': 'España',
+              'españa': 'España',
+              'portugal': 'Portugal',
+              'andorra': 'Andorra',
+              'france': 'Francia',
+              'francia': 'Francia',
+              'morocco': 'Marruecos',
+              'marruecos': 'Marruecos',
+              'italy': 'Italia',
+              'italia': 'Italia',
+              'germany': 'Alemania',
+              'alemania': 'Alemania',
+              'united kingdom': 'Reino Unido',
+              'uk': 'Reino Unido',
+              'belgium': 'Bélgica',
+              'bélgica': 'Bélgica',
+              'netherlands': 'Países Bajos',
+              'países bajos': 'Países Bajos',
+              'holanda': 'Países Bajos',
+              'switzerland': 'Suiza',
+              'suiza': 'Suiza',
+              'austria': 'Austria',
+              'denmark': 'Dinamarca',
+              'dinamarca': 'Dinamarca',
+              'norway': 'Noruega',
+              'noruega': 'Noruega',
+              'sweden': 'Suecia',
+              'suecia': 'Suecia',
+              'finland': 'Finlandia',
+              'finlandia': 'Finlandia',
+              'poland': 'Polonia',
+              'polonia': 'Polonia',
+              'czech republic': 'República Checa',
+              'czechia': 'República Checa',
+              'croatia': 'Croacia',
+              'croacia': 'Croacia',
+              'greece': 'Grecia',
+              'grecia': 'Grecia'
+            }
+            
+            // Buscar coincidencia en el mapa
+            let paisDetectado = false
+            for (const [key, value] of Object.entries(countryMap)) {
+              if (ultimaParte.includes(key)) {
+                pais = value
+                paisDetectado = true
+                break
+              }
+            }
+            
+            // Si no se detectó un país conocido, usar la última parte tal cual
+            if (!paisDetectado) {
               pais = addressParts[addressParts.length - 1]
             }
+            
+            console.log(`🌍 País detectado: ${pais} (desde "${place.formatted_address}")`)
           }
-
+          
+          // Si aún no hay país, usar España como fallback
+          if (!pais) {
+            pais = 'España'
+            console.log(`⚠️ No se pudo detectar país, usando España por defecto`)
+          }
+          
           // Extraer ciudad y provincia
           if (addressParts.length >= 2) {
             ciudad = addressParts[addressParts.length - 2] || ''
