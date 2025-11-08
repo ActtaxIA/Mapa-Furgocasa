@@ -57,6 +57,20 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .banner-header:hover {
+            transform: translateY(-2px);
+        }
+
+        .banner-header a {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .banner-icon {
@@ -111,6 +125,21 @@
             backdrop-filter: blur(10px);
             font-size: 14px;
             font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+        }
+
+        .feature-item a {
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .feature-icon {
@@ -235,11 +264,13 @@
         </div>
 
         <div class="banner-header">
-            <div class="banner-icon">🚐</div>
-            <div class="banner-title">
-                <h2>Mapa Furgocasa</h2>
-                <p>Tu herramienta definitiva para viajar en autocaravana</p>
-            </div>
+            <a href="https://www.mapafurgocasa.com/mapa" target="_blank">
+                <div class="banner-icon">🚐</div>
+                <div class="banner-title">
+                    <h2>Mapa Furgocasa</h2>
+                    <p>Tu herramienta definitiva para viajar en autocaravana</p>
+                </div>
+            </a>
         </div>
 
         <div class="banner-description">
@@ -248,16 +279,22 @@
 
         <div class="banner-features">
             <div class="feature-item">
-                <span class="feature-icon">🗺️</span>
-                <span>Mapa Interactivo</span>
+                <a href="https://www.mapafurgocasa.com/mapa" target="_blank">
+                    <span class="feature-icon">🗺️</span>
+                    <span>Mapa Interactivo</span>
+                </a>
             </div>
             <div class="feature-item">
-                <span class="feature-icon">🤖</span>
-                <span>Chatbot con IA</span>
+                <a href="https://www.mapafurgocasa.com/mapa" target="_blank">
+                    <span class="feature-icon">🤖</span>
+                    <span>Chatbot con IA</span>
+                </a>
             </div>
             <div class="feature-item">
-                <span class="feature-icon">🛣️</span>
-                <span>Planificador de Rutas</span>
+                <a href="https://www.mapafurgocasa.com/mapa" target="_blank">
+                    <span class="feature-icon">🛣️</span>
+                    <span>Planificador de Rutas</span>
+                </a>
             </div>
         </div>
 
