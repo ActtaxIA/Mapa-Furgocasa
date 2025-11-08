@@ -261,8 +261,8 @@ export default function BusquedaMasivaPage() {
   const [mapResults, setMapResults] = useState<PlaceResult[]>([])
   const [mapSelectedPlaces, setMapSelectedPlaces] = useState<Set<string>>(new Set())
   const [mapMessage, setMapMessage] = useState<{ type: 'success' | 'error' | 'info', text: string } | null>(null)
-  const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null)
-  const [mapBounds, setMapBounds] = useState<google.maps.LatLngBounds | null>(null)
+  const [mapInstance, setMapInstance] = useState<any>(null)
+  const [mapBounds, setMapBounds] = useState<any>(null)
   const [showMapSearchBtn, setShowMapSearchBtn] = useState(false)
 
   useEffect(() => {
