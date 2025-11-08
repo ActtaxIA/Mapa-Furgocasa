@@ -24,6 +24,7 @@
             text-decoration: none;
             display: block;
             color: white;
+            -webkit-tap-highlight-color: rgba(14, 165, 233, 0.3);
         }
 
         .furgocasa-banner:hover {
@@ -31,8 +32,8 @@
             box-shadow: 0 15px 50px rgba(14, 165, 233, 0.4);
         }
 
-        .furgocasa-banner * {
-            pointer-events: none;
+        .furgocasa-banner:active {
+            transform: translateY(-2px);
         }
 
         .banner-content {
@@ -235,7 +236,7 @@
 <body>
 
 <!-- BANNER PRINCIPAL -->
-<a href="https://www.mapafurgocasa.com/mapa" target="_blank" class="furgocasa-banner">
+<a href="https://www.mapafurgocasa.com" target="_blank" class="furgocasa-banner">
     <div class="banner-content">
         <div class="banner-intro">
             <p>¿Quieres conocer en detalle ésta y otras áreas de autocaravanas?</p>
