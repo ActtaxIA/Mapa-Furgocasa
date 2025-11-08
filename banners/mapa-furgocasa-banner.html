@@ -20,11 +20,19 @@
             overflow: hidden;
             box-shadow: 0 10px 40px rgba(14, 165, 233, 0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            color: white;
         }
 
         .furgocasa-banner:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 50px rgba(14, 165, 233, 0.4);
+        }
+
+        .furgocasa-banner * {
+            pointer-events: none;
         }
 
         .banner-content {
@@ -54,20 +62,6 @@
         }
 
         .banner-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .banner-header:hover {
-            transform: translateY(-2px);
-        }
-
-        .banner-header a {
-            text-decoration: none;
-            color: inherit;
             display: flex;
             align-items: center;
             gap: 15px;
@@ -125,21 +119,6 @@
             backdrop-filter: blur(10px);
             font-size: 14px;
             font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .feature-item:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-3px);
-        }
-
-        .feature-item a {
-            text-decoration: none;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .feature-icon {
@@ -256,7 +235,7 @@
 <body>
 
 <!-- BANNER PRINCIPAL -->
-<div class="furgocasa-banner">
+<a href="https://www.mapafurgocasa.com/mapa" target="_blank" class="furgocasa-banner">
     <div class="banner-content">
         <div class="banner-intro">
             <p>¿Quieres conocer en detalle ésta y otras áreas de autocaravanas?</p>
@@ -264,13 +243,11 @@
         </div>
 
         <div class="banner-header">
-            <a href="https://www.mapafurgocasa.com/mapa" target="_blank">
-                <div class="banner-icon">🚐</div>
-                <div class="banner-title">
-                    <h2>Mapa Furgocasa</h2>
-                    <p>Tu herramienta definitiva para viajar en autocaravana</p>
-                </div>
-            </a>
+            <div class="banner-icon">🚐</div>
+            <div class="banner-title">
+                <h2>Mapa Furgocasa</h2>
+                <p>Tu herramienta definitiva para viajar en autocaravana</p>
+            </div>
         </div>
 
         <div class="banner-description">
@@ -279,32 +256,26 @@
 
         <div class="banner-features">
             <div class="feature-item">
-                <a href="https://www.mapafurgocasa.com/mapa" target="_blank">
-                    <span class="feature-icon">🗺️</span>
-                    <span>Mapa Interactivo</span>
-                </a>
+                <span class="feature-icon">🗺️</span>
+                <span>Mapa Interactivo</span>
             </div>
             <div class="feature-item">
-                <a href="https://www.mapafurgocasa.com/mapa" target="_blank">
-                    <span class="feature-icon">🤖</span>
-                    <span>Chatbot con IA</span>
-                </a>
+                <span class="feature-icon">🤖</span>
+                <span>Chatbot con IA</span>
             </div>
             <div class="feature-item">
-                <a href="https://www.mapafurgocasa.com/mapa" target="_blank">
-                    <span class="feature-icon">🛣️</span>
-                    <span>Planificador de Rutas</span>
-                </a>
+                <span class="feature-icon">🛣️</span>
+                <span>Planificador de Rutas</span>
             </div>
         </div>
 
         <div class="banner-cta">
-            <a href="https://www.mapafurgocasa.com/mapa" class="cta-button" target="_blank">
+            <div class="cta-button">
                 🚀 Explorar el Mapa
-            </a>
-            <a href="https://www.mapafurgocasa.com/auth/login" class="cta-button secondary" target="_blank">
+            </div>
+            <div class="cta-button secondary">
                 🔐 Crear Cuenta Gratis
-            </a>
+            </div>
         </div>
     </div>
 
@@ -325,7 +296,7 @@
         </div>
         <div class="banner-badge">🚀 EN VIVO</div>
     </div>
-</div>
+</a>
 
 </body>
 </html>
