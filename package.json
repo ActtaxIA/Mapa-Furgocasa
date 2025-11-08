@@ -17,7 +17,8 @@
     "db:migrate:all": "node scripts/migrate-to-supabase.js --users",
     "db:fix:services": "node scripts/fix-services-language.js",
     "db:check:paises": "node scripts/check-paises-supabase.js",
-    "db:fix:countries": "ts-node --project tsconfig.scripts.json scripts/fix-countries-with-geocoding.ts"
+    "db:fix:countries": "ts-node --project tsconfig.scripts.json scripts/fix-countries-with-geocoding.ts",
+    "db:fix:countries:today": "ts-node --project tsconfig.scripts.json scripts/fix-countries-today.ts"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.6",
