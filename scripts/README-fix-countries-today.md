@@ -244,4 +244,3 @@ Errores:                    0
 **Creado por:** Acttax IA  
 **Fecha:** Noviembre 2024  
 **Versión:** 1.0
-

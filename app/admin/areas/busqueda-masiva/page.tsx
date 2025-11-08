@@ -578,14 +578,14 @@ export default function BusquedaMasivaPage() {
           let ciudad = ''
           let provincia = ''
           let pais = ''
-          
+
           // Intentar extraer de la dirección formateada
           const addressParts = place.formatted_address.split(',').map(p => p.trim())
-          
+
           // Detectar el país desde la dirección (última parte normalmente es el país)
           if (addressParts.length > 0) {
             const ultimaParte = addressParts[addressParts.length - 1].toLowerCase()
-            
+
             // Mapa de detección de países
             const countryMap: { [key: string]: string } = {
               'spain': 'España',
@@ -627,7 +627,7 @@ export default function BusquedaMasivaPage() {
               'greece': 'Grecia',
               'grecia': 'Grecia'
             }
-            
+
             // Buscar coincidencia en el mapa
             let paisDetectado = false
             for (const [key, value] of Object.entries(countryMap)) {
@@ -637,21 +637,21 @@ export default function BusquedaMasivaPage() {
                 break
               }
             }
-            
+
             // Si no se detectó un país conocido, usar la última parte tal cual
             if (!paisDetectado) {
               pais = addressParts[addressParts.length - 1]
             }
-            
+
             console.log(`🌍 País detectado: ${pais} (desde "${place.formatted_address}")`)
           }
-          
+
           // Si aún no hay país, usar España como fallback
           if (!pais) {
             pais = 'España'
             console.log(`⚠️ No se pudo detectar país, usando España por defecto`)
           }
-          
+
           // Extraer ciudad y provincia
           if (addressParts.length >= 2) {
             ciudad = addressParts[addressParts.length - 2] || ''
@@ -813,14 +813,14 @@ export default function BusquedaMasivaPage() {
           let ciudad = ''
           let provincia = ''
           let pais = ''
-          
+
           // Intentar extraer de la dirección formateada
           const addressParts = place.formatted_address.split(',').map(p => p.trim())
-          
+
           // Detectar el país desde la dirección (última parte normalmente es el país)
           if (addressParts.length > 0) {
             const ultimaParte = addressParts[addressParts.length - 1].toLowerCase()
-            
+
             // Mapa de detección de países
             const countryMap: { [key: string]: string } = {
               'spain': 'España',
@@ -862,7 +862,7 @@ export default function BusquedaMasivaPage() {
               'greece': 'Grecia',
               'grecia': 'Grecia'
             }
-            
+
             // Buscar coincidencia en el mapa
             let paisDetectado = false
             for (const [key, value] of Object.entries(countryMap)) {
@@ -872,21 +872,21 @@ export default function BusquedaMasivaPage() {
                 break
               }
             }
-            
+
             // Si no se detectó un país conocido, usar la última parte tal cual
             if (!paisDetectado) {
               pais = addressParts[addressParts.length - 1]
             }
-            
+
             console.log(`🌍 País detectado: ${pais} (desde "${place.formatted_address}")`)
           }
-          
+
           // Si aún no hay país, usar España como fallback
           if (!pais) {
             pais = 'España'
             console.log(`⚠️ No se pudo detectar país, usando España por defecto`)
           }
-          
+
           // Extraer ciudad y provincia
           if (addressParts.length >= 2) {
             ciudad = addressParts[addressParts.length - 2] || ''

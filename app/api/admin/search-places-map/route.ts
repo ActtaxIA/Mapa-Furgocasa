@@ -64,8 +64,8 @@ export async function POST(request: NextRequest) {
     searchUrl.searchParams.append('keyword', query)
     searchUrl.searchParams.append('key', apiKey)
     searchUrl.searchParams.append('language', 'es')
-    // Tipos relevantes para áreas de autocaravanas
-    searchUrl.searchParams.append('type', 'rv_park|campground|parking')
+    // No restringir por tipo para incluir campings, áreas de autocaravanas y todo tipo de lugares relevantes
+    // tanto en Europa como en Sudamérica
 
     console.log('📡 URL de búsqueda en mapa:', searchUrl.toString().replace(apiKey, 'API_KEY_HIDDEN'))
 
