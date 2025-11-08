@@ -1099,7 +1099,7 @@ export default function BusquedaMasivaPage() {
                 setShowMapSearchBtn(true)
               }}
               searchResults={mapResults}
-              existingAreas={window.existingAreasData?.areas || []}
+              existingAreas={typeof window !== 'undefined' ? (window.existingAreasData?.areas || []) : []}
             />
           </div>
 
