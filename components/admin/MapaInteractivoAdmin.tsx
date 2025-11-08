@@ -17,8 +17,8 @@ interface PlaceResult {
 }
 
 interface Props {
-  onMapReady: (map: google.maps.Map) => void
-  onBoundsChanged: (bounds: google.maps.LatLngBounds) => void
+  onMapReady: (map: any) => void
+  onBoundsChanged: (bounds: any) => void
   searchResults: PlaceResult[]
   existingAreas: any[]
 }
@@ -30,8 +30,8 @@ export function MapaInteractivoAdmin({
   existingAreas
 }: Props) {
   const mapRef = useRef<HTMLDivElement>(null)
-  const [map, setMap] = useState<google.maps.Map | null>(null)
-  const markersRef = useRef<google.maps.Marker[]>([])
+  const [map, setMap] = useState<any>(null)
+  const markersRef = useRef<any[]>([])
   const [error, setError] = useState<string | null>(null)
 
   // Inicializar mapa
