@@ -18,7 +18,10 @@
     "db:fix:services": "node scripts/fix-services-language.js",
     "db:check:paises": "node scripts/check-paises-supabase.js",
     "db:fix:countries": "ts-node --project tsconfig.scripts.json scripts/fix-countries-with-geocoding.ts",
-    "db:fix:countries:today": "ts-node --project tsconfig.scripts.json scripts/fix-countries-today.ts"
+    "db:fix:countries:today": "ts-node --project tsconfig.scripts.json scripts/fix-countries-today.ts",
+    "import:latam": "ts-node --project tsconfig.scripts.json scripts/import-latam-massive.ts",
+    "import:latam:dry": "ts-node --project tsconfig.scripts.json scripts/import-latam-massive.ts -- --dry",
+    "monitor:import": "ts-node --project tsconfig.scripts.json scripts/monitor-import-progress.ts"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.6",

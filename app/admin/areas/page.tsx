@@ -8,7 +8,7 @@ import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { DeleteConfirmModal } from '@/components/ui/DeleteConfirmModal'
 import Link from 'next/link'
 import * as XLSX from 'xlsx'
-import { 
+import {
   MagnifyingGlassIcon,
   PlusIcon,
   PencilIcon,
@@ -53,9 +53,13 @@ export default function AdminAreasPage() {
   const [busqueda, setBusqueda] = useState('')
   const [filtroVerificado, setFiltroVerificado] = useState<'all' | 'verified' | 'unverified'>('all')
   const [filtroActivo, setFiltroActivo] = useState<'all' | 'active' | 'inactive'>('all')
+  const [filtroPais, setFiltroPais] = useState<string>('all')
+  const [filtroTipo, setFiltroTipo] = useState<string>('all')
   const [paginaActual, setPaginaActual] = useState(1)
   const [sortColumn, setSortColumn] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  const [selectedAreas, setSelectedAreas] = useState<Set<string>>(new Set())
+  const [selectAll, setSelectAll] = useState(false)
   const [modalState, setModalState] = useState<{
     isOpen: boolean
     type: 'success' | 'error'
@@ -76,6 +80,7 @@ export default function AdminAreasPage() {
     areaId: '',
     areaNombre: ''
   })
+  const [bulkDeleteModal, setBulkDeleteModal] = useState(false)
   const [itemsPorPagina, setItemsPorPagina] = useState(10)
   const router = useRouter()
 
@@ -86,7 +91,7 @@ export default function AdminAreasPage() {
   const checkAdminAndLoadAreas = async () => {
     const supabase = createClient()
     const { data: { session } } = await supabase.auth.getSession()
-    
+
     if (!session?.user || !session.user.user_metadata?.is_admin) {
       router.push('/mapa')
       return
@@ -179,28 +184,28 @@ export default function AdminAreasPage() {
 
   const confirmDelete = async () => {
     const { areaId, areaNombre } = deleteModal
-    
+
     try {
       const supabase = createClient()
-      
+
       console.log('🗑️ Intentando eliminar área:', {
         id: areaId,
         nombre: areaNombre
       })
-      
+
       // Eliminar registros relacionados primero (pueden no existir, ignorar errores)
       console.log('  📝 Eliminando valoraciones...')
       const { error: errorVal } = await supabase.from('valoraciones').delete().eq('area_id', areaId)
       if (errorVal) console.log('  ⚠️ Error eliminando valoraciones (puede ser que no existan):', errorVal.message)
-      
+
       console.log('  ⭐ Eliminando favoritos...')
       const { error: errorFav } = await supabase.from('favoritos').delete().eq('area_id', areaId)
       if (errorFav) console.log('  ⚠️ Error eliminando favoritos (puede ser que no existan):', errorFav.message)
-      
+
       console.log('  👀 Eliminando visitas...')
       const { error: errorVis } = await supabase.from('visitas').delete().eq('area_id', areaId)
       if (errorVis) console.log('  ⚠️ Error eliminando visitas (puede ser que no existan):', errorVis.message)
-      
+
       // Eliminar el área
       console.log('  🗑️ Eliminando área principal...')
       const { data: deletedData, error } = await supabase
@@ -217,18 +222,18 @@ export default function AdminAreasPage() {
         console.error('   Hint:', error.hint)
         throw error
       }
-      
+
       console.log('✅ Área eliminada correctamente de Supabase')
       console.log('   Datos eliminados:', deletedData)
-      
+
       // Verificar que realmente se eliminó algo
       if (!deletedData || deletedData.length === 0) {
         console.warn('⚠️ No se devolvieron datos de la eliminación')
       }
-      
+
       // Cerrar modal de eliminación
       setDeleteModal({ isOpen: false, areaId: '', areaNombre: '' })
-      
+
       // Mostrar mensaje de éxito
       setModalState({
         isOpen: true,
@@ -236,16 +241,16 @@ export default function AdminAreasPage() {
         title: '✅ Área Eliminada',
         message: `El área "${areaNombre}" ha sido eliminada correctamente.`,
       })
-      
+
       // Recargar la lista completa desde Supabase inmediatamente
       console.log('🔄 Recargando lista completa desde Supabase...')
       await loadAreas()
     } catch (error: any) {
       console.error('❌ Error eliminando área:', error)
-      
+
       // Cerrar modal de eliminación
       setDeleteModal({ isOpen: false, areaId: '', areaNombre: '' })
-      
+
       // Mostrar mensaje de error
       setModalState({
         isOpen: true,
@@ -256,21 +261,192 @@ export default function AdminAreasPage() {
     }
   }
 
+  // ============================================================================
+  // FUNCIONES DE SELECCIÓN MÚLTIPLE
+  // ============================================================================
+
+  const toggleSelectArea = (areaId: string) => {
+    const newSelected = new Set(selectedAreas)
+    if (newSelected.has(areaId)) {
+      newSelected.delete(areaId)
+    } else {
+      newSelected.add(areaId)
+    }
+    setSelectedAreas(newSelected)
+    setSelectAll(newSelected.size === areasEnPagina.length)
+  }
+
+  const toggleSelectAll = () => {
+    if (selectAll) {
+      setSelectedAreas(new Set())
+      setSelectAll(false)
+    } else {
+      const allIds = new Set(areasEnPagina.map(a => a.id))
+      setSelectedAreas(allIds)
+      setSelectAll(true)
+    }
+  }
+
+  const selectAllFiltered = () => {
+    const allIds = new Set(areasFiltradas.map(a => a.id))
+    setSelectedAreas(allIds)
+    setSelectAll(true)
+  }
+
+  const deselectAll = () => {
+    setSelectedAreas(new Set())
+    setSelectAll(false)
+  }
+
+  // ============================================================================
+  // ACCIONES MASIVAS
+  // ============================================================================
+
+  const bulkDelete = async () => {
+    if (selectedAreas.size === 0) return
+
+    try {
+      const supabase = createClient()
+      const areasToDelete = Array.from(selectedAreas)
+
+      console.log(`🗑️ Eliminando ${areasToDelete.length} áreas...`)
+
+      let deleted = 0
+      let errors = 0
+
+      for (const areaId of areasToDelete) {
+        try {
+          // Eliminar registros relacionados
+          await supabase.from('valoraciones').delete().eq('area_id', areaId)
+          await supabase.from('favoritos').delete().eq('area_id', areaId)
+          await supabase.from('visitas').delete().eq('area_id', areaId)
+
+          // Eliminar área
+          const { error } = await supabase
+            .from('areas')
+            .delete()
+            .eq('id', areaId)
+
+          if (error) throw error
+          deleted++
+        } catch (error) {
+          console.error(`Error eliminando área ${areaId}:`, error)
+          errors++
+        }
+      }
+
+      setBulkDeleteModal(false)
+      setSelectedAreas(new Set())
+      setSelectAll(false)
+
+      setModalState({
+        isOpen: true,
+        type: errors > 0 ? 'error' : 'success',
+        title: errors > 0 ? '⚠️ Eliminación Parcial' : '✅ Áreas Eliminadas',
+        message: `Se eliminaron ${deleted} área(s) correctamente.${errors > 0 ? ` ${errors} área(s) no pudieron ser eliminadas.` : ''}`,
+      })
+
+      await loadAreas()
+    } catch (error: any) {
+      console.error('Error en eliminación masiva:', error)
+      setBulkDeleteModal(false)
+      setModalState({
+        isOpen: true,
+        type: 'error',
+        title: '❌ Error',
+        message: `Error en eliminación masiva: ${error.message}`,
+      })
+    }
+  }
+
+  const bulkToggleActive = async (newState: boolean) => {
+    if (selectedAreas.size === 0) return
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('areas')
+        .update({ activo: newState })
+        .in('id', Array.from(selectedAreas))
+
+      if (error) throw error
+
+      setModalState({
+        isOpen: true,
+        type: 'success',
+        title: '✅ Actualización Exitosa',
+        message: `${selectedAreas.size} área(s) ${newState ? 'activada(s)' : 'desactivada(s)'} correctamente.`,
+      })
+
+      setSelectedAreas(new Set())
+      setSelectAll(false)
+      await loadAreas()
+    } catch (error: any) {
+      setModalState({
+        isOpen: true,
+        type: 'error',
+        title: '❌ Error',
+        message: `Error actualizando áreas: ${error.message}`,
+      })
+    }
+  }
+
+  const bulkToggleVerified = async (newState: boolean) => {
+    if (selectedAreas.size === 0) return
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('areas')
+        .update({ verificado: newState })
+        .in('id', Array.from(selectedAreas))
+
+      if (error) throw error
+
+      setModalState({
+        isOpen: true,
+        type: 'success',
+        title: '✅ Actualización Exitosa',
+        message: `${selectedAreas.size} área(s) ${newState ? 'verificada(s)' : 'marcada(s) como sin verificar'} correctamente.`,
+      })
+
+      setSelectedAreas(new Set())
+      setSelectAll(false)
+      await loadAreas()
+    } catch (error: any) {
+      setModalState({
+        isOpen: true,
+        type: 'error',
+        title: '❌ Error',
+        message: `Error actualizando áreas: ${error.message}`,
+      })
+    }
+  }
+
+  // Obtener lista única de países y tipos
+  const paisesUnicos = Array.from(new Set(areas.map(a => a.pais).filter(Boolean))).sort()
+  const tiposUnicos = Array.from(new Set(areas.map(a => a.tipo_area).filter(Boolean))).sort()
+
   // Filtrar y ordenar
   let areasFiltradas = areas.filter(area => {
     const matchBusqueda = area.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
                          area.ciudad?.toLowerCase().includes(busqueda.toLowerCase()) ||
-                         area.provincia?.toLowerCase().includes(busqueda.toLowerCase())
-    
-    const matchVerificado = filtroVerificado === 'all' || 
+                         area.provincia?.toLowerCase().includes(busqueda.toLowerCase()) ||
+                         area.pais?.toLowerCase().includes(busqueda.toLowerCase())
+
+    const matchVerificado = filtroVerificado === 'all' ||
                            (filtroVerificado === 'verified' && area.verificado) ||
                            (filtroVerificado === 'unverified' && !area.verificado)
-    
+
     const matchActivo = filtroActivo === 'all' ||
                        (filtroActivo === 'active' && area.activo) ||
                        (filtroActivo === 'inactive' && !area.activo)
 
-    return matchBusqueda && matchVerificado && matchActivo
+    const matchPais = filtroPais === 'all' || area.pais === filtroPais
+
+    const matchTipo = filtroTipo === 'all' || area.tipo_area === filtroTipo
+
+    return matchBusqueda && matchVerificado && matchActivo && matchPais && matchTipo
   })
 
   // Aplicar ordenación si hay columna seleccionada
@@ -313,7 +489,9 @@ export default function AdminAreasPage() {
   // Resetear a página 1 cuando cambian los filtros
   useEffect(() => {
     setPaginaActual(1)
-  }, [busqueda, filtroVerificado, filtroActivo])
+    setSelectedAreas(new Set())
+    setSelectAll(false)
+  }, [busqueda, filtroVerificado, filtroActivo, filtroPais, filtroTipo])
 
   // Función para exportar a CSV
   const exportToCSV = () => {
@@ -325,7 +503,7 @@ export default function AdminAreasPage() {
             .map(([key]) => key)
             .join('; ')
         : ''
-      
+
       return [
         area.nombre,
         area.ciudad || '',
@@ -361,7 +539,7 @@ export default function AdminAreasPage() {
             .map(([key]) => key)
             .join('; ')
         : ''
-      
+
       return [
         area.nombre,
         area.ciudad || '',
@@ -414,7 +592,7 @@ export default function AdminAreasPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
@@ -468,7 +646,7 @@ export default function AdminAreasPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filtros */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
             {/* Búsqueda */}
             <div className="md:col-span-2">
               <div className="relative">
@@ -477,10 +655,38 @@ export default function AdminAreasPage() {
                   type="text"
                   value={busqueda}
                   onChange={(e) => setBusqueda(e.target.value)}
-                  placeholder="Buscar por nombre, ciudad o provincia..."
+                  placeholder="Buscar por nombre, ciudad, provincia o país..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 />
               </div>
+            </div>
+
+            {/* Filtro País */}
+            <div>
+              <select
+                value={filtroPais}
+                onChange={(e) => setFiltroPais(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              >
+                <option value="all">Todos los países</option>
+                {paisesUnicos.map(pais => (
+                  <option key={pais} value={pais}>{pais}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Filtro Tipo */}
+            <div>
+              <select
+                value={filtroTipo}
+                onChange={(e) => setFiltroTipo(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              >
+                <option value="all">Todos los tipos</option>
+                {tiposUnicos.map(tipo => (
+                  <option key={tipo} value={tipo}>{tipo}</option>
+                ))}
+              </select>
             </div>
 
             {/* Filtro Verificado */}
@@ -535,13 +741,84 @@ export default function AdminAreasPage() {
           </div>
         </div>
 
+        {/* Barra de acciones masivas */}
+        {selectedAreas.size > 0 && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-semibold text-blue-900">
+                  {selectedAreas.size} área(s) seleccionada(s)
+                </span>
+                <button
+                  onClick={selectAllFiltered}
+                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Seleccionar todas ({areasFiltradas.length})
+                </button>
+                <button
+                  onClick={deselectAll}
+                  className="text-sm text-gray-600 hover:text-gray-800 font-medium"
+                >
+                  Deseleccionar todas
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => bulkToggleActive(true)}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
+                >
+                  <CheckCircleIcon className="w-4 h-4" />
+                  Activar
+                </button>
+                <button
+                  onClick={() => bulkToggleActive(false)}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium text-sm"
+                >
+                  <XCircleIcon className="w-4 h-4" />
+                  Desactivar
+                </button>
+                <button
+                  onClick={() => bulkToggleVerified(true)}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                >
+                  <CheckCircleIcon className="w-4 h-4" />
+                  Verificar
+                </button>
+                <button
+                  onClick={() => bulkToggleVerified(false)}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-medium text-sm"
+                >
+                  <XCircleIcon className="w-4 h-4" />
+                  Sin Verificar
+                </button>
+                <button
+                  onClick={() => setBulkDeleteModal(true)}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-sm"
+                >
+                  <TrashIcon className="w-4 h-4" />
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Tabla mejorada de áreas */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th 
+                  <th className="px-4 py-3 text-left w-12">
+                    <input
+                      type="checkbox"
+                      checked={selectAll}
+                      onChange={toggleSelectAll}
+                      className="w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500 cursor-pointer"
+                    />
+                  </th>
+                  <th
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-64 cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('nombre')}
                   >
@@ -552,7 +829,7 @@ export default function AdminAreasPage() {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40 cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('ciudad')}
                   >
@@ -563,18 +840,29 @@ export default function AdminAreasPage() {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32 cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('pais')}
+                  >
+                    <div className="flex items-center gap-2">
+                      País
+                      {sortColumn === 'pais' && (
+                        sortDirection === 'asc' ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />
+                      )}
+                    </div>
+                  </th>
+                  <th
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24 cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('tipo_area')}
                   >
                     <div className="flex items-center gap-2">
-                      Tipo
+                      Categoría
                       {sortColumn === 'tipo_area' && (
                         sortDirection === 'asc' ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20 cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('precio_noche')}
                   >
@@ -585,7 +873,7 @@ export default function AdminAreasPage() {
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                     Servicios
                   </th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
@@ -606,7 +894,15 @@ export default function AdminAreasPage() {
                     : []
 
                   return (
-                    <tr key={area.id} className="hover:bg-gray-50">
+                    <tr key={area.id} className={`hover:bg-gray-50 ${selectedAreas.has(area.id) ? 'bg-blue-50' : ''}`}>
+                      <td className="px-4 py-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedAreas.has(area.id)}
+                          onChange={() => toggleSelectArea(area.id)}
+                          className="w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500 cursor-pointer"
+                        />
+                      </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           {area.foto_principal && (
@@ -627,13 +923,16 @@ export default function AdminAreasPage() {
                         <div className="text-xs text-gray-500">{area.provincia}</div>
                       </td>
                       <td className="px-4 py-3">
+                        <div className="text-sm font-medium text-gray-900">{area.pais || 'N/A'}</div>
+                      </td>
+                      <td className="px-4 py-3">
                         <span className="px-2 py-1 text-xs font-semibold rounded-full bg-sky-100 text-sky-800">
                           {area.tipo_area}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-900 text-center">
-                        {area.precio_noche !== null && area.precio_noche !== undefined 
-                          ? area.precio_noche === 0 
+                        {area.precio_noche !== null && area.precio_noche !== undefined
+                          ? area.precio_noche === 0
                             ? <span className="text-green-600 font-semibold">Gratis</span>
                             : <span className="font-semibold">{area.precio_noche}€</span>
                           : 'N/A'}
@@ -702,7 +1001,7 @@ export default function AdminAreasPage() {
                           >
                             <PencilIcon className="w-5 h-5" />
                           </Link>
-                          <button 
+                          <button
                             onClick={() => handleDelete(area.id, area.nombre)}
                             className="text-red-600 hover:text-red-900 p-1"
                             title="Eliminar área"
@@ -785,6 +1084,18 @@ export default function AdminAreasPage() {
         title="⚠️ Confirmar Eliminación"
         itemName={deleteModal.areaNombre}
         warningText="Esta acción NO se puede deshacer y eliminará el área, todas las valoraciones asociadas, todos los favoritos de usuarios y todas las visitas registradas."
+      />
+
+      {/* Modal de Eliminación Masiva */}
+      <ConfirmModal
+        isOpen={bulkDeleteModal}
+        onClose={() => setBulkDeleteModal(false)}
+        onConfirm={bulkDelete}
+        title="⚠️ Eliminar Múltiples Áreas"
+        message={`¿Estás seguro de que deseas eliminar ${selectedAreas.size} área(s)?\n\nEsta acción NO se puede deshacer y eliminará:\n- Las áreas seleccionadas\n- Todas sus valoraciones\n- Todos los favoritos asociados\n- Todas las visitas registradas`}
+        type="error"
+        confirmText={`Sí, eliminar ${selectedAreas.size} área(s)`}
+        showCancel={true}
       />
 
       {/* Modal de Mensajes (Éxito/Error) */}
