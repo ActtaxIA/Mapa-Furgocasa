@@ -47,6 +47,37 @@ const getServicioIcon = (servicio: string) => {
   return iconos[servicio] || null
 }
 
+// Helper para formatear tipos de Google
+const formatGoogleType = (type: string): string => {
+  const translations: { [key: string]: string } = {
+    'rv_park': 'RV Park',
+    'campground': 'Camping',
+    'parking': 'Parking',
+    'lodging': 'Alojamiento',
+    'establishment': 'Establecimiento',
+    'point_of_interest': 'Punto de Interés',
+    'gas_station': 'Gasolinera',
+    'restaurant': 'Restaurante',
+    'store': 'Tienda',
+    'car_repair': 'Taller',
+    'car_dealer': 'Concesionario',
+    'storage': 'Almacenamiento',
+    'moving_company': 'Mudanzas',
+  }
+  return translations[type] || type.replace(/_/g, ' ')
+}
+
+// Helper para obtener el tipo principal de Google
+const getPrimaryGoogleType = (types: string[] | null): string => {
+  if (!types || types.length === 0) return 'N/A'
+  
+  // Priorizar tipos relevantes
+  const priority = ['rv_park', 'campground', 'parking', 'lodging', 'gas_station']
+  const primaryType = types.find(t => priority.includes(t)) || types[0]
+  
+  return formatGoogleType(primaryType)
+}
+
 export default function AdminAreasPage() {
   const [areas, setAreas] = useState<Area[]>([])
   const [loading, setLoading] = useState(true)
@@ -851,7 +882,7 @@ export default function AdminAreasPage() {
                       )}
                     </div>
                   </th>
-                  <th
+                  <th 
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24 cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('tipo_area')}
                   >
@@ -862,7 +893,10 @@ export default function AdminAreasPage() {
                       )}
                     </div>
                   </th>
-                  <th
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                    Tipo Google
+                  </th>
+                  <th 
                     className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20 cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('precio_noche')}
                   >
@@ -929,6 +963,18 @@ export default function AdminAreasPage() {
                         <span className="px-2 py-1 text-xs font-semibold rounded-full bg-sky-100 text-sky-800">
                           {area.tipo_area}
                         </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs font-medium text-gray-900" title={area.google_types?.join(', ') || 'Sin tipos'}>
+                            {getPrimaryGoogleType(area.google_types)}
+                          </span>
+                          {area.google_types && area.google_types.length > 1 && (
+                            <span className="text-xs text-gray-500">
+                              +{area.google_types.length - 1} más
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-900 text-center">
                         {area.precio_noche !== null && area.precio_noche !== undefined

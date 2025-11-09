@@ -327,9 +327,7 @@ async function cargarAreasExistentes() {
       .map((a) => a.google_place_id as string)
   );
   slugsSet = new Set(allAreas.map((a) => a.slug));
-  normalizedNamesSet = new Set(
-    allAreas.map((a) => normalizeText(a.nombre))
-  );
+  normalizedNamesSet = new Set(allAreas.map((a) => normalizeText(a.nombre)));
 
   console.log(`✅ Cargadas ${allAreas.length} áreas existentes`);
   console.log(`   - ${placeIdsSet.size} Google Place IDs únicos`);
@@ -421,7 +419,12 @@ function checkIfPlaceExists(place: PlaceResult): boolean {
   if (lat && lng) {
     for (const area of areasExistentes) {
       if (area.latitud && area.longitud) {
-        const distance = calculateDistance(lat, lng, area.latitud, area.longitud);
+        const distance = calculateDistance(
+          lat,
+          lng,
+          area.latitud,
+          area.longitud
+        );
         if (distance < 0.5) {
           // Menos de 500 metros
           return true;
@@ -497,7 +500,8 @@ async function searchInBounds(
     // Calcular radio desde el centro
     const latDiff = bounds.north - bounds.south;
     const lngDiff = bounds.east - bounds.west;
-    const radiusKm = Math.sqrt(latDiff * latDiff + lngDiff * lngDiff) * 111 / 2;
+    const radiusKm =
+      (Math.sqrt(latDiff * latDiff + lngDiff * lngDiff) * 111) / 2;
     const radiusMeters = Math.min(radiusKm * 1000, 50000); // Máximo 50km
 
     // Usar Nearby Search API
@@ -516,9 +520,7 @@ async function searchInBounds(
     const response = await fetch(searchUrl.toString());
 
     if (!response.ok) {
-      console.error(
-        `❌ Error HTTP ${response.status} en búsqueda: ${query}`
-      );
+      console.error(`❌ Error HTTP ${response.status} en búsqueda: ${query}`);
       return [];
     }
 
@@ -529,7 +531,9 @@ async function searchInBounds(
     }
 
     if (data.status !== "OK") {
-      console.error(`⚠️  API Status: ${data.status} - ${data.error_message || ""}`);
+      console.error(
+        `⚠️  API Status: ${data.status} - ${data.error_message || ""}`
+      );
       return [];
     }
 
@@ -725,6 +729,7 @@ async function importArea(place: PlaceResult, pais: string): Promise<boolean> {
       precio_noche: null,
       plazas_camper: null,
       google_place_id: place.place_id,
+      google_types: place.types || null, // ✨ Guardar tipos de Google
       google_maps_url: `https://www.google.com/maps/place/?q=place_id:${place.place_id}`,
       website: place.website || null,
       telefono: place.phone || null,
@@ -833,11 +838,11 @@ async function importLATAMMassive() {
     // Crear cuadrícula
     const grids = createGrid(pais.bounds, pais.gridSize);
     console.log(`📐 Cuadrículas generadas: ${grids.length}`);
+    console.log(`🔍 Términos de búsqueda: ${TERMINOS_BUSQUEDA.length}`);
     console.log(
-      `🔍 Términos de búsqueda: ${TERMINOS_BUSQUEDA.length}`
-    );
-    console.log(
-      `📊 Total búsquedas estimadas: ${grids.length * TERMINOS_BUSQUEDA.length}\n`
+      `📊 Total búsquedas estimadas: ${
+        grids.length * TERMINOS_BUSQUEDA.length
+      }\n`
     );
 
     let areasImportadasPais = 0;
@@ -847,18 +852,17 @@ async function importLATAMMassive() {
       const grid = grids[i];
 
       console.log(
-        `\n📍 Cuadrícula ${i + 1}/${grids.length} - Centro: [${grid.center.lat.toFixed(
+        `\n📍 Cuadrícula ${i + 1}/${
+          grids.length
+        } - Centro: [${grid.center.lat.toFixed(2)}, ${grid.center.lng.toFixed(
           2
-        )}, ${grid.center.lng.toFixed(2)}]`
+        )}]`
       );
 
       // Buscar cada término
       for (const termino of TERMINOS_BUSQUEDA) {
         // Verificar límite
-        if (
-          limitPerCountry > 0 &&
-          areasImportadasPais >= limitPerCountry
-        ) {
+        if (limitPerCountry > 0 && areasImportadasPais >= limitPerCountry) {
           console.log(
             `\n⚠️  Límite alcanzado para ${pais.nombre}: ${limitPerCountry} áreas`
           );
@@ -868,9 +872,7 @@ async function importLATAMMassive() {
         stats.busquedasRealizadas++;
         totalBusquedas++;
 
-        process.stdout.write(
-          `   Buscando "${termino}"... `
-        );
+        process.stdout.write(`   Buscando "${termino}"... `);
 
         const resultados = await searchInBounds(termino, grid);
 
@@ -929,10 +931,7 @@ async function importLATAMMassive() {
       }
 
       // Verificar límite de cuadrícula
-      if (
-        limitPerCountry > 0 &&
-        areasImportadasPais >= limitPerCountry
-      ) {
+      if (limitPerCountry > 0 && areasImportadasPais >= limitPerCountry) {
         break;
       }
     }
@@ -1003,11 +1002,11 @@ async function importLATAMMassive() {
   // Tabla por país
   console.log(`📋 Detalle por país:\n`);
   console.log(
-    `${"País".padEnd(20)} ${"Búsquedas".padEnd(
+    `${"País".padEnd(20)} ${"Búsquedas".padEnd(12)} ${"Resultados".padEnd(
       12
-    )} ${"Resultados".padEnd(12)} ${"Nuevas".padEnd(
-      10
-    )} ${isDryRun ? "" : "Importadas".padEnd(12)} ${"Costo".padEnd(10)}`
+    )} ${"Nuevas".padEnd(10)} ${
+      isDryRun ? "" : "Importadas".padEnd(12)
+    } ${"Costo".padEnd(10)}`
   );
   console.log(`${"-".repeat(80)}`);
 
@@ -1031,7 +1030,9 @@ async function importLATAMMassive() {
     console.log(`   npm run import:latam\n`);
   } else {
     console.log(`✅ Importación completada`);
-    console.log(`   Total de áreas añadidas a la base de datos: ${totalImportadas}\n`);
+    console.log(
+      `   Total de áreas añadidas a la base de datos: ${totalImportadas}\n`
+    );
   }
 }
 
