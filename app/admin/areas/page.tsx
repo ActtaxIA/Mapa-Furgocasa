@@ -486,6 +486,12 @@ export default function AdminAreasPage() {
       let aValue: any = a[sortColumn as keyof Area]
       let bValue: any = b[sortColumn as keyof Area]
 
+      // Manejo especial para google_types (array)
+      if (sortColumn === 'google_types') {
+        aValue = getPrimaryGoogleType(aValue as string[] | null)
+        bValue = getPrimaryGoogleType(bValue as string[] | null)
+      }
+
       if (aValue == null) return 1
       if (bValue == null) return -1
 
@@ -893,8 +899,16 @@ export default function AdminAreasPage() {
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
-                    Tipo Google
+                  <th 
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32 cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('google_types')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Tipo Google
+                      {sortColumn === 'google_types' && (
+                        sortDirection === 'asc' ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />
+                      )}
+                    </div>
                   </th>
                   <th 
                     className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20 cursor-pointer hover:bg-gray-100"
