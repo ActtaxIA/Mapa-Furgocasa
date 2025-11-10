@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { BannerHeroHorizontal } from './BannerHeroHorizontal'
 import { BannerCuadradoMedium } from './BannerCuadradoMedium'
 import { BannerLeaderboardFull } from './BannerLeaderboardFull'
@@ -71,11 +71,26 @@ export function BannerRotativo({
   strategy = 'weighted',
   exclude = [],
 }: BannerRotativoProps) {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   const { SelectedBanner, bannerId } = useMemo(() => {
-    // Detectar tipo de dispositivo por tamaño de ventana
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
-    const isTablet = typeof window !== 'undefined' && window.innerWidth >= 768 && window.innerWidth < 1024
-    const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024
+    // Durante SSR o antes de hidratar, usar default desktop
+    if (!isClient) {
+      const defaultBanner = BANNERS_CONFIG.desktop[0]
+      return {
+        SelectedBanner: defaultBanner.component,
+        bannerId: defaultBanner.id,
+      }
+    }
+
+    // Detectar tipo de dispositivo por tamaño de ventana (solo en cliente)
+    const isMobile = window.innerWidth < 768
+    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024
+    const isDesktop = window.innerWidth >= 1024
 
     // Seleccionar pool de banners según dispositivo
     let bannerPool = BANNERS_CONFIG.desktop // Default
@@ -140,7 +155,12 @@ export function BannerRotativo({
       SelectedBanner: selectedBanner.component,
       bannerId: selectedBanner.id,
     }
-  }, [areaId, position, strategy, exclude])
+  }, [isClient, areaId, position, strategy, exclude])
+
+  // No renderizar hasta que estemos en el cliente para evitar hydration mismatch
+  if (!isClient) {
+    return null
+  }
 
   return (
     <div
