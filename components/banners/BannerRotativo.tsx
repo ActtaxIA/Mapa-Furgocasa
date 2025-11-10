@@ -57,51 +57,65 @@ function selectBanner(
   position: string,
   strategy: 'random' | 'deterministic' | 'weighted',
   exclude: string[]
-): BannerConfig {
+): BannerConfig | null {
+  // Validación: si no hay banners, retornar null
+  if (!banners || banners.length === 0) {
+    return null
+  }
+
   const availableBanners = banners.filter((b) => !exclude.includes(b.id))
   
-  if (availableBanners.length === 0) {
-    return banners[0]
+  // Si todos están excluidos, usar todos sin filtrar
+  const finalBanners = availableBanners.length > 0 ? availableBanners : banners
+  
+  // Validación final
+  if (finalBanners.length === 0) {
+    return null
   }
 
-  let selectedBanner = availableBanners[0]
+  let selectedBanner = finalBanners[0]
 
-  switch (strategy) {
-    case 'random': {
-      const randomIndex = Math.floor(Math.random() * availableBanners.length)
-      selectedBanner = availableBanners[randomIndex]
-      break
-    }
-
-    case 'deterministic': {
-      const index = (areaId + position.length) % availableBanners.length
-      selectedBanner = availableBanners[index]
-      break
-    }
-
-    case 'weighted': {
-      const shouldRandomize = Math.random() < 0.3
-
-      if (shouldRandomize) {
-        const totalWeight = availableBanners.reduce((sum, b) => sum + b.weight, 0)
-        let random = Math.random() * totalWeight
-
-        for (const banner of availableBanners) {
-          random -= banner.weight
-          if (random <= 0) {
-            selectedBanner = banner
-            break
-          }
-        }
-      } else {
-        const index = (areaId + position.length) % availableBanners.length
-        selectedBanner = availableBanners[index]
+  try {
+    switch (strategy) {
+      case 'random': {
+        const randomIndex = Math.floor(Math.random() * finalBanners.length)
+        selectedBanner = finalBanners[randomIndex] || finalBanners[0]
+        break
       }
-      break
+
+      case 'deterministic': {
+        const index = (areaId + position.length) % finalBanners.length
+        selectedBanner = finalBanners[index] || finalBanners[0]
+        break
+      }
+
+      case 'weighted': {
+        const shouldRandomize = Math.random() < 0.3
+
+        if (shouldRandomize) {
+          const totalWeight = finalBanners.reduce((sum, b) => sum + (b.weight || 1), 0)
+          let random = Math.random() * totalWeight
+
+          for (const banner of finalBanners) {
+            random -= (banner.weight || 1)
+            if (random <= 0) {
+              selectedBanner = banner
+              break
+            }
+          }
+        } else {
+          const index = (areaId + position.length) % finalBanners.length
+          selectedBanner = finalBanners[index] || finalBanners[0]
+        }
+        break
+      }
     }
+  } catch (error) {
+    console.error('Error selecting banner:', error)
+    selectedBanner = finalBanners[0]
   }
 
-  return selectedBanner
+  return selectedBanner || null
 }
 
 /**
@@ -120,12 +134,27 @@ export function BannerRotativo({
   useEffect(() => {
     setMounted(true)
     
-    const deviceType = getDeviceType()
-    const bannerPool = BANNERS_CONFIG[deviceType]
-    const selected = selectBanner(bannerPool, areaId, position, strategy, exclude)
-    
-    setSelectedBanner(() => selected.component)
-    setBannerId(selected.id)
+    try {
+      const deviceType = getDeviceType()
+      const bannerPool = BANNERS_CONFIG[deviceType]
+      
+      if (!bannerPool || bannerPool.length === 0) {
+        console.error('No banner pool found for device type:', deviceType)
+        return
+      }
+      
+      const selected = selectBanner(bannerPool, areaId, position, strategy, exclude)
+      
+      if (!selected || !selected.component || !selected.id) {
+        console.error('Invalid banner selected:', selected)
+        return
+      }
+      
+      setSelectedBanner(() => selected.component)
+      setBannerId(selected.id)
+    } catch (error) {
+      console.error('Error in useEffect:', error)
+    }
   }, [areaId, position, strategy, exclude])
 
   // Durante SSR y primera carga, mostrar BannerHeroHorizontal por defecto
