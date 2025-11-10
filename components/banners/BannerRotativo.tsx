@@ -49,6 +49,7 @@ interface BannerRotativoProps {
   areaId?: number
   strategy?: 'random' | 'deterministic' | 'weighted'
   exclude?: string[]
+  priority?: number // 1 = primero, 2 = segundo, 3 = tercero
 }
 
 function getDeviceType(): 'mobile' | 'tablet' | 'desktop' {
@@ -144,6 +145,7 @@ export function BannerRotativo({
   areaId = 0,
   strategy = 'weighted',
   exclude = [],
+  priority = 1,
 }: BannerRotativoProps) {
   const { usedBanners, markBannerAsUsed } = useBannerContext()
   const [mounted, setMounted] = useState(false)
@@ -158,33 +160,46 @@ export function BannerRotativo({
     }
     
     hasInitialized.current = true
-    setMounted(true)
     
-    try {
-      const deviceType = getDeviceType()
-      const bannerPool = BANNERS_CONFIG[deviceType]
+    // ⏱️ Delay escalonado según prioridad para garantizar orden de selección
+    // Banner 1: 0ms, Banner 2: 50ms, Banner 3: 100ms
+    const delay = (priority - 1) * 50
+    const timeoutId = setTimeout(() => {
+      setMounted(true)
       
-      if (!bannerPool || bannerPool.length === 0) {
-        console.error('No banner pool found for device type:', deviceType)
-        return
+      try {
+        const deviceType = getDeviceType()
+        const bannerPool = BANNERS_CONFIG[deviceType]
+        
+        if (!bannerPool || bannerPool.length === 0) {
+          console.error('No banner pool found for device type:', deviceType)
+          return
+        }
+        
+        // 🎯 Obtener el snapshot actual de banners usados
+        const currentUsedBanners = usedBanners
+        
+        // 🎯 Pasar usedBanners para evitar duplicados
+        const selected = selectBanner(bannerPool, areaId, position, strategy, exclude, currentUsedBanners)
+        
+        if (!selected || !selected.component || !selected.id) {
+          console.error('Invalid banner selected:', selected)
+          return
+        }
+        
+        console.log(`[Priority ${priority} - ${position}] Selected: ${selected.id}, Used:`, Array.from(currentUsedBanners))
+        
+        // ✅ Marcar este banner como usado INMEDIATAMENTE
+        markBannerAsUsed(selected.id)
+        
+        setSelectedBanner(() => selected.component)
+        setBannerId(selected.id)
+      } catch (error) {
+        console.error('Error in useEffect:', error)
       }
-      
-      // 🎯 Pasar usedBanners para evitar duplicados
-      const selected = selectBanner(bannerPool, areaId, position, strategy, exclude, usedBanners)
-      
-      if (!selected || !selected.component || !selected.id) {
-        console.error('Invalid banner selected:', selected)
-        return
-      }
-      
-      // ✅ Marcar este banner como usado en esta página
-      markBannerAsUsed(selected.id)
-      
-      setSelectedBanner(() => selected.component)
-      setBannerId(selected.id)
-    } catch (error) {
-      console.error('Error in useEffect:', error)
-    }
+    }, 0)
+    
+    return () => clearTimeout(timeoutId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

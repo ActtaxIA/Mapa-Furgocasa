@@ -101,6 +101,7 @@ export default async function AreaPage({ params }: PageProps) {
             areaId={area.id}
             position="after-info"
             strategy="weighted"
+            priority={1}
           />
 
           {/* Servicios */}
@@ -134,6 +135,7 @@ export default async function AreaPage({ params }: PageProps) {
             position="after-gallery"
             strategy="weighted"
             exclude={['mobile']}
+            priority={2}
           />
 
           {/* Mapa de ubicación */}
@@ -163,6 +165,7 @@ export default async function AreaPage({ params }: PageProps) {
             areaId={area.id}
             position="after-related"
             strategy="deterministic"
+            priority={3}
           />
         </div>
       </div>
