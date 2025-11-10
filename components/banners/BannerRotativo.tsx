@@ -178,7 +178,10 @@ export function BannerRotativo({
     } catch (error) {
       console.error('Error in useEffect:', error)
     }
-  }, [areaId, position, strategy, exclude, usedBanners, markBannerAsUsed])
+    // 🔥 CRITICAL: No incluir usedBanners ni markBannerAsUsed en dependencias
+    // para evitar loops infinitos. Solo ejecutar cuando cambia la posición.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [areaId, position, strategy])
 
   // Durante SSR y primera carga, mostrar BannerHeroHorizontal por defecto
   if (!mounted || !SelectedBanner) {
