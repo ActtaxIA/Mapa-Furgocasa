@@ -22,10 +22,13 @@ interface BannerConfig {
 
 const BANNERS_CONFIG = {
   mobile: [
-    { id: 'hero-horizontal-mobile', component: BannerHeroHorizontal, weight: 1 },
-    { id: 'ultra-wide-bares-mobile', component: BannerUltraWideBares, weight: 1.2 },
-    { id: 'ultra-wide-hoteles-mobile', component: BannerUltraWideHoteles, weight: 1.2 },
-    { id: 'ultra-wide-restaurantes-mobile', component: BannerUltraWideRestaurantes, weight: 1.2 },
+    { id: 'banner-mobile', component: BannerMobile, weight: 1.5 },
+    { id: 'cuadrado-medium-mobile', component: BannerCuadradoMedium, weight: 1.3 },
+    { id: 'vertical-sidebar-mobile', component: BannerVerticalSidebar, weight: 1.2 },
+    { id: 'hero-horizontal-mobile', component: BannerHeroHorizontal, weight: 0.8 },
+    { id: 'ultra-wide-bares-mobile', component: BannerUltraWideBares, weight: 1 },
+    { id: 'ultra-wide-hoteles-mobile', component: BannerUltraWideHoteles, weight: 1 },
+    { id: 'ultra-wide-restaurantes-mobile', component: BannerUltraWideRestaurantes, weight: 1 },
   ] as BannerConfig[],
   tablet: [
     { id: 'hero-horizontal', component: BannerHeroHorizontal, weight: 1 },
