@@ -12,8 +12,6 @@ import { BannerUltraWideModern } from './BannerUltraWideModern'
 import { BannerUltraWideBares } from './BannerUltraWideBares'
 import { BannerUltraWideHoteles } from './BannerUltraWideHoteles'
 import { BannerUltraWideRestaurantes } from './BannerUltraWideRestaurantes'
-import { BannerPremiumAnimated } from './BannerPremiumAnimated'
-import { BannerWideCarousel } from './BannerWideCarousel'
 import { BannerMegaWideSlider } from './BannerMegaWideSlider'
 import { useBannerContext } from './BannerContext'
 
