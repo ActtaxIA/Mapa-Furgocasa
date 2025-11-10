@@ -78,87 +78,106 @@ export function BannerRotativo({
   }, [])
 
   const { SelectedBanner, bannerId } = useMemo(() => {
-    // Durante SSR o antes de hidratar, usar default desktop
-    if (!isClient) {
-      const defaultBanner = BANNERS_CONFIG.desktop[0]
+    // Función helper para seleccionar banner de forma segura
+    const selectBanner = (banners: typeof BANNERS_CONFIG.desktop) => {
+      if (!banners || banners.length === 0) {
+        return {
+          SelectedBanner: BannerHeroHorizontal,
+          bannerId: 'hero-horizontal-fallback',
+        }
+      }
+
+      const availableBanners = banners.filter((b) => !exclude.includes(b.id))
+
+      if (availableBanners.length === 0) {
+        // Si todos están excluidos, usar el primero sin filtrar
+        return {
+          SelectedBanner: banners[0].component,
+          bannerId: banners[0].id,
+        }
+      }
+
+      let selectedBanner = availableBanners[0] // Default seguro
+
+      try {
+        switch (strategy) {
+          case 'random': {
+            const randomIndex = Math.floor(Math.random() * availableBanners.length)
+            selectedBanner = availableBanners[randomIndex]
+            break
+          }
+
+          case 'deterministic': {
+            const deterministicIndex = (areaId + position.length) % availableBanners.length
+            selectedBanner = availableBanners[deterministicIndex]
+            break
+          }
+
+          case 'weighted': {
+            const shouldRandomize = Math.random() < 0.3
+
+            if (shouldRandomize) {
+              // Selección ponderada
+              const totalWeight = availableBanners.reduce((sum, b) => sum + (b.weight || 1), 0)
+              let random = Math.random() * totalWeight
+
+              for (const banner of availableBanners) {
+                random -= banner.weight || 1
+                if (random <= 0) {
+                  selectedBanner = banner
+                  break
+                }
+              }
+            } else {
+              // Determinista
+              const deterministicIndex = (areaId + position.length) % availableBanners.length
+              selectedBanner = availableBanners[deterministicIndex]
+            }
+            break
+          }
+        }
+      } catch (error) {
+        console.error('Error selecting banner:', error)
+        // Mantener el default (availableBanners[0])
+      }
+
+      // Verificación final de seguridad
+      if (!selectedBanner || !selectedBanner.component) {
+        return {
+          SelectedBanner: BannerHeroHorizontal,
+          bannerId: 'hero-horizontal-error-fallback',
+        }
+      }
+
       return {
-        SelectedBanner: defaultBanner.component,
-        bannerId: defaultBanner.id,
+        SelectedBanner: selectedBanner.component,
+        bannerId: selectedBanner.id,
       }
     }
 
-    // Detectar tipo de dispositivo por tamaño de ventana (solo en cliente)
-    const isMobile = window.innerWidth < 768
-    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024
-    const isDesktop = window.innerWidth >= 1024
+    // Durante SSR o antes de hidratar, no renderizar nada
+    if (!isClient) {
+      return {
+        SelectedBanner: null,
+        bannerId: 'ssr',
+      }
+    }
 
-    // Seleccionar pool de banners según dispositivo
-    let bannerPool = BANNERS_CONFIG.desktop // Default
-    if (isMobile) {
+    // Detectar tipo de dispositivo (solo en cliente)
+    const width = window.innerWidth
+    let bannerPool = BANNERS_CONFIG.desktop
+
+    if (width < 768) {
       bannerPool = BANNERS_CONFIG.mobile
-    } else if (isTablet) {
+    } else if (width < 1024) {
       bannerPool = BANNERS_CONFIG.tablet
     }
 
-    // Filtrar banners excluidos
-    const availableBanners = bannerPool.filter((b) => !exclude.includes(b.id))
-
-    if (availableBanners.length === 0) {
-      // Fallback al primer banner disponible
-      return {
-        SelectedBanner: BannerHeroHorizontal,
-        bannerId: 'hero-horizontal',
-      }
-    }
-
-    let selectedIndex: number
-    let selectedBanner = availableBanners[0]
-
-    switch (strategy) {
-      case 'random':
-        // Completamente aleatorio
-        selectedIndex = Math.floor(Math.random() * availableBanners.length)
-        selectedBanner = availableBanners[selectedIndex]
-        break
-
-      case 'deterministic':
-        // Basado en areaId (siempre el mismo para cada área)
-        selectedIndex = (areaId + position.length) % availableBanners.length
-        selectedBanner = availableBanners[selectedIndex]
-        break
-
-      case 'weighted':
-        // Mix: 70% determinista + 30% aleatorio con pesos
-        const shouldRandomize = Math.random() < 0.3
-
-        if (shouldRandomize) {
-          // Selección ponderada por pesos
-          const totalWeight = availableBanners.reduce((sum, b) => sum + b.weight, 0)
-          let random = Math.random() * totalWeight
-
-          for (const banner of availableBanners) {
-            random -= banner.weight
-            if (random <= 0) {
-              selectedBanner = banner
-              break
-            }
-          }
-        } else {
-          // Determinista
-          selectedIndex = (areaId + position.length) % availableBanners.length
-          selectedBanner = availableBanners[selectedIndex]
-        }
-        break
-    }
-
-    return {
-      SelectedBanner: selectedBanner.component,
-      bannerId: selectedBanner.id,
-    }
+    return selectBanner(bannerPool)
   }, [isClient, areaId, position, strategy, exclude])
 
-  // No renderizar hasta que estemos en el cliente para evitar hydration mismatch
-  if (!isClient) {
+  // No renderizar hasta que estemos en el cliente
+  if (!isClient || !SelectedBanner) {
     return null
   }
 
