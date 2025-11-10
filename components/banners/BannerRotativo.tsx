@@ -18,21 +18,20 @@ interface BannerConfig {
 
 const BANNERS_CONFIG = {
   mobile: [
-    { id: 'mobile', component: BannerMobile, weight: 1 },
-    { id: 'hero-horizontal-mobile', component: BannerHeroHorizontal, weight: 0.5 },
+    { id: 'hero-horizontal-mobile', component: BannerHeroHorizontal, weight: 1 },
+    // TEMPORALMENTE DESHABILITADO: BannerMobile (tiene problemas con animaciones)
   ] as BannerConfig[],
   tablet: [
     { id: 'hero-horizontal', component: BannerHeroHorizontal, weight: 1 },
-    { id: 'cuadrado-medium', component: BannerCuadradoMedium, weight: 1 },
     { id: 'leaderboard-full', component: BannerLeaderboardFull, weight: 1 },
+    // TEMPORALMENTE DESHABILITADO: BannerCuadradoMedium (tiene style jsx)
   ] as BannerConfig[],
   desktop: [
-    { id: 'premium-animated', component: BannerPremiumAnimated, weight: 1.5 },
-    { id: 'vertical-sidebar', component: BannerVerticalSidebar, weight: 1 },
-    { id: 'wide-carousel', component: BannerWideCarousel, weight: 1.2 },
-    { id: 'ultra-wide-modern', component: BannerUltraWideModern, weight: 1.3 },
-    { id: 'leaderboard-full-desktop', component: BannerLeaderboardFull, weight: 0.8 },
-    { id: 'cuadrado-medium-desktop', component: BannerCuadradoMedium, weight: 0.7 },
+    { id: 'hero-horizontal-desktop', component: BannerHeroHorizontal, weight: 1 },
+    { id: 'vertical-sidebar', component: BannerVerticalSidebar, weight: 1.2 },
+    { id: 'leaderboard-full-desktop', component: BannerLeaderboardFull, weight: 1 },
+    // TEMPORALMENTE DESHABILITADOS (tienen <style jsx>):
+    // BannerPremiumAnimated, BannerWideCarousel, BannerUltraWideModern, BannerCuadradoMedium
   ] as BannerConfig[],
 }
 
