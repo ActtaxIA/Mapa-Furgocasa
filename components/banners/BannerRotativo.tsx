@@ -176,9 +176,15 @@ export function BannerRotativo({
     return selectBanner(bannerPool)
   }, [isClient, areaId, position, strategy, exclude])
 
-  // No renderizar hasta que estemos en el cliente
+  // Mostrar placeholder durante SSR, banner real en cliente
   if (!isClient || !SelectedBanner) {
-    return null
+    // Renderizar un div vacío con altura mínima para evitar layout shift
+    return (
+      <div 
+        className="casi-cinco-banner-wrapper my-8 min-h-[100px] md:min-h-[200px]" 
+        data-position={position}
+      />
+    )
   }
 
   return (
