@@ -11,6 +11,7 @@ import { GaleriaFotos } from '@/components/area/GaleriaFotos'
 import { ValoracionesCompleto } from '@/components/area/ValoracionesCompleto'
 import { AreasRelacionadas } from '@/components/area/AreasRelacionadas'
 import { BannerRotativo } from '@/components/banners/BannerRotativo'
+import { BannerProvider } from '@/components/banners/BannerContext'
 import type { Metadata } from 'next'
 
 interface PageProps {
@@ -81,7 +82,7 @@ export default async function AreaPage({ params }: PageProps) {
     .limit(4)
 
   return (
-    <>
+    <BannerProvider>
       {/* Navbar */}
       <Navbar />
 
@@ -168,6 +169,6 @@ export default async function AreaPage({ params }: PageProps) {
 
       {/* Footer - Solo en páginas de detalle para SEO */}
       <Footer />
-    </>
+    </BannerProvider>
   )
 }

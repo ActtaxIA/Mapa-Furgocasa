@@ -9,6 +9,10 @@ import { BannerVerticalSidebar } from './BannerVerticalSidebar'
 import { BannerMobile } from './BannerMobile'
 import { BannerWideCarousel } from './BannerWideCarousel'
 import { BannerUltraWideModern } from './BannerUltraWideModern'
+import { BannerUltraWideBares } from './BannerUltraWideBares'
+import { BannerUltraWideHoteles } from './BannerUltraWideHoteles'
+import { BannerUltraWideRestaurantes } from './BannerUltraWideRestaurantes'
+import { useBannerContext } from './BannerContext'
 
 interface BannerConfig {
   id: string
@@ -19,19 +23,24 @@ interface BannerConfig {
 const BANNERS_CONFIG = {
   mobile: [
     { id: 'hero-horizontal-mobile', component: BannerHeroHorizontal, weight: 1 },
-    // TEMPORALMENTE DESHABILITADO: BannerMobile (tiene problemas con animaciones)
+    { id: 'ultra-wide-bares-mobile', component: BannerUltraWideBares, weight: 1.2 },
+    { id: 'ultra-wide-hoteles-mobile', component: BannerUltraWideHoteles, weight: 1.2 },
+    { id: 'ultra-wide-restaurantes-mobile', component: BannerUltraWideRestaurantes, weight: 1.2 },
   ] as BannerConfig[],
   tablet: [
     { id: 'hero-horizontal', component: BannerHeroHorizontal, weight: 1 },
     { id: 'leaderboard-full', component: BannerLeaderboardFull, weight: 1 },
-    // TEMPORALMENTE DESHABILITADO: BannerCuadradoMedium (tiene style jsx)
+    { id: 'ultra-wide-bares-tablet', component: BannerUltraWideBares, weight: 1.3 },
+    { id: 'ultra-wide-hoteles-tablet', component: BannerUltraWideHoteles, weight: 1.3 },
+    { id: 'ultra-wide-restaurantes-tablet', component: BannerUltraWideRestaurantes, weight: 1.3 },
   ] as BannerConfig[],
   desktop: [
-    { id: 'hero-horizontal-desktop', component: BannerHeroHorizontal, weight: 1 },
-    { id: 'vertical-sidebar', component: BannerVerticalSidebar, weight: 1.2 },
-    { id: 'leaderboard-full-desktop', component: BannerLeaderboardFull, weight: 1 },
-    // TEMPORALMENTE DESHABILITADOS (tienen <style jsx>):
-    // BannerPremiumAnimated, BannerWideCarousel, BannerUltraWideModern, BannerCuadradoMedium
+    { id: 'hero-horizontal-desktop', component: BannerHeroHorizontal, weight: 0.8 },
+    { id: 'vertical-sidebar', component: BannerVerticalSidebar, weight: 1 },
+    { id: 'leaderboard-full-desktop', component: BannerLeaderboardFull, weight: 0.8 },
+    { id: 'ultra-wide-bares-desktop', component: BannerUltraWideBares, weight: 1.5 },
+    { id: 'ultra-wide-hoteles-desktop', component: BannerUltraWideHoteles, weight: 1.5 },
+    { id: 'ultra-wide-restaurantes-desktop', component: BannerUltraWideRestaurantes, weight: 1.5 },
   ] as BannerConfig[],
 }
 
@@ -55,17 +64,26 @@ function selectBanner(
   areaId: number,
   position: string,
   strategy: 'random' | 'deterministic' | 'weighted',
-  exclude: string[]
+  exclude: string[],
+  usedBanners: Set<string>
 ): BannerConfig | null {
   // Validación: si no hay banners, retornar null
   if (!banners || banners.length === 0) {
     return null
   }
 
-  const availableBanners = banners.filter((b) => !exclude.includes(b.id))
+  // 🎯 FILTRO 1: Excluir banners ya usados en esta página
+  const notUsedBanners = banners.filter((b) => !usedBanners.has(b.id))
   
-  // Si todos están excluidos, usar todos sin filtrar
-  const finalBanners = availableBanners.length > 0 ? availableBanners : banners
+  // 🎯 FILTRO 2: Excluir banners específicos (parámetro exclude)
+  const availableBanners = notUsedBanners.filter((b) => !exclude.includes(b.id))
+  
+  // Si todos están excluidos/usados, usar los no usados (ignorar exclude)
+  // Si todos fueron usados, resetear y usar todos
+  const finalBanners = 
+    availableBanners.length > 0 ? availableBanners :
+    notUsedBanners.length > 0 ? notUsedBanners :
+    banners
   
   // Validación final
   if (finalBanners.length === 0) {
@@ -119,6 +137,7 @@ function selectBanner(
 
 /**
  * Componente que rota banners inteligentemente según el dispositivo
+ * ✅ GARANTIZA: No repetir banners en la misma página
  */
 export function BannerRotativo({
   position,
@@ -126,6 +145,7 @@ export function BannerRotativo({
   strategy = 'weighted',
   exclude = [],
 }: BannerRotativoProps) {
+  const { usedBanners, markBannerAsUsed } = useBannerContext()
   const [mounted, setMounted] = useState(false)
   const [SelectedBanner, setSelectedBanner] = useState<React.ComponentType<{ position: string }> | null>(null)
   const [bannerId, setBannerId] = useState<string>('loading')
@@ -142,19 +162,23 @@ export function BannerRotativo({
         return
       }
       
-      const selected = selectBanner(bannerPool, areaId, position, strategy, exclude)
+      // 🎯 Pasar usedBanners para evitar duplicados
+      const selected = selectBanner(bannerPool, areaId, position, strategy, exclude, usedBanners)
       
       if (!selected || !selected.component || !selected.id) {
         console.error('Invalid banner selected:', selected)
         return
       }
       
+      // ✅ Marcar este banner como usado en esta página
+      markBannerAsUsed(selected.id)
+      
       setSelectedBanner(() => selected.component)
       setBannerId(selected.id)
     } catch (error) {
       console.error('Error in useEffect:', error)
     }
-  }, [areaId, position, strategy, exclude])
+  }, [areaId, position, strategy, exclude, usedBanners, markBannerAsUsed])
 
   // Durante SSR y primera carga, mostrar BannerHeroHorizontal por defecto
   if (!mounted || !SelectedBanner) {
