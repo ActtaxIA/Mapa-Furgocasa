@@ -10,6 +10,7 @@ import { ContactoInfo } from '@/components/area/ContactoInfo'
 import { GaleriaFotos } from '@/components/area/GaleriaFotos'
 import { ValoracionesCompleto } from '@/components/area/ValoracionesCompleto'
 import { AreasRelacionadas } from '@/components/area/AreasRelacionadas'
+import { BannerRotativo } from '@/components/banners/BannerRotativo'
 import type { Metadata } from 'next'
 
 interface PageProps {
@@ -21,7 +22,7 @@ interface PageProps {
 // Generar metadata dinámica para SEO
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const supabase = await createClient()
-  
+
   const { data: area } = await supabase
     .from('areas')
     .select('*')
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function AreaPage({ params }: PageProps) {
   const supabase = await createClient()
-  
+
   // Obtener datos del área
   const { data: area, error } = await supabase
     .from('areas')
@@ -90,9 +91,16 @@ export default async function AreaPage({ params }: PageProps) {
 
         {/* Contenido principal */}
         <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-          
+
           {/* Información básica */}
           <InformacionBasica area={area} />
+
+          {/* 🎯 Banner 1: Después de info básica - Usuario ya está interesado */}
+          <BannerRotativo
+            areaId={area.id}
+            position="after-info"
+            strategy="weighted"
+          />
 
           {/* Servicios */}
           {area.servicios && (
@@ -111,7 +119,7 @@ export default async function AreaPage({ params }: PageProps) {
                 fotos = fotos.split(',').map((url: string) => url.trim()).filter((url: string) => url)
               }
             }
-            
+
             // Verificar que sea un array válido y con elementos
             if (fotos && Array.isArray(fotos) && fotos.length > 0) {
               return <GaleriaFotos fotos={fotos} nombre={area.nombre} />
@@ -119,8 +127,16 @@ export default async function AreaPage({ params }: PageProps) {
             return null
           })()}
 
+          {/* 🎯 Banner 2: Después de galería - Usuario ya vio todo, pensando en ruta */}
+          <BannerRotativo
+            areaId={area.id}
+            position="after-gallery"
+            strategy="weighted"
+            exclude={['mobile']}
+          />
+
           {/* Mapa de ubicación */}
-          <MapaUbicacion 
+          <MapaUbicacion
             latitud={Number(area.latitud)}
             longitud={Number(area.longitud)}
             nombre={area.nombre}
@@ -130,7 +146,7 @@ export default async function AreaPage({ params }: PageProps) {
           <ContactoInfo area={area} />
 
           {/* Valoraciones */}
-          <ValoracionesCompleto 
+          <ValoracionesCompleto
             areaId={area.id}
             areaNombre={area.nombre}
             valoraciones={valoraciones || []}
@@ -140,6 +156,13 @@ export default async function AreaPage({ params }: PageProps) {
           {areasRelacionadas && areasRelacionadas.length > 0 && (
             <AreasRelacionadas areas={areasRelacionadas} />
           )}
+
+          {/* 🎯 Banner 3: Al final - Última oportunidad de engagement */}
+          <BannerRotativo
+            areaId={area.id}
+            position="after-related"
+            strategy="deterministic"
+          />
         </div>
       </div>
 
