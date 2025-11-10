@@ -76,13 +76,24 @@ function getDeviceType(): 'mobile' | 'tablet' | 'desktop' {
   return 'desktop'
 }
 
+// 🎯 Hash simple para generar índice determinístico
+function simpleHash(str: string): number {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // Convert to 32bit integer
+  }
+  return Math.abs(hash)
+}
+
 function selectBanner(
   banners: BannerConfig[],
   areaId: number,
   position: string,
   strategy: 'random' | 'deterministic' | 'weighted',
   exclude: string[],
-  usedBanners: Set<string>
+  usedBannerIds: string[] // Cambiado de Set a array para ser serializable
 ): BannerConfig | null {
   // Validación: si no hay banners, retornar null
   if (!banners || banners.length === 0) {
@@ -90,7 +101,7 @@ function selectBanner(
   }
 
   // 🎯 FILTRO 1: Excluir banners ya usados en esta página
-  const notUsedBanners = banners.filter((b) => !usedBanners.has(b.id))
+  const notUsedBanners = banners.filter((b) => !usedBannerIds.includes(b.id))
   
   // 🎯 FILTRO 2: Excluir banners específicos (parámetro exclude)
   const availableBanners = notUsedBanners.filter((b) => !exclude.includes(b.id))
@@ -110,25 +121,31 @@ function selectBanner(
   let selectedBanner = finalBanners[0]
 
   try {
+    // 🎯 CLAVE: Usar hash determinístico basado en areaId + position + usedBanners
+    // Esto garantiza que cada posición seleccione un banner diferente
+    const seed = `${areaId}-${position}-${usedBannerIds.join(',')}`
+    const hash = simpleHash(seed)
+    const deterministicIndex = hash % finalBanners.length
+    
     switch (strategy) {
       case 'random': {
-        const randomIndex = Math.floor(Math.random() * finalBanners.length)
-        selectedBanner = finalBanners[randomIndex] || finalBanners[0]
+        // Aún así usar seed para que sea predecible en SSR
+        selectedBanner = finalBanners[deterministicIndex] || finalBanners[0]
         break
       }
 
       case 'deterministic': {
-        const index = (areaId + position.length) % finalBanners.length
-        selectedBanner = finalBanners[index] || finalBanners[0]
+        selectedBanner = finalBanners[deterministicIndex] || finalBanners[0]
         break
       }
 
       case 'weighted': {
-        const shouldRandomize = Math.random() < 0.3
+        // Usar el hash para decidir si randomizar
+        const shouldRandomize = (hash % 100) < 30
 
         if (shouldRandomize) {
           const totalWeight = finalBanners.reduce((sum, b) => sum + (b.weight || 1), 0)
-          let random = Math.random() * totalWeight
+          let random = (hash % 1000) / 1000 * totalWeight
 
           for (const banner of finalBanners) {
             random -= (banner.weight || 1)
@@ -138,8 +155,7 @@ function selectBanner(
             }
           }
         } else {
-          const index = (areaId + position.length) % finalBanners.length
-          selectedBanner = finalBanners[index] || finalBanners[0]
+          selectedBanner = finalBanners[deterministicIndex] || finalBanners[0]
         }
         break
       }
