@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { BannerHeroHorizontal } from './BannerHeroHorizontal'
 import { BannerCuadradoMedium } from './BannerCuadradoMedium'
 import { BannerLeaderboardFull } from './BannerLeaderboardFull'
@@ -149,8 +149,15 @@ export function BannerRotativo({
   const [mounted, setMounted] = useState(false)
   const [SelectedBanner, setSelectedBanner] = useState<React.ComponentType<{ position: string }> | null>(null)
   const [bannerId, setBannerId] = useState<string>('loading')
+  const hasInitialized = useRef(false)
 
   useEffect(() => {
+    // 🔥 EJECUTAR UNA SOLA VEZ por montaje del componente
+    if (hasInitialized.current) {
+      return
+    }
+    
+    hasInitialized.current = true
     setMounted(true)
     
     try {
@@ -178,10 +185,8 @@ export function BannerRotativo({
     } catch (error) {
       console.error('Error in useEffect:', error)
     }
-    // 🔥 CRITICAL: No incluir usedBanners ni markBannerAsUsed en dependencias
-    // para evitar loops infinitos. Solo ejecutar cuando cambia la posición.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [areaId, position, strategy])
+  }, [])
 
   // Durante SSR y primera carga, mostrar BannerHeroHorizontal por defecto
   if (!mounted || !SelectedBanner) {
