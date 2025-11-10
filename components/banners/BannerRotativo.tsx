@@ -12,6 +12,9 @@ import { BannerUltraWideModern } from './BannerUltraWideModern'
 import { BannerUltraWideBares } from './BannerUltraWideBares'
 import { BannerUltraWideHoteles } from './BannerUltraWideHoteles'
 import { BannerUltraWideRestaurantes } from './BannerUltraWideRestaurantes'
+import { BannerPremiumAnimated } from './BannerPremiumAnimated'
+import { BannerWideCarousel } from './BannerWideCarousel'
+import { BannerMegaWideSlider } from './BannerMegaWideSlider'
 import { useBannerContext } from './BannerContext'
 
 interface BannerConfig {
@@ -31,19 +34,31 @@ const BANNERS_CONFIG = {
     { id: 'ultra-wide-restaurantes-mobile', component: BannerUltraWideRestaurantes, weight: 1 },
   ] as BannerConfig[],
   tablet: [
+    { id: 'cuadrado-medium-tablet', component: BannerCuadradoMedium, weight: 1.3 },
     { id: 'hero-horizontal', component: BannerHeroHorizontal, weight: 1 },
     { id: 'leaderboard-full', component: BannerLeaderboardFull, weight: 1 },
-    { id: 'ultra-wide-bares-tablet', component: BannerUltraWideBares, weight: 1.3 },
-    { id: 'ultra-wide-hoteles-tablet', component: BannerUltraWideHoteles, weight: 1.3 },
-    { id: 'ultra-wide-restaurantes-tablet', component: BannerUltraWideRestaurantes, weight: 1.3 },
+    { id: 'ultra-wide-bares-tablet', component: BannerUltraWideBares, weight: 1.4 },
+    { id: 'ultra-wide-hoteles-tablet', component: BannerUltraWideHoteles, weight: 1.4 },
+    { id: 'ultra-wide-restaurantes-tablet', component: BannerUltraWideRestaurantes, weight: 1.4 },
+    { id: 'wide-carousel-tablet', component: BannerWideCarousel, weight: 1.2 },
   ] as BannerConfig[],
   desktop: [
+    // 🎯 Banners específicos por categoría (mayor peso)
+    { id: 'ultra-wide-bares-desktop', component: BannerUltraWideBares, weight: 1.6 },
+    { id: 'ultra-wide-hoteles-desktop', component: BannerUltraWideHoteles, weight: 1.6 },
+    { id: 'ultra-wide-restaurantes-desktop', component: BannerUltraWideRestaurantes, weight: 1.6 },
+    
+    // 🎨 Banners premium con animaciones
+    { id: 'premium-animated-desktop', component: BannerPremiumAnimated, weight: 1.4 },
+    { id: 'mega-wide-slider-desktop', component: BannerMegaWideSlider, weight: 1.4 },
+    { id: 'ultra-wide-modern-desktop', component: BannerUltraWideModern, weight: 1.3 },
+    { id: 'wide-carousel-desktop', component: BannerWideCarousel, weight: 1.3 },
+    
+    // 📐 Banners estándar
+    { id: 'vertical-sidebar-desktop', component: BannerVerticalSidebar, weight: 1.1 },
+    { id: 'leaderboard-full-desktop', component: BannerLeaderboardFull, weight: 0.9 },
     { id: 'hero-horizontal-desktop', component: BannerHeroHorizontal, weight: 0.8 },
-    { id: 'vertical-sidebar', component: BannerVerticalSidebar, weight: 1 },
-    { id: 'leaderboard-full-desktop', component: BannerLeaderboardFull, weight: 0.8 },
-    { id: 'ultra-wide-bares-desktop', component: BannerUltraWideBares, weight: 1.5 },
-    { id: 'ultra-wide-hoteles-desktop', component: BannerUltraWideHoteles, weight: 1.5 },
-    { id: 'ultra-wide-restaurantes-desktop', component: BannerUltraWideRestaurantes, weight: 1.5 },
+    { id: 'cuadrado-medium-desktop', component: BannerCuadradoMedium, weight: 0.8 },
   ] as BannerConfig[],
 }
 
