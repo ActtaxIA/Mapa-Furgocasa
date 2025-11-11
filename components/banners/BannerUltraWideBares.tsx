@@ -269,4 +269,3 @@ export function BannerUltraWideBares({ position }: BannerUltraWideBaresProps) {
     </div>
   )
 }
-
