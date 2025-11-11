@@ -270,4 +270,3 @@ export function BannerUltraWideHoteles({ position }: BannerUltraWideHotelesProps
     </div>
   )
 }
-

@@ -269,4 +269,3 @@ export function BannerUltraWideRestaurantes({ position }: BannerUltraWideRestaur
     </div>
   )
 }
-
