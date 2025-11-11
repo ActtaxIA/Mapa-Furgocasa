@@ -123,23 +123,23 @@ export function BannerUltraWideBares({ position }: BannerUltraWideBaresProps) {
           <div className="text-base text-[#ffd935] font-bold uppercase tracking-wide mb-2 text-center">
             🌟 Bares Destacados
           </div>
-            <div className="grid grid-cols-2 gap-2 md:gap-4">
+            <div className="grid grid-cols-2 gap-4">
             <a
               href="https://www.casicinco.com/bar/barcelona?utm_source=furgocasa&utm_medium=banner&utm_campaign=ultra_wide_bares"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-[rgba(255,255,255,0.08)] backdrop-blur-[10px] border border-[rgba(255,255,255,0.12)] rounded-[20px] p-5 transition-all duration-300 hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,217,53,0.4)] hover:translate-y-[-6px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)] no-underline text-inherit block animate-fadeInUp"
             >
-              <div className="text-2xl md:text-3xl lg:text-4xl mb-2">🍸</div>
-              <div className="text-xs md:text-sm lg:text-base font-bold text-white mb-1">Bobby's Free</div>
-              <div className="text-[10px] md:text-xs text-[rgba(255,255,255,0.6)] mb-1.5">📍 Barcelona</div>
-              <div className="inline-block bg-[rgba(218,112,214,0.2)] border border-[rgba(218,112,214,0.4)] px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-lg md:rounded-xl text-[8px] md:text-[10px] text-[#ee82ee] font-semibold mb-1.5">
+              <div className="text-[36px] mb-3">🍸</div>
+              <div className="text-base font-bold text-white mb-1.5">Bobby's Free</div>
+              <div className="text-xs text-[rgba(255,255,255,0.6)] mb-2">📍 Barcelona</div>
+              <div className="inline-block bg-[rgba(218,112,214,0.2)] border border-[rgba(218,112,214,0.4)] px-2.5 py-1 rounded-xl text-[10px] text-[#ee82ee] font-semibold mb-2">
                 Cóctelería
               </div>
-              <div className="flex items-center gap-1 md:gap-2">
-                <span className="text-[#ffd935] text-[10px] md:text-xs">★★★★★</span>
-                <span className="text-sm md:text-base lg:text-lg font-extrabold text-[#ffd935]">4.8</span>
-                <span className="text-[9px] md:text-[11px] text-[rgba(255,255,255,0.5)]">(856)</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[#ffd935] text-sm">★★★★★</span>
+                <span className="text-lg font-extrabold text-[#ffd935]">4.8</span>
+                <span className="text-[11px] text-[rgba(255,255,255,0.5)]">(856)</span>
               </div>
             </a>
 
@@ -150,7 +150,7 @@ export function BannerUltraWideBares({ position }: BannerUltraWideBaresProps) {
               className="bg-[rgba(255,255,255,0.08)] backdrop-blur-[10px] border border-[rgba(255,255,255,0.12)] rounded-[20px] p-5 transition-all duration-300 hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,217,53,0.4)] hover:translate-y-[-6px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)] no-underline text-inherit block animate-fadeInUp"
               style={{ animationDelay: '0.1s' }}
             >
-              <div className="text-4xl mb-3">🍹</div>
+              <div className="text-[36px] mb-3">🍹</div>
               <div className="text-base font-bold text-white mb-1.5">Salmon Guru</div>
               <div className="text-xs text-[rgba(255,255,255,0.6)] mb-2">📍 Madrid</div>
               <div className="inline-block bg-[rgba(218,112,214,0.2)] border border-[rgba(218,112,214,0.4)] px-2.5 py-1 rounded-xl text-[10px] text-[#ee82ee] font-semibold mb-2">
@@ -170,7 +170,7 @@ export function BannerUltraWideBares({ position }: BannerUltraWideBaresProps) {
               className="bg-[rgba(255,255,255,0.08)] backdrop-blur-[10px] border border-[rgba(255,255,255,0.12)] rounded-[20px] p-5 transition-all duration-300 hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,217,53,0.4)] hover:translate-y-[-6px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)] no-underline text-inherit block animate-fadeInUp"
               style={{ animationDelay: '0.2s' }}
             >
-              <div className="text-4xl mb-3">🍺</div>
+              <div className="text-[36px] mb-3">🍺</div>
               <div className="text-base font-bold text-white mb-1.5">La Rebotica</div>
               <div className="text-xs text-[rgba(255,255,255,0.6)] mb-2">📍 Sevilla</div>
               <div className="inline-block bg-[rgba(218,112,214,0.2)] border border-[rgba(218,112,214,0.4)] px-2.5 py-1 rounded-xl text-[10px] text-[#ee82ee] font-semibold mb-2">
@@ -190,7 +190,7 @@ export function BannerUltraWideBares({ position }: BannerUltraWideBaresProps) {
               className="bg-[rgba(255,255,255,0.08)] backdrop-blur-[10px] border border-[rgba(255,255,255,0.12)] rounded-[20px] p-5 transition-all duration-300 hover:bg-[rgba(255,255,255,0.14)] hover:border-[rgba(255,217,53,0.4)] hover:translate-y-[-6px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)] no-underline text-inherit block animate-fadeInUp"
               style={{ animationDelay: '0.3s' }}
             >
-              <div className="text-4xl mb-3">🥃</div>
+              <div className="text-[36px] mb-3">🥃</div>
               <div className="text-base font-bold text-white mb-1.5">Café de las Horas</div>
               <div className="text-xs text-[rgba(255,255,255,0.6)] mb-2">📍 Valencia</div>
               <div className="inline-block bg-[rgba(218,112,214,0.2)] border border-[rgba(218,112,214,0.4)] px-2.5 py-1 rounded-xl text-[10px] text-[#ee82ee] font-semibold mb-2">
