@@ -21,7 +21,7 @@ export function BannerUltraWideRestaurantes({ position }: BannerUltraWideRestaur
       <div className="absolute w-[150px] h-[150px] top-[60%] right-[15%] rounded-full bg-[rgba(255,217,53,0.1)] animate-float-delayed-2" />
       <div className="absolute w-[80px] h-[80px] bottom-[20%] left-[50%] rounded-full bg-[rgba(255,217,53,0.1)] animate-float-delayed-4" />
 
-      <div className="relative z-10 p-[50px_60px] grid grid-cols-1 lg:grid-cols-2 gap-[60px] items-center">
+      <div className="relative z-10 p-6 md:p-12 lg:p-[50px_60px] grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-[60px] items-center">
         {/* Sección Izquierda */}
         <div className="flex flex-col gap-6">
           <a

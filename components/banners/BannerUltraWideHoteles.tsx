@@ -21,7 +21,7 @@ export function BannerUltraWideHoteles({ position }: BannerUltraWideHotelesProps
       <div className="absolute w-[180px] h-[180px] top-[65%] right-[12%] rounded-full animate-float-glow-delayed-2" style={{ background: 'radial-gradient(circle, rgba(255, 217, 53, 0.2) 0%, transparent 70%)' }} />
       <div className="absolute w-[90px] h-[90px] bottom-[15%] left-[55%] rounded-full animate-float-glow-delayed-4" style={{ background: 'radial-gradient(circle, rgba(255, 217, 53, 0.2) 0%, transparent 70%)' }} />
 
-      <div className="relative z-10 p-[50px_60px] grid grid-cols-1 lg:grid-cols-2 gap-[60px] items-center">
+      <div className="relative z-10 p-6 md:p-12 lg:p-[50px_60px] grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-[60px] items-center">
         {/* Sección Izquierda */}
         <div className="flex flex-col gap-6">
           <a
