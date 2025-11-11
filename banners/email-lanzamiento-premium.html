@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌟 Descubre Mapa Furgocasa - La Revolución del Caravaning</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #e5e7eb;
+            padding: 20px;
+        }
+        
+        .email-wrapper {
+            max-width: 680px;
+            margin: 0 auto;
+            background: #ffffff;
+            box-shadow: 0 15px 60px rgba(0, 0, 0, 0.12);
+        }
+        
+        /* HEADER CON LOGO */
+        .email-header {
+            background: white;
+            padding: 30px 40px;
+            text-align: center;
+            border-bottom: 3px solid #0ea5e9;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 50px;
+        }
+        
+        .logo-text {
+            text-align: left;
+        }
+        
+        .logo-text h1 {
+            font-size: 32px;
+            font-weight: 900;
+            color: #0284c7;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+        
+        .logo-text p {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        /* ANNOUNCEMENT BANNER */
+        .announcement-banner {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            padding: 18px 40px;
+            text-align: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+        }
+        
+        .announcement-banner .highlight {
+            font-size: 18px;
+            display: inline-block;
+            padding: 0 8px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+        }
+        
+        /* HERO IMAGE SECTION */
+        .hero-visual {
+            background: linear-gradient(180deg, #0ea5e9 0%, #06b6d4 100%);
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-visual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.95);
+            color: #0284c7;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .hero-headline {
+            font-size: 48px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hero-subheadline {
+            font-size: 22px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 500;
+            max-width: 550px;
+            margin: 0 auto 35px;
+            line-height: 1.5;
+        }
+        
+        .hero-emoji-showcase {
+            font-size: 70px;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        
+        .hero-button {
+            display: inline-block;
+            background: white;
+            color: #0284c7;
+            padding: 20px 50px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 19px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .hero-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.35);
+        }
+        
+        /* CONTENT SECTIONS */
+        .content-section {
+            padding: 50px 40px;
+        }
+        
+        .section-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1f2937;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .section-subtitle {
+            font-size: 17px;
+            color: #6b7280;
+            text-align: center;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        /* FEATURE SHOWCASE */
+        .feature-showcase {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 30px;
+            background: #f9fafb;
+            border-radius: 16px;
+            border-left: 5px solid #0ea5e9;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-item:hover {
+            transform: translateX(8px);
+            background: #f0f9ff;
+            border-left-color: #0284c7;
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.15);
+        }
+        
+        .feature-emoji {
+            font-size: 45px;
+            flex-shrink: 0;
+        }
+        
+        .feature-content h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0284c7;
+            margin-bottom: 8px;
+        }
+        
+        .feature-content p {
+            font-size: 15px;
+            color: #4b5563;
+            line-height: 1.6;
+        }
+        
+        /* BENEFITS GRID */
+        .benefits-section {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 50px 40px;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .benefit-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 2px solid #bae6fd;
+            transition: all 0.3s ease;
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(14, 165, 233, 0.2);
+            border-color: #0ea5e9;
+        }
+        
+        .benefit-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .benefit-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        
+        .benefit-description {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+        
+        /* TESTIMONIAL */
+        .testimonial-section {
+            padding: 50px 40px;
+            background: white;
+        }
+        
+        .testimonial-box {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            padding: 40px;
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.3);
+        }
+        
+        .testimonial-quote {
+            font-size: 20px;
+            font-style: italic;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .testimonial-author {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .testimonial-role {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .testimonial-stars {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        /* CTA SECTION */
+        .cta-section {
+            background: #1f2937;
+            padding: 50px 40px;
+            text-align: center;
+            color: white;
+        }
+        
+        .cta-section h2 {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+        
+        .cta-section p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .cta-button-large {
+            display: inline-block;
+            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            color: white;
+            padding: 18px 45px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 17px;
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button-large:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(14, 165, 233, 0.5);
+        }
+        
+        .cta-button-outline {
+            display: inline-block;
+            background: transparent;
+            color: white;
+            padding: 18px 45px;
+            border-radius: 50px;
+            border: 2px solid white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 17px;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button-outline:hover {
+            background: white;
+            color: #1f2937;
+        }
+        
+        /* FOOTER */
+        .email-footer {
+            background: #f9fafb;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 2px solid #e5e7eb;
+        }
+        
+        .footer-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-stat {
+            text-align: center;
+        }
+        
+        .footer-stat-number {
+            font-size: 28px;
+            font-weight: 900;
+            color: #0284c7;
+            display: block;
+        }
+        
+        .footer-stat-label {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .footer-text {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 12px;
+        }
+        
+        .footer-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .email-header {
+                padding: 25px 20px;
+            }
+            
+            .logo-section {
+                flex-direction: column;
+            }
+            
+            .logo-text {
+                text-align: center;
+            }
+            
+            .hero-visual {
+                padding: 35px 20px;
+            }
+            
+            .hero-headline {
+                font-size: 36px;
+            }
+            
+            .hero-subheadline {
+                font-size: 18px;
+            }
+            
+            .content-section {
+                padding: 35px 20px;
+            }
+            
+            .section-title {
+                font-size: 26px;
+            }
+            
+            .feature-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+            }
+            
+            .cta-button-large,
+            .cta-button-outline {
+                width: 100%;
+            }
+            
+            .footer-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="email-wrapper">
+    <!-- HEADER -->
+    <div class="email-header">
+        <div class="logo-section">
+            <div class="logo-icon">🚐</div>
+            <div class="logo-text">
+                <h1>Mapa Furgocasa</h1>
+                <p>Tu Super App de Caravaning</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANNOUNCEMENT -->
+    <div class="announcement-banner">
+        🎉 <span class="highlight">¡LANZAMIENTO OFICIAL!</span> Ya disponible para todos 🎉
+    </div>
+
+    <!-- HERO -->
+    <div class="hero-visual">
+        <div class="hero-content">
+            <div class="hero-badge">🚀 Nueva Era del Caravaning</div>
+            <div class="hero-emoji-showcase">🗺️✨🚐</div>
+            <h1 class="hero-headline">La app que revoluciona tu forma de viajar</h1>
+            <p class="hero-subheadline">
+                Miles de áreas verificadas, rutas inteligentes y una comunidad global. Todo en un solo lugar.
+            </p>
+            <a href="https://www.mapafurgocasa.com/mapa?utm_source=email&utm_medium=launch_premium&utm_campaign=nuevos_usuarios" class="hero-button" target="_blank">
+                🗺️ Descubrir Mapa Furgocasa
+            </a>
+        </div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="content-section">
+        <h2 class="section-title">¿Por qué Mapa Furgocasa?</h2>
+        <p class="section-subtitle">
+            No es solo un mapa. Es tu compañero de viaje definitivo.
+        </p>
+
+        <div class="feature-showcase">
+            <div class="feature-item">
+                <div class="feature-emoji">🌍</div>
+                <div class="feature-content">
+                    <h3>Cobertura Global Incomparable</h3>
+                    <p>
+                        Más de 3,600 áreas de pernocta verificadas en Europa y Latinoamérica. Desde España hasta Argentina, tenemos tu próxima parada cubierta.
+                    </p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-emoji">🤖</div>
+                <div class="feature-content">
+                    <h3>Inteligencia Artificial Integrada</h3>
+                    <p>
+                        Nuestro chatbot IA te recomienda las mejores rutas según tus preferencias, época del año y nivel de experiencia. Como tener un experto viajero en tu bolsillo.
+                    </p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-emoji">🛣️</div>
+                <div class="feature-content">
+                    <h3>Planificador de Rutas Avanzado</h3>
+                    <p>
+                        Crea itinerarios épicos con múltiples paradas, calcula distancias y tiempos, y optimiza tu viaje para aprovechar cada momento en la carretera.
+                    </p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-emoji">📱</div>
+                <div class="feature-content">
+                    <h3>100% Gratis, Siempre</h3>
+                    <p>
+                        Sin costos ocultos, sin suscripciones premium. Todas las funciones disponibles para todos, porque creemos que viajar debe ser accesible.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BENEFITS -->
+    <div class="benefits-section">
+        <h2 class="section-title">Lo que obtienes desde el día 1</h2>
+
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <span class="benefit-icon">📍</span>
+                <div class="benefit-title">GPS en Tiempo Real</div>
+                <div class="benefit-description">
+                    Encuentra áreas cercanas al instante con tu ubicación
+                </div>
+            </div>
+
+            <div class="benefit-card">
+                <span class="benefit-icon">💙</span>
+                <div class="benefit-title">Favoritos Ilimitados</div>
+                <div class="benefit-description">
+                    Guarda y organiza tus lugares preferidos sin límites
+                </div>
+            </div>
+
+            <div class="benefit-card">
+                <span class="benefit-icon">⭐</span>
+                <div class="benefit-title">Reseñas Verificadas</div>
+                <div class="benefit-description">
+                    Lee opiniones reales de otros caravanistas
+                </div>
+            </div>
+
+            <div class="benefit-card">
+                <span class="benefit-icon">🌐</span>
+                <div class="benefit-title">Multi-idioma</div>
+                <div class="benefit-description">
+                    Disponible en 6 idiomas para viajeros globales
+                </div>
+            </div>
+
+            <div class="benefit-card">
+                <span class="benefit-icon">🔒</span>
+                <div class="benefit-title">Datos Seguros</div>
+                <div class="benefit-description">
+                    Tu privacidad y seguridad son nuestra prioridad
+                </div>
+            </div>
+
+            <div class="benefit-card">
+                <span class="benefit-icon">🎯</span>
+                <div class="benefit-title">Filtros Avanzados</div>
+                <div class="benefit-description">
+                    Encuentra exactamente lo que necesitas (agua, luz, WiFi...)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TESTIMONIAL -->
+    <div class="testimonial-section">
+        <div class="testimonial-box">
+            <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+            <p class="testimonial-quote">
+                "Después de años usando diferentes apps, Mapa Furgocasa es lo mejor que he encontrado. La combinación de mapa detallado, planificador de rutas y el chatbot IA es simplemente perfecta. Ya no viajo sin ella."
+            </p>
+            <div class="testimonial-author">María González</div>
+            <div class="testimonial-role">Viajera fulltime desde 2019</div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+        <h2>Empieza tu aventura hoy</h2>
+        <p>Únete a la comunidad de caravanistas más grande de Europa y LATAM</p>
+        <div class="cta-buttons">
+            <a href="https://www.mapafurgocasa.com/auth/register?utm_source=email&utm_medium=launch_premium&utm_campaign=nuevos_usuarios" class="cta-button-large" target="_blank">
+                ✨ Crear Cuenta Gratis
+            </a>
+            <a href="https://www.mapafurgocasa.com/mapa?utm_source=email&utm_medium=launch_premium&utm_campaign=nuevos_usuarios" class="cta-button-outline" target="_blank">
+                🗺️ Explorar sin Registro
+            </a>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="email-footer">
+        <div class="footer-stats">
+            <div class="footer-stat">
+                <span class="footer-stat-number">+3,600</span>
+                <span class="footer-stat-label">Áreas</span>
+            </div>
+            <div class="footer-stat">
+                <span class="footer-stat-number">15+</span>
+                <span class="footer-stat-label">Países</span>
+            </div>
+            <div class="footer-stat">
+                <span class="footer-stat-number">24/7</span>
+                <span class="footer-stat-label">IA Disponible</span>
+            </div>
+        </div>
+        
+        <p class="footer-text">
+            Mapa Furgocasa - La revolución del caravaning ha llegado
+        </p>
+        <div class="footer-badge">🚀 EN VIVO AHORA</div>
+    </div>
+</div>
+
+</body>
+</html>
+
