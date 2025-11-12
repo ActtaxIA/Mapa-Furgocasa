@@ -170,10 +170,8 @@ export default function VehiculoPage() {
             <DatosCompraTab
               vehiculoId={vehiculoId}
               onDataSaved={() => {
-                // Recargar el tab de resumen si está activo
-                if (activeTab === 'resumen') {
-                  window.location.reload()
-                }
+                // Opcional: cambiar al tab de resumen después de guardar
+                // setActiveTab('resumen')
               }}
             />
           )}

@@ -6,10 +6,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-import { 
-  MapIcon, 
-  MapPinIcon, 
-  ArrowPathIcon, 
+import {
+  MapIcon,
+  MapPinIcon,
+  ArrowPathIcon,
   HeartIcon,
   StarIcon,
   UserGroupIcon,
@@ -24,7 +24,7 @@ import { StarIcon as StarSolid } from '@heroicons/react/24/solid'
 
 export default function HomePage() {
   const [totalAreas, setTotalAreas] = useState(1000)
-  
+
   useEffect(() => {
     // Cargar contador dinámico de áreas
     const loadTotalAreas = async () => {
@@ -59,7 +59,7 @@ export default function HomePage() {
             backgroundSize: '40px 40px'
           }}></div>
         </div>
-        
+
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-5xl mx-auto text-center">
             {/* Badge */}
@@ -75,12 +75,12 @@ export default function HomePage() {
                 autocaravanas
               </span>
             </h1>
-            
+
             <p className="text-xl md:text-2xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed">
               Descubre, planifica y viaja. Toda la información que necesitas sobre áreas de pernocta,
               campings y parkings para autocaravanas en <strong className="text-sky-200">Europa y Latinoamérica</strong>.
             </p>
-            
+
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Link
@@ -138,7 +138,7 @@ export default function HomePage() {
                 +{totalAreas} Áreas Actualizadas
               </h3>
               <p className="text-white/90 leading-relaxed">
-                Base de datos completa con áreas públicas, privadas, campings y parkings. 
+                Base de datos completa con áreas públicas, privadas, campings y parkings.
                 Información verificada de servicios, precios y ubicaciones exactas.
               </p>
             </div>
@@ -152,7 +152,7 @@ export default function HomePage() {
                 Planificador de Rutas
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Crea rutas personalizadas y descubre automáticamente áreas de pernocta cercanas. 
+                Crea rutas personalizadas y descubre automáticamente áreas de pernocta cercanas.
                 Optimiza distancias y tiempos de viaje.
               </p>
             </div>
@@ -166,7 +166,7 @@ export default function HomePage() {
                 Cobertura Mundial
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                España, Portugal, Francia, Andorra, Argentina y más países. 
+                España, Portugal, Francia, Andorra, Argentina y más países.
                 Expandimos constantemente nuestra red global de áreas.
               </p>
             </div>
@@ -180,7 +180,7 @@ export default function HomePage() {
                 Lista de Favoritos
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Guarda tus áreas preferidas y accede a ellas desde cualquier dispositivo. 
+                Guarda tus áreas preferidas y accede a ellas desde cualquier dispositivo.
                 Organiza tu próximo viaje fácilmente.
               </p>
             </div>
@@ -194,7 +194,7 @@ export default function HomePage() {
                 Gestión de Vehículos
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Registra tu autocaravana y lleva un control completo: mantenimientos, averías, 
+                Registra tu autocaravana y lleva un control completo: mantenimientos, averías,
                 gastos, consumo y valoración. Todo en un solo lugar.
               </p>
             </div>
@@ -208,7 +208,7 @@ export default function HomePage() {
                 Alertas de Accidentes
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Sistema único de QR para tu vehículo. Los testigos pueden reportar incidentes 
+                Sistema único de QR para tu vehículo. Los testigos pueden reportar incidentes
                 y recibe notificaciones instantáneas con todos los detalles.
               </p>
             </div>
@@ -240,7 +240,7 @@ export default function HomePage() {
                       Información Verificada
                     </h3>
                     <p className="text-white/80">
-                      Cada área es revisada y actualizada por nuestro equipo. 
+                      Cada área es revisada y actualizada por nuestro equipo.
                       Datos reales de ubicación, servicios disponibles, precios actualizados y estado operativo.
                     </p>
                   </div>
@@ -257,7 +257,7 @@ export default function HomePage() {
                       Comunidad Activa
                     </h3>
                     <p className="text-white/80">
-                      Miles de autocaravanistas comparten experiencias, consejos y recomendaciones. 
+                      Miles de autocaravanistas comparten experiencias, consejos y recomendaciones.
                       La comunidad más grande de España y en crecimiento internacional.
                     </p>
                   </div>
@@ -274,7 +274,7 @@ export default function HomePage() {
                       Siempre Actualizado
                     </h3>
                     <p className="text-white/80">
-                      Nuevas áreas añadidas constantemente. Sistema de reportes de la comunidad. 
+                      Nuevas áreas añadidas constantemente. Sistema de reportes de la comunidad.
                       Nunca llegarás a un lugar cerrado o inexistente.
                     </p>
                   </div>
@@ -291,7 +291,7 @@ export default function HomePage() {
                       Tecnología Google Maps
                     </h3>
                     <p className="text-white/80">
-                      Integración completa con Google Maps. Visualización precisa, cálculo de rutas, 
+                      Integración completa con Google Maps. Visualización precisa, cálculo de rutas,
                       navegación directa y vista satélite de cada ubicación.
                     </p>
                   </div>
@@ -307,7 +307,7 @@ export default function HomePage() {
                 ))}
               </div>
               <blockquote className="text-2xl md:text-3xl text-white mb-6 italic font-light">
-                "La mejor herramienta para planificar rutas en autocaravana. 
+                "La mejor herramienta para planificar rutas en autocaravana.
                 He descubierto áreas increíbles que nunca hubiera encontrado por mi cuenta."
               </blockquote>
               <div className="text-white/80 font-medium">
@@ -327,10 +327,10 @@ export default function HomePage() {
                 Comienza tu próxima aventura hoy
               </h2>
               <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-                Únete a miles de autocaravanistas que ya planifican sus viajes con Mapa Furgocasa. 
+                Únete a miles de autocaravanistas que ya planifican sus viajes con Mapa Furgocasa.
                 <strong className="text-sky-200"> 100% gratis para siempre</strong>.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                 <Link
                   href="/auth/register"
