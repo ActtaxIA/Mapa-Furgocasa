@@ -133,7 +133,7 @@ CREATE OR REPLACE FUNCTION calcular_precio_litro_combustible()
 RETURNS TRIGGER AS $$
 BEGIN
   -- Calcular precio por litro si hay combustible y coste
-  IF NEW.combustible_litros IS NOT NULL AND NEW.combustible_litros > 0 
+  IF NEW.combustible_litros IS NOT NULL AND NEW.combustible_litros > 0
      AND NEW.coste_combustible IS NOT NULL AND NEW.coste_combustible > 0 THEN
     NEW.precio_litro = NEW.coste_combustible / NEW.combustible_litros;
   END IF;
@@ -160,7 +160,7 @@ DECLARE
 BEGIN
   -- Solo calcular si es un repostaje completo
   IF NEW.combustible_litros IS NOT NULL AND NEW.combustible_litros > 0 THEN
-    
+
     -- Buscar el último repostaje del mismo vehículo
     SELECT * INTO ultimo_repostaje
     FROM vehiculo_kilometraje
@@ -170,11 +170,11 @@ BEGIN
       AND fecha < NEW.fecha
     ORDER BY fecha DESC, created_at DESC
     LIMIT 1;
-    
+
     -- Si hay un repostaje anterior, calcular consumo
     IF ultimo_repostaje.id IS NOT NULL THEN
       km_recorridos = NEW.kilometros - ultimo_repostaje.kilometros;
-      
+
       IF km_recorridos > 0 THEN
         NEW.km_desde_ultimo_repostaje = km_recorridos;
         -- Consumo en litros/100km
@@ -182,7 +182,7 @@ BEGIN
       END IF;
     END IF;
   END IF;
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -230,12 +230,12 @@ BEGIN
   SELECT user_id INTO propietario_id
   FROM vehiculos_registrados
   WHERE id = NEW.vehiculo_id;
-  
+
   -- Verificar que el user_id coincide
   IF NEW.user_id != propietario_id THEN
     RAISE EXCEPTION 'El usuario no es propietario del vehículo';
   END IF;
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -289,12 +289,12 @@ BEGIN
   IF NEW.estado = 'resuelto' AND NEW.fecha_resolucion IS NULL THEN
     NEW.fecha_resolucion = CURRENT_DATE;
   END IF;
-  
+
   -- Si el estado cambia a 'en_reparacion' y no tiene fecha de inicio, ponerla
   IF NEW.estado = 'en_reparacion' AND NEW.fecha_inicio_reparacion IS NULL THEN
     NEW.fecha_inicio_reparacion = CURRENT_DATE;
   END IF;
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -320,4 +320,3 @@ BEGIN
   RAISE NOTICE '   - Verificación de propiedad';
   RAISE NOTICE '   - Actualización de fechas de averías';
 END $$;
-

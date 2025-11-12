@@ -51,6 +51,7 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
+    "@types/google.maps": "^3.58.1",
     "@types/node": "^20.10.6",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18.2.46",

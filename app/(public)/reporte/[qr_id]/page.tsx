@@ -14,6 +14,11 @@ import {
 } from '@heroicons/react/24/outline'
 import { Loader } from '@googlemaps/js-api-loader'
 
+// Tipos simplificados para Google Maps (se cargan dinámicamente)
+type GoogleMap = any
+type GoogleMarker = any
+type GoogleGeocoder = any
+
 export default function ReportePage() {
   const params = useParams()
   const router = useRouter()
@@ -24,7 +29,7 @@ export default function ReportePage() {
   const [submitting, setSubmitting] = useState(false)
   const [ubicacion, setUbicacion] = useState<{ lat: number; lng: number; direccion?: string } | null>(null)
   const [obteniendoUbicacion, setObteniendoUbicacion] = useState(false)
-  const [mapa, setMapa] = useState<google.maps.Map | null>(null)
+  const [mapa, setMapa] = useState<GoogleMap | null>(null)
   const [mapaCargado, setMapaCargado] = useState(false)
 
   // Form state
@@ -95,9 +100,10 @@ export default function ReportePage() {
           })
 
           await loader.load()
+          const google = (window as any).google
           const geocoder = new google.maps.Geocoder()
 
-          geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+          geocoder.geocode({ location: { lat, lng } }, (results: any, status: any) => {
             if (status === 'OK' && results && results[0]) {
               setUbicacion({
                 lat,
@@ -137,6 +143,7 @@ export default function ReportePage() {
       const mapElement = document.getElementById('mapa-ubicacion')
       if (!mapElement || mapa) return
 
+      const google = (window as any).google
       const newMap = new google.maps.Map(mapElement, {
         center: { lat: ubicacion.lat, lng: ubicacion.lng },
         zoom: 15,
@@ -153,13 +160,13 @@ export default function ReportePage() {
       })
 
       // Actualizar ubicación cuando se arrastra el marcador
-      marker.addListener('dragend', (e: google.maps.MapMouseEvent) => {
+      marker.addListener('dragend', (e: any) => {
         if (e.latLng) {
           const newLat = e.latLng.lat()
           const newLng = e.latLng.lng()
           // Hacer geocoding reverso de la nueva ubicación
           const geocoder = new google.maps.Geocoder()
-          geocoder.geocode({ location: { lat: newLat, lng: newLng } }, (results, status) => {
+          geocoder.geocode({ location: { lat: newLat, lng: newLng } }, (results: any, status: any) => {
             if (status === 'OK' && results && results[0]) {
               setUbicacion({
                 lat: newLat,
@@ -174,13 +181,13 @@ export default function ReportePage() {
       })
 
       // También permitir hacer clic en el mapa
-      newMap.addListener('click', (e: google.maps.MapMouseEvent) => {
+      newMap.addListener('click', (e: any) => {
         if (e.latLng) {
           const newLat = e.latLng.lat()
           const newLng = e.latLng.lng()
           marker.setPosition({ lat: newLat, lng: newLng })
           const geocoder = new google.maps.Geocoder()
-          geocoder.geocode({ location: { lat: newLat, lng: newLng } }, (results, status) => {
+          geocoder.geocode({ location: { lat: newLat, lng: newLng } }, (results: any, status: any) => {
             if (status === 'OK' && results && results[0]) {
               setUbicacion({
                 lat: newLat,

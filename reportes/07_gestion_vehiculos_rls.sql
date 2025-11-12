@@ -263,4 +263,3 @@ BEGIN
   RAISE NOTICE '   - vehiculo_ficha_tecnica';
   RAISE NOTICE '   - Políticas de admin habilitadas';
 END $$;
-
