@@ -22,9 +22,8 @@ import { DatosCompraTab } from '@/components/vehiculo/DatosCompraTab'
 import MantenimientosTab from '@/components/vehiculo/MantenimientosTab'
 import AveriasTab from '@/components/vehiculo/AveriasTab'
 import MejorasTab from '@/components/vehiculo/MejorasTab'
-import KilometrajeTab from '@/components/vehiculo/KilometrajeTab'
 
-type TabType = 'resumen' | 'compra' | 'mantenimientos' | 'averias' | 'mejoras' | 'kilometraje' | 'venta'
+type TabType = 'resumen' | 'compra' | 'mantenimientos' | 'averias' | 'mejoras' | 'venta'
 
 export default function VehiculoPage() {
   const params = useParams()
@@ -99,7 +98,6 @@ export default function VehiculoPage() {
     { id: 'mantenimientos', label: 'Mantenimientos', icon: WrenchScrewdriverIcon },
     { id: 'averias', label: 'Averías', icon: ExclamationTriangleIcon },
     { id: 'mejoras', label: 'Mejoras', icon: SparklesIcon },
-    { id: 'kilometraje', label: 'Kilometraje', icon: TruckIcon },
     { id: 'venta', label: 'Venta', icon: TagIcon },
   ]
 
@@ -184,10 +182,6 @@ export default function VehiculoPage() {
 
           {activeTab === 'mejoras' && (
             <MejorasTab vehiculoId={vehiculoId} />
-          )}
-
-          {activeTab === 'kilometraje' && (
-            <KilometrajeTab vehiculoId={vehiculoId} />
           )}
 
           {activeTab === 'venta' && (
