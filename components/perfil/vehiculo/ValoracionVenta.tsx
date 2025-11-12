@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { 
   CurrencyEuroIcon, 
-  TrendingUpIcon, 
-  TrendingDownIcon,
+  ArrowTrendingUpIcon, 
+  ArrowTrendingDownIcon,
   SparklesIcon,
   ChartBarIcon,
   CheckCircleIcon
@@ -205,7 +205,7 @@ export default function ValoracionVenta({ vehiculoId }: Props) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-red-50 rounded-lg p-4 border border-red-200">
           <div className="flex items-center mb-1">
-            <TrendingDownIcon className="h-5 w-5 text-red-600 mr-2" />
+            <ArrowTrendingDownIcon className="h-5 w-5 text-red-600 mr-2" />
             <span className="text-sm font-medium text-red-900">Venta Rápida</span>
           </div>
           <p className="text-2xl font-bold text-red-700">
@@ -227,7 +227,7 @@ export default function ValoracionVenta({ vehiculoId }: Props) {
 
         <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
           <div className="flex items-center mb-1">
-            <TrendingUpIcon className="h-5 w-5 text-blue-600 mr-2" />
+            <ArrowTrendingUpIcon className="h-5 w-5 text-blue-600 mr-2" />
             <span className="text-sm font-medium text-blue-900">Precio Óptimo</span>
           </div>
           <p className="text-2xl font-bold text-blue-700">

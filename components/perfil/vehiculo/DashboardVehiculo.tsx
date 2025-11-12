@@ -43,7 +43,7 @@ export function DashboardVehiculo({ vehiculo, onTabChange }: Props) {
         .single()
 
       if (resumenData) {
-        setResumen(resumenData)
+        setResumen(resumenData as ResumenEconomico)
       }
 
       // Cargar próximas alertas (mantenimientos y documentos próximos a vencer)
