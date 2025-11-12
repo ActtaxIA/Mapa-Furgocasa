@@ -23,20 +23,20 @@ interface CompraData {
   lugar_compra: string
   pais_compra: string
   ciudad_compra: string
-  
+
   // Estado del vehículo en compra
   kilometros_compra: string
   estado_general: string
   num_propietarios_anteriores: string
   libro_mantenimiento: boolean
   itv_al_dia: boolean
-  
+
   // Documentación y garantía
   tiene_garantia: boolean
   meses_garantia: string
   tipo_garantia: string
   transferencia_incluida: boolean
-  
+
   // Financiación
   financiado: boolean
   importe_financiado: string
@@ -45,16 +45,16 @@ interface CompraData {
   pendiente_pago: string
   entidad_financiera: string
   tipo_interes: string
-  
+
   // Negociación
   precio_inicial: string
   descuento_aplicado: string
   vehiculo_entregado: boolean
   precio_vehiculo_entregado: string
-  
+
   // Extras incluidos en la compra
   extras_incluidos: string
-  
+
   notas: string
 }
 
@@ -63,7 +63,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
   const [saving, setSaving] = useState(false)
   const [existingData, setExistingData] = useState<any>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
-  
+
   const [formData, setFormData] = useState<CompraData>({
     precio_compra: '',
     fecha_compra: '',
@@ -718,7 +718,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
         {/* Extras Incluidos */}
         <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Extras Incluidos en la Compra</h3>
-          
+
           <textarea
             value={formData.extras_incluidos}
             onChange={(e) => setFormData({ ...formData, extras_incluidos: e.target.value })}
@@ -734,7 +734,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
         {/* Notas */}
         <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Notas Adicionales</h3>
-          
+
           <textarea
             rows={4}
             value={formData.notas}
@@ -758,4 +758,3 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
     </div>
   )
 }
-

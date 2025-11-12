@@ -1,6 +1,6 @@
 # 🚐 Mapa Furgocasa - Plataforma de Áreas para Autocaravanas en Europa y LATAM
 
-**Versión: 1.1.0 - PRODUCCIÓN** 🎉✅
+**Versión: 2.0.0 - PRODUCCIÓN** 🎉✅
 
 > 🔴 **ENTORNO DE PRODUCCIÓN ACTIVA EN AWS AMPLIFY**
 > - **URL:** https://www.mapafurgocasa.com
@@ -11,7 +11,7 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 
 **Estado:** 🟢 **100% OPERATIVO** - Chatbot IA funcionando, Editor de prompts activo, Sistema completo en producción.
 
-**Última actualización:** 7 de Noviembre 2025 - Búsqueda Google Places ampliada a 65 países (Europa + LATAM).
+**Última actualización:** 12 de Noviembre 2025 - Sistema completo de gestión de vehículos y valoración automática implementado.
 
 ---
 
@@ -32,9 +32,17 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
   - Mis Valoraciones
   - Mis Favoritos
   - Mis Rutas Guardadas
+  - 🚐 **Mi Autocaravana** ✨ **NUEVO v2.0** - Registro y gestión de vehículos
+  - 📋 **Mis Reportes** ✨ **NUEVO v2.0** - Sistema de alertas de accidentes
+  - 💰 **Valoración Automática** ✨ **NUEVO v2.0** - ¿Por cuánto puedo vender?
+  - 📊 **Histórico de Valoraciones** ✨ **NUEVO v2.0** - Evolución del valor con gráficos
 - 📱 **Responsive Design** - Funciona en móvil, tablet y desktop
 - 🌐 **Acceso Público** - Mapa y áreas sin registro, herramientas avanzadas con registro
 - 🔔 **Notificaciones Toast** - Feedback elegante en todas las acciones
+- 🚨 **Sistema de Alertas de Accidentes** ✨ **NUEVO v2.0** - QR único por vehículo, reportes públicos
+- 🚐 **Gestión Completa de Vehículos** ✨ **NUEVO v2.0** - Mantenimientos, averías, documentos, mejoras
+- 💶 **Valoración Automática con IA** ✨ **NUEVO v2.0** - Algoritmo propio de valoración de mercado
+- 📈 **Análisis Económico** ✨ **NUEVO v2.0** - Control financiero completo del vehículo
 
 ### Para Administradores
 - ⚙️ **Panel de Administración** completo en `/admin`
@@ -139,7 +147,24 @@ supabase/add-rutas-table.sql
 
 # 3. Permisos de administrador (obligatorio si usarás /admin)
 supabase/FIX-admin-permisos-v3-SIMPLE.sql
+
+# 4. Sistema de Gestión de Vehículos ✨ NUEVO v2.0
+# Ejecutar en orden del 01 al 12:
+reportes/01_crear_tablas.sql
+reportes/02_crear_triggers.sql
+reportes/03_configurar_rls.sql
+reportes/04_funciones_auxiliares.sql
+reportes/05_gestion_vehiculos_tablas.sql
+reportes/06_gestion_vehiculos_triggers.sql
+reportes/07_gestion_vehiculos_rls.sql
+reportes/08_valoracion_economica.sql
+reportes/09_valoracion_economica_triggers.sql
+reportes/10_valoracion_economica_rls.sql
+reportes/11_funciones_analisis_economico.sql
+reportes/12_funciones_admin.sql
 ```
+
+**📖 Guía completa:** Consulta `reportes/README_GESTION_VEHICULOS.md` para instrucciones detalladas.
 
 ### 6. Crear Usuario Administrador
 
@@ -179,13 +204,16 @@ NEW MAPA FURGOCASA/
 │   │   ├── ruta/                 # Planificador de rutas
 │   │   ├── area/[slug]/          # Detalle de área
 │   │   ├── auth/                 # Login, registro, etc.
-│   │   └── perfil/               # Perfil de usuario
+│   │   ├── perfil/               # Perfil de usuario
+│   │   └── reporte/[qr_id]/     # ✨ NUEVO v2.0 - Página pública de reporte de accidentes
 │   ├── admin/                    # Panel de administración
 │   │   ├── areas/                # Gestión de áreas
 │   │   ├── analytics/            # Estadísticas
 │   │   └── users/                # Gestión de usuarios
 │   ├── api/                      # API Routes
-│   │   └── admin/                # Endpoints de admin
+│   │   ├── admin/                # Endpoints de admin
+│   │   ├── reportes/             # ✨ NUEVO v2.0 - API de reportes de accidentes
+│   │   └── vehiculos/            # ✨ NUEVO v2.0 - API de gestión de vehículos
 │   ├── globals.css               # Estilos globales + animaciones toast
 │   └── layout.tsx                # Layout principal
 ├── components/                   # Componentes React
@@ -200,7 +228,13 @@ NEW MAPA FURGOCASA/
 │   │   ├── MapaVisitas.tsx       # Mapa interactivo de visitas
 │   │   ├── ValoracionesTab.tsx   # Tab de valoraciones
 │   │   ├── FavoritosTab.tsx      # Tab de favoritos
-│   │   └── RutasTab.tsx          # Tab de rutas guardadas
+│   │   ├── RutasTab.tsx          # Tab de rutas guardadas
+│   │   ├── MiAutocaravanaTab.tsx # ✨ NUEVO v2.0 - Registro y gestión de vehículos
+│   │   ├── MisReportesTab.tsx    # ✨ NUEVO v2.0 - Gestión de reportes de accidentes
+│   │   └── vehiculo/             # ✨ NUEVO v2.0 - Componentes de gestión de vehículos
+│   │       ├── DashboardVehiculo.tsx      # Dashboard principal del vehículo
+│   │       ├── ValoracionVenta.tsx        # Valoración automática con IA
+│   │       └── HistoricoValoracion.tsx    # Histórico con gráficos
 │   ├── ruta/                     # Componentes del planificador
 │   │   └── PlanificadorRuta.tsx  # Planificador completo con guardar rutas
 │   └── ui/                       # Componentes UI reutilizables
@@ -214,14 +248,32 @@ NEW MAPA FURGOCASA/
 │   ├── add-rutas-table.sql       # Tabla de rutas
 │   ├── ROLLBACK-COMPLETO.sql     # Restaurar políticas
 │   └── FIX-admin-permisos-v3-SIMPLE.sql  # Permisos admin
+├── reportes/                     # ✨ NUEVO v2.0 - Scripts SQL de gestión de vehículos
+│   ├── 01_crear_tablas.sql       # Tablas de reportes de accidentes
+│   ├── 02_crear_triggers.sql     # Triggers automáticos
+│   ├── 03_configurar_rls.sql     # Políticas de seguridad
+│   ├── 04_funciones_auxiliares.sql # Funciones auxiliares
+│   ├── 05_gestion_vehiculos_tablas.sql      # Tablas de gestión
+│   ├── 06_gestion_vehiculos_triggers.sql    # Triggers de gestión
+│   ├── 07_gestion_vehiculos_rls.sql         # RLS de gestión
+│   ├── 08_valoracion_economica.sql          # Tablas económicas
+│   ├── 09_valoracion_economica_triggers.sql # Triggers económicos
+│   ├── 10_valoracion_economica_rls.sql      # RLS económicos
+│   ├── 11_funciones_analisis_economico.sql  # Funciones de análisis
+│   ├── 12_funciones_admin.sql               # Funciones de administración
+│   └── README_GESTION_VEHICULOS.md          # Guía de implementación
 ├── types/                        # Tipos TypeScript
 │   ├── database.types.ts         # Tipos de BD (incluye Ruta)
-│   └── ia-config.types.ts        # Tipos de config IA
+│   ├── ia-config.types.ts       # Tipos de config IA
+│   ├── reportes.types.ts        # ✨ NUEVO v2.0 - Tipos de reportes
+│   └── gestion-vehiculos.types.ts # ✨ NUEVO v2.0 - Tipos de gestión de vehículos
 ├── public/                       # Archivos estáticos
 └── docs/                         # Documentación
     ├── SOLUCION_ADMIN_AREAS_FINAL.md
     ├── INSTALACION_RAPIDA.md
-    └── COMANDOS_UTILES.md
+    ├── COMANDOS_UTILES.md
+    ├── SISTEMA_VALORACION_VENTA.md          # ✨ NUEVO v2.0 - Guía completa de valoración
+    └── PANEL_ADMIN_VEHICULOS.md             # ✨ NUEVO v2.0 - Panel de administración
 ```
 
 ---
@@ -345,7 +397,7 @@ NEW MAPA FURGOCASA/
 
 ---
 
-## 👤 Dashboard de Perfil (NUEVO)
+## 👤 Dashboard de Perfil
 
 ### Mis Visitas
 - Lista completa de áreas visitadas
@@ -373,6 +425,38 @@ NEW MAPA FURGOCASA/
 - Marcar como favorita
 - Eliminar rutas
 - Contador total
+
+### 🚐 Mi Autocaravana ✨ **NUEVO v2.0**
+- **Registro de Vehículos** - Añade tu autocaravana con matrícula, marca, modelo
+- **QR Único** - Genera un código QR para pegar en tu vehículo
+- **Gestión Completa** - Historial de mantenimientos, averías, documentos, mejoras
+- **Control de Kilometraje** - Registro de consumo y kilometraje
+- **Ficha Técnica** - Datos técnicos completos del vehículo
+- **Dashboard del Vehículo** - Vista completa con estadísticas y accesos rápidos
+
+### 📋 Mis Reportes ✨ **NUEVO v2.0**
+- **Sistema de Alertas** - Recibe notificaciones cuando alguien reporta un accidente
+- **Reportes Recibidos** - Lista completa de reportes de testigos
+- **Información del Testigo** - Contacto directo con quien reportó
+- **Ubicación en Mapa** - Visualiza dónde ocurrió el accidente
+- **Gestión de Estado** - Marca como leído o cierra reportes
+- **Página Pública** - Cualquiera puede reportar accediendo al QR de tu vehículo
+
+### 💰 Valoración Automática ✨ **NUEVO v2.0**
+- **¿Por cuánto puedo vender?** - Respuesta instantánea con IA
+- **Algoritmo Propio** - Valoración basada en datos reales de mercado
+- **3 Rangos de Precio** - Venta rápida, precio justo, precio óptimo
+- **Comparativa con Mercado** - Analiza vehículos similares vendidos
+- **Nivel de Confianza** - Alta/Media/Baja según datos disponibles
+- **Desglose Detallado** - Ajustes por kilometraje, estado, averías
+- **Poner en Venta** - Activa tu vehículo con un clic
+
+### 📊 Histórico de Valoraciones ✨ **NUEVO v2.0**
+- **Evolución Temporal** - Gráfico interactivo del valor en el tiempo
+- **Estadísticas de Cambio** - Valor inicial, actual, variación total
+- **Valoraciones Manuales** - Añade tasaciones externas (concesionarios, peritos)
+- **Comparativa Visual** - Ve cómo evoluciona tu inversión
+- **Múltiples Fuentes** - Automático (IA), manual, tasación externa
 
 ---
 
@@ -422,9 +506,28 @@ Todas las funciones de IA son configurables desde `/admin/configuracion` con pro
 - **valoraciones** - Comentarios y puntuaciones
 - **favoritos** - Áreas favoritas de usuarios
 - **visitas** - Registro de visitas con notas
-- **rutas** - Rutas guardadas por usuarios (NUEVO)
+- **rutas** - Rutas guardadas por usuarios
 - **ia_config** - Configuración de agentes IA
 - **user_analytics** - Eventos y estadísticas
+
+### 🚐 Sistema de Gestión de Vehículos ✨ **NUEVO v2.0**
+
+- **vehiculos_registrados** - Autocaravanas registradas por usuarios
+- **reportes_accidentes** - Reportes de accidentes de testigos
+- **notificaciones_reportes** - Historial de notificaciones
+- **mantenimientos** - Historial completo de mantenimiento (ITV, aceite, revisiones)
+- **averias** - Registro y seguimiento de averías e incidencias
+- **vehiculo_documentos** - Biblioteca digital de documentos importantes
+- **vehiculo_mejoras** - Registro de mejoras y personalizaciones
+- **vehiculo_kilometraje** - Control de consumo y kilometraje
+- **vehiculo_ficha_tecnica** - Datos técnicos completos del vehículo
+
+### 💰 Sistema de Valoración Económica ✨ **NUEVO v2.0**
+
+- **vehiculo_valoracion_economica** - Control financiero completo
+- **datos_mercado_autocaravanas** - Base de datos pública de precios (anónima)
+- **historico_precios_usuario** - Evolución del valor en el tiempo
+- **gastos_adicionales** - Seguros, impuestos, parking, etc.
 
 **Row Level Security (RLS):**
 - ✅ Habilitado en todas las tablas
@@ -566,6 +669,76 @@ Incluye:
 
 ---
 
+## 🎉 Novedades en v2.0 (Noviembre 2025) ✨
+
+### 🚐 Sistema Completo de Gestión de Vehículos
+
+1. **Registro de Autocaravanas**
+   - Registra tu vehículo con matrícula, marca, modelo, año
+   - Genera QR único para pegar en el vehículo
+   - Múltiples vehículos por usuario
+
+2. **Sistema de Alertas de Accidentes** 🚨
+   - QR único por vehículo para reportes públicos
+   - Página pública `/reporte/[qr-id]` para testigos
+   - Notificaciones automáticas al propietario
+   - Geolocalización automática del accidente
+   - Información del testigo (contacto directo)
+   - Gestión completa desde el perfil
+
+3. **Gestión Integral del Vehículo**
+   - **Mantenimientos:** ITV, cambios de aceite, revisiones periódicas
+   - **Averías:** Registro completo con costes y resolución
+   - **Documentos:** Biblioteca digital (ITV, seguro, ficha técnica)
+   - **Mejoras:** Personalizaciones y mejoras instaladas
+   - **Kilometraje:** Control de consumo y kilometraje
+   - **Ficha Técnica:** Datos técnicos completos
+
+4. **Valoración Automática con IA** 💶
+   - Algoritmo propio de valoración basado en mercado real
+   - Comparativa con vehículos similares vendidos
+   - 3 rangos de precio: venta rápida, justo, óptimo
+   - Ajustes automáticos por kilometraje, estado, averías
+   - Nivel de confianza según datos disponibles
+   - Poner vehículo en venta con un clic
+
+5. **Análisis Económico Completo** 📊
+   - Control financiero total (compra, gastos, venta)
+   - Histórico de valoraciones con gráficos interactivos
+   - Comparativa con mercado en tiempo real
+   - Proyección de costes anuales
+   - Análisis de consumo de combustible
+   - ROI y ganancia/pérdida calculados automáticamente
+
+6. **Panel de Administración Avanzado** 👨‍💼
+   - Analytics de vehículos registrados
+   - Análisis por marca/modelo
+   - Distribución económica
+   - Análisis de siniestralidad
+   - Tendencias de mercado
+   - Averías recurrentes
+   - Mejoras populares
+   - Consumo real vs oficial
+
+### 📈 Potencial de Monetización
+
+El sistema genera datos únicos y valiosos:
+- Base de datos de mercado español de autocaravanas
+- Precios reales de compra/venta
+- Costes reales de mantenimiento
+- Problemas recurrentes por modelo
+- Consumo real vs oficial
+- Depreciación real por marca/modelo
+
+**Vías de monetización identificadas:**
+- Informes corporativos (aseguradoras, fabricantes)
+- Suscripciones B2B (concesionarios)
+- API de valoraciones (webs externas)
+- Usuarios premium (5-10€/mes)
+- Marketplace de servicios (comisiones)
+
+---
+
 ## 🎉 Novedades en v1.1 (Noviembre 2025)
 
 ### ✨ Panel de Administración Optimizado
@@ -641,7 +814,8 @@ Este proyecto es de uso personal y educativo.
 ## 👨‍💻 Autor
 
 **Narciso Pardo Buendía**
-- Versión 1.1 - Noviembre 2025
+- Versión 2.0 - Noviembre 2025 (Sistema completo de gestión de vehículos)
+- Versión 1.1 - Noviembre 2025 (Optimizaciones panel admin)
 - Versión BETA 1.0 - Octubre 2025
 
 ---
@@ -694,4 +868,4 @@ Para dudas o problemas:
 
 **¡Feliz viaje! 🚐✨**
 
-*Mapa Furgocasa - v1.1.0 - Sistema Global en Producción*
+*Mapa Furgocasa - v2.0.0 - Sistema Global en Producción*

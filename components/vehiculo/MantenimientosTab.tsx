@@ -1,0 +1,567 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import {
+  PlusIcon,
+  WrenchScrewdriverIcon,
+  CalendarIcon,
+  CurrencyEuroIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  PencilIcon,
+  TrashIcon
+} from '@heroicons/react/24/outline'
+
+interface Mantenimiento {
+  id: string
+  vehiculo_id: string
+  tipo_mantenimiento: string
+  descripcion: string | null
+  fecha_programada: string | null
+  fecha_realizada: string | null
+  kilometraje: number | null
+  coste: number | null
+  taller: string | null
+  ubicacion_taller: string | null
+  notas: string | null
+  proximo_mantenimiento_km: number | null
+  proximo_mantenimiento_fecha: string | null
+  estado: 'pendiente' | 'completado' | 'vencido'
+  created_at: string
+  updated_at: string
+}
+
+interface Props {
+  vehiculoId: string
+}
+
+export default function MantenimientosTab({ vehiculoId }: Props) {
+  const [mantenimientos, setMantenimientos] = useState<Mantenimiento[]>([])
+  const [cargando, setCargando] = useState(true)
+  const [mostrarFormulario, setMostrarFormulario] = useState(false)
+  const [editandoId, setEditandoId] = useState<string | null>(null)
+  const [guardando, setGuardando] = useState(false)
+  const [mensaje, setMensaje] = useState<{ tipo: 'exito' | 'error', texto: string } | null>(null)
+
+  // Estado del formulario
+  const [formData, setFormData] = useState({
+    tipo_mantenimiento: 'revision',
+    descripcion: '',
+    fecha_programada: '',
+    fecha_realizada: '',
+    kilometraje: '',
+    coste: '',
+    taller: '',
+    ubicacion_taller: '',
+    notas: '',
+    proximo_mantenimiento_km: '',
+    proximo_mantenimiento_fecha: '',
+    estado: 'pendiente' as 'pendiente' | 'completado' | 'vencido'
+  })
+
+  useEffect(() => {
+    cargarMantenimientos()
+  }, [vehiculoId])
+
+  const cargarMantenimientos = async () => {
+    try {
+      setCargando(true)
+      const response = await fetch(`/api/vehiculos/${vehiculoId}/mantenimientos`)
+
+      if (response.ok) {
+        const data = await response.json()
+        setMantenimientos(data)
+      }
+    } catch (error) {
+      console.error('Error al cargar mantenimientos:', error)
+    } finally {
+      setCargando(false)
+    }
+  }
+
+  const limpiarFormulario = () => {
+    setFormData({
+      tipo_mantenimiento: 'revision',
+      descripcion: '',
+      fecha_programada: '',
+      fecha_realizada: '',
+      kilometraje: '',
+      coste: '',
+      taller: '',
+      ubicacion_taller: '',
+      notas: '',
+      proximo_mantenimiento_km: '',
+      proximo_mantenimiento_fecha: '',
+      estado: 'pendiente'
+    })
+    setEditandoId(null)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    try {
+      setGuardando(true)
+      setMensaje(null)
+
+      const datos = {
+        vehiculo_id: vehiculoId,
+        tipo_mantenimiento: formData.tipo_mantenimiento,
+        descripcion: formData.descripcion || null,
+        fecha_programada: formData.fecha_programada || null,
+        fecha_realizada: formData.fecha_realizada || null,
+        kilometraje: formData.kilometraje ? parseInt(formData.kilometraje) : null,
+        coste: formData.coste ? parseFloat(formData.coste) : null,
+        taller: formData.taller || null,
+        ubicacion_taller: formData.ubicacion_taller || null,
+        notas: formData.notas || null,
+        proximo_mantenimiento_km: formData.proximo_mantenimiento_km ? parseInt(formData.proximo_mantenimiento_km) : null,
+        proximo_mantenimiento_fecha: formData.proximo_mantenimiento_fecha || null,
+        estado: formData.estado
+      }
+
+      const url = editandoId
+        ? `/api/vehiculos/${vehiculoId}/mantenimientos?id=${editandoId}`
+        : `/api/vehiculos/${vehiculoId}/mantenimientos`
+
+      const response = await fetch(url, {
+        method: editandoId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      })
+
+      if (response.ok) {
+        setMensaje({
+          tipo: 'exito',
+          texto: editandoId ? 'Mantenimiento actualizado correctamente' : 'Mantenimiento registrado correctamente'
+        })
+        limpiarFormulario()
+        setMostrarFormulario(false)
+        await cargarMantenimientos()
+      } else {
+        const error = await response.json()
+        setMensaje({ tipo: 'error', texto: error.error || 'Error al guardar el mantenimiento' })
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      setMensaje({ tipo: 'error', texto: 'Error al guardar el mantenimiento' })
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  const handleEditar = (mantenimiento: Mantenimiento) => {
+    setFormData({
+      tipo_mantenimiento: mantenimiento.tipo_mantenimiento,
+      descripcion: mantenimiento.descripcion || '',
+      fecha_programada: mantenimiento.fecha_programada || '',
+      fecha_realizada: mantenimiento.fecha_realizada || '',
+      kilometraje: mantenimiento.kilometraje?.toString() || '',
+      coste: mantenimiento.coste?.toString() || '',
+      taller: mantenimiento.taller || '',
+      ubicacion_taller: mantenimiento.ubicacion_taller || '',
+      notas: mantenimiento.notas || '',
+      proximo_mantenimiento_km: mantenimiento.proximo_mantenimiento_km?.toString() || '',
+      proximo_mantenimiento_fecha: mantenimiento.proximo_mantenimiento_fecha || '',
+      estado: mantenimiento.estado
+    })
+    setEditandoId(mantenimiento.id)
+    setMostrarFormulario(true)
+  }
+
+  const handleEliminar = async (id: string) => {
+    if (!confirm('¿Estás seguro de que deseas eliminar este mantenimiento?')) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/vehiculos/${vehiculoId}/mantenimientos?id=${id}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        setMensaje({ tipo: 'exito', texto: 'Mantenimiento eliminado correctamente' })
+        await cargarMantenimientos()
+      } else {
+        setMensaje({ tipo: 'error', texto: 'Error al eliminar el mantenimiento' })
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      setMensaje({ tipo: 'error', texto: 'Error al eliminar el mantenimiento' })
+    }
+  }
+
+  const getEstadoColor = (estado: string) => {
+    switch (estado) {
+      case 'completado':
+        return 'bg-green-100 text-green-800'
+      case 'pendiente':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'vencido':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const formatearFecha = (fecha: string | null) => {
+    if (!fecha) return 'No especificada'
+    return new Date(fecha).toLocaleDateString('es-ES')
+  }
+
+  if (cargando) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header con botón de añadir */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Mantenimientos</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            Registra y programa los mantenimientos de tu vehículo
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            limpiarFormulario()
+            setMostrarFormulario(!mostrarFormulario)
+          }}
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
+        >
+          <PlusIcon className="h-5 w-5 mr-2" />
+          Nuevo Mantenimiento
+        </button>
+      </div>
+
+      {/* Mensajes */}
+      {mensaje && (
+        <div className={`rounded-md p-4 ${mensaje.tipo === 'exito' ? 'bg-green-50' : 'bg-red-50'}`}>
+          <p className={`text-sm ${mensaje.tipo === 'exito' ? 'text-green-800' : 'text-red-800'}`}>
+            {mensaje.texto}
+          </p>
+        </div>
+      )}
+
+      {/* Formulario */}
+      {mostrarFormulario && (
+        <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            {editandoId ? 'Editar Mantenimiento' : 'Nuevo Mantenimiento'}
+          </h3>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Tipo de mantenimiento */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Tipo de mantenimiento *
+                </label>
+                <select
+                  required
+                  value={formData.tipo_mantenimiento}
+                  onChange={(e) => setFormData({ ...formData, tipo_mantenimiento: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                >
+                  <option value="revision">Revisión</option>
+                  <option value="cambio_aceite">Cambio de aceite</option>
+                  <option value="cambio_filtros">Cambio de filtros</option>
+                  <option value="cambio_neumaticos">Cambio de neumáticos</option>
+                  <option value="cambio_frenos">Cambio de frenos</option>
+                  <option value="itv">ITV</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+
+              {/* Estado */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Estado *
+                </label>
+                <select
+                  required
+                  value={formData.estado}
+                  onChange={(e) => setFormData({ ...formData, estado: e.target.value as any })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                >
+                  <option value="pendiente">Pendiente</option>
+                  <option value="completado">Completado</option>
+                  <option value="vencido">Vencido</option>
+                </select>
+              </div>
+
+              {/* Fecha programada */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Fecha programada
+                </label>
+                <input
+                  type="date"
+                  value={formData.fecha_programada}
+                  onChange={(e) => setFormData({ ...formData, fecha_programada: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                />
+              </div>
+
+              {/* Fecha realizada */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Fecha realizada
+                </label>
+                <input
+                  type="date"
+                  value={formData.fecha_realizada}
+                  onChange={(e) => setFormData({ ...formData, fecha_realizada: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                />
+              </div>
+
+              {/* Kilometraje */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Kilometraje
+                </label>
+                <input
+                  type="number"
+                  value={formData.kilometraje}
+                  onChange={(e) => setFormData({ ...formData, kilometraje: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  placeholder="Ej: 50000"
+                />
+              </div>
+
+              {/* Coste */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Coste (€)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.coste}
+                  onChange={(e) => setFormData({ ...formData, coste: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  placeholder="Ej: 150.00"
+                />
+              </div>
+
+              {/* Taller */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Taller
+                </label>
+                <input
+                  type="text"
+                  value={formData.taller}
+                  onChange={(e) => setFormData({ ...formData, taller: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  placeholder="Nombre del taller"
+                />
+              </div>
+
+              {/* Ubicación del taller */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Ubicación del taller
+                </label>
+                <input
+                  type="text"
+                  value={formData.ubicacion_taller}
+                  onChange={(e) => setFormData({ ...formData, ubicacion_taller: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  placeholder="Ciudad, dirección..."
+                />
+              </div>
+
+              {/* Próximo mantenimiento KM */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Próximo mantenimiento (KM)
+                </label>
+                <input
+                  type="number"
+                  value={formData.proximo_mantenimiento_km}
+                  onChange={(e) => setFormData({ ...formData, proximo_mantenimiento_km: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  placeholder="Ej: 60000"
+                />
+              </div>
+
+              {/* Próximo mantenimiento fecha */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Próximo mantenimiento (Fecha)
+                </label>
+                <input
+                  type="date"
+                  value={formData.proximo_mantenimiento_fecha}
+                  onChange={(e) => setFormData({ ...formData, proximo_mantenimiento_fecha: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                />
+              </div>
+            </div>
+
+            {/* Descripción */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Descripción
+              </label>
+              <textarea
+                rows={3}
+                value={formData.descripcion}
+                onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                placeholder="Detalles del mantenimiento..."
+              />
+            </div>
+
+            {/* Notas */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Notas adicionales
+              </label>
+              <textarea
+                rows={3}
+                value={formData.notas}
+                onChange={(e) => setFormData({ ...formData, notas: e.target.value })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                placeholder="Observaciones, recomendaciones..."
+              />
+            </div>
+
+            {/* Botones */}
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setMostrarFormulario(false)
+                  limpiarFormulario()
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={guardando}
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50"
+              >
+                {guardando ? 'Guardando...' : (editandoId ? 'Actualizar' : 'Guardar')}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Lista de mantenimientos */}
+      {mantenimientos.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+          <WrenchScrewdriverIcon className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900">No hay mantenimientos registrados</h3>
+          <p className="mt-1 text-sm text-gray-500">
+            Comienza registrando el primer mantenimiento de tu vehículo
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Tipo
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Fecha
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Kilometraje
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Coste
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Taller
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Estado
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Acciones
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {mantenimientos.map((mantenimiento) => (
+                  <tr key={mantenimiento.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <WrenchScrewdriverIcon className="h-5 w-5 text-gray-400 mr-2" />
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {mantenimiento.tipo_mantenimiento.replace('_', ' ')}
+                          </div>
+                          {mantenimiento.descripcion && (
+                            <div className="text-sm text-gray-500 truncate max-w-xs">
+                              {mantenimiento.descripcion}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {formatearFecha(mantenimiento.fecha_realizada || mantenimiento.fecha_programada)}
+                      </div>
+                      {mantenimiento.proximo_mantenimiento_fecha && (
+                        <div className="text-xs text-gray-500">
+                          Próximo: {formatearFecha(mantenimiento.proximo_mantenimiento_fecha)}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {mantenimiento.kilometraje ? `${mantenimiento.kilometraje.toLocaleString()} km` : '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {mantenimiento.coste ? `${mantenimiento.coste.toFixed(2)} €` : '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{mantenimiento.taller || '-'}</div>
+                      {mantenimiento.ubicacion_taller && (
+                        <div className="text-xs text-gray-500">{mantenimiento.ubicacion_taller}</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoColor(mantenimiento.estado)}`}>
+                        {mantenimiento.estado}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                      <button
+                        onClick={() => handleEditar(mantenimiento)}
+                        className="text-primary-600 hover:text-primary-900 inline-flex items-center"
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => handleEliminar(mantenimiento.id)}
+                        className="text-red-600 hover:text-red-900 inline-flex items-center"
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

@@ -3,13 +3,15 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { VehiculoRegistrado } from '@/types/reportes.types'
+import Link from 'next/link'
 import {
   TruckIcon,
   QrCodeIcon,
   PlusIcon,
   TrashIcon,
   ArrowDownTrayIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  ChartBarIcon
 } from '@heroicons/react/24/outline'
 
 interface Props {
@@ -404,7 +406,14 @@ export function MiAutocaravanaTab({ userId }: Props) {
               </div>
 
               {/* Acciones */}
-              <div className="mt-4 flex justify-end">
+              <div className="mt-4 flex justify-between items-center">
+                <Link
+                  href={`/vehiculo/${vehiculo.id}`}
+                  className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors"
+                >
+                  <ChartBarIcon className="h-5 w-5 mr-2" />
+                  Gestionar Vehículo
+                </Link>
                 <button
                   onClick={() => handleDelete(vehiculo.id)}
                   className="inline-flex items-center px-3 py-2 border border-red-300 rounded-lg text-sm font-medium text-red-700 bg-white hover:bg-red-50 transition-colors"
