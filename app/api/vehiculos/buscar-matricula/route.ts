@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     // Buscar vehículo por matrícula (sin necesidad de autenticación)
     const { data: vehiculo, error } = await supabase
       .from('vehiculos_registrados')
-      .select('id, matricula, marca, modelo, año, user_id')
+      .select('id, matricula, marca, modelo, user_id')
       .eq('matricula', matricula.toUpperCase())
       .eq('activo', true)
       .single()
@@ -44,8 +44,7 @@ export async function GET(request: Request) {
         id: vehiculo.id,
         matricula: vehiculo.matricula,
         marca: vehiculo.marca,
-        modelo: vehiculo.modelo,
-        año: vehiculo.año
+        modelo: vehiculo.modelo
       }
     })
 
