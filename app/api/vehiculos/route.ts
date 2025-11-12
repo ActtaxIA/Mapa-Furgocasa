@@ -114,7 +114,8 @@ export async function POST(request: Request) {
     }
 
     // Generar imagen del QR (base64 data URL)
-    const qrUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://mapafurgocasa.com'}/reporte/${qr_code_id}`
+    // El QR ahora lleva a /accidente con la matrícula como sugerencia
+    const qrUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://mapafurgocasa.com'}/accidente?matricula=${matricula.trim().toUpperCase()}`
     let qr_image_url: string | undefined
 
     try {

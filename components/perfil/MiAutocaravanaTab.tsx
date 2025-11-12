@@ -334,17 +334,71 @@ export function MiAutocaravanaTab({ userId }: Props) {
               </div>
 
               {/* Información del QR */}
-              <div className="mt-4 p-4 bg-primary-50 rounded-xl border border-primary-200">
+              <div className="mt-4 p-6 bg-gradient-to-r from-primary-50 to-blue-50 rounded-xl border-2 border-primary-200 shadow-sm">
                 <div className="flex items-start">
-                  <QrCodeIcon className="h-5 w-5 text-primary-600 mr-3 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm text-primary-900">
-                    <p className="font-semibold mb-2">Código QR para Reportes de Accidentes</p>
-                    <p className="text-primary-700 mb-3">
-                      Imprime y pega este QR en tu autocaravana. Los testigos podrán escanearlo con su móvil para reportar accidentes y tú recibirás una notificación.
-                    </p>
-                    <p className="text-xs font-mono bg-white px-3 py-2 rounded-lg border border-primary-200 break-all">
-                      {process.env.NEXT_PUBLIC_APP_URL || 'https://mapafurgocasa.com'}/reporte/{vehiculo.qr_code_id}
-                    </p>
+                  <QrCodeIcon className="h-6 w-6 text-primary-600 mr-4 flex-shrink-0 mt-1" />
+                  <div className="flex-1">
+                    <h4 className="text-lg font-bold text-primary-900 mb-3">
+                      📋 Código QR para Reportes de Accidentes
+                    </h4>
+                    
+                    {/* Instrucciones para el propietario */}
+                    <div className="mb-4 p-4 bg-white rounded-lg border border-primary-200">
+                      <p className="font-semibold text-primary-900 mb-2">
+                        🎯 Instrucciones para ti:
+                      </p>
+                      <ul className="space-y-1 text-sm text-gray-700">
+                        <li className="flex items-start">
+                          <span className="text-primary-600 mr-2">1.</span>
+                          <span><strong>Descarga</strong> el código QR usando el botón de arriba</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-primary-600 mr-2">2.</span>
+                          <span><strong>Imprímelo</strong> en tamaño A5 o más grande (para mejor lectura)</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-primary-600 mr-2">3.</span>
+                          <span><strong>Pégalo</strong> en un lugar visible de tu autocaravana (parabrisas, puerta lateral, etc.)</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-primary-600 mr-2">4.</span>
+                          <span><strong>Recibe alertas</strong> instantáneas si alguien reporta un accidente</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* Frase gancho para testigos */}
+                    <div className="p-4 bg-orange-50 rounded-lg border-2 border-orange-200">
+                      <p className="font-bold text-orange-900 mb-2 flex items-center">
+                        <span className="text-2xl mr-2">⚠️</span>
+                        Mensaje sugerido para el QR impreso:
+                      </p>
+                      <div className="bg-white p-4 rounded-lg border-2 border-dashed border-orange-300 text-center">
+                        <p className="text-lg font-bold text-gray-900 mb-2">
+                          🚨 ¿Has visto un accidente con este vehículo?
+                        </p>
+                        <p className="text-base text-gray-700 mb-2">
+                          Escanea este código QR y ayúdanos reportándolo
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Tu testimonio es valioso • Solo toma 2 minutos • Anónimo y seguro
+                        </p>
+                      </div>
+                      <p className="text-xs text-orange-700 mt-3 italic">
+                        💡 <strong>Tip:</strong> Incluye este texto junto al QR cuando lo imprimas para motivar a los testigos
+                      </p>
+                    </div>
+
+                    {/* URL del QR */}
+                    <div className="mt-4">
+                      <p className="text-xs font-semibold text-gray-600 mb-1">URL del código QR:</p>
+                      <p className="text-xs font-mono bg-white px-3 py-2 rounded-lg border border-gray-300 break-all text-gray-700">
+                        {process.env.NEXT_PUBLIC_APP_URL || 'https://mapafurgocasa.com'}/accidente?matricula={vehiculo.matricula}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        ℹ️ El testigo solo necesitará confirmar la matrícula y completar el reporte
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

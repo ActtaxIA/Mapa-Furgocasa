@@ -14,7 +14,9 @@ import {
   SparklesIcon,
   PhotoIcon,
   MagnifyingGlassIcon,
-  PlusIcon
+  PlusIcon,
+  ExclamationTriangleIcon,
+  TruckIcon
 } from '@heroicons/react/24/outline'
 
 export default function AdminDashboardPage() {
@@ -96,6 +98,20 @@ export default function AdminDashboardPage() {
       icon: <CogIcon className="w-12 h-12" />,
       href: '/admin/configuracion',
       color: 'from-gray-600 to-slate-700'
+    },
+    {
+      title: 'Reportes de Accidentes',
+      description: 'Gestiona reportes y estadísticas',
+      icon: <ExclamationTriangleIcon className="w-12 h-12" />,
+      href: '/admin/reportes',
+      color: 'from-red-500 to-orange-600'
+    },
+    {
+      title: 'Gestión de Vehículos',
+      description: 'Analiza el parque de autocaravanas',
+      icon: <TruckIcon className="w-12 h-12" />,
+      href: '/admin/vehiculos',
+      color: 'from-cyan-500 to-blue-600'
     }
   ]
 
