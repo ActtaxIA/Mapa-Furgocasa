@@ -11,7 +11,7 @@ import QRCode from 'qrcode'
 // GET: Obtener vehículos del usuario autenticado
 export async function GET() {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -53,7 +53,7 @@ export async function GET() {
 // POST: Registrar un nuevo vehículo
 export async function POST(request: Request) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -176,7 +176,7 @@ export async function POST(request: Request) {
 // DELETE: Eliminar (desactivar) un vehículo
 export async function DELETE(request: Request) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()

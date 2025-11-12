@@ -10,7 +10,7 @@ import { NextResponse } from 'next/server'
 // GET: Obtener reportes del usuario autenticado
 export async function GET() {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -48,7 +48,7 @@ export async function GET() {
 // POST: Crear un nuevo reporte (endpoint PÚBLICO - no requiere autenticación)
 export async function POST(request: Request) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     const body = await request.json()
     const {

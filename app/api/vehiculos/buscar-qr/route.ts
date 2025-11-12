@@ -10,7 +10,7 @@ import { NextResponse } from 'next/server'
 // GET: Buscar vehículo por QR code (público, no requiere autenticación)
 export async function GET(request: Request) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     const { searchParams } = new URL(request.url)
     const qr_id = searchParams.get('qr_id')
