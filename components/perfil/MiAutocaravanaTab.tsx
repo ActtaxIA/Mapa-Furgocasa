@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { VehiculoRegistrado } from '@/types/reportes.types'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
   TruckIcon,
   QrCodeIcon,
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export function MiAutocaravanaTab({ userId }: Props) {
+  const router = useRouter()
   const [vehiculos, setVehiculos] = useState<VehiculoRegistrado[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -88,10 +90,14 @@ export function MiAutocaravanaTab({ userId }: Props) {
       const data = await response.json()
 
       if (response.ok) {
-        setMessage({ type: 'success', text: data.message })
+        setMessage({ type: 'success', text: '¡Vehículo registrado! Ahora completa los datos de compra...' })
         setFormData({ matricula: '', marca: '', modelo: '', año: '', color: '' })
         setShowForm(false)
-        loadVehiculos()
+        
+        // Redirigir a la página del vehículo con el tab de compra activo
+        setTimeout(() => {
+          router.push(`/vehiculo/${data.vehiculo.id}?tab=compra`)
+        }, 1500)
       } else {
         setMessage({ type: 'error', text: data.error })
       }

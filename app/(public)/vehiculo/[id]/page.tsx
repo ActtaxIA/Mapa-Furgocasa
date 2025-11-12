@@ -36,6 +36,17 @@ export default function VehiculoPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<TabType>('resumen')
 
+  // Detectar parámetro tab en la URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search)
+      const tabParam = searchParams.get('tab') as TabType
+      if (tabParam && ['resumen', 'compra', 'mantenimientos', 'averias', 'mejoras', 'venta'].includes(tabParam)) {
+        setActiveTab(tabParam)
+      }
+    }
+  }, [])
+
   useEffect(() => {
     loadData()
   }, [vehiculoId])
