@@ -93,7 +93,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
         setMessage({ type: 'success', text: '¡Vehículo registrado! Ahora completa los datos de compra...' })
         setFormData({ matricula: '', marca: '', modelo: '', año: '', color: '' })
         setShowForm(false)
-        
+
         // Redirigir a la página del vehículo con el tab de compra activo
         setTimeout(() => {
           router.push(`/vehiculo/${data.vehiculo.id}?tab=compra`)
