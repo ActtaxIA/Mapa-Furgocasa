@@ -54,3 +54,10 @@ next-env.d.ts
 # OS
 .DS_Store
 Thumbs.db
+
+# Windows system files
+AppData/
+.cursor/extensions/
+.rustup/
+.ssh/
+.wdm/

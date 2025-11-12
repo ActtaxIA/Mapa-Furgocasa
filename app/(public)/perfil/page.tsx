@@ -11,6 +11,8 @@ import { VisitasTab } from '@/components/perfil/VisitasTab'
 import { ValoracionesTab } from '@/components/perfil/ValoracionesTab'
 import { FavoritosTab } from '@/components/perfil/FavoritosTab'
 import { RutasTab } from '@/components/perfil/RutasTab'
+import { MiAutocaravanaTab } from '@/components/perfil/MiAutocaravanaTab'
+import { MisReportesTab } from '@/components/perfil/MisReportesTab'
 import { 
   UserCircleIcon,
   EnvelopeIcon,
@@ -21,10 +23,12 @@ import {
   ArrowLeftIcon,
   ChartBarIcon,
   StarIcon,
-  MapIcon
+  MapIcon,
+  TruckIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline'
 
-type TabType = 'perfil' | 'visitas' | 'valoraciones' | 'favoritos' | 'rutas'
+type TabType = 'perfil' | 'visitas' | 'valoraciones' | 'favoritos' | 'rutas' | 'autocaravana' | 'reportes'
 
 export default function PerfilPage() {
   const [user, setUser] = useState<any>(null)
@@ -47,6 +51,7 @@ export default function PerfilPage() {
     totalFavoritos: 0,
     totalRutas: 0,
     promedioRating: 0,
+    totalReportesNoLeidos: 0,
   })
 
   useEffect(() => {
@@ -108,12 +113,17 @@ export default function PerfilPage() {
         .select('*', { count: 'exact', head: true })
         .eq('user_id', userId)
 
+      // Obtener reportes no leídos
+      const { data: reportesNoLeidosData } = await supabase
+        .rpc('contar_reportes_no_leidos', { usuario_uuid: userId })
+
       setStats({
         totalVisitas: visitasCount || 0,
         totalValoraciones,
         totalFavoritos: favoritosCount || 0,
         totalRutas: rutasCount || 0,
         promedioRating,
+        totalReportesNoLeidos: (reportesNoLeidosData as number) || 0,
       })
     } catch (error) {
       console.error('Error cargando estadísticas:', error)
@@ -284,6 +294,33 @@ export default function PerfilPage() {
                   <span className="ml-auto text-xs bg-gray-200 px-2 py-1 rounded-full">
                     {stats.totalRutas}
                   </span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('autocaravana')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    activeTab === 'autocaravana'
+                      ? 'bg-sky-50 text-sky-700 font-medium'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <TruckIcon className="w-5 h-5" />
+                  Mi Autocaravana
+                </button>
+                <button
+                  onClick={() => setActiveTab('reportes')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    activeTab === 'reportes'
+                      ? 'bg-sky-50 text-sky-700 font-medium'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <ExclamationTriangleIcon className="w-5 h-5" />
+                  Mis Reportes
+                  {stats.totalReportesNoLeidos > 0 && (
+                    <span className="ml-auto text-xs bg-red-500 text-white px-2 py-1 rounded-full font-semibold">
+                      {stats.totalReportesNoLeidos}
+                    </span>
+                  )}
                 </button>
               </nav>
 
@@ -457,6 +494,8 @@ export default function PerfilPage() {
               {activeTab === 'valoraciones' && <ValoracionesTab userId={user.id} />}
               {activeTab === 'favoritos' && <FavoritosTab userId={user.id} />}
               {activeTab === 'rutas' && <RutasTab userId={user.id} />}
+              {activeTab === 'autocaravana' && <MiAutocaravanaTab userId={user.id} />}
+              {activeTab === 'reportes' && <MisReportesTab userId={user.id} />}
             </div>
           </div>
         </div>
