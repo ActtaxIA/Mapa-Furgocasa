@@ -22,6 +22,7 @@ import { DatosCompraTab } from '@/components/vehiculo/DatosCompraTab'
 import MantenimientosTab from '@/components/vehiculo/MantenimientosTab'
 import AveriasTab from '@/components/vehiculo/AveriasTab'
 import MejorasTab from '@/components/vehiculo/MejorasTab'
+import VentaTab from '@/components/vehiculo/VentaTab'
 
 type TabType = 'resumen' | 'compra' | 'mantenimientos' | 'averias' | 'mejoras' | 'venta'
 
@@ -185,10 +186,7 @@ export default function VehiculoPage() {
           )}
 
           {activeTab === 'venta' && (
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Poner en Venta</h2>
-              <p className="text-gray-600">Gestión de venta en construcción...</p>
-            </div>
+            <VentaTab vehiculoId={vehiculoId} />
           )}
         </div>
       </main>
