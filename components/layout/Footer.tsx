@@ -107,6 +107,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/accidente" className="hover:text-white transition-colors">
+                  🚨 Reportar Accidente
+                </Link>
+              </li>
+              <li>
                 <Link href="/auth/register" className="hover:text-white transition-colors">
                   📝 Registrarse
                 </Link>

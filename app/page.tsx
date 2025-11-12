@@ -16,7 +16,9 @@ import {
   ClockIcon,
   ShieldCheckIcon,
   GlobeAltIcon,
-  DevicePhoneMobileIcon
+  DevicePhoneMobileIcon,
+  TruckIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline'
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid'
 
@@ -183,31 +185,31 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Feature 5 */}
+            {/* Feature 5 - NUEVO */}
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-2 border-[#0b3c74]/10">
               <div className="w-16 h-16 bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] rounded-xl flex items-center justify-center mb-6">
-                <StarIcon className="w-10 h-10 text-white" />
+                <TruckIcon className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                Valoraciones Reales
+                Gestión de Vehículos
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Lee opiniones de otros autocaravanistas y comparte tu experiencia. 
-                Comunidad activa y colaborativa.
+                Registra tu autocaravana y lleva un control completo: mantenimientos, averías, 
+                gastos, consumo y valoración. Todo en un solo lugar.
               </p>
             </div>
 
-            {/* Feature 6 */}
+            {/* Feature 6 - NUEVO */}
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-2 border-[#0b3c74]/10">
               <div className="w-16 h-16 bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] rounded-xl flex items-center justify-center mb-6">
-                <DevicePhoneMobileIcon className="w-10 h-10 text-white" />
+                <ExclamationTriangleIcon className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                App Móvil (PWA)
+                Alertas de Accidentes
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Instálala como app en tu móvil. Funciona offline y se actualiza automáticamente. 
-                Sin descargar nada de la tienda.
+                Sistema único de QR para tu vehículo. Los testigos pueden reportar incidentes 
+                y recibe notificaciones instantáneas con todos los detalles.
               </p>
             </div>
           </div>
