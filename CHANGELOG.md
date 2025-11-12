@@ -4,6 +4,194 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 ---
 
+## [2.0.0] - 2025-11-12 🚀
+
+### 🎯 SISTEMA COMPLETO DE GESTIÓN DE VEHÍCULOS Y VALORACIÓN AUTOMÁTICA
+
+Versión mayor con sistema completo de gestión de autocaravanas, reportes de accidentes y valoración automática con IA.
+
+### ✅ Agregado
+
+#### Sistema de Reportes de Accidentes 🚨
+- **Registro de vehículos** con matrícula, marca, modelo, año
+- **QR único por vehículo** generado automáticamente
+- **Página pública `/reporte/[qr_id]`** para que testigos reporten accidentes
+- **Geolocalización automática** del accidente con Google Maps
+- **Notificaciones automáticas** al propietario del vehículo
+- **Gestión completa** desde el perfil de usuario
+- **Información del testigo** (contacto directo)
+- **Fotos del accidente** con upload a Supabase Storage
+
+#### Gestión Integral de Vehículos 🚐
+- **6 nuevas tablas SQL:**
+  - `mantenimientos` - Historial completo (ITV, aceite, revisiones)
+  - `averias` - Registro y seguimiento de averías
+  - `vehiculo_documentos` - Biblioteca digital de documentos
+  - `vehiculo_mejoras` - Registro de mejoras y personalizaciones
+  - `vehiculo_kilometraje` - Control de consumo y kilometraje
+  - `vehiculo_ficha_tecnica` - Datos técnicos completos
+- **Dashboard del vehículo** con estadísticas y accesos rápidos
+- **Alertas próximas** (mantenimientos y documentos a vencer)
+- **Desglose de costes** completo
+
+#### Sistema de Valoración Económica 💰
+- **4 nuevas tablas SQL:**
+  - `vehiculo_valoracion_economica` - Control financiero completo
+  - `datos_mercado_autocaravanas` - Base de datos pública de precios
+  - `historico_precios_usuario` - Evolución del valor en el tiempo
+  - `gastos_adicionales` - Seguros, impuestos, parking, etc.
+- **2 vistas SQL** para análisis económico
+- **30+ triggers automáticos** para cálculos y validaciones
+- **20+ funciones SQL** de análisis e IA
+
+#### Valoración Automática con IA 🤖
+- **Algoritmo propio de valoración** basado en datos reales de mercado
+- **Función SQL:** `calcular_valoracion_automatica()` con múltiples factores:
+  - Precio base de mercado (ventas reales)
+  - Depreciación por años (15% primeros 5 años, 10% después)
+  - Ajuste por kilometraje (penaliza/bonifica según uso)
+  - Ajuste por estado (penaliza por averías graves)
+  - Nivel de confianza (Alta/Media/Baja según datos)
+- **3 rangos de precio:** Venta rápida (-10%), Precio justo, Precio óptimo (+10%)
+- **Comparativa con mercado** en tiempo real
+- **Poner vehículo en venta** con un clic
+- **Componente React:** `ValoracionVenta.tsx` con UI completa
+
+#### Histórico de Valoraciones 📊
+- **Gráfico interactivo** con Recharts (evolución temporal)
+- **Estadísticas de cambio** (valor inicial, actual, variación)
+- **Valoraciones manuales** (tasaciones externas)
+- **Múltiples fuentes** (automático, manual, tasación)
+- **Componente React:** `HistoricoValoracion.tsx` con gráficos de área
+
+#### Panel de Administración Avanzado 👨‍💼
+- **9 funciones SQL de analytics:**
+  - `admin_dashboard_metricas()` - KPIs principales
+  - `admin_analisis_por_marca_modelo()` - Análisis por vehículo
+  - `admin_distribucion_por_precio()` - Distribución económica
+  - `admin_analisis_siniestralidad()` - Reportes de accidentes
+  - `admin_top_modelos_mercado()` - Tendencias de mercado
+  - `admin_averias_recurrentes()` - Problemas comunes
+  - `admin_mejoras_populares()` - Mejoras más realizadas
+  - `admin_consumo_real_vs_oficial()` - Comparativa de consumos
+  - `admin_usuarios_top_contribuyentes()` - Usuarios más activos
+
+#### Componentes React Nuevos
+- `components/perfil/MiAutocaravanaTab.tsx` - Registro y gestión de vehículos
+- `components/perfil/MisReportesTab.tsx` - Gestión de reportes recibidos
+- `components/perfil/vehiculo/DashboardVehiculo.tsx` - Dashboard principal
+- `components/perfil/vehiculo/ValoracionVenta.tsx` - Valoración automática
+- `components/perfil/vehiculo/HistoricoValoracion.tsx` - Histórico con gráficos
+
+#### API Endpoints Nuevos
+- `GET /api/vehiculos` - Listar vehículos del usuario
+- `POST /api/vehiculos` - Registrar nuevo vehículo
+- `GET /api/vehiculos/buscar-qr` - Buscar vehículo por QR (público)
+- `GET /api/vehiculos/[id]/valoracion` - Obtener valoración automática
+- `PUT /api/vehiculos/[id]/venta` - Poner en venta
+- `POST /api/vehiculos/[id]/venta` - Registrar venta final
+- `GET /api/vehiculos/[id]/historico-valoracion` - Histórico de valoraciones
+- `POST /api/vehiculos/[id]/historico-valoracion` - Añadir valoración manual
+- `GET /api/reportes` - Listar reportes del usuario
+- `POST /api/reportes` - Crear reporte (público)
+- `PATCH /api/reportes/[id]` - Actualizar estado de reporte
+
+### 🔧 Arreglado
+
+#### TypeScript Errors
+- **Google Maps types:** Usar tipos simplificados (`type GoogleMap = any`) como en otros componentes
+- **createClient() async:** Añadir `await` en todas las API routes
+- **Type casting:** Cast explícito para `ResumenEconomico`
+- **Heroicons:** Usar `ArrowTrendingUpIcon` en lugar de `TrendingUpIcon`
+
+#### Dependencias
+- **qrcode:** Añadida dependencia `qrcode@^1.5.3` y `@types/qrcode@^1.5.5`
+- **recharts:** Añadida dependencia `recharts@^2.10.3` para gráficos
+- **package-lock.json:** Sincronizado con todas las nuevas dependencias
+
+### 📚 Documentación
+
+#### Nuevos Documentos
+- `CHANGELOG_GESTION_VEHICULOS.md` - Changelog completo del sistema
+- `docs/SISTEMA_VALORACION_VENTA.md` - Guía completa de valoración (639 líneas)
+- `docs/PANEL_ADMIN_VEHICULOS.md` - Documentación del panel admin
+- `reportes/README_GESTION_VEHICULOS.md` - Guía de implementación SQL
+- `reportes/RESUMEN_SISTEMA_COMPLETO.md` - Resumen técnico completo
+
+#### Documentos Actualizados
+- `README.md` - Actualizado a v2.0.0 con todas las nuevas features
+- `CHANGELOG.md` - Este archivo
+
+### 🗄️ Base de Datos
+
+#### Nuevas Tablas (13)
+- `vehiculos_registrados` - Autocaravanas registradas
+- `reportes_accidentes` - Reportes de testigos
+- `notificaciones_reportes` - Historial de notificaciones
+- `mantenimientos` - Historial de mantenimiento
+- `averias` - Registro de averías
+- `vehiculo_documentos` - Documentos digitales
+- `vehiculo_mejoras` - Mejoras instaladas
+- `vehiculo_kilometraje` - Control de kilometraje
+- `vehiculo_ficha_tecnica` - Ficha técnica completa
+- `vehiculo_valoracion_economica` - Control financiero
+- `datos_mercado_autocaravanas` - Base de datos de mercado
+- `historico_precios_usuario` - Histórico de valoraciones
+- `gastos_adicionales` - Gastos adicionales
+
+#### Nuevas Vistas (2)
+- `resumen_economico_vehiculo` - Vista consolidada económica
+- `estadisticas_mercado_por_modelo` - Estadísticas de mercado
+
+#### Scripts SQL (12 archivos)
+- `reportes/01_crear_tablas.sql` (162 líneas)
+- `reportes/02_crear_triggers.sql` (109 líneas)
+- `reportes/03_configurar_rls.sql` (131 líneas)
+- `reportes/04_funciones_auxiliares.sql` (277 líneas)
+- `reportes/05_gestion_vehiculos_tablas.sql` (390 líneas)
+- `reportes/06_gestion_vehiculos_triggers.sql` (324 líneas)
+- `reportes/07_gestion_vehiculos_rls.sql` (267 líneas)
+- `reportes/08_valoracion_economica.sql` (356 líneas)
+- `reportes/09_valoracion_economica_triggers.sql` (330 líneas)
+- `reportes/10_valoracion_economica_rls.sql` (169 líneas)
+- `reportes/11_funciones_analisis_economico.sql` (463 líneas)
+- `reportes/12_funciones_admin.sql` (457 líneas)
+
+**Total: 3,435 líneas de SQL**
+
+### 📊 Métricas v2.0
+
+- **Tablas nuevas:** 13
+- **Vistas nuevas:** 2
+- **Triggers nuevos:** 30+
+- **Funciones SQL nuevas:** 20+
+- **Componentes React nuevos:** 5
+- **API endpoints nuevos:** 11
+- **Tipos TypeScript nuevos:** 40+
+- **Líneas de SQL:** 3,435
+- **Líneas de documentación:** 1,350+
+
+### 💰 Potencial de Monetización
+
+El sistema genera datos únicos y valiosos:
+- Base de datos de mercado español de autocaravanas
+- Precios reales de compra/venta
+- Costes reales de mantenimiento
+- Problemas recurrentes por modelo
+- Consumo real vs oficial
+- Depreciación real por marca/modelo
+
+**Vías identificadas:**
+- Informes corporativos (aseguradoras, fabricantes)
+- Suscripciones B2B (concesionarios)
+- API de valoraciones (webs externas)
+- Usuarios premium (5-10€/mes)
+- Marketplace de servicios (comisiones)
+
+**Proyección:** 34,000€/año (1k usuarios) → 280,000€/año (10k usuarios)
+
+---
+
 ## [1.1.0] - 2025-11-05 ✨
 
 ### 🎯 OPTIMIZACIÓN DEL PANEL DE ADMINISTRACIÓN
@@ -253,6 +441,6 @@ WHERE email = 'info@furgocasa.com';
 
 ---
 
-**Versión actual:** 1.0.0  
-**Última actualización:** 4 de Noviembre, 2025  
-**Próxima versión:** 1.1.0 (optimizaciones y mejoras)
+**Versión actual:** 2.0.0  
+**Última actualización:** 12 de Noviembre, 2025  
+**Próxima versión:** 2.1.0 (mejoras y optimizaciones)

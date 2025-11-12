@@ -341,7 +341,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
                     <h4 className="text-lg font-bold text-primary-900 mb-3">
                       📋 Código QR para Reportes de Accidentes
                     </h4>
-                    
+
                     {/* Instrucciones para el propietario */}
                     <div className="mb-4 p-4 bg-white rounded-lg border border-primary-200">
                       <p className="font-semibold text-primary-900 mb-2">
