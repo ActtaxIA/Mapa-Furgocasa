@@ -31,8 +31,10 @@ export default function ReporteAccidentePage() {
   } | null>(null);
   const [obteniendoUbicacion, setObteniendoUbicacion] = useState(false);
   const [mapa, setMapa] = useState<GoogleMap | null>(null);
+  const [marcador, setMarcador] = useState<GoogleMarker | null>(null);
   const [mapaCargado, setMapaCargado] = useState(false);
   const [cargandoInicial, setCargandoInicial] = useState(true);
+  const [ubicacionAjustada, setUbicacionAjustada] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -213,12 +215,48 @@ export default function ReporteAccidentePage() {
         streetViewControl: false,
       }) as GoogleMap;
 
-      new google.maps.Marker({
+      // Crear marcador ARRASTRABLE
+      const newMarker = new google.maps.Marker({
         position: { lat: ubicacion.lat, lng: ubicacion.lng },
         map: newMap,
-        title: "Ubicación del accidente",
+        title: "Arrastra para ajustar la ubicación exacta",
+        draggable: true,
+        animation: google.maps.Animation.DROP,
       }) as GoogleMarker;
 
+      // Listener para cuando se arrastra el marcador
+      google.maps.event.addListener(newMarker, 'dragend', async function(event: any) {
+        const newLat = event.latLng.lat();
+        const newLng = event.latLng.lng();
+        
+        setUbicacionAjustada(true);
+        
+        // Actualizar ubicación
+        try {
+          const geocoder = new google.maps.Geocoder();
+          const result = await geocoder.geocode({ location: { lat: newLat, lng: newLng } });
+          
+          if (result.results && result.results[0]) {
+            const nuevaDireccion = result.results[0].formatted_address;
+            setUbicacion({ lat: newLat, lng: newLng, direccion: nuevaDireccion });
+            setFormData((prev) => ({
+              ...prev,
+              ubicacion_descripcion: nuevaDireccion,
+            }));
+            setMessage({
+              type: "success",
+              text: "✅ Ubicación ajustada correctamente",
+            });
+          } else {
+            setUbicacion({ lat: newLat, lng: newLng });
+          }
+        } catch (error) {
+          console.error("Error en geocoding:", error);
+          setUbicacion({ lat: newLat, lng: newLng });
+        }
+      });
+
+      setMarcador(newMarker);
       setMapa(newMap);
       setMapaCargado(true);
     } catch (error) {
@@ -504,10 +542,25 @@ export default function ReporteAccidentePage() {
                     </p>
                   </div>
 
+                  {/* Mensaje de advertencia para ajustar ubicación */}
+                  <div className="p-4 bg-yellow-50 border border-yellow-300 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <ExclamationTriangleIcon className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-yellow-900 mb-1">
+                          ⚠️ Verifica la ubicación en el mapa
+                        </p>
+                        <p className="text-sm text-yellow-700">
+                          Si la ubicación no es correcta, <strong>arrastra el marcador rojo</strong> en el mapa hasta el lugar exacto del accidente. La dirección se actualizará automáticamente.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Mapa */}
                   <div
                     id="map"
-                    className="w-full h-64 rounded-lg border border-gray-300"
+                    className="w-full h-64 rounded-lg border border-gray-300 shadow-sm"
                   ></div>
 
                   <div>
