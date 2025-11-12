@@ -3,10 +3,12 @@
 Este directorio contiene los scripts SQL necesarios para implementar el **Sistema Completo de Gestión de Vehículos y Valoración Automática** en Supabase.
 
 **Incluye:**
+
 - 🚨 Sistema de Alertas de Accidentes (scripts 01-04)
 - 🚐 Gestión Integral de Vehículos (scripts 05-07)
 - 💰 Sistema de Valoración Económica (scripts 08-10)
 - 🤖 Funciones de Análisis e IA (scripts 11-12)
+- 📝 Ampliación de Campos de Compra (script 13)
 
 ---
 
@@ -17,7 +19,9 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ### 📦 Fase 1: Sistema de Reportes de Accidentes (01-04)
 
 ### 1️⃣ `01_crear_tablas.sql`
+
 **Descripción:** Crea las 3 tablas principales del sistema
+
 - `vehiculos_registrados` - Autocaravanas registradas por usuarios
 - `reportes_accidentes` - Reportes de accidentes de testigos
 - `notificaciones_reportes` - Historial de notificaciones
@@ -27,7 +31,9 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ---
 
 ### 2️⃣ `02_crear_triggers.sql`
+
 **Descripción:** Crea triggers y funciones automáticas
+
 - Trigger `update_vehiculos_updated_at` - Actualiza fecha de modificación
 - Trigger `update_reportes_updated_at` - Actualiza fecha de modificación
 - Trigger `trigger_crear_notificacion_reporte` - Crea notificación automática al crear reporte
@@ -36,12 +42,14 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ---
 
 ### 3️⃣ `03_configurar_rls.sql`
+
 **Descripción:** Configura Row Level Security (RLS) para seguridad
+
 - **Políticas para `vehiculos_registrados`:**
   - Los usuarios solo ven sus propios vehículos
   - Búsqueda pública por QR (necesario para página de reporte)
-  
 - **Políticas para `reportes_accidentes`:**
+
   - Cualquiera puede crear reportes (anon)
   - Solo propietarios ven reportes de sus vehículos
   - Solo propietarios pueden actualizar/cerrar reportes
@@ -53,31 +61,38 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ---
 
 ### 4️⃣ `04_funciones_auxiliares.sql`
+
 **Descripción:** Funciones útiles para consultas y estadísticas
 
 #### Funciones creadas:
 
 1. **`estadisticas_vehiculo(vehiculo_uuid)`**
+
    - Retorna: total_reportes, reportes_pendientes, reportes_cerrados, ultimo_reporte
    - Uso: Estadísticas de un vehículo específico
 
 2. **`contar_reportes_no_leidos(usuario_uuid)`**
+
    - Retorna: cantidad de reportes no leídos
    - Uso: Badge de notificaciones en perfil
 
 3. **`buscar_vehiculo_por_qr(qr_id)`**
+
    - Retorna: datos del vehículo o existe=false
    - Uso: Página pública de reporte
 
 4. **`obtener_reportes_usuario(usuario_uuid)`**
+
    - Retorna: todos los reportes con información completa
    - Uso: Dashboard de reportes en perfil
 
 5. **`marcar_reporte_leido(reporte_uuid, usuario_uuid)`**
+
    - Retorna: true/false
    - Uso: Marcar reporte como leído
 
 6. **`cerrar_reporte(reporte_uuid, usuario_uuid, notas)`**
+
    - Retorna: true/false
    - Uso: Cerrar/resolver un reporte
 
@@ -90,7 +105,9 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ### 📦 Fase 2: Gestión Integral de Vehículos (05-07)
 
 ### 5️⃣ `05_gestion_vehiculos_tablas.sql`
+
 **Descripción:** Crea 6 tablas para gestión completa del vehículo
+
 - `mantenimientos` - Historial completo de mantenimiento (ITV, aceite, revisiones)
 - `averias` - Registro y seguimiento de averías e incidencias
 - `vehiculo_documentos` - Biblioteca digital de documentos importantes
@@ -103,7 +120,9 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ---
 
 ### 6️⃣ `06_gestion_vehiculos_triggers.sql`
+
 **Descripción:** Crea triggers y funciones automáticas para gestión
+
 - Triggers de actualización de timestamps
 - Cálculo automático de costes totales (averías, mejoras)
 - Cálculo de consumo de combustible y precio por litro
@@ -116,7 +135,9 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ---
 
 ### 7️⃣ `07_gestion_vehiculos_rls.sql`
+
 **Descripción:** Configura Row Level Security (RLS) para todas las tablas de gestión
+
 - Políticas para usuarios autenticados (solo sus vehículos)
 - Políticas para administradores (lectura completa)
 - Verificación de propiedad en todas las operaciones
@@ -128,7 +149,9 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ### 📦 Fase 3: Sistema de Valoración Económica (08-10)
 
 ### 8️⃣ `08_valoracion_economica.sql`
+
 **Descripción:** Crea 4 tablas para control económico completo
+
 - `vehiculo_valoracion_economica` - Control financiero completo
 - `datos_mercado_autocaravanas` - Base de datos pública de precios (anónima)
 - `historico_precios_usuario` - Evolución del valor en el tiempo
@@ -139,7 +162,9 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ---
 
 ### 9️⃣ `09_valoracion_economica_triggers.sql`
+
 **Descripción:** Crea triggers para cálculos económicos automáticos
+
 - Cálculo de inversión total (compra + gastos)
 - Cálculo de totales de gastos adicionales
 - Cálculo de ganancia/pérdida en venta
@@ -151,7 +176,9 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ---
 
 ### 🔟 `10_valoracion_economica_rls.sql`
+
 **Descripción:** Configura RLS para tablas económicas
+
 - Políticas para usuarios (solo sus datos)
 - Políticas para datos de mercado (lectura pública, escritura anónima)
 - Políticas para administradores (lectura completa)
@@ -163,7 +190,9 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ### 📦 Fase 4: Funciones de Análisis e IA (11-12)
 
 ### 1️⃣1️⃣ `11_funciones_analisis_economico.sql`
+
 **Descripción:** Funciones avanzadas de análisis económico y valoración con IA
+
 - `calcular_valoracion_automatica()` - Algoritmo propio de valoración
 - `comparar_con_mercado()` - Comparativa de precios en tiempo real
 - `analisis_gastos_periodo()` - Desglose detallado de gastos
@@ -176,7 +205,9 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ---
 
 ### 1️⃣2️⃣ `12_funciones_admin.sql`
+
 **Descripción:** Funciones de administración y analytics para el panel admin
+
 - `admin_dashboard_metricas()` - KPIs principales
 - `admin_analisis_por_marca_modelo()` - Análisis por vehículo
 - `admin_distribucion_por_precio()` - Distribución económica
@@ -194,6 +225,7 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 ## 📖 Documentación Adicional
 
 Para más información detallada, consulta:
+
 - **[README_GESTION_VEHICULOS.md](./README_GESTION_VEHICULOS.md)** - Guía completa de implementación
 - **[RESUMEN_SISTEMA_COMPLETO.md](./RESUMEN_SISTEMA_COMPLETO.md)** - Resumen técnico completo
 - **[docs/SISTEMA_VALORACION_VENTA.md](../docs/SISTEMA_VALORACION_VENTA.md)** - Guía de valoración automática
@@ -219,9 +251,9 @@ Después de ejecutar todos los scripts (01-12), verifica que todo esté correcto
 
 ```sql
 -- Ver todas las tablas creadas (13 tablas)
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
 AND table_name IN (
   'vehiculos_registrados', 'reportes_accidentes', 'notificaciones_reportes',
   'mantenimientos', 'averias', 'vehiculo_documentos', 'vehiculo_mejoras',
@@ -232,18 +264,18 @@ AND table_name IN (
 ORDER BY table_name;
 
 -- Ver todas las vistas creadas (2 vistas)
-SELECT table_name 
-FROM information_schema.views 
-WHERE table_schema = 'public' 
+SELECT table_name
+FROM information_schema.views
+WHERE table_schema = 'public'
 AND table_name IN ('resumen_economico_vehiculo', 'estadisticas_mercado_por_modelo');
 
 -- Ver todas las funciones creadas (20+ funciones)
-SELECT routine_name 
-FROM information_schema.routines 
-WHERE routine_schema = 'public' 
+SELECT routine_name
+FROM information_schema.routines
+WHERE routine_schema = 'public'
 AND (
-  routine_name LIKE '%vehiculo%' OR 
-  routine_name LIKE '%reporte%' OR 
+  routine_name LIKE '%vehiculo%' OR
+  routine_name LIKE '%reporte%' OR
   routine_name LIKE '%mantenimiento%' OR
   routine_name LIKE '%averia%' OR
   routine_name LIKE '%valoracion%' OR
@@ -253,9 +285,9 @@ AND (
 ORDER BY routine_name;
 
 -- Ver todas las políticas RLS (40+ políticas)
-SELECT tablename, policyname 
-FROM pg_policies 
-WHERE schemaname = 'public' 
+SELECT tablename, policyname
+FROM pg_policies
+WHERE schemaname = 'public'
 AND tablename IN (
   'vehiculos_registrados', 'reportes_accidentes', 'notificaciones_reportes',
   'mantenimientos', 'averias', 'vehiculo_documentos', 'vehiculo_mejoras',
@@ -266,8 +298,8 @@ AND tablename IN (
 ORDER BY tablename, policyname;
 
 -- Ver todos los triggers creados (30+ triggers)
-SELECT trigger_name, event_object_table 
-FROM information_schema.triggers 
+SELECT trigger_name, event_object_table
+FROM information_schema.triggers
 WHERE trigger_schema = 'public'
 AND (
   event_object_table LIKE '%vehiculo%' OR
@@ -302,6 +334,7 @@ SELECT public.contar_reportes_no_leidos('TU-USER-UUID');
 ## 🗄️ Estructura de Datos
 
 ### Tabla: `vehiculos_registrados`
+
 ```sql
 - id (UUID) - PK
 - user_id (UUID) - FK → auth.users
@@ -315,6 +348,7 @@ SELECT public.contar_reportes_no_leidos('TU-USER-UUID');
 ```
 
 ### Tabla: `reportes_accidentes`
+
 ```sql
 - id (UUID) - PK
 - vehiculo_afectado_id (UUID) - FK → vehiculos_registrados
@@ -330,6 +364,7 @@ SELECT public.contar_reportes_no_leidos('TU-USER-UUID');
 ```
 
 ### Tabla: `notificaciones_reportes`
+
 ```sql
 - id (UUID) - PK
 - user_id (UUID) - FK → auth.users
@@ -362,16 +397,19 @@ notificaciones_reportes
 ### Políticas Principales:
 
 ✅ **Usuarios autenticados:**
+
 - Solo ven sus propios vehículos
 - Solo ven reportes de sus vehículos
 - Solo pueden actualizar sus propios datos
 
 ✅ **Usuarios anónimos (public):**
+
 - Pueden buscar vehículo por QR (solo datos básicos)
 - Pueden crear reportes (sin autenticación)
 - NO pueden ver reportes de otros
 
 ✅ **Sistema:**
+
 - Puede crear notificaciones automáticamente
 - Los triggers se ejecutan con privilegios DEFINER
 
@@ -387,7 +425,7 @@ SELECT COUNT(*) FROM vehiculos_registrados;
 SELECT COUNT(*) FROM reportes_accidentes;
 
 -- Reportes por estado
-SELECT 
+SELECT
   COUNT(*) FILTER (WHERE leido = false) as no_leidos,
   COUNT(*) FILTER (WHERE cerrado = false) as pendientes,
   COUNT(*) FILTER (WHERE cerrado = true) as cerrados
@@ -406,12 +444,15 @@ LIMIT 5;
 ## 🚨 Troubleshooting
 
 ### Error: "permission denied for table"
+
 **Solución:** Asegúrate de que RLS está habilitado y las políticas están creadas correctamente
 
 ### Error: "function does not exist"
+
 **Solución:** Ejecuta los scripts en orden (especialmente `02_crear_triggers.sql`)
 
 ### Error: "duplicate key value violates unique constraint"
+
 **Solución:** El QR ID ya existe. Usa la función `generar_qr_id()` para generar uno único
 
 ---
@@ -419,6 +460,7 @@ LIMIT 5;
 ## 📞 Soporte
 
 Si tienes problemas ejecutando los scripts:
+
 1. Verifica que tienes permisos de administrador en Supabase
 2. Revisa los logs de error en el SQL Editor
 3. Comprueba que ejecutaste los scripts en orden
@@ -431,6 +473,7 @@ Si tienes problemas ejecutando los scripts:
 ✅ **Sistema Completo Implementado**
 
 ### Backend (SQL) ✅
+
 - ✅ 13 tablas creadas
 - ✅ 2 vistas creadas
 - ✅ 30+ triggers automáticos
@@ -439,6 +482,7 @@ Si tienes problemas ejecutando los scripts:
 - ✅ Scripts ejecutados en Supabase
 
 ### Frontend (React/Next.js) ✅
+
 - ✅ Componentes React creados
 - ✅ Generación de QR implementada (`qrcode`)
 - ✅ Página pública `/reporte/[qr-id]` funcionando
@@ -449,14 +493,65 @@ Si tienes problemas ejecutando los scripts:
 - ✅ Histórico con gráficos (Recharts)
 
 ### Documentación ✅
+
 - ✅ README principal actualizado
 - ✅ CHANGELOG completo
 - ✅ Guías de implementación
 - ✅ Documentación técnica detallada
 
+---
+
+### 1️⃣3️⃣ `13_ampliar_campos_compra.sql`
+
+**Descripción:** Amplía la tabla `vehiculo_valoracion_economica` con campos adicionales para capturar información detallada de la compra
+
+#### Campos añadidos:
+
+**Información del Vendedor:**
+
+- `tipo_vendedor` - Concesionario, Particular, Empresa alquiler, Subasta, etc.
+- `nombre_vendedor` - Nombre del vendedor o concesionario
+- `pais_compra` - País donde se compró
+- `ciudad_compra` - Ciudad específica
+
+**Estado del Vehículo en Compra:**
+
+- `estado_general` - Excelente, Muy bueno, Bueno, Regular, Malo
+- `num_propietarios_anteriores` - Número de dueños previos
+- `libro_mantenimiento` - Si tiene libro de mantenimiento al día
+- `itv_al_dia` - Si tenía ITV vigente
+
+**Garantía y Documentación:**
+
+- `tiene_garantia` - Si incluye garantía
+- `meses_garantia` - Duración de la garantía
+- `tipo_garantia` - Oficial, Concesionario, Aseguradora, etc.
+- `transferencia_incluida` - Si incluye transferencia
+
+**Financiación Detallada:**
+
+- `entidad_financiera` - Banco o entidad que financia
+- `tipo_interes` - % de interés aplicado
+
+**Negociación:**
+
+- `precio_inicial` - Precio pedido inicialmente
+- `descuento_aplicado` - Descuento conseguido
+- `vehiculo_entregado` - Si se entregó vehículo a cambio
+- `precio_vehiculo_entregado` - Valoración del vehículo entregado
+
+**Extras:**
+
+- `extras_incluidos` - Lista de accesorios incluidos en la compra
+
+**Índices:** 3 nuevos índices para optimizar búsquedas por tipo_vendedor, país y procedencia
+
+---
+
 ## 🚀 Próximos Pasos (Opcionales)
 
 Mejoras futuras sugeridas:
+
 1. **Notificaciones Push** - Alertas en tiempo real
 2. **Exportación de Informes PDF** - Reportes descargables
 3. **API Pública** - Para integraciones externas
