@@ -72,7 +72,7 @@ const ESPAÑA: Region = {
     east: 4.33, // Este (Cataluña)
     west: -9.3, // Oeste (Galicia)
   },
-  gridSize: 0.5, // ~55km de cuadrícula
+  gridSize: 2.5, // ~275km de cuadrícula (máxima cobertura, mínimos duplicados)
 };
 
 // Términos de búsqueda específicos para empresas
@@ -252,60 +252,9 @@ async function extractEmailFromWebsite(
 // ============================================================================
 
 function checkIfEmpresaExists(place: PlaceResult): boolean {
-  // 1. Por Google Place ID
+  // SOLO validar por Google Place ID (único y confiable)
   if (place.place_id && placeIdsSet.has(place.place_id)) {
     return true;
-  }
-
-  // 2. Por slug
-  const placeSlug = generateSlug(place.name);
-  if (placeSlug && slugsSet.has(placeSlug)) {
-    return true;
-  }
-
-  // 3. Por nombre normalizado
-  const placeNormalizedName = normalizeText(place.name);
-  if (placeNormalizedName && normalizedNamesSet.has(placeNormalizedName)) {
-    return true;
-  }
-
-  // 4. Por coordenadas (radio 500m)
-  const lat = place.geometry?.location?.lat;
-  const lng = place.geometry?.location?.lng;
-
-  if (lat && lng) {
-    for (const [_, empresa] of empresasEncontradas) {
-      // Extraer coordenadas aproximadas (si las guardamos)
-      // Por simplicidad, asumimos que direcciones iguales = duplicado
-      if (normalizeText(empresa.direccion) === normalizeText(place.formatted_address)) {
-        return true;
-      }
-    }
-  }
-
-  // 5. Similitud de nombre (Fuzzy Matching)
-  const placeWords = new Set(
-    placeNormalizedName.split(" ").filter((w) => w.length > 3)
-  );
-
-  for (const [_, empresa] of empresasEncontradas) {
-    const empresaWords = new Set(
-      normalizeText(empresa.nombre)
-        .split(" ")
-        .filter((w) => w.length > 3)
-    );
-
-    if (placeWords.size > 0 && empresaWords.size > 0) {
-      const intersection = new Set(
-        [...placeWords].filter((w) => empresaWords.has(w))
-      );
-      const similarity =
-        intersection.size / Math.max(placeWords.size, empresaWords.size);
-
-      if (similarity >= 0.8) {
-        return true;
-      }
-    }
   }
 
   return false;
@@ -780,9 +729,10 @@ async function importEmpresasEspana() {
     console.log(
       `Tasa de éxito emails:    ${
         empresasEncontradas.size > 0
-          ? ((stats.emailsEncontrados / empresasEncontradas.size) * 100).toFixed(
-              1
-            )
+          ? (
+              (stats.emailsEncontrados / empresasEncontradas.size) *
+              100
+            ).toFixed(1)
           : 0
       }%`
     );
@@ -827,4 +777,3 @@ importEmpresasEspana()
     console.error("❌ Error fatal:", error);
     process.exit(1);
   });
-

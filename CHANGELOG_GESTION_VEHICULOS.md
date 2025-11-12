@@ -288,4 +288,3 @@ El frontend tiene las bases establecidas.
 La monetización está claramente definida.
 
 **🚀 ¡Listo para despegar!**
-

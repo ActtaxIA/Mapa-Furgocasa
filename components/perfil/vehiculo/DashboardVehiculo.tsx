@@ -16,6 +16,8 @@ import {
   ArrowTrendingDownIcon
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import ValoracionVenta from './ValoracionVenta'
+import HistoricoValoracion from './HistoricoValoracion'
 
 interface Props {
   vehiculo: VehiculoRegistrado
@@ -255,6 +257,12 @@ export function DashboardVehiculo({ vehiculo, onTabChange }: Props) {
         </div>
       </div>
 
+      {/* Valoración y Análisis de Venta */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ValoracionVenta vehiculoId={vehiculo.id} />
+        <HistoricoValoracion vehiculoId={vehiculo.id} />
+      </div>
+
       {/* Desglose de Costes */}
       <div className="bg-white rounded-xl shadow p-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Desglose de Costes</h3>
@@ -306,4 +314,3 @@ export function DashboardVehiculo({ vehiculo, onTabChange }: Props) {
     </div>
   )
 }
-
