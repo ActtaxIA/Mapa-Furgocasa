@@ -40,7 +40,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .from('mantenimientos')
       .select('*')
       .eq('vehiculo_id', vehiculoId)
-      .order('fecha_mantenimiento', { ascending: false })
+      .order('fecha', { ascending: false })
 
     if (error) {
       console.error('Error obteniendo mantenimientos:', error)

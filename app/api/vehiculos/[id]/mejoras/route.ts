@@ -31,7 +31,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .from('vehiculo_mejoras')
       .select('*')
       .eq('vehiculo_id', vehiculoId)
-      .order('fecha_instalacion', { ascending: false })
+      .order('fecha', { ascending: false })
 
     if (error) {
       console.error('Error obteniendo mejoras:', error)

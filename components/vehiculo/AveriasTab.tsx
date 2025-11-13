@@ -114,6 +114,21 @@ export default function AveriasTab({ vehiculoId }: Props) {
       const costePiezas = formData.coste_piezas ? parseFloat(formData.coste_piezas) : 0
       const costeTotal = costeManoObra + costePiezas
 
+      // Mapear gravedad del formulario a severidad de BD
+      const severidadMap: { [key: string]: string } = {
+        'leve': 'baja',
+        'moderada': 'media',
+        'grave': 'alta',
+        'critica': 'critica'
+      }
+
+      // Mapear estado del formulario a estado de BD
+      const estadoMap: { [key: string]: string } = {
+        'pendiente': 'pendiente',
+        'en_reparacion': 'en_reparacion',
+        'reparada': 'resuelto'
+      }
+
       // Mapear campos del formulario a los nombres de la BD
       const datos = {
         vehiculo_id: vehiculoId,
@@ -126,8 +141,8 @@ export default function AveriasTab({ vehiculoId }: Props) {
         coste_reparacion: costeManoObra || null,  // BD espera 'coste_reparacion'
         coste_total: costeTotal > 0 ? costeTotal : null,
         taller: formData.taller || null,
-        severidad: formData.gravedad,  // BD espera 'severidad'
-        estado: formData.estado,
+        severidad: severidadMap[formData.gravedad] || 'media',  // Mapear gravedad → severidad
+        estado: estadoMap[formData.estado] || 'pendiente',  // Mapear estado
         en_garantia: formData.garantia,  // BD espera 'en_garantia'
         notas: formData.notas || null
       }
