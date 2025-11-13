@@ -447,7 +447,7 @@ export default function VentaTab({ vehiculoId }: Props) {
                       </div>
                     )}
                     <p className="text-xs text-gray-500 mt-2 italic">
-                      {calcularGananciaPerdida()! < 0 
+                      {calcularGananciaPerdida()! < 0
                         ? `Tu vehículo te ha costado ${calcularCosteAnual()?.toFixed(2)} € al año de media`
                         : `Has ganado ${calcularCosteAnual()?.toFixed(2)} € al año de media`
                       }

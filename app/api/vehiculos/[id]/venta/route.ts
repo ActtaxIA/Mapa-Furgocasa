@@ -214,8 +214,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       console.error('❌ [Venta API] Error en operación BD:', result.error)
       console.error('❌ [Venta API] Detalles del error:', JSON.stringify(result.error, null, 2))
       return NextResponse.json(
-        { 
-          error: 'Error registrando venta', 
+        {
+          error: 'Error registrando venta',
           details: result.error.message,
           code: result.error.code,
           hint: result.error.hint
@@ -242,9 +242,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     console.error('❌ [Venta API] Error catch:', error)
     console.error('❌ [Venta API] Stack:', error.stack)
     return NextResponse.json(
-      { 
+      {
         error: 'Error interno del servidor',
-        details: error.message 
+        details: error.message
       },
       { status: 500 }
     )

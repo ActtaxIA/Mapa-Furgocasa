@@ -309,7 +309,7 @@ export default function ReporteAccidentePage() {
       // Bypasea AWS Amplify completamente
       // ============================================================
       let fotosUrls: string[] = [];
-      
+
       if (formData.fotos.length > 0) {
         console.log('📸 [Frontend] Subiendo fotos directamente a Supabase Storage...');
         const supabase = createClient();
@@ -659,6 +659,92 @@ export default function ReporteAccidentePage() {
               </button>
             </div>
           )}
+        </div>
+
+        {/* 🎯 BANNER CTA: Protege tu autocaravana */}
+        <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-blue-800 rounded-2xl shadow-2xl p-8 mb-6 border-4 border-primary-400 relative overflow-hidden">
+          {/* Efecto decorativo de fondo */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32 pointer-events-none"></div>
+
+          <div className="relative z-10">
+            {/* Título principal */}
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-full mb-4 backdrop-blur-sm">
+                <span className="text-4xl">🛡️</span>
+              </div>
+              <h3 className="text-3xl font-black text-white mb-3 leading-tight">
+                ¿Quieres que TU autocaravana esté protegida?
+              </h3>
+              <p className="text-xl text-white/90 font-semibold">
+                Aparece en nuestro buscador y recibe alertas al instante
+              </p>
+            </div>
+
+            {/* Beneficios en 3 columnas */}
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div className="text-3xl mb-2">🚨</div>
+                <h4 className="font-bold text-white mb-1">Alertas Instantáneas</h4>
+                <p className="text-sm text-white/80">
+                  Recibe notificación inmediata si alguien reporta un golpe
+                </p>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div className="text-3xl mb-2">📸</div>
+                <h4 className="font-bold text-white mb-1">Fotos y Ubicación</h4>
+                <p className="text-sm text-white/80">
+                  Testigos documentan con fotos y GPS del incidente
+                </p>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div className="text-3xl mb-2">🏛️</div>
+                <h4 className="font-bold text-white mb-1">Para tu Seguro</h4>
+                <p className="text-sm text-white/80">
+                  Toda la información lista para tu aseguradora
+                </p>
+              </div>
+            </div>
+
+            {/* Texto persuasivo */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 mb-6 border border-white/20">
+              <p className="text-white/95 text-center leading-relaxed">
+                <span className="font-bold text-lg">💙 Únete a la comunidad viajera</span>
+                <br />
+                <span className="text-white/80">
+                  Registra tu vehículo gratis y viaja con la tranquilidad de que cualquier testigo podrá avisarte.
+                  Además, accede a gestión completa: mantenimientos, averías, valoración automática con IA y mucho más.
+                </span>
+              </p>
+            </div>
+
+            {/* CTA Button */}
+            <div className="text-center">
+              <a
+                href="/auth/registro?redirect=/perfil?tab=vehiculos"
+                className="inline-flex items-center gap-3 bg-white text-primary-700 px-8 py-4 rounded-xl font-black text-lg hover:bg-gray-100 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105"
+              >
+                <span className="text-2xl">🚐</span>
+                ¡Registrarme y Proteger mi Autocaravana GRATIS!
+                <span className="text-2xl">✨</span>
+              </a>
+              <p className="text-white/60 text-xs mt-3 italic">
+                🎁 100% gratis • Sin tarjeta • Sin compromiso • Registro en 1 minuto
+              </p>
+            </div>
+
+            {/* Llamada de atención final */}
+            <div className="mt-6 text-center">
+              <p className="text-white/70 text-sm">
+                <span className="font-semibold">¿Ya tienes cuenta?</span>{" "}
+                <a href="/auth/login" className="text-white underline hover:text-white/90 font-bold">
+                  Inicia sesión aquí
+                </a>
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Formulario de Reporte (solo si se encontró vehículo) */}
