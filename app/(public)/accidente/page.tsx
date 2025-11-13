@@ -392,6 +392,57 @@ export default function ReporteAccidentePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* JSON-LD Structured Data para SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Reportar Accidente de Autocaravana",
+            "description": "Sistema gratuito para reportar accidentes, golpes y daños a autocaravanas. Ayuda al propietario reportando incidentes con fotos y ubicación GPS.",
+            "url": "https://www.mapafurgocasa.com/accidente",
+            "mainEntity": {
+              "@type": "Service",
+              "name": "Sistema de Reportes de Accidentes para Autocaravanas",
+              "provider": {
+                "@type": "Organization",
+                "name": "Mapa Furgocasa",
+                "url": "https://www.mapafurgocasa.com"
+              },
+              "serviceType": "Reporte de Incidentes",
+              "areaServed": {
+                "@type": "Place",
+                "name": "Europa y América"
+              },
+              "description": "Permite a testigos reportar accidentes, golpes y daños a autocaravanas de forma anónima. El propietario recibe una notificación instantánea con fotos, ubicación GPS y descripción del incidente.",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "EUR"
+              }
+            },
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Inicio",
+                  "item": "https://www.mapafurgocasa.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Reportar Accidente",
+                  "item": "https://www.mapafurgocasa.com/accidente"
+                }
+              ]
+            }
+          })
+        }}
+      />
+
       <Navbar />
 
       <main className="flex-grow max-w-4xl mx-auto w-full px-4 lg:px-6 py-8">

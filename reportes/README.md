@@ -11,6 +11,8 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 - 📝 Ampliación de Campos de Compra (script 13)
 - 📋 Cache de Rutas (script 14)
 - 🔧 Simplificación del Sistema (script 15)
+- 🔒 Políticas RLS para Reportes (scripts 16-19)
+- 📸 Políticas de Storage para Fotos (script 20)
 
 ---
 
@@ -262,6 +264,32 @@ SELECT * FROM admin_listado_reportes_accidentes();
 - Admin puede ver todos los reportes del sistema
 - Información completa para análisis
 - Ordenados por fecha de creación (más recientes primero)
+
+---
+
+### 📸 `20_storage_policy_fotos_reportes.sql`
+
+**Descripción:** Políticas de Storage para fotos de reportes de accidentes
+
+**Políticas creadas:**
+
+1. **`Permitir subida pública de fotos de reportes`**
+   - Permite a testigos anónimos subir fotos de accidentes
+   - Se aplica a la carpeta `reportes/` del bucket `vehiculos`
+   - Necesario para que el formulario de reportes funcione sin autenticación
+
+2. **`Permitir lectura pública de fotos de reportes`**
+   - Permite lectura pública de fotos de reportes
+   - Los propietarios pueden ver las fotos sin problemas de permisos
+   - URLs públicas accesibles para todos
+
+**Ejecución en Supabase:**
+
+1. Ve a **Storage** → **Policies** → Bucket `vehiculos`
+2. Copia y pega el contenido del script
+3. Ejecuta el script
+
+**Nota:** Este script es crítico para que los testigos puedan subir fotos al reportar accidentes.
 
 ---
 
