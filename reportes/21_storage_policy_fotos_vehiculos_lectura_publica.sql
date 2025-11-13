@@ -34,7 +34,7 @@ COMMIT;
 -- ===================================================================
 -- VERIFICACIÓN: Comprobar que la política se creó correctamente
 -- ===================================================================
-SELECT 
+SELECT
   schemaname,
   tablename,
   policyname,

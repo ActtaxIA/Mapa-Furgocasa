@@ -48,6 +48,7 @@ export default function ReporteAccidentePage() {
     fecha_accidente: new Date().toISOString().slice(0, 16),
     ubicacion_descripcion: "",
     fotos: [] as File[],
+    es_anonimo: false, // Por defecto NO anónimo
   });
 
   const [message, setMessage] = useState<{
@@ -317,6 +318,7 @@ export default function ReporteAccidentePage() {
       formDataToSend.append('ubicacion_lng', ubicacion.lng.toString());
       if (ubicacion.direccion) formDataToSend.append('ubicacion_direccion', ubicacion.direccion);
       if (formData.ubicacion_descripcion) formDataToSend.append('ubicacion_descripcion', formData.ubicacion_descripcion);
+      formDataToSend.append('es_anonimo', formData.es_anonimo.toString());
 
       // Añadir fotos
       console.log('📸 [Frontend] Añadiendo fotos al FormData...');
@@ -351,6 +353,7 @@ export default function ReporteAccidentePage() {
           fecha_accidente: new Date().toISOString().slice(0, 16),
           ubicacion_descripcion: "",
           fotos: [],
+          es_anonimo: false,
         });
         setVehiculo(null);
         setBusquedaMatricula("");
@@ -706,6 +709,35 @@ export default function ReporteAccidentePage() {
                 Tus Datos (Testigo)
               </h2>
 
+              {/* Checkbox para reporte anónimo */}
+              <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.es_anonimo}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        es_anonimo: e.target.checked,
+                      }))
+                    }
+                    className="mt-1 w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 focus:ring-2"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg">🎭</span>
+                      <span className="font-bold text-gray-900">
+                        Hacer este reporte anónimo
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Si marcas esta opción, el propietario <strong>NO verá tu nombre, email ni teléfono</strong>.
+                      Solo recibirá la información del accidente. Tu privacidad está garantizada.
+                    </p>
+                  </div>
+                </label>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -722,6 +754,7 @@ export default function ReporteAccidentePage() {
                       }))
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder={formData.es_anonimo ? "Solo para nosotros (no se mostrará)" : "Tu nombre completo"}
                   />
                 </div>
 
@@ -740,6 +773,7 @@ export default function ReporteAccidentePage() {
                       }))
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder={formData.es_anonimo ? "Solo para nosotros (no se mostrará)" : "tu@email.com"}
                   />
                 </div>
 
@@ -757,9 +791,22 @@ export default function ReporteAccidentePage() {
                       }))
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder={formData.es_anonimo ? "Opcional (no se mostrará si es anónimo)" : "Tu teléfono"}
                   />
                 </div>
               </div>
+
+              {formData.es_anonimo && (
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800 flex items-center gap-2">
+                    <span>🔒</span>
+                    <span>
+                      <strong>Modo anónimo activado:</strong> El propietario solo verá la información del accidente, 
+                      pero no tus datos personales. Tu identidad permanecerá privada.
+                    </span>
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Paso 4: Detalles del Accidente */}

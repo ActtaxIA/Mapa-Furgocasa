@@ -84,6 +84,7 @@ export async function POST(request: Request) {
     let ubicacion_direccion: string | null = null
     let ubicacion_descripcion: string | null = null
     let fecha_accidente: string = ''
+    let es_anonimo: boolean = false
     const fotosFiles: File[] = []
 
     if (isFormData) {
@@ -104,6 +105,8 @@ export async function POST(request: Request) {
       ubicacion_direccion = formData.get('ubicacion_direccion') as string | null
       ubicacion_descripcion = formData.get('ubicacion_descripcion') as string | null
       fecha_accidente = formData.get('fecha_accidente') as string
+      const es_anonimoStr = formData.get('es_anonimo') as string | null
+      es_anonimo = es_anonimoStr === 'true'
 
       // Obtener todas las fotos
       const fotosEntries = formData.getAll('fotos')
@@ -130,6 +133,7 @@ export async function POST(request: Request) {
       ubicacion_direccion = body.ubicacion_direccion || null
       ubicacion_descripcion = body.ubicacion_descripcion || null
       fecha_accidente = body.fecha_accidente || ''
+      es_anonimo = body.es_anonimo === true || body.es_anonimo === 'true'
     }
 
     // Validaciones básicas - aceptar qr_code_id, vehiculo_id o matricula
@@ -350,8 +354,8 @@ export async function POST(request: Request) {
         ip_address,
         captcha_verificado: false, // Por ahora sin captcha
         leido: false,
-        cerrado: false
-        // Nota: 'verificado' removido temporalmente para debugging
+        cerrado: false,
+        es_anonimo: es_anonimo
       })
       .select()
       .single()

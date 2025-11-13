@@ -32,11 +32,11 @@ export async function POST(
     console.log('🔵 POST /api/vehiculos/[id]/fotos iniciado')
     const supabase = await createClient()
     console.log('✅ Supabase client creado')
-    
+
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     console.log('👤 Usuario:', user?.id, 'Error auth:', authError)
-    
+
     if (authError || !user) {
       console.error('❌ No autenticado:', authError)
       return jsonResponse(
@@ -103,10 +103,10 @@ export async function POST(
       const fileExt = fotoFile.name.split('.').pop()
       const timestamp = Date.now()
       const fileName = `${user.id}/${vehiculo.qr_code_id}_${timestamp}.${fileExt}`
-      
+
       // Convertir File a ArrayBuffer
       const fileBuffer = await fotoFile.arrayBuffer()
-      
+
       const { error: uploadError } = await supabase
         .storage
         .from('vehiculos')
@@ -131,7 +131,7 @@ export async function POST(
 
       // Actualizar array de fotos_adicionales en la base de datos
       const nuevasFotos = [...fotosAdicionales, publicUrl]
-      
+
       const { error: updateError } = await supabase
         .from('vehiculos_registrados')
         .update({ fotos_adicionales: nuevasFotos })
@@ -164,7 +164,7 @@ export async function POST(
   } catch (error: any) {
     console.error('Error en POST /api/vehiculos/[id]/fotos:', error)
     return jsonResponse(
-      { 
+      {
         error: 'Error interno del servidor',
         details: error?.message || 'Sin detalles',
         stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
@@ -181,10 +181,10 @@ export async function DELETE(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     if (authError || !user) {
       return NextResponse.json(
         { error: 'No autenticado' },
@@ -256,7 +256,7 @@ export async function DELETE(
       // Eliminar de fotos adicionales
       const fotosAdicionales = vehiculo.fotos_adicionales || []
       const nuevasFotos = fotosAdicionales.filter((url: string) => url !== fotoUrl)
-      
+
       await supabase
         .from('vehiculos_registrados')
         .update({ fotos_adicionales: nuevasFotos })
@@ -276,4 +276,3 @@ export async function DELETE(
     )
   }
 }
-
