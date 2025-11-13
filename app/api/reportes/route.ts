@@ -52,32 +52,72 @@ export async function POST(request: Request) {
     // Es seguro porque validamos todos los datos antes de insertar
     const supabase = createServiceClient()
 
-    // Obtener FormData para manejar fotos
-    const formData = await request.formData()
-    const qr_code_id = formData.get('qr_code_id') as string | null
-    const vehiculo_id = formData.get('vehiculo_id') as string | null
-    const matricula = formData.get('matricula') as string | null
-    const matricula_tercero = formData.get('matricula_tercero') as string | null
-    const descripcion_tercero = formData.get('descripcion_tercero') as string | null
-    const testigo_nombre = formData.get('testigo_nombre') as string
-    const testigo_email = formData.get('testigo_email') as string | null
-    const testigo_telefono = formData.get('testigo_telefono') as string | null
-    const descripcion = formData.get('descripcion') as string
-    const tipo_dano = formData.get('tipo_dano') as string | null
-    const ubicacion_lat = formData.get('ubicacion_lat') as string
-    const ubicacion_lng = formData.get('ubicacion_lng') as string
-    const ubicacion_direccion = formData.get('ubicacion_direccion') as string | null
-    const ubicacion_descripcion = formData.get('ubicacion_descripcion') as string | null
-    const fecha_accidente = formData.get('fecha_accidente') as string
+    // Detectar si es FormData o JSON
+    const contentType = request.headers.get('content-type') || ''
+    const isFormData = contentType.includes('multipart/form-data')
     
-    // Obtener todas las fotos
+    let qr_code_id: string | null = null
+    let vehiculo_id: string | null = null
+    let matricula: string | null = null
+    let matricula_tercero: string | null = null
+    let descripcion_tercero: string | null = null
+    let testigo_nombre: string = ''
+    let testigo_email: string | null = null
+    let testigo_telefono: string | null = null
+    let descripcion: string = ''
+    let tipo_dano: string | null = null
+    let ubicacion_lat: string = ''
+    let ubicacion_lng: string = ''
+    let ubicacion_direccion: string | null = null
+    let ubicacion_descripcion: string | null = null
+    let fecha_accidente: string = ''
     const fotosFiles: File[] = []
-    const fotosEntries = formData.getAll('fotos')
-    fotosEntries.forEach((entry) => {
-      if (entry instanceof File && entry.size > 0) {
-        fotosFiles.push(entry)
-      }
-    })
+
+    if (isFormData) {
+      // Procesar FormData (con fotos)
+      const formData = await request.formData()
+      qr_code_id = formData.get('qr_code_id') as string | null
+      vehiculo_id = formData.get('vehiculo_id') as string | null
+      matricula = formData.get('matricula') as string | null
+      matricula_tercero = formData.get('matricula_tercero') as string | null
+      descripcion_tercero = formData.get('descripcion_tercero') as string | null
+      testigo_nombre = formData.get('testigo_nombre') as string
+      testigo_email = formData.get('testigo_email') as string | null
+      testigo_telefono = formData.get('testigo_telefono') as string | null
+      descripcion = formData.get('descripcion') as string
+      tipo_dano = formData.get('tipo_dano') as string | null
+      ubicacion_lat = formData.get('ubicacion_lat') as string
+      ubicacion_lng = formData.get('ubicacion_lng') as string
+      ubicacion_direccion = formData.get('ubicacion_direccion') as string | null
+      ubicacion_descripcion = formData.get('ubicacion_descripcion') as string | null
+      fecha_accidente = formData.get('fecha_accidente') as string
+      
+      // Obtener todas las fotos
+      const fotosEntries = formData.getAll('fotos')
+      fotosEntries.forEach((entry) => {
+        if (entry instanceof File && entry.size > 0) {
+          fotosFiles.push(entry)
+        }
+      })
+    } else {
+      // Procesar JSON (sin fotos - retrocompatibilidad)
+      const body = await request.json()
+      qr_code_id = body.qr_code_id || null
+      vehiculo_id = body.vehiculo_id || null
+      matricula = body.matricula || null
+      matricula_tercero = body.matricula_tercero || null
+      descripcion_tercero = body.descripcion_tercero || null
+      testigo_nombre = body.testigo_nombre || ''
+      testigo_email = body.testigo_email || null
+      testigo_telefono = body.testigo_telefono || null
+      descripcion = body.descripcion || ''
+      tipo_dano = body.tipo_dano || null
+      ubicacion_lat = body.ubicacion_lat || ''
+      ubicacion_lng = body.ubicacion_lng || ''
+      ubicacion_direccion = body.ubicacion_direccion || null
+      ubicacion_descripcion = body.ubicacion_descripcion || null
+      fecha_accidente = body.fecha_accidente || ''
+    }
 
     // Validaciones básicas - aceptar qr_code_id, vehiculo_id o matricula
     if (!qr_code_id && !vehiculo_id && !matricula) {
