@@ -24,7 +24,7 @@ export async function GET(request: Request) {
     const supabase = createAnonClient()
 
     // Buscar vehículo por matrícula (sin necesidad de autenticación)
-    const { data: vehiculo, error } = await supabase
+    const { data: vehiculo, error } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('id, matricula, marca, modelo, user_id')
       .eq('matricula', matricula.toUpperCase())
