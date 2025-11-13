@@ -21,7 +21,7 @@ ON storage.objects
 FOR INSERT
 TO anon, authenticated
 WITH CHECK (
-  bucket_id = 'vehiculos' 
+  bucket_id = 'vehiculos'
   AND (storage.foldername(name))[1] = 'reportes'
 );
 
@@ -44,7 +44,7 @@ COMMIT;
 -- ===================================================================
 -- VERIFICACIÓN: Comprobar que las políticas se crearon correctamente
 -- ===================================================================
-SELECT 
+SELECT
   schemaname,
   tablename,
   policyname,
@@ -58,4 +58,3 @@ WHERE schemaname = 'storage'
   AND tablename = 'objects'
   AND policyname LIKE '%reportes%'
 ORDER BY policyname;
-

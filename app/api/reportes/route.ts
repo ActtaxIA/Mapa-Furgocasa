@@ -254,15 +254,18 @@ export async function POST(request: Request) {
 
     // Subir fotos a Supabase Storage si existen
     const fotos_urls: string[] = []
+    console.log(`📸 [Reportes] Procesando ${fotosFiles.length} fotos`)
+    
     if (fotosFiles.length > 0) {
       try {
         const timestamp = Date.now()
         for (let i = 0; i < fotosFiles.length; i++) {
           const foto = fotosFiles[i]
+          console.log(`📸 [Reportes] Foto ${i + 1}: ${foto.name}, size: ${foto.size} bytes`)
           
           // Validar tamaño (máx 5MB)
           if (foto.size > 5 * 1024 * 1024) {
-            console.warn(`Foto ${i + 1} excede 5MB, se omite`)
+            console.warn(`⚠️ [Reportes] Foto ${i + 1} excede 5MB, se omite`)
             continue
           }
 
@@ -271,6 +274,8 @@ export async function POST(request: Request) {
           
           // Convertir File a ArrayBuffer
           const fileBuffer = await foto.arrayBuffer()
+          
+          console.log(`📸 [Reportes] Subiendo a: ${fileName}`)
           
           const { error: uploadError } = await supabase
             .storage
@@ -281,7 +286,7 @@ export async function POST(request: Request) {
             })
 
           if (uploadError) {
-            console.error(`Error subiendo foto ${i + 1}:`, uploadError)
+            console.error(`❌ [Reportes] Error subiendo foto ${i + 1}:`, uploadError)
             // Continuar con las demás fotos
             continue
           }
@@ -292,17 +297,24 @@ export async function POST(request: Request) {
             .from('vehiculos')
             .getPublicUrl(fileName)
           
+          console.log(`✅ [Reportes] Foto ${i + 1} subida: ${publicUrl}`)
           fotos_urls.push(publicUrl)
         }
+        
+        console.log(`📸 [Reportes] Total fotos subidas: ${fotos_urls.length}`)
       } catch (fotoError) {
-        console.error('Error procesando fotos:', fotoError)
+        console.error('❌ [Reportes] Error procesando fotos:', fotoError)
         // Continuar sin fotos, no es crítico
       }
+    } else {
+      console.log(`📸 [Reportes] No hay fotos para subir`)
     }
 
     // Obtener IP del cliente (para prevenir spam)
     const forwarded = request.headers.get('x-forwarded-for')
     const ip_address = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown'
+
+    console.log(`💾 [Reportes] Insertando reporte con ${fotos_urls.length} fotos:`, fotos_urls)
 
     // Insertar reporte
     const { data: nuevoReporte, error: insertError } = await (supabase as any)
@@ -330,6 +342,8 @@ export async function POST(request: Request) {
       })
       .select()
       .single()
+    
+    console.log(`✅ [Reportes] Reporte creado:`, nuevoReporte?.id)
 
     if (insertError) {
       console.error('Error insertando reporte:', insertError)
