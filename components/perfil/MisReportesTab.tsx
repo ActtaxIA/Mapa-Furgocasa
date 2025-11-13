@@ -228,10 +228,10 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       // ============================================================
       // SECCIÓN DE 3 COLUMNAS: Vehículo, Testigo, Fecha
       // ============================================================
-      
+
       const colWidth = (pageWidth - 2 * margin - 10) / 3 // 3 columnas con separación
       const startYFor3Cols = yPos
-      
+
       // COLUMNA 1: VEHÍCULO AFECTADO
       let col1X = margin
       let col1Y = startYFor3Cols
@@ -243,7 +243,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       pdf.setFontSize(11)
       pdf.setFont('helvetica', 'bold')
       pdf.text('VEHICULO', col1X + 5, col1Y + 3)
-      col1Y += 8
+      col1Y += 11 // Aumentado de 8 a 11
 
       pdf.setFontSize(8)
       pdf.setFont('helvetica', 'bold')
@@ -253,7 +253,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       const matriculaLines = pdf.splitTextToSize(reporte.vehiculo_matricula, colWidth - 2)
       pdf.text(matriculaLines, col1X, col1Y)
       col1Y += matriculaLines.length * 4 + 2
-      
+
       if (reporte.vehiculo_marca || reporte.vehiculo_modelo) {
         pdf.setFont('helvetica', 'bold')
         pdf.text('Vehiculo:', col1X, col1Y)
@@ -289,10 +289,10 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       pdf.setFontSize(11)
       pdf.setFont('helvetica', 'bold')
       pdf.text('TESTIGO', col2X + 5, col2Y + 3)
-      col2Y += 8
+      col2Y += 11 // Aumentado de 8 a 11
 
       pdf.setFontSize(8)
-      
+
       if (!reporte.es_anonimo) {
         pdf.setFont('helvetica', 'bold')
         pdf.text('Nombre:', col2X, col2Y)
@@ -301,7 +301,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
         const nombreLines = pdf.splitTextToSize(reporte.testigo_nombre, colWidth - 2)
         pdf.text(nombreLines, col2X, col2Y)
         col2Y += nombreLines.length * 4 + 2
-        
+
         if (reporte.testigo_email) {
           pdf.setFont('helvetica', 'bold')
           pdf.text('Email:', col2X, col2Y)
@@ -339,7 +339,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       pdf.setFontSize(11)
       pdf.setFont('helvetica', 'bold')
       pdf.text('FECHA', col3X + 5, col3Y + 3)
-      col3Y += 8
+      col3Y += 11 // Aumentado de 8 a 11
 
       pdf.setFont('helvetica', 'normal')
       pdf.setFontSize(8)
