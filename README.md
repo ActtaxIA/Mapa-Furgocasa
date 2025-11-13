@@ -1,6 +1,6 @@
 # 🚐 Mapa Furgocasa - Plataforma de Áreas para Autocaravanas en Europa y LATAM
 
-**Versión: 2.0.0 - PRODUCCIÓN** 🎉✅
+**Versión: 2.1.0 - PRODUCCIÓN** 🎉✅
 
 > 🔴 **ENTORNO DE PRODUCCIÓN ACTIVA EN AWS AMPLIFY**
 > - **URL:** https://www.mapafurgocasa.com
@@ -9,9 +9,9 @@
 
 Plataforma web interactiva totalmente funcional para descubrir y gestionar áreas de autocaravanas, campers y vehículos recreativos en **Europa y Latinoamérica** (España, Portugal, Francia, Italia, Alemania, Argentina, Chile, Uruguay, Brasil, Colombia, Perú y más).
 
-**Estado:** 🟢 **100% OPERATIVO** - Chatbot IA funcionando, Editor de prompts activo, Sistema completo en producción.
+**Estado:** 🟢 **100% OPERATIVO** - Chatbot IA funcionando, Editor de prompts activo, Sistema completo en producción, **Subida directa de fotos a Supabase Storage (bypass AWS Amplify)**.
 
-**Última actualización:** 12 de Noviembre 2025 - Sistema completo de gestión de vehículos y valoración automática implementado.
+**Última actualización:** 13 de Noviembre 2025 - Sistema de subida directa de fotos a Supabase Storage implementado. Solución definitiva al problema de AWS Amplify bloqueando FormData.
 
 ---
 
@@ -43,6 +43,8 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 - 🚐 **Gestión Completa de Vehículos** ✨ **NUEVO v2.0** - Mantenimientos, averías, documentos, mejoras
 - 💶 **Valoración Automática con IA** ✨ **NUEVO v2.0** - Algoritmo propio de valoración de mercado
 - 📈 **Análisis Económico** ✨ **NUEVO v2.0** - Control financiero completo del vehículo
+- 📸 **Subida Directa de Fotos** ✨ **NUEVO v2.1** - Supabase Storage directo, bypass AWS Amplify, sin errores 403
+- 🗑️ **Gestión Completa de Fotos** ✨ **NUEVO v2.1** - Subir, borrar y gestionar fotos en reportes y vehículos
 
 ### Para Administradores
 - ⚙️ **Panel de Administración** completo en `/admin`

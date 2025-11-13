@@ -4,6 +4,77 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 ---
 
+## [2.1.0] - 2025-11-13 📸🚀
+
+### 🎯 SISTEMA DE SUBIDA DIRECTA DE FOTOS A SUPABASE STORAGE
+
+Solución definitiva al problema de AWS Amplify bloqueando `multipart/form-data`. Implementación completa de subida directa desde el frontend a Supabase Storage, bypasseando completamente AWS Amplify.
+
+### ✅ Agregado
+
+#### Subida Directa de Fotos 📸
+- **Bypass completo de AWS Amplify** - Las fotos se suben directamente desde el navegador a Supabase Storage
+- **Sin errores 403** - Eliminados todos los problemas de interception de API routes
+- **Máximo 10MB por foto** (aumentado desde 5MB)
+- **Subida en reportes de accidentes** - Hasta 5 fotos por reporte
+- **Subida en vehículos** - Foto principal + hasta 9 adicionales (galería)
+- **Validación en frontend** - Tamaño y cantidad antes de subir
+- **URLs públicas** - Supabase Storage devuelve URLs públicas instantáneamente
+
+#### Gestión Completa de Fotos 🗑️
+- **Eliminar fotos ANTES de enviar** - Botón X en reportes y registro de vehículos
+- **Eliminar fotos DESPUÉS** - Galería de vehículos con confirmación modal
+- **Eliminación física** - Se borran de Supabase Storage + BD
+- **Preview mejorado** - Muestra nombre y tamaño de cada foto
+- **Feedback visual** - Toast notifications para todas las acciones
+
+### 🔧 Modificado
+
+#### Frontend
+- `app/(public)/accidente/page.tsx` - Subida directa a Supabase Storage, botones de eliminar
+- `components/perfil/MiAutocaravanaTab.tsx` - Subida directa de foto principal
+- `components/vehiculo/GaleriaFotosTab.tsx` - Subida directa de fotos adicionales
+
+#### Backend (API)
+- `app/api/reportes/route.ts` - Recibe solo JSON con `fotos_urls[]` (no FormData)
+- `app/api/vehiculos/route.ts` - Recibe solo JSON con `foto_url` (no FormData)
+- `app/api/vehiculos/[id]/fotos/route.ts` - Recibe solo JSON con `foto_url`, DELETE físico
+
+### 📚 Técnico
+
+#### Flujo Nuevo (v2.1)
+```
+1. Usuario selecciona fotos
+2. Frontend valida (tamaño, cantidad)
+3. Frontend sube a Supabase Storage (directo)
+4. Frontend obtiene URLs públicas
+5. Frontend envía JSON con URLs a API
+6. Backend guarda URLs en BD
+```
+
+#### Flujo Anterior (v2.0 - Fallaba)
+```
+1. Usuario selecciona fotos
+2. Frontend envía FormData a API
+3. AWS Amplify intercepta y bloquea (403)
+4. ❌ FALLO
+```
+
+### 🎯 Ventajas
+- ✅ **Más rápido** - Directo navegador → Supabase (sin API intermedia)
+- ✅ **Sin límites** - No depende de límites de AWS Amplify
+- ✅ **Confiable** - Supabase maneja millones de archivos sin problema
+- ✅ **Escalable** - Preparado para crecimiento masivo
+- ✅ **Mantenible** - Código más simple (solo JSON en API)
+
+### 📊 Estado
+- ✅ Reportes de accidentes: FUNCIONAL
+- ✅ Registro de vehículos: FUNCIONAL
+- ✅ Galería de fotos: FUNCIONAL
+- ✅ Eliminación de fotos: FUNCIONAL
+
+---
+
 ## [2.0.0] - 2025-11-12 🚀
 
 ### 🎯 SISTEMA COMPLETO DE GESTIÓN DE VEHÍCULOS Y VALORACIÓN AUTOMÁTICA

@@ -1,5 +1,7 @@
 # 🚐 Sistema Completo de Gestión de Vehículos - Scripts SQL
 
+**Versión 2.1.0** - Actualizado para sistema de subida directa de fotos
+
 Este directorio contiene los scripts SQL necesarios para implementar el **Sistema Completo de Gestión de Vehículos y Valoración Automática** en Supabase.
 
 **Incluye:**
@@ -12,7 +14,20 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 - 📋 Cache de Rutas (script 14)
 - 🔧 Simplificación del Sistema (script 15)
 - 🔒 Políticas RLS para Reportes (scripts 16-19)
-- 📸 Políticas de Storage para Fotos (script 20)
+- 📸 Políticas de Storage para Fotos (scripts 20-21) ✨ **NUEVO v2.1**
+- 🎭 Campo Reportes Anónimos (script 22) ✨ **NUEVO v2.1**
+
+## ✨ Cambios Importantes v2.1.0
+
+### 📸 Sistema de Subida Directa de Fotos
+- **Script 20**: Políticas de storage para fotos de reportes (subida pública)
+- **Script 21**: Políticas de storage para fotos de vehículos (lectura pública)
+- **Script 22**: Campo `es_anonimo` para reportes anónimos
+
+### 🔒 Mejoras de Seguridad y UX
+- **Eliminado campo `verificado`** (script 15) - Simplifica reportes de terceros
+- **RLS mejorado** (scripts 16-18) - Permite reportes públicos sin bloqueos
+- **Admin functions** (script 19) - Listado optimizado de reportes para admin
 
 ---
 
