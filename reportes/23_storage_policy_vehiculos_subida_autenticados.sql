@@ -1,84 +1,64 @@
--- ============================================================
--- Script 23: Políticas de Storage para Subida de Fotos de Vehículos
--- ============================================================
--- Versión: 2.1.0
--- Fecha: 2025-11-13
--- Descripción: Permite a usuarios autenticados subir fotos de sus vehículos
--- ============================================================
+-- ===================================================================
+-- STORAGE POLICIES: Fotos de Vehículos (Usuarios Autenticados)
+-- ===================================================================
+-- Políticas para permitir subida de fotos de vehículos
+-- IMPORTANTE: Este script debe ejecutarse en el SQL Editor de Supabase
+-- ===================================================================
 
 BEGIN;
 
--- ============================================================
--- 1. POLÍTICA: Subida de fotos de vehículos (autenticados)
--- ============================================================
+-- Eliminar políticas anteriores si existen (por si se ejecuta múltiples veces)
+DROP POLICY IF EXISTS "Usuarios pueden subir fotos de vehiculos" ON storage.objects;
+DROP POLICY IF EXISTS "Usuarios pueden actualizar fotos de vehiculos" ON storage.objects;
+DROP POLICY IF EXISTS "Usuarios pueden eliminar fotos de vehiculos" ON storage.objects;
 
--- Eliminar política existente si existe
-DROP POLICY IF EXISTS "Usuarios pueden subir fotos de sus vehiculos" ON storage.objects;
-
--- Crear política de INSERT para usuarios autenticados
--- Permite subir a: vehiculos/{user_id}/*
-CREATE POLICY "Usuarios pueden subir fotos de sus vehiculos"
+-- ===================================================================
+-- POLÍTICA 1: Permitir SUBIDA de fotos de vehículos (autenticados)
+-- ===================================================================
+-- Permite a usuarios autenticados subir fotos a la carpeta vehiculos/
+-- del bucket vehiculos (igual que reportes pero solo authenticated)
+CREATE POLICY "Usuarios pueden subir fotos de vehiculos"
 ON storage.objects
 FOR INSERT
 TO authenticated
 WITH CHECK (
   bucket_id = 'vehiculos'
-  AND (storage.foldername(name))[1] = auth.uid()::text
+  AND (storage.foldername(name))[1] = 'vehiculos'
 );
 
-COMMENT ON POLICY "Usuarios pueden subir fotos de sus vehiculos" ON storage.objects IS 
-'Permite a usuarios autenticados subir fotos en su carpeta personal: vehiculos/{user_id}/';
-
--- ============================================================
--- 2. POLÍTICA: Actualización de fotos de vehículos (autenticados)
--- ============================================================
-
--- Eliminar política existente si existe
-DROP POLICY IF EXISTS "Usuarios pueden actualizar sus fotos de vehiculos" ON storage.objects;
-
--- Crear política de UPDATE para usuarios autenticados
-CREATE POLICY "Usuarios pueden actualizar sus fotos de vehiculos"
+-- ===================================================================
+-- POLÍTICA 2: Permitir ACTUALIZACIÓN de fotos de vehículos
+-- ===================================================================
+CREATE POLICY "Usuarios pueden actualizar fotos de vehiculos"
 ON storage.objects
 FOR UPDATE
 TO authenticated
 USING (
   bucket_id = 'vehiculos'
-  AND (storage.foldername(name))[1] = auth.uid()::text
+  AND (storage.foldername(name))[1] = 'vehiculos'
 )
 WITH CHECK (
   bucket_id = 'vehiculos'
-  AND (storage.foldername(name))[1] = auth.uid()::text
+  AND (storage.foldername(name))[1] = 'vehiculos'
 );
 
-COMMENT ON POLICY "Usuarios pueden actualizar sus fotos de vehiculos" ON storage.objects IS 
-'Permite a usuarios autenticados actualizar fotos en su carpeta personal';
-
--- ============================================================
--- 3. POLÍTICA: Eliminación de fotos de vehículos (autenticados)
--- ============================================================
-
--- Eliminar política existente si existe
-DROP POLICY IF EXISTS "Usuarios pueden eliminar sus fotos de vehiculos" ON storage.objects;
-
--- Crear política de DELETE para usuarios autenticados
-CREATE POLICY "Usuarios pueden eliminar sus fotos de vehiculos"
+-- ===================================================================
+-- POLÍTICA 3: Permitir ELIMINACIÓN de fotos de vehículos
+-- ===================================================================
+CREATE POLICY "Usuarios pueden eliminar fotos de vehiculos"
 ON storage.objects
 FOR DELETE
 TO authenticated
 USING (
   bucket_id = 'vehiculos'
-  AND (storage.foldername(name))[1] = auth.uid()::text
+  AND (storage.foldername(name))[1] = 'vehiculos'
 );
-
-COMMENT ON POLICY "Usuarios pueden eliminar sus fotos de vehiculos" ON storage.objects IS 
-'Permite a usuarios autenticados eliminar fotos de su carpeta personal';
 
 COMMIT;
 
--- ============================================================
--- VERIFICACIÓN: Mostrar todas las políticas del bucket vehiculos
--- ============================================================
-
+-- ===================================================================
+-- VERIFICACIÓN: Comprobar que las políticas se crearon correctamente
+-- ===================================================================
 SELECT
   schemaname,
   tablename,
@@ -94,17 +74,19 @@ WHERE schemaname = 'storage'
   AND policyname LIKE '%vehiculos%'
 ORDER BY policyname;
 
--- ============================================================
+-- ===================================================================
 -- RESULTADO ESPERADO:
--- ============================================================
--- Deberías ver las siguientes políticas:
+-- ===================================================================
+-- Deberías ver las siguientes políticas para el bucket vehiculos:
 --
--- 1. "Permitir lectura pública de fotos de reportes" (SELECT, anon/authenticated)
--- 2. "Permitir subida pública de fotos de reportes" (INSERT, anon/authenticated)
--- 3. "Usuarios pueden eliminar sus fotos de vehiculos" (DELETE, authenticated)
--- 4. "Usuarios pueden subir fotos de sus vehiculos" (INSERT, authenticated)
--- 5. "Usuarios pueden actualizar sus fotos de vehiculos" (UPDATE, authenticated)
--- 6. "Usuarios pueden ver fotos de vehiculos publicas" (SELECT, authenticated)
+-- REPORTES (anon + authenticated):
+-- 1. "Permitir lectura pública de fotos de reportes" (SELECT)
+-- 2. "Permitir subida pública de fotos de reportes" (INSERT)
 --
--- ============================================================
-
+-- VEHÍCULOS (solo authenticated):
+-- 3. "Usuarios pueden eliminar fotos de vehiculos" (DELETE)
+-- 4. "Usuarios pueden subir fotos de vehiculos" (INSERT)
+-- 5. "Usuarios pueden actualizar fotos de vehiculos" (UPDATE)
+-- 6. "Usuarios pueden ver fotos de vehiculos publicas" (SELECT) - ya existe
+--
+-- ===================================================================
