@@ -115,14 +115,13 @@ export default function MejorasTab({ vehiculoId }: Props) {
       // Mapear campos del formulario a los nombres de la BD
       const datos = {
         vehiculo_id: vehiculoId,
-        titulo: formData.nombre,  // BD espera 'titulo'
+        titulo: formData.nombre || 'Mejora sin nombre',  // BD espera 'titulo' NOT NULL
         categoria: formData.tipo_mejora,  // BD espera 'categoria'
-        descripcion: formData.descripcion || null,
+        descripcion: formData.descripcion || 'Sin descripción',  // BD espera 'descripcion' NOT NULL
         fecha: formData.fecha_instalacion,  // BD espera 'fecha'
         coste_materiales: costeMateriales || null,  // BD espera 'coste_materiales'
         coste_mano_obra: costeManoObra || null,  // BD espera 'coste_mano_obra'
         coste_total: costeTotal > 0 ? costeTotal : null,
-        aumenta_valor: formData.mejora_valor,  // BD espera 'aumenta_valor'
         instalado_por: formData.proveedor || null,  // BD espera 'instalado_por'
         notas: formData.notas || null
       }

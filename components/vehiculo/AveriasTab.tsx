@@ -134,7 +134,7 @@ export default function AveriasTab({ vehiculoId }: Props) {
         vehiculo_id: vehiculoId,
         titulo: `Avería: ${formData.tipo_averia}`,  // BD requiere 'titulo' (NOT NULL)
         categoria: formData.tipo_averia,  // BD espera 'categoria'
-        descripcion: formData.descripcion,
+        descripcion: formData.descripcion || 'Sin descripción',  // BD espera 'descripcion' NOT NULL
         fecha_averia: formData.fecha_averia,
         fecha_resolucion: formData.fecha_resolucion || null,
         kilometraje: formData.kilometraje ? parseInt(formData.kilometraje) : null,
