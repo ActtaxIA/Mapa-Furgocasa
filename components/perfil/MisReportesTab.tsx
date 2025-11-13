@@ -509,35 +509,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
                     </div>
                   </div>
 
-                  {/* Tipo de daño */}
-                  {reporte.tipo_dano && (
-                    <div className="mt-3">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getTipoDanoColor(reporte.tipo_dano)}`}>
-                        {reporte.tipo_dano}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Descripción */}
-                  <div className="mt-4">
-                    <h4 className="text-sm font-semibold text-gray-900">Descripción del Accidente:</h4>
-                    <p className="mt-1 text-sm text-gray-700">{reporte.descripcion}</p>
-                  </div>
-
-                  {/* Información del tercero */}
-                  {reporte.matricula_tercero && (
-                    <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                      <h4 className="text-sm font-semibold text-gray-900">Vehículo Causante:</h4>
-                      <p className="mt-1 text-sm">
-                        <strong>Matrícula:</strong> {reporte.matricula_tercero}
-                      </p>
-                      {reporte.descripcion_tercero && (
-                        <p className="mt-1 text-sm">{reporte.descripcion_tercero}</p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Información del testigo */}
+                  {/* 1. INFORMACIÓN DEL TESTIGO */}
                   {reporte.es_anonimo ? (
                     <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
                       <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
@@ -553,7 +525,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
                     </div>
                   ) : (
                     <div className="mt-4 p-3 bg-primary-50 rounded-lg border border-primary-200">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-2">Datos del Testigo:</h4>
+                      <h4 className="text-sm font-semibold text-gray-900 mb-2">👤 Datos del Testigo:</h4>
                       <div className="space-y-1 text-sm">
                         <p><strong>Nombre:</strong> {reporte.testigo_nombre}</p>
                         {reporte.testigo_email && (
@@ -576,40 +548,92 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
                     </div>
                   )}
 
-                  {/* Ubicación y fecha */}
-                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                    <div className="flex items-start">
-                      <MapPinIcon className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium text-gray-900">Ubicación:</p>
-                        <p className="text-gray-600">
-                          {reporte.ubicacion_direccion || `${reporte.ubicacion_lat}, ${reporte.ubicacion_lng}`}
-                        </p>
-                        <a
-                          href={`https://www.google.com/maps?q=${reporte.ubicacion_lat},${reporte.ubicacion_lng}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary-600 hover:text-primary-700 hover:underline text-xs transition-colors"
-                        >
-                          Ver en Google Maps
-                        </a>
+                  {/* 2. UBICACIÓN Y FECHA */}
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-start">
+                        <MapPinIcon className="h-5 w-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-900 text-sm mb-1">📍 Ubicación del Accidente</p>
+                          <p className="text-sm text-gray-700">
+                            {reporte.ubicacion_direccion || 'Ver coordenadas'}
+                          </p>
+                          {reporte.ubicacion_descripcion && (
+                            <p className="text-xs text-gray-500 mt-1">{reporte.ubicacion_descripcion}</p>
+                          )}
+                          <div className="mt-2 flex flex-col gap-1">
+                            <p className="text-xs text-gray-500">
+                              Lat: {reporte.ubicacion_lat} · Lng: {reporte.ubicacion_lng}
+                            </p>
+                            <a
+                              href={`https://www.google.com/maps?q=${reporte.ubicacion_lat},${reporte.ubicacion_lng}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center text-primary-600 hover:text-primary-700 hover:underline text-xs font-medium transition-colors"
+                            >
+                              🗺️ Ver en Google Maps →
+                            </a>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-start">
-                      <CalendarIcon className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium text-gray-900">Fecha del Accidente:</p>
-                        <p className="text-gray-600">
-                          {new Date(reporte.fecha_accidente).toLocaleString('es-ES')}
-                        </p>
+                    <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-start">
+                        <CalendarIcon className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-900 text-sm mb-1">📅 Fecha del Accidente</p>
+                          <p className="text-sm text-gray-700">
+                            {new Date(reporte.fecha_accidente).toLocaleString('es-ES', {
+                              dateStyle: 'full',
+                              timeStyle: 'short'
+                            })}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-2">
+                            Reportado: {new Date(reporte.created_at).toLocaleDateString('es-ES')}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Fotos */}
+                  {/* 3. DESCRIPCIÓN DEL ACCIDENTE */}
+                  <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <div className="flex items-start gap-3">
+                      <ExclamationTriangleIcon className="h-6 w-6 text-yellow-600 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="text-sm font-semibold text-gray-900 mb-2">
+                          📝 Descripción del Accidente
+                          {reporte.tipo_dano && (
+                            <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTipoDanoColor(reporte.tipo_dano)}`}>
+                              {reporte.tipo_dano}
+                            </span>
+                          )}
+                        </h4>
+                        <p className="text-sm text-gray-700 leading-relaxed">{reporte.descripcion}</p>
+                        
+                        {/* Información del vehículo causante */}
+                        {reporte.matricula_tercero && (
+                          <div className="mt-3 pt-3 border-t border-yellow-300">
+                            <p className="text-sm font-semibold text-gray-900 mb-1">🚗 Vehículo Causante:</p>
+                            <p className="text-sm text-gray-700">
+                              <strong>Matrícula:</strong> {reporte.matricula_tercero}
+                            </p>
+                            {reporte.descripcion_tercero && (
+                              <p className="text-sm text-gray-700 mt-1">{reporte.descripcion_tercero}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4. FOTOS DEL ACCIDENTE */}
                   {reporte.fotos_urls && reporte.fotos_urls.length > 0 && (
-                    <div className="mt-4">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-2">Fotos del Accidente:</h4>
+                    <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        📸 Evidencias Fotográficas
+                        <span className="text-xs font-normal text-gray-600">({reporte.fotos_urls.length} {reporte.fotos_urls.length === 1 ? 'foto' : 'fotos'})</span>
+                      </h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                         {reporte.fotos_urls.map((url, index) => (
                           <a
@@ -617,13 +641,18 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block"
+                            className="block group relative"
                           >
                             <img
                               src={url}
                               alt={`Foto ${index + 1}`}
-                              className="w-full h-24 object-cover rounded border hover:opacity-75"
+                              className="w-full h-24 object-cover rounded border-2 border-blue-200 group-hover:border-blue-400 transition-all"
                             />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity rounded flex items-center justify-center">
+                              <span className="text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                Ver completa
+                              </span>
+                            </div>
                           </a>
                         ))}
                       </div>
