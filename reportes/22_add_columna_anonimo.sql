@@ -23,7 +23,7 @@ COMMIT;
 -- ===================================================================
 -- VERIFICACIÓN: Comprobar que la columna se creó correctamente
 -- ===================================================================
-SELECT 
+SELECT
   column_name,
   data_type,
   column_default,
@@ -32,4 +32,3 @@ FROM information_schema.columns
 WHERE table_schema = 'public'
   AND table_name = 'reportes_accidentes'
   AND column_name = 'es_anonimo';
-

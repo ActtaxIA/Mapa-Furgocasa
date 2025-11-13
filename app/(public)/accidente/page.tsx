@@ -801,7 +801,7 @@ export default function ReporteAccidentePage() {
                   <p className="text-sm text-blue-800 flex items-center gap-2">
                     <span>🔒</span>
                     <span>
-                      <strong>Modo anónimo activado:</strong> El propietario solo verá la información del accidente, 
+                      <strong>Modo anónimo activado:</strong> El propietario solo verá la información del accidente,
                       pero no tus datos personales. Tu identidad permanecerá privada.
                     </span>
                   </p>

@@ -116,4 +116,3 @@ export interface UbicacionData {
   direccion?: string
   descripcion?: string
 }
-
