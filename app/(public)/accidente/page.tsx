@@ -457,16 +457,16 @@ export default function ReporteAccidentePage() {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-100 to-orange-100 rounded-full mb-4 animate-pulse">
             <ExclamationTriangleIcon className="w-12 h-12 text-red-600" />
           </div>
-          
+
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
             🚐 ¿Viste algo? ¡Ayuda a un compañero viajero!
           </h1>
-          
+
           <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-4 leading-relaxed">
             Si has sido testigo de un golpe, rayón o accidente a una autocaravana,
             <span className="font-semibold text-primary-600"> tu ayuda puede marcar la diferencia</span>.
           </p>
-          
+
           {/* Frases motivadoras */}
           <div className="bg-gradient-to-r from-primary-50 to-blue-50 rounded-xl p-6 max-w-2xl mx-auto border-l-4 border-primary-500">
             <p className="text-xl font-bold text-gray-800 mb-2">
@@ -476,15 +476,15 @@ export default function ReporteAccidentePage() {
               El dueño de esta autocaravana seguro haría lo mismo por la tuya.
             </p>
             <p className="text-sm text-gray-500 mt-3">
-              🕐 Solo te llevará <span className="font-semibold">2 minutos</span> • 
-              🎭 <span className="font-semibold">100% anónimo</span> • 
+              🕐 Solo te llevará <span className="font-semibold">2 minutos</span> •
+              🎭 <span className="font-semibold">100% anónimo</span> •
               ✨ Serás un <span className="font-semibold">héroe viajero</span>
             </p>
           </div>
-          
+
           {/* Mensaje adicional con humor */}
           <p className="text-sm text-gray-500 mt-4 italic">
-            <span className="font-medium">Dato curioso:</span> 8 de cada 10 propietarios nunca 
+            <span className="font-medium">Dato curioso:</span> 8 de cada 10 propietarios nunca
             descubren quién rayó su autocaravana. ¡Tú puedes cambiar eso! 🦸‍♂️
           </p>
         </div>
@@ -504,12 +504,12 @@ export default function ReporteAccidentePage() {
                     🎉 ¡Eres un héroe viajero!
                   </h3>
                   <p className="text-green-800 mb-3 text-lg">
-                    Tu reporte ha sido enviado con éxito. El propietario acaba de recibir una 
+                    Tu reporte ha sido enviado con éxito. El propietario acaba de recibir una
                     <span className="font-bold"> notificación instantánea</span>.
                   </p>
                   <div className="bg-white rounded-lg p-4 border-l-4 border-green-500">
                     <p className="text-sm text-gray-700 mb-2">
-                      <span className="font-semibold">Gracias por tu solidaridad.</span> 
+                      <span className="font-semibold">Gracias por tu solidaridad.</span>
                       Personas como tú hacen que la comunidad viajera sea especial. 💚
                     </p>
                     <p className="text-xs text-gray-600 italic">
@@ -584,7 +584,7 @@ export default function ReporteAccidentePage() {
                   </p>
                   <div className="bg-white rounded-lg p-4 border-l-4 border-green-500">
                     <p className="text-green-700 text-sm mb-2">
-                      Ahora solo completa el formulario. El propietario recibirá una 
+                      Ahora solo completa el formulario. El propietario recibirá una
                       <span className="font-semibold"> notificación instantánea</span> con tu reporte.
                     </p>
                     <p className="text-green-600 text-xs italic">
@@ -876,17 +876,17 @@ export default function ReporteAccidentePage() {
                     <CameraIcon className="w-6 h-6 text-blue-600" />
                     Fotos del Accidente (opcional pero <span className="text-blue-600">MUY útiles</span>)
                   </label>
-                  
+
                   <div className="bg-white p-4 rounded-lg border-l-4 border-blue-400 mb-4">
                     <p className="text-sm text-gray-700 mb-2">
                       📸 <span className="font-semibold">Una imagen vale más que mil palabras</span>
                     </p>
                     <p className="text-xs text-gray-600">
-                      Sube hasta <span className="font-semibold">5 fotos</span> (máx. <span className="font-semibold">10 MB</span> cada una). 
+                      Sube hasta <span className="font-semibold">5 fotos</span> (máx. <span className="font-semibold">10 MB</span> cada una).
                       Pueden ser del daño, del vehículo responsable, o del contexto del accidente.
                     </p>
                   </div>
-                  
+
                   <input
                     type="file"
                     accept="image/*"
@@ -902,7 +902,7 @@ export default function ReporteAccidentePage() {
                         });
                         return;
                       }
-                      
+
                       // Validar tamaño
                       const maxSize = 10 * 1024 * 1024; // 10MB
                       const fotosGrandes = files.filter(f => f.size > maxSize);
@@ -914,13 +914,13 @@ export default function ReporteAccidentePage() {
                         });
                         return;
                       }
-                      
+
                       setFormData((prev) => ({ ...prev, fotos: files }));
                       setMessage(null);
                     }}
                     className="w-full px-4 py-3 border-2 border-dashed border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white hover:bg-blue-50 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-500 file:text-white file:font-semibold hover:file:bg-blue-600 file:cursor-pointer cursor-pointer"
                   />
-                  
+
                   {formData.fotos.length > 0 && (
                     <div className="mt-4 bg-white rounded-lg p-4 border-2 border-green-200 shadow-sm">
                       <p className="text-sm font-bold text-green-700 flex items-center gap-2 mb-3">
@@ -963,7 +963,7 @@ export default function ReporteAccidentePage() {
                 </>
               )}
             </button>
-            
+
             {/* Mensaje de privacidad */}
             <p className="text-center text-xs text-gray-500 -mt-3">
               🔒 Tus datos son privados. Solo el propietario verá tu reporte.

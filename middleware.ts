@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function middleware(request: NextRequest) {
   // CRÍTICO: Excluir rutas API ANTES DE CUALQUIER PROCESAMIENTO
   const pathname = request.nextUrl.pathname
-  
+
   // Lista completa de rutas a excluir
   if (
     pathname.startsWith('/api/') ||
@@ -37,11 +37,11 @@ export async function middleware(request: NextRequest) {
             ...options,
             path: options.path || '/',
             sameSite: (options.sameSite || 'lax') as 'lax' | 'strict' | 'none',
-            secure: request.headers.get('x-forwarded-proto') === 'https' || 
+            secure: request.headers.get('x-forwarded-proto') === 'https' ||
                     request.nextUrl.protocol === 'https:',
             httpOnly: options.httpOnly !== false,
           }
-          
+
           request.cookies.set(cookieOptions)
           response = NextResponse.next({
             request: {
@@ -58,7 +58,7 @@ export async function middleware(request: NextRequest) {
             path: options.path || '/',
             maxAge: 0,
           }
-          
+
           request.cookies.set(cookieOptions)
           response = NextResponse.next({
             request: {
@@ -83,7 +83,7 @@ export const config = {
      * Match all request paths except:
      * - Static files
      * - API routes
-     * 
+     *
      * Nota: La exclusión real se hace en el código del middleware
      * para mayor control y evitar problemas con AWS Amplify
      */
