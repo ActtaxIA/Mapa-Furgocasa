@@ -11,8 +11,6 @@ import { VisitasTab } from '@/components/perfil/VisitasTab'
 import { ValoracionesTab } from '@/components/perfil/ValoracionesTab'
 import { FavoritosTab } from '@/components/perfil/FavoritosTab'
 import { RutasTab } from '@/components/perfil/RutasTab'
-import { MiAutocaravanaTab } from '@/components/perfil/MiAutocaravanaTab'
-import { MisReportesTab } from '@/components/perfil/MisReportesTab'
 import { 
   UserCircleIcon,
   EnvelopeIcon,
@@ -21,14 +19,11 @@ import {
   HeartIcon,
   ClockIcon,
   ArrowLeftIcon,
-  ChartBarIcon,
   StarIcon,
-  MapIcon,
-  TruckIcon,
-  ExclamationTriangleIcon
+  MapIcon
 } from '@heroicons/react/24/outline'
 
-type TabType = 'perfil' | 'visitas' | 'valoraciones' | 'favoritos' | 'rutas' | 'autocaravana' | 'reportes'
+type TabType = 'perfil' | 'visitas' | 'valoraciones' | 'favoritos' | 'rutas'
 
 export default function PerfilPage() {
   const [user, setUser] = useState<any>(null)
@@ -295,33 +290,6 @@ export default function PerfilPage() {
                     {stats.totalRutas}
                   </span>
                 </button>
-                <button
-                  onClick={() => setActiveTab('autocaravana')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    activeTab === 'autocaravana'
-                      ? 'bg-sky-50 text-sky-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <TruckIcon className="w-5 h-5" />
-                  Mi Autocaravana
-                </button>
-                <button
-                  onClick={() => setActiveTab('reportes')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    activeTab === 'reportes'
-                      ? 'bg-sky-50 text-sky-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <ExclamationTriangleIcon className="w-5 h-5" />
-                  Mis Reportes
-                  {stats.totalReportesNoLeidos > 0 && (
-                    <span className="ml-auto text-xs bg-red-500 text-white px-2 py-1 rounded-full font-semibold">
-                      {stats.totalReportesNoLeidos}
-                    </span>
-                  )}
-                </button>
               </nav>
 
               {/* Quick Info */}
@@ -494,8 +462,6 @@ export default function PerfilPage() {
               {activeTab === 'valoraciones' && <ValoracionesTab userId={user.id} />}
               {activeTab === 'favoritos' && <FavoritosTab userId={user.id} />}
               {activeTab === 'rutas' && <RutasTab userId={user.id} />}
-              {activeTab === 'autocaravana' && <MiAutocaravanaTab userId={user.id} />}
-              {activeTab === 'reportes' && <MisReportesTab userId={user.id} />}
             </div>
           </div>
         </div>

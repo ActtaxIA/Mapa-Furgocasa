@@ -9,6 +9,7 @@ import {
   UserCircleIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
+  TruckIcon,
 } from "@heroicons/react/24/outline";
 
 export function Navbar() {
@@ -193,6 +194,14 @@ export function Navbar() {
                         >
                           <UserCircleIcon className="w-5 h-5" />
                           Mi Perfil
+                        </Link>
+                        <Link
+                          href="/mis-autocaravanas"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          <TruckIcon className="w-5 h-5" />
+                          Mis Autocaravanas
                         </Link>
                         <button
                           onClick={handleLogout}
