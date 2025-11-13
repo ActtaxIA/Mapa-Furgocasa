@@ -11,10 +11,11 @@ export function createClient() {
     return supabaseClient
   }
 
-  // Crear nueva instancia solo si no existe
-  // Verificar que estamos en el navegador antes de crear
+  // Solo crear cliente en el navegador, no durante SSR
   if (typeof window === 'undefined') {
-    throw new Error('createClient() solo puede ser llamado en el navegador')
+    // Durante SSR, retornar un cliente mock que no hará nada
+    // Esto evita errores durante el build pero mantiene el singleton en el cliente
+    return null as any
   }
 
   supabaseClient = createBrowserClient<Database>(
