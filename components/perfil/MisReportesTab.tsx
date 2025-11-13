@@ -33,7 +33,13 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       const data = await response.json()
 
       if (response.ok) {
-        setReportes(data.reportes || [])
+        // Mapear reporte_id a id para compatibilidad con el tipo ReporteCompletoUsuario
+        const reportesMapeados = (data.reportes || []).map((r: any) => ({
+          ...r,
+          id: r.reporte_id || r.id,
+          vehiculo_afectado_id: r.vehiculo_id || r.vehiculo_afectado_id
+        }))
+        setReportes(reportesMapeados)
       } else {
         console.error('Error cargando reportes:', data.error)
       }
