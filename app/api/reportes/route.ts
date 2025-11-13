@@ -53,7 +53,8 @@ export async function POST(request: Request) {
     const body = await request.json()
     const {
       qr_code_id,
-      vehiculo_id, // Nuevo: aceptar vehiculo_id directamente
+      vehiculo_id,
+      matricula, // Nuevo: aceptar matrícula directamente
       matricula_tercero,
       descripcion_tercero,
       testigo_nombre,
@@ -69,10 +70,10 @@ export async function POST(request: Request) {
       fotos_urls
     } = body
 
-    // Validaciones básicas - aceptar qr_code_id o vehiculo_id
-    if (!qr_code_id && !vehiculo_id) {
+    // Validaciones básicas - aceptar qr_code_id, vehiculo_id o matricula
+    if (!qr_code_id && !vehiculo_id && !matricula) {
       return NextResponse.json(
-        { error: 'QR code o ID de vehículo requerido' },
+        { error: 'QR code, ID de vehículo o matrícula requerido' },
         { status: 400 }
       )
     }
@@ -140,7 +141,25 @@ export async function POST(request: Request) {
     // Obtener vehiculo_afectado_id
     let vehiculo_afectado_id: string | null = null
 
-    if (vehiculo_id) {
+    if (matricula) {
+      // Si se proporciona matrícula directamente, buscar vehículo por matrícula
+      const { data: vehiculoData, error: vehiculoError } = await supabase
+        .from('vehiculos_registrados')
+        .select('id')
+        .eq('matricula', matricula.trim().toUpperCase())
+        .eq('activo', true)
+        .single()
+
+      if (vehiculoError || !vehiculoData) {
+        console.error('Error buscando vehículo por matrícula:', vehiculoError)
+        return NextResponse.json(
+          { error: 'Vehículo no encontrado o inactivo' },
+          { status: 404 }
+        )
+      }
+
+      vehiculo_afectado_id = vehiculoData.id
+    } else if (vehiculo_id) {
       // Si se proporciona vehiculo_id directamente, validar que existe
       const { data: vehiculoData, error: vehiculoError } = await supabase
         .from('vehiculos_registrados')

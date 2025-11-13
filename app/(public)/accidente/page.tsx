@@ -302,7 +302,7 @@ export default function ReporteAccidentePage() {
     try {
       // Preparar datos del reporte en formato JSON
       const reporteData = {
-        vehiculo_id: vehiculo.id,
+        matricula: vehiculo.matricula, // Usar matrícula como identificador principal
         matricula_tercero: formData.matricula_tercero || null,
         descripcion_tercero: formData.descripcion_tercero || null,
         testigo_nombre: formData.testigo_nombre,
