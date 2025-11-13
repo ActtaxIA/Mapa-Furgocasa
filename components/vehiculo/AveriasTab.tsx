@@ -177,20 +177,29 @@ export default function AveriasTab({ vehiculoId }: Props) {
     }
   }
 
-  const handleEditar = (averia: Averia) => {
+  const handleEditar = (averia: any) => {
+    // Mapear de BD (severidad) a formulario (gravedad)
+    const severidadToGravedadMap: { [key: string]: string } = {
+      'baja': 'leve', 'media': 'moderada', 'alta': 'grave', 'critica': 'critica'
+    }
+    // Mapear de BD (estado) a formulario (estado)
+    const estadoMap: { [key: string]: string } = {
+      'pendiente': 'pendiente', 'en_reparacion': 'en_reparacion', 'resuelto': 'reparada'
+    }
+    
     setFormData({
-      tipo_averia: averia.tipo_averia,
-      descripcion: averia.descripcion,
-      fecha_averia: averia.fecha_averia,
+      tipo_averia: averia.categoria || '',
+      descripcion: averia.descripcion || '',
+      fecha_averia: averia.fecha_averia || '',
       fecha_resolucion: averia.fecha_resolucion || '',
       kilometraje: averia.kilometraje?.toString() || '',
-      coste_mano_obra: averia.coste_mano_obra?.toString() || '',
-      coste_piezas: averia.coste_piezas?.toString() || '',
+      coste_mano_obra: averia.coste_reparacion?.toString() || '',
+      coste_piezas: '', // No está en BD como campo separado
       taller: averia.taller || '',
-      ubicacion_averia: averia.ubicacion_averia || '',
-      gravedad: averia.gravedad,
-      estado: averia.estado,
-      garantia: averia.garantia,
+      ubicacion_averia: '', // No está en BD
+      gravedad: severidadToGravedadMap[averia.severidad] || 'moderada',
+      estado: estadoMap[averia.estado] || 'pendiente',
+      garantia: averia.en_garantia || false,
       notas: averia.notas || ''
     })
     setEditandoId(averia.id)
@@ -618,8 +627,8 @@ export default function AveriasTab({ vehiculoId }: Props) {
                         <WrenchIcon className="h-5 w-5 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
                         <div>
                           <div className="text-sm font-medium text-gray-900">
-                            {averia.tipo_averia.replace('_', ' ')}
-                            {averia.garantia && (
+                            {averia.categoria?.replace('_', ' ') || 'Sin categoría'}
+                            {averia.en_garantia && (
                               <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                                 Garantía
                               </span>
@@ -650,22 +659,20 @@ export default function AveriasTab({ vehiculoId }: Props) {
                       <div className="text-sm font-medium text-gray-900">
                         {averia.coste_total ? `${averia.coste_total.toFixed(2)} €` : '-'}
                       </div>
-                      {(averia.coste_mano_obra || averia.coste_piezas) && (
+                      {(averia.coste_reparacion || averia.coste_total) && (
                         <div className="text-xs text-gray-500">
-                          {averia.coste_mano_obra && `MO: ${averia.coste_mano_obra.toFixed(2)}€`}
-                          {averia.coste_mano_obra && averia.coste_piezas && ' | '}
-                          {averia.coste_piezas && `Piezas: ${averia.coste_piezas.toFixed(2)}€`}
+                          {averia.coste_reparacion && `Reparación: ${averia.coste_reparacion.toFixed(2)}€`}
                         </div>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getGravedadColor(averia.gravedad)}`}>
-                        {averia.gravedad}
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getGravedadColor(averia.severidad || 'media')}`}>
+                        {averia.severidad || 'media'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoColor(averia.estado)}`}>
-                        {averia.estado.replace('_', ' ')}
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoColor(averia.estado || 'pendiente')}`}>
+                        {(averia.estado || 'pendiente').replace('_', ' ')}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">

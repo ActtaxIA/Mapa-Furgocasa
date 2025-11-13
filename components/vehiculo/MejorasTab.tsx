@@ -156,20 +156,20 @@ export default function MejorasTab({ vehiculoId }: Props) {
     }
   }
 
-  const handleEditar = (mejora: Mejora) => {
+  const handleEditar = (mejora: any) => {
     setFormData({
-      tipo_mejora: mejora.tipo_mejora,
-      nombre: mejora.nombre,
+      tipo_mejora: mejora.categoria || '',
+      nombre: mejora.titulo || '',
       descripcion: mejora.descripcion || '',
-      fecha_instalacion: mejora.fecha_instalacion,
-      coste_producto: mejora.coste_producto?.toString() || '',
-      coste_instalacion: mejora.coste_instalacion?.toString() || '',
-      marca: mejora.marca || '',
-      modelo: mejora.modelo || '',
-      proveedor: mejora.proveedor || '',
-      ubicacion_instalacion: mejora.ubicacion_instalacion || '',
-      garantia_meses: mejora.garantia_meses?.toString() || '',
-      mejora_valor: mejora.mejora_valor,
+      fecha_instalacion: mejora.fecha || '',
+      coste_producto: mejora.coste_materiales?.toString() || '',
+      coste_instalacion: mejora.coste_mano_obra?.toString() || '',
+      marca: '', // No está en BD
+      modelo: '', // No está en BD
+      proveedor: mejora.instalado_por || '',
+      ubicacion_instalacion: '', // No está en BD
+      garantia_meses: '', // No está en BD
+      mejora_valor: false, // No está en BD
       notas: mejora.notas || ''
     })
     setEditandoId(mejora.id)
@@ -560,15 +560,10 @@ export default function MejorasTab({ vehiculoId }: Props) {
                         <SparklesIcon className="h-5 w-5 text-primary-600 mr-2 mt-0.5 flex-shrink-0" />
                         <div>
                           <div className="text-sm font-medium text-gray-900">
-                            {mejora.nombre}
-                            {mejora.mejora_valor && (
-                              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                +Valor
-                              </span>
-                            )}
+                            {mejora.titulo || 'Sin nombre'}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
-                            {mejora.tipo_mejora.replace('_', ' ')}
+                            {mejora.categoria?.replace('_', ' ') || 'Sin categoría'}
                           </div>
                           {mejora.descripcion && (
                             <div className="text-sm text-gray-500 mt-1">
@@ -579,28 +574,25 @@ export default function MejorasTab({ vehiculoId }: Props) {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{mejora.marca || '-'}</div>
-                      {mejora.modelo && (
-                        <div className="text-xs text-gray-500">{mejora.modelo}</div>
-                      )}
+                      <div className="text-sm text-gray-900">{mejora.instalado_por || '-'}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatearFecha(mejora.fecha_instalacion)}
+                      {formatearFecha(mejora.fecha)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
                         {mejora.coste_total ? `${mejora.coste_total.toFixed(2)} €` : '-'}
                       </div>
-                      {(mejora.coste_producto || mejora.coste_instalacion) && (
+                      {(mejora.coste_materiales || mejora.coste_mano_obra) && (
                         <div className="text-xs text-gray-500">
-                          {mejora.coste_producto && `Prod: ${mejora.coste_producto.toFixed(2)}€`}
-                          {mejora.coste_producto && mejora.coste_instalacion && ' | '}
-                          {mejora.coste_instalacion && `Inst: ${mejora.coste_instalacion.toFixed(2)}€`}
+                          {mejora.coste_materiales && `Mat: ${mejora.coste_materiales.toFixed(2)}€`}
+                          {mejora.coste_materiales && mejora.coste_mano_obra && ' | '}
+                          {mejora.coste_mano_obra && `MO: ${mejora.coste_mano_obra.toFixed(2)}€`}
                         </div>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {mejora.garantia_meses ? `${mejora.garantia_meses} meses` : '-'}
+                      -
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                       <button
