@@ -107,20 +107,23 @@ export default function MejorasTab({ vehiculoId }: Props) {
       setGuardando(true)
       setMensaje(null)
 
+      // Calcular coste total
+      const costeMateriales = formData.coste_producto ? parseFloat(formData.coste_producto) : 0
+      const costeManoObra = formData.coste_instalacion ? parseFloat(formData.coste_instalacion) : 0
+      const costeTotal = costeMateriales + costeManoObra
+
+      // Mapear campos del formulario a los nombres de la BD
       const datos = {
         vehiculo_id: vehiculoId,
-        tipo_mejora: formData.tipo_mejora,
-        nombre: formData.nombre,
+        titulo: formData.nombre,  // BD espera 'titulo'
+        categoria: formData.tipo_mejora,  // BD espera 'categoria'
         descripcion: formData.descripcion || null,
-        fecha_instalacion: formData.fecha_instalacion,
-        coste_producto: formData.coste_producto ? parseFloat(formData.coste_producto) : null,
-        coste_instalacion: formData.coste_instalacion ? parseFloat(formData.coste_instalacion) : null,
-        marca: formData.marca || null,
-        modelo: formData.modelo || null,
-        proveedor: formData.proveedor || null,
-        ubicacion_instalacion: formData.ubicacion_instalacion || null,
-        garantia_meses: formData.garantia_meses ? parseInt(formData.garantia_meses) : null,
-        mejora_valor: formData.mejora_valor,
+        fecha: formData.fecha_instalacion,  // BD espera 'fecha'
+        coste_materiales: costeMateriales || null,  // BD espera 'coste_materiales'
+        coste_mano_obra: costeManoObra || null,  // BD espera 'coste_mano_obra'
+        coste_total: costeTotal > 0 ? costeTotal : null,
+        aumenta_valor: formData.mejora_valor,  // BD espera 'aumenta_valor'
+        instalado_por: formData.proveedor || null,  // BD espera 'instalado_por'
         notas: formData.notas || null
       }
 

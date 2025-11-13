@@ -104,20 +104,19 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
       setGuardando(true)
       setMensaje(null)
 
+      // Mapear campos del formulario a los nombres de la BD
       const datos = {
         vehiculo_id: vehiculoId,
-        tipo_mantenimiento: formData.tipo_mantenimiento,
+        tipo: formData.tipo_mantenimiento,  // BD espera 'tipo'
         descripcion: formData.descripcion || null,
-        fecha_programada: formData.fecha_programada || null,
-        fecha_realizada: formData.fecha_realizada || null,
+        fecha: formData.fecha_realizada || formData.fecha_programada || null,  // BD espera 'fecha'
         kilometraje: formData.kilometraje ? parseInt(formData.kilometraje) : null,
         coste: formData.coste ? parseFloat(formData.coste) : null,
         taller: formData.taller || null,
-        ubicacion_taller: formData.ubicacion_taller || null,
+        direccion_taller: formData.ubicacion_taller || null,  // BD espera 'direccion_taller'
         notas: formData.notas || null,
-        proximo_mantenimiento_km: formData.proximo_mantenimiento_km ? parseInt(formData.proximo_mantenimiento_km) : null,
-        proximo_mantenimiento_fecha: formData.proximo_mantenimiento_fecha || null,
-        estado: formData.estado
+        kilometraje_proximo: formData.proximo_mantenimiento_km ? parseInt(formData.proximo_mantenimiento_km) : null,  // BD espera 'kilometraje_proximo'
+        proximo_mantenimiento: formData.proximo_mantenimiento_fecha || null  // BD espera 'proximo_mantenimiento'
       }
 
       const url = editandoId

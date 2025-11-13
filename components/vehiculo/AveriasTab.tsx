@@ -109,20 +109,26 @@ export default function AveriasTab({ vehiculoId }: Props) {
       setGuardando(true)
       setMensaje(null)
 
+      // Calcular coste total
+      const costeManoObra = formData.coste_mano_obra ? parseFloat(formData.coste_mano_obra) : 0
+      const costePiezas = formData.coste_piezas ? parseFloat(formData.coste_piezas) : 0
+      const costeTotal = costeManoObra + costePiezas
+
+      // Mapear campos del formulario a los nombres de la BD
       const datos = {
         vehiculo_id: vehiculoId,
-        tipo_averia: formData.tipo_averia,
+        titulo: `Avería: ${formData.tipo_averia}`,  // BD requiere 'titulo' (NOT NULL)
+        categoria: formData.tipo_averia,  // BD espera 'categoria'
         descripcion: formData.descripcion,
         fecha_averia: formData.fecha_averia,
         fecha_resolucion: formData.fecha_resolucion || null,
         kilometraje: formData.kilometraje ? parseInt(formData.kilometraje) : null,
-        coste_mano_obra: formData.coste_mano_obra ? parseFloat(formData.coste_mano_obra) : null,
-        coste_piezas: formData.coste_piezas ? parseFloat(formData.coste_piezas) : null,
+        coste_reparacion: costeManoObra || null,  // BD espera 'coste_reparacion'
+        coste_total: costeTotal > 0 ? costeTotal : null,
         taller: formData.taller || null,
-        ubicacion_averia: formData.ubicacion_averia || null,
-        gravedad: formData.gravedad,
+        severidad: formData.gravedad,  // BD espera 'severidad'
         estado: formData.estado,
-        garantia: formData.garantia,
+        en_garantia: formData.garantia,  // BD espera 'en_garantia'
         notas: formData.notas || null
       }
 
