@@ -162,8 +162,7 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
       ubicacion_taller: mantenimiento.direccion_taller || '',
       notas: mantenimiento.notas || '',
       proximo_mantenimiento_km: mantenimiento.kilometraje_proximo?.toString() || '',
-      proximo_mantenimiento_fecha: mantenimiento.proximo_mantenimiento || '',
-      estado: mantenimiento.estado || 'pendiente'
+      proximo_mantenimiento_fecha: mantenimiento.proximo_mantenimiento || ''
     })
     setEditandoId(mantenimiento.id)
     setMostrarFormulario(true)
@@ -191,18 +190,6 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
     }
   }
 
-  const getEstadoColor = (estado: string) => {
-    switch (estado) {
-      case 'completado':
-        return 'bg-green-100 text-green-800'
-      case 'pendiente':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'vencido':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
 
   const formatearFecha = (fecha: string | null) => {
     if (!fecha) return 'No especificada'
@@ -521,9 +508,6 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Taller
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Estado
-                  </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Acciones
                   </th>
@@ -568,11 +552,6 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
                       {mantenimiento.direccion_taller && (
                         <div className="text-xs text-gray-500">{mantenimiento.direccion_taller}</div>
                       )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoColor(mantenimiento.estado || 'pendiente')}`}>
-                        {mantenimiento.estado || 'pendiente'}
-                      </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                       <button

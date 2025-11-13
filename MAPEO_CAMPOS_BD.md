@@ -43,6 +43,7 @@
 | `notas` | `notas` | ✅ IGUAL |
 | `proximo_mantenimiento_km` | `kilometraje_proximo` | ⚠️ DIFERENTE |
 | `proximo_mantenimiento_fecha` | `proximo_mantenimiento` | ⚠️ DIFERENTE |
+| `estado` | ❌ NO EXISTE | Solo en formulario, no se guarda |
 
 ### Interface TypeScript Correcta
 ```typescript
@@ -306,4 +307,3 @@ titulo: formData.nombre || 'Mejora sin nombre' // ✅
 **Fecha de creación:** 13 de noviembre de 2025  
 **Última actualización:** 13 de noviembre de 2025  
 **Mantenedor:** Equipo Mapa Furgocasa
-
