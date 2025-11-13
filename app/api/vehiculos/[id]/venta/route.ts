@@ -32,9 +32,9 @@ export async function GET(
       .from('vehiculo_valoracion_economica')
       .select('*')
       .eq('vehiculo_id', params.id)
-      .single()
+      .maybeSingle()
 
-    if (error && error.code !== 'PGRST116') {
+    if (error) {
       throw error
     }
 
@@ -93,18 +93,48 @@ export async function PUT(
       return NextResponse.json({ error: 'Vehículo no encontrado' }, { status: 404 })
     }
 
-    // Actualizar el estado de venta
-    const { data, error } = await supabase
+    // Verificar si existe el registro
+    const { data: existingData } = await supabase
       .from('vehiculo_valoracion_economica')
-      .update({
-        en_venta,
-        precio_venta_deseado,
-        fecha_puesta_venta: en_venta ? new Date().toISOString() : null,
-        updated_at: new Date().toISOString()
-      })
+      .select('id')
       .eq('vehiculo_id', params.id)
-      .select()
-      .single()
+      .maybeSingle()
+
+    let data, error
+
+    if (existingData) {
+      // Actualizar registro existente
+      const result = await supabase
+        .from('vehiculo_valoracion_economica')
+        .update({
+          en_venta,
+          precio_venta_deseado,
+          fecha_puesta_venta: en_venta ? new Date().toISOString() : null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('vehiculo_id', params.id)
+        .select()
+        .single()
+      
+      data = result.data
+      error = result.error
+    } else {
+      // Crear nuevo registro
+      const result = await supabase
+        .from('vehiculo_valoracion_economica')
+        .insert({
+          vehiculo_id: params.id,
+          user_id: user.id,
+          en_venta,
+          precio_venta_deseado,
+          fecha_puesta_venta: en_venta ? new Date().toISOString() : null
+        })
+        .select()
+        .single()
+      
+      data = result.data
+      error = result.error
+    }
 
     if (error) throw error
 
@@ -156,23 +186,58 @@ export async function POST(
       return NextResponse.json({ error: 'Vehículo no encontrado' }, { status: 404 })
     }
 
-    // Registrar la venta con todos los campos
-    const { data, error } = await supabase
+    // Verificar si existe el registro
+    const { data: existingData } = await supabase
       .from('vehiculo_valoracion_economica')
-      .update({
-        vendido: true,
-        precio_venta_final,
-        fecha_venta,
-        comprador_tipo,
-        kilometros_venta,
-        estado_venta,
-        notas_venta,
-        en_venta: false,
-        updated_at: new Date().toISOString()
-      })
+      .select('id')
       .eq('vehiculo_id', params.id)
-      .select()
-      .single()
+      .maybeSingle()
+
+    let data, error
+
+    if (existingData) {
+      // Actualizar registro existente
+      const result = await supabase
+        .from('vehiculo_valoracion_economica')
+        .update({
+          vendido: true,
+          precio_venta_final,
+          fecha_venta,
+          comprador_tipo,
+          kilometros_venta,
+          estado_venta,
+          notas_venta,
+          en_venta: false,
+          updated_at: new Date().toISOString()
+        })
+        .eq('vehiculo_id', params.id)
+        .select()
+        .single()
+      
+      data = result.data
+      error = result.error
+    } else {
+      // Crear nuevo registro
+      const result = await supabase
+        .from('vehiculo_valoracion_economica')
+        .insert({
+          vehiculo_id: params.id,
+          user_id: user.id,
+          vendido: true,
+          precio_venta_final,
+          fecha_venta,
+          comprador_tipo,
+          kilometros_venta,
+          estado_venta,
+          notas_venta,
+          en_venta: false
+        })
+        .select()
+        .single()
+      
+      data = result.data
+      error = result.error
+    }
 
     if (error) throw error
 
