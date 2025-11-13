@@ -10,7 +10,7 @@ import { NextResponse } from 'next/server'
 // PUT: Establecer una foto como principal
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -25,6 +25,7 @@ export async function PUT(
       )
     }
 
+    const params = await context.params
     const vehiculoId = params.id
     const { fotoUrl } = await request.json()
 

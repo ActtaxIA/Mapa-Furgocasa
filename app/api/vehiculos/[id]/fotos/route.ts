@@ -10,7 +10,7 @@ import { NextResponse } from 'next/server'
 // POST: Subir una foto adicional
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -25,6 +25,7 @@ export async function POST(
       )
     }
 
+    const params = await context.params
     const vehiculoId = params.id
 
     // Verificar que el vehículo pertenece al usuario
@@ -155,7 +156,7 @@ export async function POST(
 // DELETE: Eliminar una foto
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -170,6 +171,7 @@ export async function DELETE(
       )
     }
 
+    const params = await context.params
     const vehiculoId = params.id
     const { fotoUrl, esFotoPrincipal } = await request.json()
 
