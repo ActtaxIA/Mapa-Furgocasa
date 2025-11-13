@@ -504,6 +504,71 @@ export function MiAutocaravanaTab({ userId }: Props) {
                 </div>
               </div>
 
+              {/* Diseños descargables para imprimir junto al QR */}
+              <div className="mt-4">
+                <div className="mb-2">
+                  <p className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                    <span>🎨</span> Diseños para imprimir y pegar junto al QR (opcional)
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    Descarga un cartel llamativo para motivar a los testigos a reportar. Imprime en tamaño A5 o A6.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Diseño 1 - Urgente */}
+                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                    <img src="/designs/qr-urgente.svg" alt="Diseño Urgente - ¿Viste un golpe?" className="w-full h-44 object-cover" />
+                    <div className="p-3 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">Urgente / Alta visibilidad</p>
+                        <p className="text-xs text-gray-500">Naranja · Mensaje directo</p>
+                      </div>
+                      <a
+                        href="/designs/qr-urgente.svg"
+                        download={`Cartel-QR-Urgente-${vehiculo.matricula}.svg`}
+                        className="px-3 py-1.5 bg-primary-600 text-white text-xs rounded-lg hover:bg-primary-700"
+                      >
+                        Descargar
+                      </a>
+                    </div>
+                  </div>
+                  {/* Diseño 2 - Emocional */}
+                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                    <img src="/designs/qr-emocional.svg" alt="Diseño Emocional - Haz lo que te gustaría..." className="w-full h-44 object-cover" />
+                    <div className="p-3 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">Emocional / Solidario</p>
+                        <p className="text-xs text-gray-500">Azul · Mensaje humano</p>
+                      </div>
+                      <a
+                        href="/designs/qr-emocional.svg"
+                        download={`Cartel-QR-Emocional-${vehiculo.matricula}.svg`}
+                        className="px-3 py-1.5 bg-primary-600 text-white text-xs rounded-lg hover:bg-primary-700"
+                      >
+                        Descargar
+                      </a>
+                    </div>
+                  </div>
+                  {/* Diseño 3 - Comunidad */}
+                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                    <img src="/designs/qr-comunidad.svg" alt="Diseño Comunidad - Nos cuidamos entre todos" className="w-full h-44 object-cover" />
+                    <div className="p-3 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">Comunidad / Viajeros</p>
+                        <p className="text-xs text-gray-500">Verde · #SomosComunidad</p>
+                      </div>
+                      <a
+                        href="/designs/qr-comunidad.svg"
+                        download={`Cartel-QR-Comunidad-${vehiculo.matricula}.svg`}
+                        className="px-3 py-1.5 bg-primary-600 text-white text-xs rounded-lg hover:bg-primary-700"
+                      >
+                        Descargar
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Acciones */}
               <div className="mt-4 flex justify-between items-center">
                 <Link
