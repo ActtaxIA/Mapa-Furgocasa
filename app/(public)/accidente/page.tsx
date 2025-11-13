@@ -352,9 +352,14 @@ export default function ReporteAccidentePage() {
         setMapa(null);
         setMapaCargado(false);
       } else {
+        const errorMsg = data.details 
+          ? `${data.error}: ${data.details}` 
+          : data.error || "Error al enviar el reporte";
+        
+        console.error("Error del servidor:", data);
         setMessage({
           type: "error",
-          text: data.error || "Error al enviar el reporte",
+          text: errorMsg,
         });
       }
     } catch (error) {

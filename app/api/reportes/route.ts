@@ -11,10 +11,10 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   try {
     const supabase = await createClient()
-    
+
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     if (authError || !user) {
       return NextResponse.json(
         { error: 'No autenticado' },
@@ -49,7 +49,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
-    
+
     const body = await request.json()
     const {
       qr_code_id,
@@ -120,7 +120,7 @@ export async function POST(request: Request) {
     // Validar coordenadas
     const lat = parseFloat(ubicacion_lat)
     const lng = parseFloat(ubicacion_lng)
-    
+
     if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
       return NextResponse.json(
         { error: 'Las coordenadas de ubicación no son válidas' },
@@ -237,7 +237,11 @@ export async function POST(request: Request) {
     if (insertError) {
       console.error('Error insertando reporte:', insertError)
       return NextResponse.json(
-        { error: 'Error al crear reporte' },
+        { 
+          error: 'Error al crear reporte',
+          details: insertError.message,
+          code: insertError.code
+        },
         { status: 500 }
       )
     }
@@ -250,12 +254,15 @@ export async function POST(request: Request) {
       message: 'Reporte creado correctamente. El propietario ha sido notificado.'
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error en POST /api/reportes:', error)
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { 
+        error: 'Error interno del servidor',
+        details: error.message || 'Error desconocido',
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      },
       { status: 500 }
     )
   }
 }
-
