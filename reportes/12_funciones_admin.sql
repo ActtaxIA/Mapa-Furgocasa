@@ -85,25 +85,40 @@ BEGIN
     COALESCE(v.marca, 'Sin marca')::VARCHAR as marca,
     COALESCE(v.modelo, 'Sin modelo')::VARCHAR as modelo,
     COUNT(DISTINCT v.id)::BIGINT as cantidad,
-    ROUND(AVG(v.año), 1) as año_promedio,
-    ROUND(AVG(k.km_actual), 0) as km_promedio,
-    ROUND(AVG(ve.precio_compra), 2) as precio_compra_promedio,
-    ROUND(AVG(ve.valor_estimado_actual), 2) as valor_actual_promedio,
+    CASE 
+      WHEN COUNT(DISTINCT v.id) > 0 THEN ROUND(AVG(v."año"), 1)
+      ELSE NULL
+    END::DECIMAL as año_promedio,
+    CASE 
+      WHEN COUNT(k.km_actual) > 0 THEN ROUND(AVG(k.km_actual), 0)
+      ELSE NULL
+    END::DECIMAL as km_promedio,
+    CASE 
+      WHEN COUNT(ve.precio_compra) > 0 THEN ROUND(AVG(ve.precio_compra), 2)
+      ELSE NULL
+    END::DECIMAL as precio_compra_promedio,
+    CASE 
+      WHEN COUNT(ve.valor_estimado_actual) > 0 THEN ROUND(AVG(ve.valor_estimado_actual), 2)
+      ELSE NULL
+    END::DECIMAL as valor_actual_promedio,
     ROUND(AVG(
       CASE
         WHEN ve.precio_compra > 0 AND ve.valor_estimado_actual IS NOT NULL
         THEN ((ve.precio_compra - ve.valor_estimado_actual) / ve.precio_compra * 100)
         ELSE NULL
       END
-    ), 2) as depreciacion_media,
+    ), 2)::DECIMAL as depreciacion_media,
     ROUND(AVG(
       CASE
-        WHEN ve.total_mantenimientos IS NOT NULL AND v.año IS NOT NULL
-        THEN ve.total_mantenimientos / GREATEST(EXTRACT(YEAR FROM CURRENT_DATE) - v.año, 1)
+        WHEN ve.total_mantenimientos IS NOT NULL AND v."año" IS NOT NULL
+        THEN ve.total_mantenimientos / GREATEST(EXTRACT(YEAR FROM CURRENT_DATE) - v."año", 1)
         ELSE NULL
       END
-    ), 2) as coste_mantenimiento_anual,
-    ROUND(AVG(ve.total_averias), 2) as coste_averias_total,
+    ), 2)::DECIMAL as coste_mantenimiento_anual,
+    CASE 
+      WHEN COUNT(ve.total_averias) > 0 THEN ROUND(AVG(ve.total_averias), 2)
+      ELSE 0
+    END::DECIMAL as coste_averias_total,
     COUNT(DISTINCT r.id)::BIGINT as num_reportes_accidentes
   FROM vehiculos_registrados v
   LEFT JOIN vehiculo_valoracion_economica ve ON v.id = ve.vehiculo_id
