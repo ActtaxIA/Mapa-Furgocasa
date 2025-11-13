@@ -12,10 +12,10 @@ import QRCode from 'qrcode'
 export async function GET() {
   try {
     const supabase = await createClient()
-    
+
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     if (authError || !user) {
       return NextResponse.json(
         { error: 'No autenticado' },
@@ -54,10 +54,10 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
-    
+
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     if (authError || !user) {
       return NextResponse.json(
         { error: 'No autenticado' },
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     // Procesar siempre como JSON
     // Las fotos se suben DIRECTAMENTE a Supabase Storage desde el frontend
     const body = await request.json()
-    
+
     const matricula = body.matricula as string
     const marca = body.marca as string | null
     const modelo = body.modelo as string | null
@@ -192,10 +192,10 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const supabase = await createClient()
-    
+
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     if (authError || !user) {
       return NextResponse.json(
         { error: 'No autenticado' },
@@ -256,4 +256,3 @@ export async function DELETE(request: Request) {
     )
   }
 }
-

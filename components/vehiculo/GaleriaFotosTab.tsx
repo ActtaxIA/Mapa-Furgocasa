@@ -132,8 +132,8 @@ export function GaleriaFotosTab({ vehiculoId, fotoUrl, fotosAdicionales }: Props
     setConfirmModal({
       isOpen: true,
       title: 'Eliminar Foto',
-      message: esFotoPrincipal 
-        ? '¿Estás seguro de eliminar la foto principal del vehículo?' 
+      message: esFotoPrincipal
+        ? '¿Estás seguro de eliminar la foto principal del vehículo?'
         : '¿Estás seguro de eliminar esta foto?',
       onConfirm: async () => {
         try {
@@ -204,7 +204,7 @@ export function GaleriaFotosTab({ vehiculoId, fotoUrl, fotosAdicionales }: Props
             {fotos.length} {fotos.length === 1 ? 'foto' : 'fotos'} - Máximo 10 fotos por vehículo
           </p>
         </div>
-        
+
         {fotos.length < 10 && (
           <label className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg cursor-pointer hover:bg-primary-700 transition-colors disabled:opacity-50">
             <PlusIcon className="w-5 h-5 mr-2" />
@@ -344,4 +344,3 @@ export function GaleriaFotosTab({ vehiculoId, fotoUrl, fotosAdicionales }: Props
     </div>
   )
 }
-

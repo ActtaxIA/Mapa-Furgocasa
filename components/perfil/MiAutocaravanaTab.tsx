@@ -82,7 +82,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
       // Bypasea AWS Amplify completamente
       // ============================================================
       let foto_url: string | null = null
-      
+
       if (fotoFile) {
         console.log('📸 [Frontend] Subiendo foto de vehículo directamente a Supabase Storage...')
         const supabase = createClient()
@@ -356,7 +356,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
                     </button>
                   </div>
                 )}
-                
+
                 {/* Botón de subida */}
                 {!fotoPreview && (
                   <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">

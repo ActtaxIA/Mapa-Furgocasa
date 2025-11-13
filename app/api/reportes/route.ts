@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     // Procesar siempre como JSON
     // Las fotos se suben DIRECTAMENTE a Supabase Storage desde el frontend
     const body = await request.json()
-    
+
     const qr_code_id: string | null = body.qr_code_id || null
     const vehiculo_id: string | null = body.vehiculo_id || null
     const matricula: string | null = body.matricula || null
