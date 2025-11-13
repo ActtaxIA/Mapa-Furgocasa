@@ -300,31 +300,30 @@ export default function ReporteAccidentePage() {
     setMessage(null);
 
     try {
-      const reporteData = new FormData();
-      reporteData.append("vehiculo_id", vehiculo.id);
-      reporteData.append("matricula_tercero", formData.matricula_tercero);
-      reporteData.append("descripcion_tercero", formData.descripcion_tercero);
-      reporteData.append("testigo_nombre", formData.testigo_nombre);
-      reporteData.append("testigo_email", formData.testigo_email);
-      reporteData.append("testigo_telefono", formData.testigo_telefono);
-      reporteData.append("descripcion", formData.descripcion);
-      reporteData.append("tipo_dano", formData.tipo_dano);
-      reporteData.append("fecha_accidente", formData.fecha_accidente);
-      reporteData.append("ubicacion_lat", ubicacion.lat.toString());
-      reporteData.append("ubicacion_lng", ubicacion.lng.toString());
-      reporteData.append(
-        "ubicacion_descripcion",
-        formData.ubicacion_descripcion || ubicacion.direccion || ""
-      );
-
-      // Añadir fotos
-      formData.fotos.forEach((foto) => {
-        reporteData.append("fotos", foto);
-      });
+      // Preparar datos del reporte en formato JSON
+      const reporteData = {
+        vehiculo_id: vehiculo.id,
+        matricula_tercero: formData.matricula_tercero || null,
+        descripcion_tercero: formData.descripcion_tercero || null,
+        testigo_nombre: formData.testigo_nombre,
+        testigo_email: formData.testigo_email || null,
+        testigo_telefono: formData.testigo_telefono || null,
+        descripcion: formData.descripcion,
+        tipo_dano: formData.tipo_dano || null,
+        fecha_accidente: formData.fecha_accidente,
+        ubicacion_lat: ubicacion.lat.toString(),
+        ubicacion_lng: ubicacion.lng.toString(),
+        ubicacion_direccion: ubicacion.direccion || null,
+        ubicacion_descripcion: formData.ubicacion_descripcion || ubicacion.direccion || null,
+        fotos_urls: [] // Por ahora sin fotos, se puede implementar después con upload a storage
+      };
 
       const response = await fetch("/api/reportes", {
         method: "POST",
-        body: reporteData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reporteData),
       });
 
       const data = await response.json();

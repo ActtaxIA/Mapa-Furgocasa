@@ -53,6 +53,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     const {
       qr_code_id,
+      vehiculo_id, // Nuevo: aceptar vehiculo_id directamente
       matricula_tercero,
       descripcion_tercero,
       testigo_nombre,
@@ -68,10 +69,10 @@ export async function POST(request: Request) {
       fotos_urls
     } = body
 
-    // Validaciones básicas
-    if (!qr_code_id) {
+    // Validaciones básicas - aceptar qr_code_id o vehiculo_id
+    if (!qr_code_id && !vehiculo_id) {
       return NextResponse.json(
-        { error: 'QR code inválido' },
+        { error: 'QR code o ID de vehículo requerido' },
         { status: 400 }
       )
     }
@@ -136,29 +137,52 @@ export async function POST(request: Request) {
       )
     }
 
-    // Buscar vehículo por QR code
-    const { data: vehiculoData, error: vehiculoError } = await supabase
-      .rpc('buscar_vehiculo_por_qr', { qr_id: qr_code_id })
+    // Obtener vehiculo_afectado_id
+    let vehiculo_afectado_id: string | null = null
 
-    if (vehiculoError) {
-      console.error('Error buscando vehículo:', vehiculoError)
-      return NextResponse.json(
-        { error: 'Error al buscar vehículo' },
-        { status: 500 }
-      )
+    if (vehiculo_id) {
+      // Si se proporciona vehiculo_id directamente, validar que existe
+      const { data: vehiculoData, error: vehiculoError } = await supabase
+        .from('vehiculos_registrados')
+        .select('id')
+        .eq('id', vehiculo_id)
+        .eq('activo', true)
+        .single()
+
+      if (vehiculoError || !vehiculoData) {
+        console.error('Error buscando vehículo por ID:', vehiculoError)
+        return NextResponse.json(
+          { error: 'Vehículo no encontrado o inactivo' },
+          { status: 404 }
+        )
+      }
+
+      vehiculo_afectado_id = vehiculoData.id
+    } else if (qr_code_id) {
+      // Buscar vehículo por QR code
+      const { data: vehiculoData, error: vehiculoError } = await supabase
+        .rpc('buscar_vehiculo_por_qr', { qr_id: qr_code_id })
+
+      if (vehiculoError) {
+        console.error('Error buscando vehículo:', vehiculoError)
+        return NextResponse.json(
+          { error: 'Error al buscar vehículo' },
+          { status: 500 }
+        )
+      }
+
+      // La función retorna una tabla, obtener el primer resultado
+      const vehiculo = Array.isArray(vehiculoData) ? vehiculoData[0] : vehiculoData
+
+      if (!vehiculo || !vehiculo.existe) {
+        return NextResponse.json(
+          { error: 'Código QR no válido o vehículo no encontrado' },
+          { status: 404 }
+        )
+      }
+
+      vehiculo_afectado_id = vehiculo.vehiculo_id
     }
-
-    // La función retorna una tabla, obtener el primer resultado
-    const vehiculo = Array.isArray(vehiculoData) ? vehiculoData[0] : vehiculoData
-
-    if (!vehiculo || !vehiculo.existe) {
-      return NextResponse.json(
-        { error: 'Código QR no válido o vehículo no encontrado' },
-        { status: 404 }
-      )
-    }
-
-    const vehiculo_afectado_id = vehiculo.vehiculo_id
 
     // Obtener IP del cliente (para prevenir spam)
     const forwarded = request.headers.get('x-forwarded-for')
