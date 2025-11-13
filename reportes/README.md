@@ -285,11 +285,19 @@ SELECT * FROM admin_listado_reportes_accidentes();
 
 **Ejecución en Supabase:**
 
-1. Ve a **Storage** → **Policies** → Bucket `vehiculos`
-2. Copia y pega el contenido del script
-3. Ejecuta el script
+1. Ve a **SQL Editor** en el menú lateral
+2. Crea una nueva query
+3. Copia y pega el contenido de `20_storage_policy_fotos_reportes.sql`
+4. Click en **Run** (Ejecutar)
+5. Verifica que aparezcan las 2 políticas en la query de verificación
 
-**Nota:** Este script es crítico para que los testigos puedan subir fotos al reportar accidentes.
+**Políticas creadas:**
+- `Permitir subida pública de fotos de reportes` (INSERT)
+- `Permitir lectura pública de fotos de reportes` (SELECT)
+
+**Scope:** Carpeta `reportes/` del bucket `vehiculos`
+
+**Nota:** Este script es **crítico** para que los testigos puedan subir fotos al reportar accidentes. Sin estas políticas, la subida de fotos fallará con error 403.
 
 ---
 
