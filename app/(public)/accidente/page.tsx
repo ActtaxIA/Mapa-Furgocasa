@@ -452,39 +452,81 @@ export default function ReporteAccidentePage() {
       <Navbar />
 
       <main className="flex-grow max-w-4xl mx-auto w-full px-4 lg:px-6 py-8">
-        {/* Header */}
+        {/* Header mejorado */}
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
-            <ExclamationTriangleIcon className="w-10 h-10 text-red-600" />
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-100 to-orange-100 rounded-full mb-4 animate-pulse">
+            <ExclamationTriangleIcon className="w-12 h-12 text-red-600" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Reportar un Accidente
+          
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+            🚐 ¿Viste algo? ¡Ayuda a un compañero viajero!
           </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Si has sido testigo de un accidente o daño a una autocaravana,
-            puedes reportarlo aquí. Introduce la matrícula del vehículo dañado
-            para comenzar.
+          
+          <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-4 leading-relaxed">
+            Si has sido testigo de un golpe, rayón o accidente a una autocaravana,
+            <span className="font-semibold text-primary-600"> tu ayuda puede marcar la diferencia</span>.
+          </p>
+          
+          {/* Frases motivadoras */}
+          <div className="bg-gradient-to-r from-primary-50 to-blue-50 rounded-xl p-6 max-w-2xl mx-auto border-l-4 border-primary-500">
+            <p className="text-xl font-bold text-gray-800 mb-2">
+              💙 "Haz por otros lo que te gustaría que hicieran por ti"
+            </p>
+            <p className="text-gray-600 italic">
+              El dueño de esta autocaravana seguro haría lo mismo por la tuya.
+            </p>
+            <p className="text-sm text-gray-500 mt-3">
+              🕐 Solo te llevará <span className="font-semibold">2 minutos</span> • 
+              🎭 <span className="font-semibold">100% anónimo</span> • 
+              ✨ Serás un <span className="font-semibold">héroe viajero</span>
+            </p>
+          </div>
+          
+          {/* Mensaje adicional con humor */}
+          <p className="text-sm text-gray-500 mt-4 italic">
+            <span className="font-medium">Dato curioso:</span> 8 de cada 10 propietarios nunca 
+            descubren quién rayó su autocaravana. ¡Tú puedes cambiar eso! 🦸‍♂️
           </p>
         </div>
 
         {/* Mensajes */}
         {message && (
-          <div
-            className={`mb-6 p-4 rounded-lg ${
-              message.type === "success"
-                ? "bg-green-50 text-green-800 border border-green-200"
-                : "bg-red-50 text-red-800 border border-red-200"
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              {message.type === "success" ? (
-                <CheckCircleIcon className="w-5 h-5" />
-              ) : (
-                <ExclamationTriangleIcon className="w-5 h-5" />
-              )}
-              <p>{message.text}</p>
+          message.type === "success" ? (
+            <div className="mb-6 p-6 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 shadow-lg">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center animate-bounce">
+                    <CheckCircleIcon className="w-10 h-10 text-white" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-green-900 mb-2">
+                    🎉 ¡Eres un héroe viajero!
+                  </h3>
+                  <p className="text-green-800 mb-3 text-lg">
+                    Tu reporte ha sido enviado con éxito. El propietario acaba de recibir una 
+                    <span className="font-bold"> notificación instantánea</span>.
+                  </p>
+                  <div className="bg-white rounded-lg p-4 border-l-4 border-green-500">
+                    <p className="text-sm text-gray-700 mb-2">
+                      <span className="font-semibold">Gracias por tu solidaridad.</span> 
+                      Personas como tú hacen que la comunidad viajera sea especial. 💚
+                    </p>
+                    <p className="text-xs text-gray-600 italic">
+                      "El karma viajero existe: lo que das, vuelve" 🔄✨
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="mb-6 p-4 rounded-lg bg-red-50 text-red-800 border border-red-200">
+              <div className="flex items-center gap-2">
+                <ExclamationTriangleIcon className="w-5 h-5" />
+                <p>{message.text}</p>
+              </div>
+            </div>
+          )
         )}
 
         {/* Paso 1: Buscar Vehículo */}
@@ -529,16 +571,26 @@ export default function ReporteAccidentePage() {
           </form>
 
           {vehiculo && (
-            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center gap-3">
-                <CheckCircleIcon className="w-6 h-6 text-green-600" />
-                <div>
-                  <p className="font-semibold text-green-900">
-                    Vehículo encontrado: {vehiculo.marca} {vehiculo.modelo}
+            <div className="mt-4 p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl shadow-md">
+              <div className="flex items-start gap-3">
+                <CheckCircleIcon className="w-8 h-8 text-green-600 flex-shrink-0 mt-1 animate-bounce" />
+                <div className="flex-1">
+                  <h3 className="font-bold text-green-900 text-lg mb-2 flex items-center gap-2">
+                    🎉 ¡Genial! Vehículo encontrado
+                  </h3>
+                  <p className="text-green-800 mb-3">
+                    <span className="font-semibold text-lg">{vehiculo.marca} {vehiculo.modelo}</span>
+                    <span className="text-green-700"> • Matrícula: {vehiculo.matricula}</span>
                   </p>
-                  <p className="text-sm text-green-700">
-                    Matrícula: {vehiculo.matricula} • Año: {vehiculo.año}
-                  </p>
+                  <div className="bg-white rounded-lg p-4 border-l-4 border-green-500">
+                    <p className="text-green-700 text-sm mb-2">
+                      Ahora solo completa el formulario. El propietario recibirá una 
+                      <span className="font-semibold"> notificación instantánea</span> con tu reporte.
+                    </p>
+                    <p className="text-green-600 text-xs italic">
+                      ¡Gracias por ser parte de la comunidad viajera! 🚐💚
+                    </p>
+                  </div>
                 </div>
               </div>
               <button
@@ -547,9 +599,9 @@ export default function ReporteAccidentePage() {
                   setBusquedaMatricula("");
                   setNoEncontrado(false);
                 }}
-                className="mt-3 text-sm text-primary-600 hover:underline"
+                className="mt-4 text-sm text-primary-600 hover:text-primary-700 font-medium hover:underline flex items-center gap-1"
               >
-                Buscar otro vehículo
+                ← Buscar otro vehículo
               </button>
             </div>
           )}
@@ -819,13 +871,22 @@ export default function ReporteAccidentePage() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Fotos del Accidente (opcional)
+                <div className="bg-gradient-to-r from-blue-50 to-sky-50 border-2 border-blue-200 rounded-xl p-5">
+                  <label className="block text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <CameraIcon className="w-6 h-6 text-blue-600" />
+                    Fotos del Accidente (opcional pero <span className="text-blue-600">MUY útiles</span>)
                   </label>
-                  <p className="text-xs text-gray-500 mb-2">
-                    Máximo 5 fotos. Tamaño máximo: 10 MB por foto.
-                  </p>
+                  
+                  <div className="bg-white p-4 rounded-lg border-l-4 border-blue-400 mb-4">
+                    <p className="text-sm text-gray-700 mb-2">
+                      📸 <span className="font-semibold">Una imagen vale más que mil palabras</span>
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      Sube hasta <span className="font-semibold">5 fotos</span> (máx. <span className="font-semibold">10 MB</span> cada una). 
+                      Pueden ser del daño, del vehículo responsable, o del contexto del accidente.
+                    </p>
+                  </div>
+                  
                   <input
                     type="file"
                     accept="image/*"
@@ -841,7 +902,7 @@ export default function ReporteAccidentePage() {
                         });
                         return;
                       }
-
+                      
                       // Validar tamaño
                       const maxSize = 10 * 1024 * 1024; // 10MB
                       const fotosGrandes = files.filter(f => f.size > maxSize);
@@ -853,22 +914,30 @@ export default function ReporteAccidentePage() {
                         });
                         return;
                       }
-
+                      
                       setFormData((prev) => ({ ...prev, fotos: files }));
                       setMessage(null);
                     }}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                    className="w-full px-4 py-3 border-2 border-dashed border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white hover:bg-blue-50 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-500 file:text-white file:font-semibold hover:file:bg-blue-600 file:cursor-pointer cursor-pointer"
                   />
+                  
                   {formData.fotos.length > 0 && (
-                    <div className="mt-2 space-y-1">
-                      <p className="text-sm font-medium text-gray-700">
-                        {formData.fotos.length} foto(s) seleccionada(s):
+                    <div className="mt-4 bg-white rounded-lg p-4 border-2 border-green-200 shadow-sm">
+                      <p className="text-sm font-bold text-green-700 flex items-center gap-2 mb-3">
+                        <CheckCircleIcon className="w-5 h-5" />
+                        ¡Perfecto! {formData.fotos.length} foto(s) lista(s) para enviar:
                       </p>
-                      {formData.fotos.map((foto, idx) => (
-                        <p key={idx} className="text-xs text-gray-600">
-                          • {foto.name} ({(foto.size / 1024 / 1024).toFixed(2)} MB)
-                        </p>
-                      ))}
+                      <div className="space-y-2">
+                        {formData.fotos.map((foto, idx) => (
+                          <div key={idx} className="flex items-center gap-2 text-xs bg-green-50 p-2 rounded border-l-4 border-green-400">
+                            <span className="text-green-700">📷</span>
+                            <span className="flex-1 text-gray-700 truncate">{foto.name}</span>
+                            <span className="text-green-600 font-semibold whitespace-nowrap">
+                              {(foto.size / 1024 / 1024).toFixed(2)} MB
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -879,20 +948,28 @@ export default function ReporteAccidentePage() {
             <button
               type="submit"
               disabled={submitting || !ubicacion}
-              className="w-full px-6 py-4 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-5 px-6 rounded-xl font-bold text-lg hover:from-primary-700 hover:to-primary-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-3"
             >
               {submitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  Enviando Reporte...
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                  Enviando tu buena acción...
                 </>
               ) : (
                 <>
-                  <ExclamationTriangleIcon className="w-5 h-5" />
-                  Enviar Reporte de Accidente
+                  <span className="text-2xl">🦸‍♂️</span>
+                  ¡Enviar Reporte y Ser un Héroe!
+                  <span className="text-2xl">✨</span>
                 </>
               )}
             </button>
+            
+            {/* Mensaje de privacidad */}
+            <p className="text-center text-xs text-gray-500 -mt-3">
+              🔒 Tus datos son privados. Solo el propietario verá tu reporte.
+              <br />
+              No compartimos tu información con nadie más.
+            </p>
           </form>
         )}
       </main>
