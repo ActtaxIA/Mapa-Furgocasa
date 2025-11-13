@@ -99,7 +99,6 @@ CREATE TABLE IF NOT EXISTS public.reportes_accidentes (
   captcha_verificado BOOLEAN DEFAULT false,
 
   -- Estado del reporte
-  verificado BOOLEAN DEFAULT false, -- Verificado por el propietario
   leido BOOLEAN DEFAULT false, -- Leído por el propietario
   cerrado BOOLEAN DEFAULT false, -- Caso cerrado/resuelto
   notas_propietario TEXT, -- Notas privadas del propietario

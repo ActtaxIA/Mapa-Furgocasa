@@ -9,6 +9,8 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 - 💰 Sistema de Valoración Económica (scripts 08-10)
 - 🤖 Funciones de Análisis e IA (scripts 11-12)
 - 📝 Ampliación de Campos de Compra (script 13)
+- 📋 Cache de Rutas (script 14)
+- 🔧 Simplificación del Sistema (script 15)
 
 ---
 
@@ -219,6 +221,22 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 - `admin_usuarios_top_contribuyentes()` - Usuarios más activos
 
 **Funciones creadas:** 9 funciones de administración
+
+---
+
+### 🔧 `15_eliminar_campo_verificado.sql`
+
+**Descripción:** Simplifica el sistema eliminando el campo innecesario
+
+**IMPORTANTE:**
+- Elimina el campo `verificado` de `reportes_accidentes`
+- Este campo no tiene sentido porque desincentiva reportes
+- Los campos `leido` y `cerrado` son suficientes para gestión
+
+**Resultado:**
+- Sistema más simple y efectivo
+- Menos fricción para los testigos
+- Mejor experiencia de usuario
 
 ---
 
