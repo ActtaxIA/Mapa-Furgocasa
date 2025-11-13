@@ -160,7 +160,7 @@ export async function POST(request: Request) {
         )
       }
 
-      vehiculo_afectado_id = vehiculoData.id
+      vehiculo_afectado_id = (vehiculoData as { id: string }).id
     } else if (vehiculo_id) {
       // Si se proporciona vehiculo_id directamente, validar que existe
       const { data: vehiculoData, error: vehiculoError } = await supabase
@@ -178,7 +178,7 @@ export async function POST(request: Request) {
         )
       }
 
-      vehiculo_afectado_id = vehiculoData.id
+      vehiculo_afectado_id = (vehiculoData as { id: string }).id
     } else if (qr_code_id) {
       // Buscar vehículo por QR code
       const { data: vehiculoData, error: vehiculoError } = await supabase
