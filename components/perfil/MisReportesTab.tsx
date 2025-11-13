@@ -33,12 +33,24 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       const data = await response.json()
 
       if (response.ok) {
+        console.log('📥 Reportes recibidos del API:', data.reportes)
+        
         // Mapear reporte_id a id para compatibilidad con el tipo ReporteCompletoUsuario
-        const reportesMapeados = (data.reportes || []).map((r: any) => ({
-          ...r,
-          id: r.reporte_id || r.id,
-          vehiculo_afectado_id: r.vehiculo_id || r.vehiculo_afectado_id
-        }))
+        const reportesMapeados = (data.reportes || []).map((r: any) => {
+          const mapeado = {
+            ...r,
+            id: r.reporte_id || r.id,
+            vehiculo_afectado_id: r.vehiculo_id || r.vehiculo_afectado_id
+          }
+          console.log('🔄 Reporte mapeado:', { 
+            original_reporte_id: r.reporte_id, 
+            original_id: r.id,
+            final_id: mapeado.id 
+          })
+          return mapeado
+        })
+        
+        console.log('✅ Reportes mapeados finales:', reportesMapeados)
         setReportes(reportesMapeados)
       } else {
         console.error('Error cargando reportes:', data.error)
@@ -51,24 +63,38 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
   }
 
   const handleMarcarLeido = async (reporteId: string) => {
+    console.log('🔵 handleMarcarLeido llamado con ID:', reporteId)
+    
+    if (!reporteId || reporteId === 'undefined') {
+      console.error('❌ ERROR: reporteId es undefined o inválido')
+      alert('Error: No se puede marcar como leído. ID de reporte inválido. Por favor, recarga la página.')
+      return
+    }
+    
     setUpdating(true)
     try {
-      const response = await fetch(`/api/reportes/${reporteId}`, {
+      const url = `/api/reportes/${reporteId}`
+      console.log('📤 Haciendo PATCH a:', url)
+      
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ leido: true })
       })
 
       if (response.ok) {
+        console.log('✅ Reporte marcado como leído exitosamente')
         loadReportes()
         // Llamar al callback para actualizar contadores en la página padre
         if (onReporteUpdate) onReporteUpdate()
       } else {
         const data = await response.json()
-        console.error('Error marcando como leído:', data.error)
+        console.error('❌ Error marcando como leído:', data.error)
+        alert(`Error: ${data.error}`)
       }
     } catch (error) {
-      console.error('Error marcando como leído:', error)
+      console.error('❌ Excepción en handleMarcarLeido:', error)
+      alert('Error al marcar como leído. Por favor, intenta de nuevo.')
     } finally {
       setUpdating(false)
     }
