@@ -17,7 +17,8 @@ import {
   TagIcon,
   PencilIcon,
   CheckIcon,
-  XMarkIcon
+  XMarkIcon,
+  PhotoIcon
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { ResumenEconomicoTab } from '@/components/vehiculo/ResumenEconomicoTab'
@@ -26,9 +27,10 @@ import MantenimientosTab from '@/components/vehiculo/MantenimientosTab'
 import AveriasTab from '@/components/vehiculo/AveriasTab'
 import MejorasTab from '@/components/vehiculo/MejorasTab'
 import VentaTab from '@/components/vehiculo/VentaTab'
+import { GaleriaFotosTab } from '@/components/vehiculo/GaleriaFotosTab'
 import { Toast } from '@/components/ui/Toast'
 
-type TabType = 'resumen' | 'compra' | 'mantenimientos' | 'averias' | 'mejoras' | 'venta'
+type TabType = 'resumen' | 'compra' | 'fotos' | 'mantenimientos' | 'averias' | 'mejoras' | 'venta'
 
 export default function VehiculoPage() {
   const params = useParams()
@@ -54,7 +56,7 @@ export default function VehiculoPage() {
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search)
       const tabParam = searchParams.get('tab') as TabType
-      if (tabParam && ['resumen', 'compra', 'mantenimientos', 'averias', 'mejoras', 'venta'].includes(tabParam)) {
+      if (tabParam && ['resumen', 'compra', 'fotos', 'mantenimientos', 'averias', 'mejoras', 'venta'].includes(tabParam)) {
         setActiveTab(tabParam)
       }
     }
@@ -192,6 +194,7 @@ export default function VehiculoPage() {
   const tabs = [
     { id: 'resumen', label: 'Resumen', icon: ChartBarIcon },
     { id: 'compra', label: 'Datos de Compra', icon: CurrencyEuroIcon },
+    { id: 'fotos', label: 'Fotos', icon: PhotoIcon },
     { id: 'mantenimientos', label: 'Mantenimientos', icon: WrenchScrewdriverIcon },
     { id: 'averias', label: 'Averías', icon: ExclamationTriangleIcon },
     { id: 'mejoras', label: 'Mejoras', icon: SparklesIcon },
@@ -348,6 +351,7 @@ export default function VehiculoPage() {
                 const shortLabels: Record<string, string> = {
                   'Resumen': 'Resumen',
                   'Datos de Compra': 'Compra',
+                  'Fotos': 'Fotos',
                   'Mantenimientos': 'Mant.',
                   'Averías': 'Averías',
                   'Mejoras': 'Mejoras',
@@ -386,6 +390,14 @@ export default function VehiculoPage() {
                 // Opcional: cambiar al tab de resumen después de guardar
                 // setActiveTab('resumen')
               }}
+            />
+          )}
+
+          {activeTab === 'fotos' && (
+            <GaleriaFotosTab
+              vehiculoId={vehiculoId}
+              fotoUrl={vehiculo.foto_url}
+              fotosAdicionales={vehiculo.fotos_adicionales || []}
             />
           )}
 
