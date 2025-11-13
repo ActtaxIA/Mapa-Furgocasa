@@ -26,6 +26,13 @@ frontend:
   environment:
     variables:
       NODE_ENV: production
+  customHeaders:
+    - pattern: '/api/**'
+      headers:
+        - key: 'Cache-Control'
+          value: 'no-store, no-cache, must-revalidate'
+        - key: 'Content-Type'
+          value: 'application/json'
 
 # Variables de entorno requeridas (configurar en AWS Amplify Console):
 # CRITICAL (Chatbot):

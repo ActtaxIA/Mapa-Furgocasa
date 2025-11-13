@@ -1,0 +1,13 @@
+# AWS Amplify Redirects Configuration
+# CRÍTICO: Rutas API NO deben ser interceptadas por Amplify
+# Deben ir directamente a Next.js API Routes
+
+# API routes - NO interceptar, pasar directamente a Next.js
+/api/* 200
+
+# Static files
+/_next/* 200
+
+# Next.js pages - SSR
+/* 200
+
