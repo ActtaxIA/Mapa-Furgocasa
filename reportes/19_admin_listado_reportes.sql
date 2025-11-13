@@ -63,4 +63,3 @@ COMMENT ON FUNCTION public.admin_listado_reportes_accidentes() IS 'Devuelve todo
 -- Solo administradores pueden ejecutar esta función
 -- (se controla a nivel de aplicación verificando user_metadata.is_admin)
 -- ===================================================================
-
