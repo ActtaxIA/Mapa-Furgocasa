@@ -72,7 +72,14 @@ export async function POST(
     }
 
     const body = await request.json()
-    const { precio_venta_final, fecha_venta, notas_venta } = body
+    const { 
+      precio_venta_final, 
+      fecha_venta, 
+      comprador_tipo,
+      kilometros_venta,
+      estado_venta,
+      notas_venta 
+    } = body
 
     // Verificar que el vehículo pertenece al usuario
     const { data: vehiculo, error: vehiculoError } = await supabase
@@ -86,13 +93,16 @@ export async function POST(
       return NextResponse.json({ error: 'Vehículo no encontrado' }, { status: 404 })
     }
 
-    // Registrar la venta
+    // Registrar la venta con todos los campos
     const { data, error } = await supabase
       .from('vehiculo_valoracion_economica')
       .update({
         vendido: true,
         precio_venta_final,
         fecha_venta,
+        comprador_tipo,
+        kilometros_venta,
+        estado_venta,
         notas_venta,
         en_venta: false,
         updated_at: new Date().toISOString()

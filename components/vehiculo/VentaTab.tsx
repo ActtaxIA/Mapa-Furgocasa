@@ -73,6 +73,9 @@ export default function VentaTab({ vehiculoId }: Props) {
         body: JSON.stringify({
           precio_venta_final: parseFloat(formData.precio_venta_final),
           fecha_venta: formData.fecha_venta,
+          comprador_tipo: formData.comprador_tipo || null,
+          kilometros_venta: formData.kilometros_venta ? parseInt(formData.kilometros_venta) : null,
+          estado_venta: formData.estado_venta || null,
           notas_venta: formData.notas_venta || null
         })
       })
