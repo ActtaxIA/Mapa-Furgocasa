@@ -211,15 +211,15 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (comprador_tipo && comprador_tipo.trim() !== '') {
       dataToSave.comprador_tipo = comprador_tipo.trim()
     }
-    
+
     if (kilometros_venta && kilometros_venta !== '' && !isNaN(parseInt(kilometros_venta))) {
       dataToSave.kilometros_venta = parseInt(kilometros_venta)
     }
-    
+
     if (estado_venta && estado_venta.trim() !== '') {
       dataToSave.estado_venta = estado_venta.trim()
     }
-    
+
     if (notas_venta && notas_venta.trim() !== '') {
       dataToSave.notas_venta = notas_venta.trim()
     }
@@ -230,11 +230,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     if (existingData) {
       // Actualizar registro existente
+      // IMPORTANTE: Usar el ID del registro, NO vehiculo_id (igual que DatosCompraTab)
       console.log('🔄 [Venta API] Actualizando registro existente:', existingData.id)
       const { data: updatedData, error: updateError } = await supabase
         .from('vehiculo_valoracion_economica')
         .update(dataToSave)
-        .eq('vehiculo_id', vehiculoId)
+        .eq('id', existingData.id)
         .select()
         .single()
       
@@ -251,7 +252,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         })
         .select()
         .single()
-      
+
       result = { data: insertedData, error: insertError }
     }
 
