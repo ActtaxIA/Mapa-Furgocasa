@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Navbar } from '@/components/layout/Navbar'
+import { AdminTable } from '@/components/admin/AdminTable'
 import Link from 'next/link'
 import {
   ExclamationTriangleIcon,
@@ -109,6 +110,118 @@ export default function AdminReportesPage() {
     if (filtro === 'cerrados') return r.cerrado
     return true
   })
+
+  // Definir columnas para AdminTable
+  const columns = [
+    {
+      key: 'vehiculo',
+      title: 'Vehículo',
+      sortable: true,
+      searchable: true,
+      render: (reporte: ReporteAccidente) => (
+        <div>
+          <p className="font-semibold">{reporte.vehiculo_marca} {reporte.vehiculo_modelo}</p>
+          <p className="text-sm text-gray-500">{reporte.vehiculo_matricula}</p>
+        </div>
+      ),
+      exportValue: (reporte: ReporteAccidente) => 
+        `${reporte.vehiculo_marca} ${reporte.vehiculo_modelo} - ${reporte.vehiculo_matricula}`
+    },
+    {
+      key: 'propietario',
+      title: 'Propietario',
+      sortable: true,
+      searchable: true,
+      render: (reporte: ReporteAccidente) => (
+        <div>
+          <p className="font-medium">{reporte.propietario_nombre}</p>
+          <p className="text-sm text-gray-500">{reporte.propietario_email}</p>
+        </div>
+      ),
+      exportValue: (reporte: ReporteAccidente) => 
+        `${reporte.propietario_nombre} (${reporte.propietario_email})`
+    },
+    {
+      key: 'testigo',
+      title: 'Testigo',
+      sortable: true,
+      searchable: true,
+      render: (reporte: ReporteAccidente) => (
+        <div>
+          <p className="font-medium">{reporte.testigo_nombre}</p>
+          <p className="text-sm text-gray-500">{reporte.testigo_email || 'Sin email'}</p>
+        </div>
+      ),
+      exportValue: (reporte: ReporteAccidente) => 
+        `${reporte.testigo_nombre} (${reporte.testigo_email || 'Sin email'})`
+    },
+    {
+      key: 'tipo_dano',
+      title: 'Tipo de Daño',
+      sortable: true,
+      searchable: true,
+      render: (reporte: ReporteAccidente) => (
+        <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">
+          {reporte.tipo_dano}
+        </span>
+      ),
+      exportValue: (reporte: ReporteAccidente) => reporte.tipo_dano
+    },
+    {
+      key: 'fecha_accidente',
+      title: 'Fecha Accidente',
+      sortable: true,
+      render: (reporte: ReporteAccidente) => (
+        <span className="text-sm">
+          {new Date(reporte.fecha_accidente).toLocaleDateString('es-ES')}
+        </span>
+      ),
+      exportValue: (reporte: ReporteAccidente) => 
+        new Date(reporte.fecha_accidente).toLocaleDateString('es-ES')
+    },
+    {
+      key: 'estado',
+      title: 'Estado',
+      sortable: true,
+      render: (reporte: ReporteAccidente) => (
+        <div className="flex flex-col gap-1">
+          {!reporte.leido && (
+            <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded">
+              No leído
+            </span>
+          )}
+          {reporte.cerrado ? (
+            <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded">
+              Cerrado
+            </span>
+          ) : (
+            <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">
+              Activo
+            </span>
+          )}
+        </div>
+      ),
+      exportValue: (reporte: ReporteAccidente) => 
+        reporte.cerrado ? 'Cerrado' : 'Activo'
+    },
+    {
+      key: 'ubicacion',
+      title: 'Ubicación',
+      render: (reporte: ReporteAccidente) => (
+        <a
+          href={`https://www.google.com/maps?q=${reporte.ubicacion_lat},${reporte.ubicacion_lng}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary-600 hover:underline text-sm flex items-center gap-1"
+        >
+          <MapPinIcon className="w-4 h-4" />
+          Ver mapa
+        </a>
+      ),
+      exportValue: (reporte: ReporteAccidente) => 
+        `${reporte.ubicacion_lat}, ${reporte.ubicacion_lng}`
+    }
+  ]
 
   if (loading) {
     return (
@@ -236,102 +349,12 @@ export default function AdminReportesPage() {
           </div>
         </div>
 
-        {/* Lista de Reportes */}
-        <div className="space-y-6">
-          {reportesFiltrados.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-12 text-center">
-              <ExclamationTriangleIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg">No hay reportes en esta categoría</p>
-            </div>
-          ) : (
-            reportesFiltrados.map((reporte) => (
-              <div
-                key={reporte.id}
-                className={`bg-white rounded-lg shadow p-6 ${
-                  !reporte.leido ? 'border-l-4 border-orange-500' : ''
-                }`}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <ExclamationTriangleIcon className={`w-6 h-6 ${
-                      reporte.cerrado ? 'text-gray-400' : 'text-red-600'
-                    }`} />
-                    <div>
-                      <h3 className="font-bold text-lg text-gray-900">
-                        {reporte.vehiculo_marca} {reporte.vehiculo_modelo} - {reporte.vehiculo_matricula}
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        Propietario: {reporte.propietario_nombre} ({reporte.propietario_email})
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    {!reporte.leido && (
-                      <span className="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded-full">
-                        No leído
-                      </span>
-                    )}
-                    {reporte.cerrado ? (
-                      <span className="px-3 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full">
-                        Cerrado
-                      </span>
-                    ) : (
-                      <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
-                        Activo
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-gray-500 mb-1">Testigo:</p>
-                    <p className="font-semibold">{reporte.testigo_nombre}</p>
-                    <p className="text-gray-600">{reporte.testigo_email}</p>
-                    {reporte.testigo_telefono && (
-                      <p className="text-gray-600">{reporte.testigo_telefono}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <p className="text-gray-500 mb-1">Detalles del Accidente:</p>
-                    <p className="font-semibold">Tipo: {reporte.tipo_dano}</p>
-                    <p className="text-gray-600">
-                      Fecha: {new Date(reporte.fecha_accidente).toLocaleString('es-ES')}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <p className="text-gray-500 text-sm mb-2">Descripción:</p>
-                  <p className="text-gray-800">{reporte.descripcion}</p>
-                </div>
-
-                {reporte.ubicacion_descripcion && (
-                  <div className="mt-4 flex items-start gap-2">
-                    <MapPinIcon className="w-5 h-5 text-primary-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm text-gray-500">Ubicación:</p>
-                      <p className="text-gray-800">{reporte.ubicacion_descripcion}</p>
-                      <a
-                        href={`https://www.google.com/maps?q=${reporte.ubicacion_lat},${reporte.ubicacion_lng}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary-600 hover:underline text-sm mt-1 inline-block"
-                      >
-                        Ver en Google Maps →
-                      </a>
-                    </div>
-                  </div>
-                )}
-
-                <div className="mt-4 pt-4 border-t text-xs text-gray-400">
-                  Reportado el: {new Date(reporte.created_at).toLocaleString('es-ES')}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+        {/* Tabla de Reportes con AdminTable */}
+        <AdminTable
+          data={reportesFiltrados}
+          columns={columns}
+          emptyMessage="No hay reportes en esta categoría"
+        />
       </div>
     </div>
   )
