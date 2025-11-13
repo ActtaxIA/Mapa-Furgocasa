@@ -52,25 +52,32 @@ export async function POST(request: Request) {
     // Es seguro porque validamos todos los datos antes de insertar
     const supabase = createServiceClient()
 
-    const body = await request.json()
-    const {
-      qr_code_id,
-      vehiculo_id,
-      matricula, // Nuevo: aceptar matrícula directamente
-      matricula_tercero,
-      descripcion_tercero,
-      testigo_nombre,
-      testigo_email,
-      testigo_telefono,
-      descripcion,
-      tipo_dano,
-      ubicacion_lat,
-      ubicacion_lng,
-      ubicacion_direccion,
-      ubicacion_descripcion,
-      fecha_accidente,
-      fotos_urls
-    } = body
+    // Obtener FormData para manejar fotos
+    const formData = await request.formData()
+    const qr_code_id = formData.get('qr_code_id') as string | null
+    const vehiculo_id = formData.get('vehiculo_id') as string | null
+    const matricula = formData.get('matricula') as string | null
+    const matricula_tercero = formData.get('matricula_tercero') as string | null
+    const descripcion_tercero = formData.get('descripcion_tercero') as string | null
+    const testigo_nombre = formData.get('testigo_nombre') as string
+    const testigo_email = formData.get('testigo_email') as string | null
+    const testigo_telefono = formData.get('testigo_telefono') as string | null
+    const descripcion = formData.get('descripcion') as string
+    const tipo_dano = formData.get('tipo_dano') as string | null
+    const ubicacion_lat = formData.get('ubicacion_lat') as string
+    const ubicacion_lng = formData.get('ubicacion_lng') as string
+    const ubicacion_direccion = formData.get('ubicacion_direccion') as string | null
+    const ubicacion_descripcion = formData.get('ubicacion_descripcion') as string | null
+    const fecha_accidente = formData.get('fecha_accidente') as string
+    
+    // Obtener todas las fotos
+    const fotosFiles: File[] = []
+    const fotosEntries = formData.getAll('fotos')
+    fotosEntries.forEach((entry) => {
+      if (entry instanceof File && entry.size > 0) {
+        fotosFiles.push(entry)
+      }
+    })
 
     // Validaciones básicas - aceptar qr_code_id, vehiculo_id o matricula
     if (!qr_code_id && !vehiculo_id && !matricula) {
@@ -205,6 +212,54 @@ export async function POST(request: Request) {
       vehiculo_afectado_id = vehiculo.vehiculo_id
     }
 
+    // Subir fotos a Supabase Storage si existen
+    const fotos_urls: string[] = []
+    if (fotosFiles.length > 0) {
+      try {
+        const timestamp = Date.now()
+        for (let i = 0; i < fotosFiles.length; i++) {
+          const foto = fotosFiles[i]
+          
+          // Validar tamaño (máx 5MB)
+          if (foto.size > 5 * 1024 * 1024) {
+            console.warn(`Foto ${i + 1} excede 5MB, se omite`)
+            continue
+          }
+
+          const fileExt = foto.name.split('.').pop() || 'jpg'
+          const fileName = `reportes/${vehiculo_afectado_id}/${timestamp}_${i}.${fileExt}`
+          
+          // Convertir File a ArrayBuffer
+          const fileBuffer = await foto.arrayBuffer()
+          
+          const { error: uploadError } = await supabase
+            .storage
+            .from('vehiculos')
+            .upload(fileName, fileBuffer, {
+              contentType: foto.type || 'image/jpeg',
+              upsert: false
+            })
+
+          if (uploadError) {
+            console.error(`Error subiendo foto ${i + 1}:`, uploadError)
+            // Continuar con las demás fotos
+            continue
+          }
+
+          // Obtener URL pública
+          const { data: { publicUrl } } = supabase
+            .storage
+            .from('vehiculos')
+            .getPublicUrl(fileName)
+          
+          fotos_urls.push(publicUrl)
+        }
+      } catch (fotoError) {
+        console.error('Error procesando fotos:', fotoError)
+        // Continuar sin fotos, no es crítico
+      }
+    }
+
     // Obtener IP del cliente (para prevenir spam)
     const forwarded = request.headers.get('x-forwarded-for')
     const ip_address = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown'
@@ -225,7 +280,7 @@ export async function POST(request: Request) {
         ubicacion_lng: lng,
         ubicacion_direccion: ubicacion_direccion?.trim() || null,
         ubicacion_descripcion: ubicacion_descripcion?.trim() || null,
-        fotos_urls: fotos_urls || [],
+        fotos_urls: fotos_urls,
         fecha_accidente,
         ip_address,
         captcha_verificado: false, // Por ahora sin captcha

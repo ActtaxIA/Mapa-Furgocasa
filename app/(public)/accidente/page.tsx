@@ -300,30 +300,30 @@ export default function ReporteAccidentePage() {
     setMessage(null);
 
     try {
-      // Preparar datos del reporte en formato JSON
-      const reporteData = {
-        matricula: vehiculo.matricula, // Usar matrícula como identificador principal
-        matricula_tercero: formData.matricula_tercero || null,
-        descripcion_tercero: formData.descripcion_tercero || null,
-        testigo_nombre: formData.testigo_nombre,
-        testigo_email: formData.testigo_email || null,
-        testigo_telefono: formData.testigo_telefono || null,
-        descripcion: formData.descripcion,
-        tipo_dano: formData.tipo_dano || null,
-        fecha_accidente: formData.fecha_accidente,
-        ubicacion_lat: ubicacion.lat.toString(),
-        ubicacion_lng: ubicacion.lng.toString(),
-        ubicacion_direccion: ubicacion.direccion || null,
-        ubicacion_descripcion: formData.ubicacion_descripcion || ubicacion.direccion || null,
-        fotos_urls: [] // Por ahora sin fotos, se puede implementar después con upload a storage
-      };
+      // Crear FormData para enviar fotos
+      const formDataToSend = new FormData();
+      formDataToSend.append('matricula', vehiculo.matricula);
+      if (formData.matricula_tercero) formDataToSend.append('matricula_tercero', formData.matricula_tercero);
+      if (formData.descripcion_tercero) formDataToSend.append('descripcion_tercero', formData.descripcion_tercero);
+      formDataToSend.append('testigo_nombre', formData.testigo_nombre);
+      if (formData.testigo_email) formDataToSend.append('testigo_email', formData.testigo_email);
+      if (formData.testigo_telefono) formDataToSend.append('testigo_telefono', formData.testigo_telefono);
+      formDataToSend.append('descripcion', formData.descripcion);
+      if (formData.tipo_dano) formDataToSend.append('tipo_dano', formData.tipo_dano);
+      formDataToSend.append('fecha_accidente', formData.fecha_accidente);
+      formDataToSend.append('ubicacion_lat', ubicacion.lat.toString());
+      formDataToSend.append('ubicacion_lng', ubicacion.lng.toString());
+      if (ubicacion.direccion) formDataToSend.append('ubicacion_direccion', ubicacion.direccion);
+      if (formData.ubicacion_descripcion) formDataToSend.append('ubicacion_descripcion', formData.ubicacion_descripcion);
+      
+      // Añadir fotos
+      formData.fotos.forEach((foto, index) => {
+        formDataToSend.append(`fotos`, foto);
+      });
 
       const response = await fetch("/api/reportes", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(reporteData),
+        body: formDataToSend,
       });
 
       const data = await response.json();
