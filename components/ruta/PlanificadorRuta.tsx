@@ -921,6 +921,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       const destinoData = ruta.destino as any
       const paradasData = (ruta.paradas as any[]) || []
       const geometriaData = ruta.geometria as any
+      const areasEncontradasData = (ruta.areas_encontradas as any[]) || []
 
       // Establecer origen y destino
       const origenPoint: RoutePoint = {
@@ -1030,18 +1031,34 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         // Ajustar el mapa a los bounds de la ruta
         map.fitBounds(mockResult.routes[0].bounds, { padding: 100 })
         
-        // Buscar áreas cercanas usando el path guardado
-        buscarAreasCercanasARuta(mockResult.routes[0])
-
-        showToast('Ruta cargada desde caché', 'success')
+        // Cargar áreas encontradas desde caché si existen
+        if (areasEncontradasData && areasEncontradasData.length > 0) {
+          console.log(`📦 Cargando ${areasEncontradasData.length} áreas desde caché`)
+          setAreasEnRuta(areasEncontradasData as Area[])
+          mostrarAreasEnMapa(areasEncontradasData as Area[])
+          showToast(`Ruta cargada desde caché con ${areasEncontradasData.length} áreas`, 'success')
+        } else {
+          // Si no hay áreas guardadas, buscarlas (para rutas antiguas)
+          console.log('🔄 Buscando áreas (ruta antigua sin caché de áreas)')
+          buscarAreasCercanasARuta(mockResult.routes[0])
+          showToast('Ruta cargada desde caché', 'success')
+        }
       } else {
-        // Si no tenemos geometría guardada, calcular la ruta (legacy)
-        console.log('🔄 Calculando ruta (ruta antigua sin caché)')
-        setTimeout(() => {
-          calcularRutaConPuntos(origenPoint, destinoPoint, paradasData)
-        }, 500)
-        showToast('Ruta cargada correctamente', 'success')
-      }
+          // Si no tenemos geometría guardada, calcular la ruta (legacy)
+          console.log('🔄 Calculando ruta (ruta antigua sin caché)')
+          
+          // Si hay áreas encontradas guardadas, cargarlas directamente
+          if (areasEncontradasData && areasEncontradasData.length > 0) {
+            console.log(`📦 Cargando ${areasEncontradasData.length} áreas desde caché (ruta antigua)`)
+            setAreasEnRuta(areasEncontradasData as Area[])
+            mostrarAreasEnMapa(areasEncontradasData as Area[])
+          }
+          
+          setTimeout(() => {
+            calcularRutaConPuntos(origenPoint, destinoPoint, paradasData)
+          }, 500)
+          showToast('Ruta cargada correctamente', 'success')
+        }
     } catch (error: any) {
       console.error('Error cargando ruta:', error)
       showToast(`Error al cargar la ruta: ${error.message}`, 'error')
@@ -1166,6 +1183,19 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         })),
         distancia_km: distanciaTotal / 1000,
         duracion_minutos: Math.round(duracionTotal / 60),
+        // Guardar áreas encontradas para evitar búsquedas repetidas
+        areas_encontradas: areasEnRuta.length > 0 ? areasEnRuta.map(area => ({
+          id: area.id,
+          nombre: area.nombre,
+          latitud: area.latitud,
+          longitud: area.longitud,
+          tipo_area: area.tipo_area,
+          pais: area.pais,
+          ciudad: area.ciudad,
+          servicios: area.servicios,
+          precio_noche: area.precio_noche,
+          precio_24h: area.precio_24h
+        })) : [],
         // Guardar toda la información de la ruta calculada
         geometria: {
           type: 'FeatureCollection',

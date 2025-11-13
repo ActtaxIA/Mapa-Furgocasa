@@ -238,6 +238,7 @@ export interface Database {
           distancia_km: number | null
           duracion_minutos: number | null
           geometria: Json | null
+          areas_encontradas: Json | null
           favorito: boolean
           created_at: string
           updated_at: string
@@ -253,6 +254,7 @@ export interface Database {
           distancia_km?: number | null
           duracion_minutos?: number | null
           geometria?: Json | null
+          areas_encontradas?: Json | null
           favorito?: boolean
           created_at?: string
           updated_at?: string
@@ -268,6 +270,7 @@ export interface Database {
           distancia_km?: number | null
           duracion_minutos?: number | null
           geometria?: Json | null
+          areas_encontradas?: Json | null
           favorito?: boolean
           created_at?: string
           updated_at?: string
