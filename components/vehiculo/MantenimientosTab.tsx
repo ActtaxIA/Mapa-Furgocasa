@@ -56,8 +56,7 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
     ubicacion_taller: '',
     notas: '',
     proximo_mantenimiento_km: '',
-    proximo_mantenimiento_fecha: '',
-    estado: 'pendiente' as 'pendiente' | 'completado' | 'vencido'
+    proximo_mantenimiento_fecha: ''
   })
 
   useEffect(() => {
@@ -92,8 +91,7 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
       ubicacion_taller: '',
       notas: '',
       proximo_mantenimiento_km: '',
-      proximo_mantenimiento_fecha: '',
-      estado: 'pendiente'
+      proximo_mantenimiento_fecha: ''
     })
     setEditandoId(null)
   }
@@ -271,23 +269,6 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
                     <option value="cambio_frenos">Cambio de frenos</option>
                     <option value="itv">ITV</option>
                     <option value="otro">Otro</option>
-                  </select>
-                </div>
-
-                {/* Estado */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Estado <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    required
-                    value={formData.estado}
-                    onChange={(e) => setFormData({ ...formData, estado: e.target.value as any })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  >
-                    <option value="pendiente">Pendiente</option>
-                    <option value="completado">Completado</option>
-                    <option value="vencido">Vencido</option>
                   </select>
                 </div>
 
