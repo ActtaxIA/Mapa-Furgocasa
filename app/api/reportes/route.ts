@@ -4,7 +4,7 @@
 // Endpoints para crear y consultar reportes
 // ===================================================================
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAnonClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 // GET: Obtener reportes del usuario autenticado
@@ -48,7 +48,9 @@ export async function GET() {
 // POST: Crear un nuevo reporte (endpoint PÚBLICO - no requiere autenticación)
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    // IMPORTANTE: Usar cliente anónimo sin cookies de sesión
+    // Esto asegura que se comporte como usuario 'anon' en RLS
+    const supabase = createAnonClient()
 
     const body = await request.json()
     const {
