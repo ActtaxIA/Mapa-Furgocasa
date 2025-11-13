@@ -24,9 +24,9 @@ ADD COLUMN IF NOT EXISTS estado_venta VARCHAR(50);
 COMMENT ON COLUMN public.vehiculo_valoracion_economica.estado_venta IS 'Estado del vehículo al vender: excelente, bueno, regular, para reparar, etc.';
 
 -- Verificación
-SELECT 
-    column_name, 
-    data_type, 
+SELECT
+    column_name,
+    data_type,
     is_nullable,
     column_default
 FROM information_schema.columns
@@ -43,4 +43,3 @@ ORDER BY column_name;
 -- 4. estado_venta: valores sugeridos 'excelente', 'bueno', 'regular', 'para_reparar'
 -- 5. Estos campos complementan la información básica de venta ya existente
 -- =====================================================
-
