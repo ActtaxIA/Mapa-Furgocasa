@@ -134,11 +134,8 @@ export async function POST(request: Request) {
       }
     }
 
-    // Validar coordenadas
-    const lat = parseFloat(ubicacion_lat)
-    const lng = parseFloat(ubicacion_lng)
-
-    if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    // Validar coordenadas (ya son numbers)
+    if (isNaN(ubicacion_lat) || isNaN(ubicacion_lng) || ubicacion_lat < -90 || ubicacion_lat > 90 || ubicacion_lng < -180 || ubicacion_lng > 180) {
       return NextResponse.json(
         { error: 'Las coordenadas de ubicación no son válidas' },
         { status: 400 }
