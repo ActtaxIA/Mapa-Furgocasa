@@ -823,20 +823,53 @@ export default function ReporteAccidentePage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Fotos del Accidente (opcional)
                   </label>
+                  <p className="text-xs text-gray-500 mb-2">
+                    Máximo 5 fotos. Tamaño máximo: 10 MB por foto.
+                  </p>
                   <input
                     type="file"
                     accept="image/*"
                     multiple
                     onChange={(e) => {
                       const files = Array.from(e.target.files || []);
+                      
+                      // Validar cantidad
+                      if (files.length > 5) {
+                        setMessage({
+                          type: 'error',
+                          text: 'Máximo 5 fotos permitidas'
+                        });
+                        return;
+                      }
+                      
+                      // Validar tamaño
+                      const maxSize = 10 * 1024 * 1024; // 10MB
+                      const fotosGrandes = files.filter(f => f.size > maxSize);
+                      if (fotosGrandes.length > 0) {
+                        const nombresFotos = fotosGrandes.map(f => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`).join(', ');
+                        setMessage({
+                          type: 'error',
+                          text: `Estas fotos exceden 10 MB: ${nombresFotos}`
+                        });
+                        return;
+                      }
+                      
                       setFormData((prev) => ({ ...prev, fotos: files }));
+                      setMessage(null);
                     }}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
                   />
                   {formData.fotos.length > 0 && (
-                    <p className="mt-2 text-sm text-gray-600">
-                      {formData.fotos.length} foto(s) seleccionada(s)
-                    </p>
+                    <div className="mt-2 space-y-1">
+                      <p className="text-sm font-medium text-gray-700">
+                        {formData.fotos.length} foto(s) seleccionada(s):
+                      </p>
+                      {formData.fotos.map((foto, idx) => (
+                        <p key={idx} className="text-xs text-gray-600">
+                          • {foto.name} ({(foto.size / 1024 / 1024).toFixed(2)} MB)
+                        </p>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>

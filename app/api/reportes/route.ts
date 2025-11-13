@@ -261,11 +261,11 @@ export async function POST(request: Request) {
         const timestamp = Date.now()
         for (let i = 0; i < fotosFiles.length; i++) {
           const foto = fotosFiles[i]
-          console.log(`📸 [Reportes] Foto ${i + 1}: ${foto.name}, size: ${foto.size} bytes`)
+          console.log(`📸 [Reportes] Foto ${i + 1}: ${foto.name}, size: ${(foto.size / 1024 / 1024).toFixed(2)} MB`)
           
-          // Validar tamaño (máx 5MB)
-          if (foto.size > 5 * 1024 * 1024) {
-            console.warn(`⚠️ [Reportes] Foto ${i + 1} excede 5MB, se omite`)
+          // Validar tamaño (máx 10MB)
+          if (foto.size > 10 * 1024 * 1024) {
+            console.warn(`⚠️ [Reportes] Foto ${i + 1} excede 10MB (${(foto.size / 1024 / 1024).toFixed(2)} MB), se omite`)
             continue
           }
 
