@@ -240,6 +240,31 @@ Este directorio contiene los scripts SQL necesarios para implementar el **Sistem
 
 ---
 
+### 🔧 `19_admin_listado_reportes.sql`
+
+**Descripción:** Función para listar todos los reportes en el panel admin
+
+**Función creada:**
+- `admin_listado_reportes_accidentes()` - Lista completa de reportes con:
+  * Datos del vehículo (matrícula, marca, modelo)
+  * Datos del propietario (nombre, email)
+  * Datos del testigo (nombre, email, teléfono)
+  * Detalles del accidente (fecha, ubicación, tipo de daño, descripción)
+  * Estado (leído, cerrado)
+  * Fecha de creación
+
+**Uso:**
+```sql
+SELECT * FROM admin_listado_reportes_accidentes();
+```
+
+**Resultado:**
+- Admin puede ver todos los reportes del sistema
+- Información completa para análisis
+- Ordenados por fecha de creación (más recientes primero)
+
+---
+
 ## 📖 Documentación Adicional
 
 Para más información detallada, consulta:

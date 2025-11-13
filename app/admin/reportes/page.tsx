@@ -54,6 +54,7 @@ export default function AdminReportesPage() {
   const [metricas, setMetricas] = useState<DashboardMetricas | null>(null)
   const [reportes, setReportes] = useState<ReporteAccidente[]>([])
   const [filtro, setFiltro] = useState<'todos' | 'pendientes' | 'cerrados'>('todos')
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -97,11 +98,17 @@ export default function AdminReportesPage() {
       const supabase = createClient()
       const { data, error } = await supabase.rpc('admin_listado_reportes_accidentes')
       
-      if (error) throw error
+      if (error) {
+        console.error('Error en RPC admin_listado_reportes_accidentes:', error)
+        setError(`Error al cargar reportes: ${error.message}`)
+        throw error
+      }
       
+      console.log('✅ Reportes cargados:', data)
       setReportes(data || [])
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error cargando reportes:', error)
+      setError(error.message || 'Error desconocido al cargar reportes')
     }
   }
 
@@ -308,6 +315,27 @@ export default function AdminReportesPage() {
                   </p>
                 </div>
                 <UserIcon className="w-12 h-12 text-green-500" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Banner de Error */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <ExclamationTriangleIcon className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-900 mb-2">Error al cargar reportes</h3>
+                <p className="text-sm text-red-800 mb-3">{error}</p>
+                <div className="bg-white rounded p-3 text-sm">
+                  <p className="font-medium text-gray-900 mb-2">Solución:</p>
+                  <ol className="list-decimal list-inside space-y-1 text-gray-700">
+                    <li>Ve a Supabase SQL Editor</li>
+                    <li>Ejecuta el script: <code className="bg-gray-100 px-2 py-1 rounded text-xs">reportes/19_admin_listado_reportes.sql</code></li>
+                    <li>Recarga esta página</li>
+                  </ol>
+                </div>
               </div>
             </div>
           </div>
