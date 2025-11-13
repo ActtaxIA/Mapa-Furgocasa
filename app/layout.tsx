@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: 'Descubre más de 3600 áreas para autocaravanas en Europa y Latinoamérica (España, Portugal, Francia, Italia, Argentina, Chile, Uruguay...). Planifica rutas, encuentra servicios, guarda favoritos y viaja con libertad. Información actualizada de parkings, campings y áreas públicas.',
   keywords: [
     'áreas autocaravanas',
-    'mapa autocaravanas europa', 
+    'mapa autocaravanas europa',
     'parkings autocaravanas',
     'camping autocaravanas',
     'pernocta autocaravanas',
@@ -104,7 +104,7 @@ export default function RootLayout({
             gtag('config', 'G-8E3JE5ZVET');
           `}
         </Script>
-        
+
         <WelcomeModal />
         <ChatbotWidget />
         {children}
