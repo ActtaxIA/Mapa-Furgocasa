@@ -9,8 +9,10 @@ interface ConfirmModalProps {
   confirmText?: string
   cancelText?: string
   onConfirm: () => void
-  onCancel: () => void
+  onCancel?: () => void
+  onClose?: () => void // Alias para onCancel
   type?: 'danger' | 'warning' | 'info' | 'error'
+  showCancel?: boolean // Controla si mostrar botón cancelar
 }
 
 export function ConfirmModal({
@@ -21,9 +23,14 @@ export function ConfirmModal({
   cancelText = 'Cancelar',
   onConfirm,
   onCancel,
-  type = 'warning'
+  onClose,
+  type = 'warning',
+  showCancel = true
 }: ConfirmModalProps) {
   if (!isOpen) return null
+
+  // onClose es un alias para onCancel
+  const handleCancel = onClose || onCancel || (() => {})
 
   const colors = {
     danger: 'bg-red-600 hover:bg-red-700',
@@ -35,20 +42,22 @@ export function ConfirmModal({
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200">
       {/* Backdrop */}
-      <div
+      <div 
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onCancel}
+        onClick={handleCancel}
       />
 
       {/* Modal */}
       <div className="relative bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
         {/* Close button */}
-        <button
-          onClick={onCancel}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          <XMarkIcon className="w-6 h-6" />
-        </button>
+        {showCancel && (
+          <button
+            onClick={handleCancel}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <XMarkIcon className="w-6 h-6" />
+          </button>
+        )}
 
         {/* Icon */}
         <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 bg-yellow-100 rounded-full">
@@ -62,16 +71,18 @@ export function ConfirmModal({
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3">
-          <button
-            onClick={onCancel}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-          >
-            {cancelText}
-          </button>
+        <div className={`flex gap-3 ${!showCancel ? 'justify-center' : ''}`}>
+          {showCancel && (
+            <button
+              onClick={handleCancel}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+            >
+              {cancelText}
+            </button>
+          )}
           <button
             onClick={onConfirm}
-            className={`flex-1 px-4 py-2 rounded-lg text-white font-medium transition-colors ${colors[type]}`}
+            className={`${showCancel ? 'flex-1' : 'w-full'} px-4 py-2 rounded-lg text-white font-medium transition-colors ${colors[type]}`}
           >
             {confirmText}
           </button>
