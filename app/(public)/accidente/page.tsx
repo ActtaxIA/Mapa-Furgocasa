@@ -1033,6 +1033,20 @@ export default function ReporteAccidentePage() {
                             <span className="text-green-600 font-semibold whitespace-nowrap">
                               {(foto.size / 1024 / 1024).toFixed(2)} MB
                             </span>
+                            {/* Botón para eliminar foto */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const nuevasFotos = Array.from(formData.fotos).filter((_, i) => i !== idx)
+                                setFormData({ ...formData, fotos: nuevasFotos })
+                              }}
+                              className="text-red-600 hover:text-red-800 hover:bg-red-100 p-1.5 rounded transition-colors"
+                              title="Eliminar foto"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
                           </div>
                         ))}
                       </div>
