@@ -106,18 +106,31 @@ export default function AdminVehiculosPage() {
   const loadAnalisis = async () => {
     try {
       const supabase = createClient()
+      
+      // Primero verificamos si la función existe
       const { data, error } = await supabase.rpc('admin_analisis_por_marca_modelo')
 
       if (error) {
         console.error('Error en RPC admin_analisis_por_marca_modelo:', error)
+        setError(`Error cargando vehículos: ${error.message}. Asegúrate de ejecutar el script SQL actualizado en Supabase.`)
         throw error
       }
 
       console.log('Análisis cargado:', data)
+      console.log('Número de registros:', data?.length || 0)
 
-      setAnalisis(data || [])
-    } catch (error) {
+      if (data && data.length > 0) {
+        setAnalisis(data)
+        setError(null) // Limpiar error si hay datos
+      } else {
+        // Si no hay datos pero tampoco hay error, puede ser que la función no devuelva resultados
+        console.warn('La función devolvió un array vacío')
+        setAnalisis([])
+        setError('No se encontraron vehículos agrupados por marca/modelo. Verifica que los vehículos tengan marca y modelo definidos.')
+      }
+    } catch (error: any) {
       console.error('Error cargando análisis:', error)
+      setError(`Error: ${error.message || 'Error desconocido al cargar vehículos'}`)
       setAnalisis([])
     }
   }

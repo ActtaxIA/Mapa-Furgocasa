@@ -82,9 +82,9 @@ RETURNS TABLE (
 BEGIN
   RETURN QUERY
   SELECT
-    v.marca,
-    v.modelo,
-    COUNT(DISTINCT v.id) as cantidad,
+    COALESCE(v.marca, 'Sin marca')::VARCHAR as marca,
+    COALESCE(v.modelo, 'Sin modelo')::VARCHAR as modelo,
+    COUNT(DISTINCT v.id)::BIGINT as cantidad,
     ROUND(AVG(v.año), 1) as año_promedio,
     ROUND(AVG(k.km_actual), 0) as km_promedio,
     ROUND(AVG(ve.precio_compra), 2) as precio_compra_promedio,
@@ -96,9 +96,15 @@ BEGIN
         ELSE NULL
       END
     ), 2) as depreciacion_media,
-    ROUND(AVG(ve.total_mantenimientos / GREATEST(EXTRACT(YEAR FROM CURRENT_DATE) - v.año, 1)), 2) as coste_mantenimiento_anual,
+    ROUND(AVG(
+      CASE
+        WHEN ve.total_mantenimientos IS NOT NULL AND v.año IS NOT NULL
+        THEN ve.total_mantenimientos / GREATEST(EXTRACT(YEAR FROM CURRENT_DATE) - v.año, 1)
+        ELSE NULL
+      END
+    ), 2) as coste_mantenimiento_anual,
     ROUND(AVG(ve.total_averias), 2) as coste_averias_total,
-    COUNT(DISTINCT r.id) as num_reportes_accidentes
+    COUNT(DISTINCT r.id)::BIGINT as num_reportes_accidentes
   FROM vehiculos_registrados v
   LEFT JOIN vehiculo_valoracion_economica ve ON v.id = ve.vehiculo_id
   LEFT JOIN (
@@ -108,7 +114,7 @@ BEGIN
   ) k ON v.id = k.vehiculo_id
   LEFT JOIN reportes_accidentes r ON v.id = r.vehiculo_id
   WHERE v.activo = true
-  GROUP BY v.marca, v.modelo
+  GROUP BY COALESCE(v.marca, 'Sin marca'), COALESCE(v.modelo, 'Sin modelo')
   HAVING COUNT(DISTINCT v.id) >= 1
   ORDER BY cantidad DESC, marca, modelo;
 END;
