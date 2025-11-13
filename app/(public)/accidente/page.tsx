@@ -300,6 +300,8 @@ export default function ReporteAccidentePage() {
     setMessage(null);
 
     try {
+      console.log('📸 [Frontend] Fotos en formData.fotos:', formData.fotos.length, formData.fotos);
+      
       // Crear FormData para enviar fotos
       const formDataToSend = new FormData();
       formDataToSend.append('matricula', vehiculo.matricula);
@@ -317,9 +319,13 @@ export default function ReporteAccidentePage() {
       if (formData.ubicacion_descripcion) formDataToSend.append('ubicacion_descripcion', formData.ubicacion_descripcion);
       
       // Añadir fotos
+      console.log('📸 [Frontend] Añadiendo fotos al FormData...');
       formData.fotos.forEach((foto, index) => {
+        console.log(`📸 [Frontend] Añadiendo foto ${index + 1}:`, foto.name, foto.size);
         formDataToSend.append(`fotos`, foto);
       });
+      
+      console.log('📸 [Frontend] FormData preparado, enviando...');
 
       const response = await fetch("/api/reportes", {
         method: "POST",
