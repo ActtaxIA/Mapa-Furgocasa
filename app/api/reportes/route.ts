@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     // Detectar si es FormData o JSON
     const contentType = request.headers.get('content-type') || ''
     const isFormData = contentType.includes('multipart/form-data')
-    
+
     let qr_code_id: string | null = null
     let vehiculo_id: string | null = null
     let matricula: string | null = null
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
       ubicacion_direccion = formData.get('ubicacion_direccion') as string | null
       ubicacion_descripcion = formData.get('ubicacion_descripcion') as string | null
       fecha_accidente = formData.get('fecha_accidente') as string
-      
+
       // Obtener todas las fotos
       const fotosEntries = formData.getAll('fotos')
       fotosEntries.forEach((entry) => {
@@ -255,14 +255,14 @@ export async function POST(request: Request) {
     // Subir fotos a Supabase Storage si existen
     const fotos_urls: string[] = []
     console.log(`📸 [Reportes] Procesando ${fotosFiles.length} fotos`)
-    
+
     if (fotosFiles.length > 0) {
       try {
         const timestamp = Date.now()
         for (let i = 0; i < fotosFiles.length; i++) {
           const foto = fotosFiles[i]
           console.log(`📸 [Reportes] Foto ${i + 1}: ${foto.name}, size: ${(foto.size / 1024 / 1024).toFixed(2)} MB`)
-          
+
           // Validar tamaño (máx 10MB)
           if (foto.size > 10 * 1024 * 1024) {
             console.warn(`⚠️ [Reportes] Foto ${i + 1} excede 10MB (${(foto.size / 1024 / 1024).toFixed(2)} MB), se omite`)
@@ -271,12 +271,12 @@ export async function POST(request: Request) {
 
           const fileExt = foto.name.split('.').pop() || 'jpg'
           const fileName = `reportes/${vehiculo_afectado_id}/${timestamp}_${i}.${fileExt}`
-          
+
           // Convertir File a ArrayBuffer
           const fileBuffer = await foto.arrayBuffer()
-          
+
           console.log(`📸 [Reportes] Subiendo a: ${fileName}`)
-          
+
           const { error: uploadError } = await supabase
             .storage
             .from('vehiculos')
@@ -296,11 +296,11 @@ export async function POST(request: Request) {
             .storage
             .from('vehiculos')
             .getPublicUrl(fileName)
-          
+
           console.log(`✅ [Reportes] Foto ${i + 1} subida: ${publicUrl}`)
           fotos_urls.push(publicUrl)
         }
-        
+
         console.log(`📸 [Reportes] Total fotos subidas: ${fotos_urls.length}`)
       } catch (fotoError) {
         console.error('❌ [Reportes] Error procesando fotos:', fotoError)
@@ -342,7 +342,7 @@ export async function POST(request: Request) {
       })
       .select()
       .single()
-    
+
     console.log(`✅ [Reportes] Reporte creado:`, nuevoReporte?.id)
 
     if (insertError) {

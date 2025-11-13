@@ -301,7 +301,7 @@ export default function ReporteAccidentePage() {
 
     try {
       console.log('📸 [Frontend] Fotos en formData.fotos:', formData.fotos.length, formData.fotos);
-      
+
       // Crear FormData para enviar fotos
       const formDataToSend = new FormData();
       formDataToSend.append('matricula', vehiculo.matricula);
@@ -317,14 +317,14 @@ export default function ReporteAccidentePage() {
       formDataToSend.append('ubicacion_lng', ubicacion.lng.toString());
       if (ubicacion.direccion) formDataToSend.append('ubicacion_direccion', ubicacion.direccion);
       if (formData.ubicacion_descripcion) formDataToSend.append('ubicacion_descripcion', formData.ubicacion_descripcion);
-      
+
       // Añadir fotos
       console.log('📸 [Frontend] Añadiendo fotos al FormData...');
       formData.fotos.forEach((foto, index) => {
         console.log(`📸 [Frontend] Añadiendo foto ${index + 1}:`, foto.name, foto.size);
         formDataToSend.append(`fotos`, foto);
       });
-      
+
       console.log('📸 [Frontend] FormData preparado, enviando...');
 
       const response = await fetch("/api/reportes", {
@@ -832,7 +832,7 @@ export default function ReporteAccidentePage() {
                     multiple
                     onChange={(e) => {
                       const files = Array.from(e.target.files || []);
-                      
+
                       // Validar cantidad
                       if (files.length > 5) {
                         setMessage({
@@ -841,7 +841,7 @@ export default function ReporteAccidentePage() {
                         });
                         return;
                       }
-                      
+
                       // Validar tamaño
                       const maxSize = 10 * 1024 * 1024; // 10MB
                       const fotosGrandes = files.filter(f => f.size > maxSize);
@@ -853,7 +853,7 @@ export default function ReporteAccidentePage() {
                         });
                         return;
                       }
-                      
+
                       setFormData((prev) => ({ ...prev, fotos: files }));
                       setMessage(null);
                     }}
