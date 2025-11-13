@@ -123,10 +123,38 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     } = body
 
     // Validar campos requeridos
-    if (!precio_venta_final || !fecha_venta) {
-      console.error('❌ [Venta API] Campos requeridos faltantes')
+    if (!precio_venta_final || precio_venta_final === '' || precio_venta_final === null || precio_venta_final === undefined) {
+      console.error('❌ [Venta API] precio_venta_final faltante o inválido:', precio_venta_final)
       return NextResponse.json(
-        { error: 'Precio de venta y fecha son obligatorios' },
+        { error: 'Precio de venta es obligatorio' },
+        { status: 400 }
+      )
+    }
+
+    if (!fecha_venta || fecha_venta === '' || fecha_venta === null || fecha_venta === undefined) {
+      console.error('❌ [Venta API] fecha_venta faltante o inválida:', fecha_venta)
+      return NextResponse.json(
+        { error: 'Fecha de venta es obligatoria' },
+        { status: 400 }
+      )
+    }
+
+    // Validar tipos de datos
+    const precioNumero = parseFloat(precio_venta_final)
+    if (isNaN(precioNumero) || precioNumero < 0) {
+      console.error('❌ [Venta API] precio_venta_final inválido:', precio_venta_final)
+      return NextResponse.json(
+        { error: 'Precio de venta debe ser un número válido mayor o igual a 0' },
+        { status: 400 }
+      )
+    }
+
+    // Validar formato de fecha (debe ser YYYY-MM-DD)
+    const fechaRegex = /^\d{4}-\d{2}-\d{2}$/
+    if (!fechaRegex.test(fecha_venta)) {
+      console.error('❌ [Venta API] fecha_venta formato inválido:', fecha_venta)
+      return NextResponse.json(
+        { error: 'Fecha de venta debe estar en formato YYYY-MM-DD' },
         { status: 400 }
       )
     }
@@ -171,16 +199,29 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     })
 
     // Preparar datos para guardar (solo campos que existen en BD)
+    // NO incluimos updated_at porque hay un trigger que lo maneja automáticamente
     const dataToSave: any = {
       vendido: true,
-      precio_venta_final: parseFloat(precio_venta_final),
-      fecha_venta,
-      comprador_tipo: comprador_tipo || null,
-      kilometros_venta: kilometros_venta ? parseInt(kilometros_venta) : null,
-      estado_venta: estado_venta || null,
-      notas_venta: notas_venta || null,
-      en_venta: false,
-      updated_at: new Date().toISOString()
+      precio_venta_final: precioNumero,
+      fecha_venta: fecha_venta.trim(),
+      en_venta: false
+    }
+
+    // Añadir campos opcionales solo si tienen valor
+    if (comprador_tipo && comprador_tipo.trim() !== '') {
+      dataToSave.comprador_tipo = comprador_tipo.trim()
+    }
+    
+    if (kilometros_venta && kilometros_venta !== '' && !isNaN(parseInt(kilometros_venta))) {
+      dataToSave.kilometros_venta = parseInt(kilometros_venta)
+    }
+    
+    if (estado_venta && estado_venta.trim() !== '') {
+      dataToSave.estado_venta = estado_venta.trim()
+    }
+    
+    if (notas_venta && notas_venta.trim() !== '') {
+      dataToSave.notas_venta = notas_venta.trim()
     }
 
     console.log('💾 [Venta API] Datos a guardar:', JSON.stringify(dataToSave, null, 2))
@@ -190,16 +231,18 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (existingData) {
       // Actualizar registro existente
       console.log('🔄 [Venta API] Actualizando registro existente:', existingData.id)
-      result = await supabase
+      const { data: updatedData, error: updateError } = await supabase
         .from('vehiculo_valoracion_economica')
         .update(dataToSave)
         .eq('vehiculo_id', vehiculoId)
         .select()
         .single()
+      
+      result = { data: updatedData, error: updateError }
     } else {
       // Crear nuevo registro
       console.log('➕ [Venta API] Creando nuevo registro')
-      result = await supabase
+      const { data: insertedData, error: insertError } = await supabase
         .from('vehiculo_valoracion_economica')
         .insert({
           vehiculo_id: vehiculoId,
@@ -208,6 +251,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         })
         .select()
         .single()
+      
+      result = { data: insertedData, error: insertError }
     }
 
     if (result.error) {
