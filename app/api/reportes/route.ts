@@ -181,7 +181,7 @@ export async function POST(request: Request) {
       vehiculo_afectado_id = (vehiculoData as { id: string }).id
     } else if (qr_code_id) {
       // Buscar vehículo por QR code
-      const { data: vehiculoData, error: vehiculoError } = await supabase
+      const { data: vehiculoData, error: vehiculoError } = await (supabase as any)
         .rpc('buscar_vehiculo_por_qr', { qr_id: qr_code_id })
 
       if (vehiculoError) {
