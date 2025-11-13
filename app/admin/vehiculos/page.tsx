@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Navbar } from '@/components/layout/Navbar'
+import { AdminTable, AdminTableColumn } from '@/components/admin/AdminTable'
 import Link from 'next/link'
 import {
   TruckIcon,
@@ -44,7 +45,6 @@ export default function AdminVehiculosPage() {
   const [loading, setLoading] = useState(true)
   const [metricas, setMetricas] = useState<DashboardMetricas | null>(null)
   const [analisis, setAnalisis] = useState<AnalisisMarcaModelo[]>([])
-  const [ordenPor, setOrdenPor] = useState<'cantidad' | 'valor' | 'depreciacion'>('cantidad')
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
@@ -135,18 +135,109 @@ export default function AdminVehiculosPage() {
     }
   }
 
-  const analisisOrdenado = [...analisis].sort((a, b) => {
-    switch (ordenPor) {
-      case 'cantidad':
-        return b.cantidad - a.cantidad
-      case 'valor':
-        return (b.valor_actual_promedio || 0) - (a.valor_actual_promedio || 0)
-      case 'depreciacion':
-        return (b.depreciacion_media || 0) - (a.depreciacion_media || 0)
-      default:
-        return 0
+  // Definir columnas para AdminTable
+  const columns: AdminTableColumn<AnalisisMarcaModelo>[] = [
+    {
+      key: 'marca',
+      title: 'Marca',
+      sortable: true,
+      searchable: true,
+      render: (item) => (
+        <div className="flex items-center">
+          <TruckIcon className="w-5 h-5 text-gray-400 mr-2" />
+          <div>
+            <div className="text-sm font-medium text-gray-900">{item.marca}</div>
+            <div className="text-sm text-gray-500">{item.modelo}</div>
+          </div>
+        </div>
+      ),
+      exportValue: (item) => `${item.marca} ${item.modelo}`
+    },
+    {
+      key: 'cantidad',
+      title: 'Cantidad',
+      sortable: true,
+      render: (item) => (
+        <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+          {item.cantidad}
+        </span>
+      )
+    },
+    {
+      key: 'año_promedio',
+      title: 'Año Prom.',
+      sortable: true,
+      render: (item) => (
+        <span className="text-sm text-gray-900">{formatNumber(item.año_promedio)}</span>
+      )
+    },
+    {
+      key: 'km_promedio',
+      title: 'Km Prom.',
+      sortable: true,
+      render: (item) => (
+        <span className="text-sm text-gray-900">{formatNumber(item.km_promedio)} km</span>
+      )
+    },
+    {
+      key: 'precio_compra_promedio',
+      title: 'Precio Compra',
+      sortable: true,
+      render: (item) => (
+        <span className="text-sm text-gray-900">{formatCurrency(item.precio_compra_promedio)}</span>
+      )
+    },
+    {
+      key: 'valor_actual_promedio',
+      title: 'Valor Actual',
+      sortable: true,
+      render: (item) => (
+        <span className="text-sm font-medium text-green-600">{formatCurrency(item.valor_actual_promedio)}</span>
+      )
+    },
+    {
+      key: 'depreciacion_media',
+      title: 'Depreciación',
+      sortable: true,
+      render: (item) => (
+        item.depreciacion_media !== null ? (
+          <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+            item.depreciacion_media > 30
+              ? 'bg-red-100 text-red-800'
+              : item.depreciacion_media > 15
+              ? 'bg-yellow-100 text-yellow-800'
+              : 'bg-green-100 text-green-800'
+          }`}>
+            {formatNumber(item.depreciacion_media)}%
+          </span>
+        ) : (
+          <span className="text-gray-400">N/A</span>
+        )
+      )
+    },
+    {
+      key: 'coste_mantenimiento_anual',
+      title: 'Mant./Año',
+      sortable: true,
+      render: (item) => (
+        <span className="text-sm text-gray-900">{formatCurrency(item.coste_mantenimiento_anual)}</span>
+      )
+    },
+    {
+      key: 'num_reportes_accidentes',
+      title: 'Accidentes',
+      sortable: true,
+      render: (item) => (
+        item.num_reportes_accidentes > 0 ? (
+          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+            {item.num_reportes_accidentes}
+          </span>
+        ) : (
+          <span className="text-gray-400">0</span>
+        )
+      )
     }
-  })
+  ]
 
   const formatCurrency = (value: number | null) => {
     if (value === null || value === undefined) return 'N/A'
@@ -279,148 +370,17 @@ export default function AdminVehiculosPage() {
           </div>
         )}
 
-        {/* Filtros de Ordenación */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-semibold text-gray-700">Ordenar por:</span>
-            <button
-              onClick={() => setOrdenPor('cantidad')}
-              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                ordenPor === 'cantidad'
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Cantidad
-            </button>
-            <button
-              onClick={() => setOrdenPor('valor')}
-              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                ordenPor === 'valor'
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Valor Actual
-            </button>
-            <button
-              onClick={() => setOrdenPor('depreciacion')}
-              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                ordenPor === 'depreciacion'
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Depreciación
-            </button>
-          </div>
-        </div>
-
-        {/* Tabla de Análisis */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Marca / Modelo
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Cantidad
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Año Prom.
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Km Prom.
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Precio Compra
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Valor Actual
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Depreciación
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Mant./Año
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Accidentes
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {analisisOrdenado.length === 0 ? (
-                  <tr>
-                    <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
-                      No hay datos de vehículos disponibles
-                    </td>
-                  </tr>
-                ) : (
-                  analisisOrdenado.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <TruckIcon className="w-5 h-5 text-gray-400 mr-2" />
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{item.marca}</div>
-                            <div className="text-sm text-gray-500">{item.modelo}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {item.cantidad}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
-                        {formatNumber(item.año_promedio)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
-                        {formatNumber(item.km_promedio)} km
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
-                        {formatCurrency(item.precio_compra_promedio)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-green-600">
-                        {formatCurrency(item.valor_actual_promedio)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        {item.depreciacion_media !== null ? (
-                          <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            item.depreciacion_media > 30
-                              ? 'bg-red-100 text-red-800'
-                              : item.depreciacion_media > 15
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-green-100 text-green-800'
-                          }`}>
-                            {formatNumber(item.depreciacion_media)}%
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">N/A</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
-                        {formatCurrency(item.coste_mantenimiento_anual)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        {item.num_reportes_accidentes > 0 ? (
-                          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                            {item.num_reportes_accidentes}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">0</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {/* Tabla de Análisis con AdminTable */}
+        <AdminTable
+          data={analisis}
+          columns={columns}
+          loading={loading}
+          emptyMessage="No hay datos de vehículos disponibles"
+          searchPlaceholder="Buscar por marca, modelo..."
+          exportFilename="vehiculos_analisis"
+          initialSortColumn="cantidad"
+          initialSortDirection="desc"
+        />
       </div>
     </div>
   )
