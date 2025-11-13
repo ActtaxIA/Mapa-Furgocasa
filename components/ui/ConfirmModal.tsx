@@ -11,7 +11,7 @@ interface ConfirmModalProps {
   onConfirm: () => void
   onCancel?: () => void
   onClose?: () => void // Alias para onCancel
-  type?: 'danger' | 'warning' | 'info' | 'error'
+  type?: 'danger' | 'warning' | 'info' | 'error' | 'success'
   showCancel?: boolean // Controla si mostrar botón cancelar
 }
 
@@ -36,7 +36,8 @@ export function ConfirmModal({
     danger: 'bg-red-600 hover:bg-red-700',
     error: 'bg-red-600 hover:bg-red-700',
     warning: 'bg-yellow-600 hover:bg-yellow-700',
-    info: 'bg-blue-600 hover:bg-blue-700'
+    info: 'bg-blue-600 hover:bg-blue-700',
+    success: 'bg-green-600 hover:bg-green-700'
   }
 
   return (
