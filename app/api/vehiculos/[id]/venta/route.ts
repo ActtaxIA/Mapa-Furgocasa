@@ -115,7 +115,7 @@ export async function PUT(
         .eq('vehiculo_id', params.id)
         .select()
         .single()
-      
+
       data = result.data
       error = result.error
     } else {
@@ -131,7 +131,7 @@ export async function PUT(
         })
         .select()
         .single()
-      
+
       data = result.data
       error = result.error
     }
@@ -213,7 +213,7 @@ export async function POST(
         .eq('vehiculo_id', params.id)
         .select()
         .single()
-      
+
       data = result.data
       error = result.error
     } else {
@@ -234,7 +234,7 @@ export async function POST(
         })
         .select()
         .single()
-      
+
       data = result.data
       error = result.error
     }
