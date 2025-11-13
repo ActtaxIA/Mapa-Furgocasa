@@ -127,7 +127,7 @@ export default function VehiculoPage() {
     setSaving(true)
     try {
       const supabase = createClient()
-      
+
       const updateData: any = {
         marca: editData.marca.trim() || null,
         modelo: editData.modelo.trim() || null,
@@ -217,13 +217,13 @@ export default function VehiculoPage() {
                 <div className="p-3 bg-primary-100 rounded-lg flex-shrink-0">
                   <TruckIcon className="w-8 h-8 text-primary-600" />
                 </div>
-                
+
                 {!isEditing ? (
                   // Modo Vista
                   <div className="flex-1">
                     <h1 className="text-3xl font-bold text-gray-900 mb-1">{vehiculo.matricula}</h1>
                     <p className="text-gray-600">
-                      {vehiculo.marca || 'Sin marca'} {vehiculo.modelo || 'Sin modelo'} 
+                      {vehiculo.marca || 'Sin marca'} {vehiculo.modelo || 'Sin modelo'}
                       {vehiculo.año && ` • ${vehiculo.año}`}
                       {vehiculo.color && ` • ${vehiculo.color}`}
                     </p>
@@ -240,7 +240,7 @@ export default function VehiculoPage() {
                         {vehiculo.matricula}
                       </div>
                     </div>
-                    
+
                     {/* Campos Editables */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
@@ -253,7 +253,7 @@ export default function VehiculoPage() {
                           placeholder="Ej: Fiat, Volkswagen..."
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Modelo</label>
                         <input
@@ -264,7 +264,7 @@ export default function VehiculoPage() {
                           placeholder="Ej: Ducato, California..."
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Año</label>
                         <input
@@ -277,7 +277,7 @@ export default function VehiculoPage() {
                           max={new Date().getFullYear() + 1}
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
                         <input
@@ -292,7 +292,7 @@ export default function VehiculoPage() {
                   </div>
                 )}
               </div>
-              
+
               {/* Botones de Acción */}
               <div className="flex gap-2 flex-shrink-0">
                 {!isEditing ? (
@@ -325,7 +325,7 @@ export default function VehiculoPage() {
                 )}
               </div>
             </div>
-            
+
             {/* Advertencia sobre matrícula */}
             {isEditing && (
               <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
