@@ -704,6 +704,7 @@ export default function AveriasTab({ vehiculoId }: Props) {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}

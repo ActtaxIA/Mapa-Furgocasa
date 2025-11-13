@@ -559,6 +559,7 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}
