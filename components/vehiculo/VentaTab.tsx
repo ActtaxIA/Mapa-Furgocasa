@@ -163,6 +163,12 @@ export default function VentaTab({ vehiculoId }: Props) {
     return Math.abs(ganancia / tiempo.totalAños)
   }
 
+  // Función helper para formatear números sin decimales (formato español: 55.000)
+  const formatNumber = (value: number | null | undefined): string => {
+    if (value === null || value === undefined) return '0'
+    return Math.round(value).toLocaleString('es-ES')
+  }
+
   if (cargando) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -248,10 +254,10 @@ export default function VentaTab({ vehiculoId }: Props) {
                           <ArrowTrendingDownIcon className="h-5 w-5 mr-1" />
                         )}
                         {calcularGananciaPerdidaFinal()! >= 0 ? '+' : ''}
-                        {calcularGananciaPerdidaFinal()!.toFixed(2)} €
+                        {formatNumber(calcularGananciaPerdidaFinal())} €
                       </p>
                       <p className="text-xs text-gray-600 mt-1">
-                        Inversión total: {datos.inversion_total.toFixed(2)} €
+                        Inversión total: {formatNumber(datos.inversion_total)} €
                       </p>
                     </div>
                     {calcularTiempoPropiedadFinal() && (
@@ -263,7 +269,7 @@ export default function VentaTab({ vehiculoId }: Props) {
                         </p>
                         {calcularCosteAnualFinal() && (
                           <p className="text-sm text-blue-700 mt-2 font-medium">
-                            📊 Coste anual: {calcularCosteAnualFinal()!.toFixed(2)} €/año
+                            📊 Coste anual: {formatNumber(calcularCosteAnualFinal())} €/año
                           </p>
                         )}
                       </div>
@@ -422,13 +428,13 @@ export default function VentaTab({ vehiculoId }: Props) {
                   <span className="text-sm font-medium text-gray-700">Tu resultado:</span>
                   <span className={`text-3xl font-bold flex items-center ${calcularGananciaPerdida()! >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {calcularGananciaPerdida()! >= 0 ? '+' : ''}
-                    {calcularGananciaPerdida()!.toFixed(2)} €
+                    {formatNumber(calcularGananciaPerdida())} €
                   </span>
                 </div>
                 <div className="text-sm text-gray-700 space-y-2 bg-white rounded-lg p-4 mb-4">
                   <div className="flex justify-between">
                     <span>Tu inversión total:</span>
-                    <span className="font-semibold">{datos.inversion_total.toFixed(2)} €</span>
+                    <span className="font-semibold">{formatNumber(datos.inversion_total)} €</span>
                   </div>
                   <div className="flex justify-between border-t pt-2">
                     <span>Precio de venta:</span>
@@ -448,14 +454,14 @@ export default function VentaTab({ vehiculoId }: Props) {
                       <div className="flex justify-between items-center pt-2 border-t border-blue-100">
                         <span className="text-sm font-medium text-gray-700">📊 Coste anual promedio:</span>
                         <span className="text-xl font-bold text-blue-700">
-                          {calcularCosteAnual()!.toFixed(2)} €/año
+                          {formatNumber(calcularCosteAnual())} €/año
                         </span>
                       </div>
                     )}
                     <p className="text-xs text-gray-500 mt-2 italic">
                       {calcularGananciaPerdida()! < 0
-                        ? `Tu vehículo te ha costado ${calcularCosteAnual()?.toFixed(2)} € al año de media`
-                        : `Has ganado ${calcularCosteAnual()?.toFixed(2)} € al año de media`
+                        ? `Tu vehículo te ha costado ${formatNumber(calcularCosteAnual())} € al año de media`
+                        : `Has ganado ${formatNumber(calcularCosteAnual())} € al año de media`
                       }
                     </p>
                   </div>
