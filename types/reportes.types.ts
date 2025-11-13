@@ -10,6 +10,7 @@ export interface VehiculoRegistrado {
   modelo?: string
   año?: number
   color?: string
+  tipo_vehiculo?: string // Tipo de vehículo: Furgoneta Camper, Autocaravana Perfilada, etc.
   foto_url?: string
   fotos_adicionales: string[]
   qr_code_id: string

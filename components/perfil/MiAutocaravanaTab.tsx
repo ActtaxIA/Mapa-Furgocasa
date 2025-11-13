@@ -46,7 +46,8 @@ export function MiAutocaravanaTab({ userId }: Props) {
     marca: '',
     modelo: '',
     año: '',
-    color: ''
+    color: '',
+    tipo_vehiculo: ''
   })
   const [fotoFile, setFotoFile] = useState<File | null>(null)
   const [fotoPreview, setFotoPreview] = useState<string | null>(null)
@@ -154,6 +155,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
         modelo: formData.modelo || null,
         año: añoNumero,
         color: formData.color || null,
+        tipo_vehiculo: formData.tipo_vehiculo || null,
         foto_url: foto_url // URL ya subida a Supabase
       }
 
@@ -171,7 +173,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
 
       if (response.ok) {
         setMessage({ type: 'success', text: '¡Vehículo registrado! Ahora completa los datos de compra...' })
-        setFormData({ matricula: '', marca: '', modelo: '', año: '', color: '' })
+        setFormData({ matricula: '', marca: '', modelo: '', año: '', color: '', tipo_vehiculo: '' })
         setFotoFile(null)
         setFotoPreview(null)
         setShowForm(false)
@@ -391,6 +393,28 @@ export function MiAutocaravanaTab({ userId }: Props) {
                   placeholder="Blanco, Gris, etc."
                 />
               </div>
+
+              {/* Tipo de vehículo */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Tipo de Vehículo <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={formData.tipo_vehiculo}
+                  onChange={(e) => setFormData({ ...formData, tipo_vehiculo: e.target.value })}
+                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  required
+                >
+                  <option value="">Selecciona un tipo</option>
+                  <option value="Furgoneta Camper">🚐 Furgoneta Camper</option>
+                  <option value="Autocaravana Perfilada">🚙 Autocaravana Perfilada</option>
+                  <option value="Autocaravana Integral">🚌 Autocaravana Integral</option>
+                  <option value="Autocaravana Capuchina">🏕️ Autocaravana Capuchina</option>
+                  <option value="Camper">🚗 Camper</option>
+                  <option value="Furgoneta">🚐 Furgoneta</option>
+                  <option value="Otro">📦 Otro</option>
+                </select>
+              </div>
             </div>
 
             {/* Campo de foto */}
@@ -465,7 +489,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
                 type="button"
                 onClick={() => {
                   setShowForm(false)
-                  setFormData({ matricula: '', marca: '', modelo: '', año: '', color: '' })
+                  setFormData({ matricula: '', marca: '', modelo: '', año: '', color: '', tipo_vehiculo: '' })
                   setFotoFile(null)
                   setFotoPreview(null)
                 }}
@@ -538,6 +562,14 @@ export function MiAutocaravanaTab({ userId }: Props) {
                     {vehiculo.modelo && <p><strong>Modelo:</strong> {vehiculo.modelo}</p>}
                     {vehiculo.año && <p><strong>Año:</strong> {vehiculo.año}</p>}
                     {vehiculo.color && <p><strong>Color:</strong> {vehiculo.color}</p>}
+                    {vehiculo.tipo_vehiculo && (
+                      <p className="flex items-center gap-1">
+                        <strong>Tipo:</strong> 
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 border border-primary-200">
+                          {vehiculo.tipo_vehiculo}
+                        </span>
+                      </p>
+                    )}
                     <p className="text-xs text-gray-400 mt-2">
                       Registrado: {new Date(vehiculo.created_at).toLocaleDateString('es-ES')}
                     </p>
