@@ -26,6 +26,7 @@ import MantenimientosTab from '@/components/vehiculo/MantenimientosTab'
 import AveriasTab from '@/components/vehiculo/AveriasTab'
 import MejorasTab from '@/components/vehiculo/MejorasTab'
 import VentaTab from '@/components/vehiculo/VentaTab'
+import { Toast } from '@/components/ui/Toast'
 
 type TabType = 'resumen' | 'compra' | 'mantenimientos' | 'averias' | 'mejoras' | 'venta'
 
@@ -46,6 +47,7 @@ export default function VehiculoPage() {
     color: ''
   })
   const [saving, setSaving] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null)
 
   // Detectar parámetro tab en la URL
   useEffect(() => {
@@ -152,17 +154,17 @@ export default function VehiculoPage() {
 
       if (error) {
         console.error('Error actualizando vehículo:', error)
-        alert('Error al actualizar los datos del vehículo')
+        setToast({ message: 'Error al actualizar los datos del vehículo', type: 'error' })
         return
       }
 
       // Recargar datos
       await loadData()
       setIsEditing(false)
-      alert('✅ Datos actualizados correctamente')
+      setToast({ message: '✅ Datos actualizados correctamente', type: 'success' })
     } catch (error) {
       console.error('Error:', error)
-      alert('Error al actualizar los datos del vehículo')
+      setToast({ message: 'Error al actualizar los datos del vehículo', type: 'error' })
     } finally {
       setSaving(false)
     }
@@ -406,6 +408,15 @@ export default function VehiculoPage() {
       </main>
 
       <Footer />
+
+      {/* Toast Notifications */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   )
 }

@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { ReporteCompletoUsuario } from '@/types/reportes.types'
+import { Toast } from '@/components/ui/Toast'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import {
   ExclamationTriangleIcon,
   MapPinIcon,
@@ -22,6 +24,8 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
   const [reportes, setReportes] = useState<ReporteCompletoUsuario[]>([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null)
+  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; reporteId: string | null }>({ isOpen: false, reporteId: null })
 
   useEffect(() => {
     loadReportes()
@@ -67,7 +71,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
 
     if (!reporteId || reporteId === 'undefined') {
       console.error('❌ ERROR: reporteId es undefined o inválido')
-      alert('Error: No se puede marcar como leído. ID de reporte inválido. Por favor, recarga la página.')
+      setToast({ message: 'Error: ID de reporte inválido. Por favor, recarga la página.', type: 'error' })
       return
     }
 
@@ -84,26 +88,32 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
 
       if (response.ok) {
         console.log('✅ Reporte marcado como leído exitosamente')
+        setToast({ message: '✅ Reporte marcado como leído', type: 'success' })
         loadReportes()
         // Llamar al callback para actualizar contadores en la página padre
         if (onReporteUpdate) onReporteUpdate()
       } else {
         const data = await response.json()
         console.error('❌ Error marcando como leído:', data.error)
-        alert(`Error: ${data.error}`)
+        setToast({ message: `Error: ${data.error}`, type: 'error' })
       }
     } catch (error) {
       console.error('❌ Excepción en handleMarcarLeido:', error)
-      alert('Error al marcar como leído. Por favor, intenta de nuevo.')
+      setToast({ message: 'Error al marcar como leído. Por favor, intenta de nuevo.', type: 'error' })
     } finally {
       setUpdating(false)
     }
   }
 
   const handleCerrarReporte = async (reporteId: string) => {
-    if (!confirm('¿Marcar este reporte como resuelto/cerrado?')) {
-      return
-    }
+    setConfirmModal({ isOpen: true, reporteId })
+  }
+
+  const confirmCerrarReporte = async () => {
+    const reporteId = confirmModal.reporteId
+    setConfirmModal({ isOpen: false, reporteId: null })
+    
+    if (!reporteId) return
 
     setUpdating(true)
     try {
@@ -114,15 +124,18 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       })
 
       if (response.ok) {
+        setToast({ message: '✅ Reporte cerrado correctamente', type: 'success' })
         loadReportes()
         // Llamar al callback para actualizar contadores en la página padre
         if (onReporteUpdate) onReporteUpdate()
       } else {
         const data = await response.json()
         console.error('Error cerrando reporte:', data.error)
+        setToast({ message: `Error: ${data.error}`, type: 'error' })
       }
     } catch (error) {
       console.error('Error cerrando reporte:', error)
+      setToast({ message: 'Error al cerrar el reporte. Por favor, intenta de nuevo.', type: 'error' })
     } finally {
       setUpdating(false)
     }
@@ -365,6 +378,27 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
           </div>
         ))}
       </div>
+
+      {/* Toast Notifications */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title="Cerrar Reporte"
+        message="¿Estás seguro de que deseas marcar este reporte como cerrado? Esta acción lo archivará y ya no aparecerá en reportes pendientes."
+        confirmText="Sí, cerrar"
+        cancelText="Cancelar"
+        onConfirm={confirmCerrarReporte}
+        onCancel={() => setConfirmModal({ isOpen: false, reporteId: null })}
+        type="warning"
+      />
     </div>
   )
 }
