@@ -156,7 +156,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
   const descargarReportePDF = async (reporte: ReporteCompletoUsuario) => {
     try {
       setToast({ message: 'Generando PDF completo...', type: 'info' })
-      
+
       const pdf = new jsPDF('p', 'mm', 'a4')
       const pageWidth = pdf.internal.pageSize.getWidth()
       const pageHeight = pdf.internal.pageSize.getHeight()
@@ -177,7 +177,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       // Header con diseño corporativo
       pdf.setFillColor(colorPrimario[0], colorPrimario[1], colorPrimario[2])
       pdf.rect(0, 0, pageWidth, 45, 'F')
-      
+
       // Línea naranja decorativa
       pdf.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2])
       pdf.rect(0, 45, pageWidth, 3, 'F')
@@ -186,11 +186,11 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       pdf.setFontSize(26)
       pdf.setFont('helvetica', 'bold')
       pdf.text('REPORTE DE ACCIDENTE', pageWidth / 2, 20, { align: 'center' })
-      
+
       pdf.setFontSize(11)
       pdf.setFont('helvetica', 'normal')
       pdf.text('Mapa Furgocasa - Documento Oficial', pageWidth / 2, 32, { align: 'center' })
-      
+
       // Subtítulo
       pdf.setFontSize(9)
       pdf.setFont('helvetica', 'italic')
@@ -201,140 +201,165 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       // Barra de información del reporte con diseño mejorado
       pdf.setFillColor(colorGrisClaro[0], colorGrisClaro[1], colorGrisClaro[2])
       pdf.roundedRect(margin, yPos - 5, pageWidth - 2 * margin, 20, 3, 3, 'F')
-      
+
       // Borde izquierdo de color
       pdf.setFillColor(colorPrimario[0], colorPrimario[1], colorPrimario[2])
       pdf.rect(margin, yPos - 5, 4, 20, 'F')
-      
+
       pdf.setTextColor(0, 0, 0)
       pdf.setFontSize(9)
       pdf.setFont('helvetica', 'bold')
       pdf.text(`ID Reporte:`, margin + 8, yPos)
       pdf.setFont('helvetica', 'normal')
       pdf.text(reporte.id, margin + 30, yPos)
-      
+
       pdf.setFont('helvetica', 'bold')
       pdf.text(`Generado:`, pageWidth - margin - 70, yPos, { align: 'left' })
       pdf.setFont('helvetica', 'normal')
       pdf.text(new Date().toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }), pageWidth - margin - 3, yPos, { align: 'right' })
-      
+
       pdf.setTextColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2])
       pdf.setFontSize(8)
       pdf.setFont('helvetica', 'italic')
       pdf.text(`Reportado: ${new Date(reporte.created_at).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}`, margin + 8, yPos + 8)
-      
+
       yPos += 28
 
-      // Sección: Información del vehículo con diseño
+      // ============================================================
+      // SECCIÓN DE 3 COLUMNAS: Vehículo, Testigo, Fecha
+      // ============================================================
+      
+      const colWidth = (pageWidth - 2 * margin - 10) / 3 // 3 columnas con separación
+      const startYFor3Cols = yPos
+      
+      // COLUMNA 1: VEHÍCULO AFECTADO
+      let col1X = margin
+      let col1Y = startYFor3Cols
+      
       pdf.setFillColor(colorPrimario[0], colorPrimario[1], colorPrimario[2])
-      pdf.rect(margin, yPos - 2, 3, 8, 'F')
+      pdf.rect(col1X, col1Y - 2, 3, 8, 'F')
       
       pdf.setTextColor(0, 0, 0)
-      pdf.setFontSize(14)
+      pdf.setFontSize(11)
       pdf.setFont('helvetica', 'bold')
-      pdf.text('VEHICULO AFECTADO', margin + 6, yPos + 3)
-      yPos += 10
+      pdf.text('VEHICULO', col1X + 5, col1Y + 3)
+      col1Y += 8
 
-      pdf.setFontSize(10)
+      pdf.setFontSize(8)
       pdf.setFont('helvetica', 'bold')
-      pdf.text('Matricula:', margin, yPos)
+      pdf.text('Matricula:', col1X, col1Y)
+      col1Y += 4
       pdf.setFont('helvetica', 'normal')
-      pdf.text(reporte.vehiculo_matricula, margin + 25, yPos)
-      yPos += 5
+      const matriculaLines = pdf.splitTextToSize(reporte.vehiculo_matricula, colWidth - 2)
+      pdf.text(matriculaLines, col1X, col1Y)
+      col1Y += matriculaLines.length * 4 + 2
       
       if (reporte.vehiculo_marca || reporte.vehiculo_modelo) {
         pdf.setFont('helvetica', 'bold')
-        pdf.text('Vehiculo:', margin, yPos)
+        pdf.text('Vehiculo:', col1X, col1Y)
+        col1Y += 4
         pdf.setFont('helvetica', 'normal')
-        pdf.text(`${reporte.vehiculo_marca || 'N/A'} ${reporte.vehiculo_modelo || 'N/A'}`, margin + 25, yPos)
-        yPos += 5
+        const vehiculoText = `${reporte.vehiculo_marca || 'N/A'} ${reporte.vehiculo_modelo || 'N/A'}`
+        const vehiculoLines = pdf.splitTextToSize(vehiculoText, colWidth - 2)
+        pdf.text(vehiculoLines, col1X, col1Y)
+        col1Y += vehiculoLines.length * 4 + 2
       }
 
-      // Tipo de daño con badge corporativo
+      // Tipo de daño
       if (reporte.tipo_dano) {
         pdf.setFillColor(255, 237, 213)
-        pdf.roundedRect(margin, yPos, 55, 8, 2, 2, 'F')
+        pdf.roundedRect(col1X, col1Y, colWidth - 2, 7, 2, 2, 'F')
         pdf.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2])
-        pdf.rect(margin, yPos, 3, 8, 'F')
+        pdf.rect(col1X, col1Y, 2, 7, 'F')
         pdf.setFont('helvetica', 'bold')
-        pdf.setFontSize(9)
+        pdf.setFontSize(7)
         pdf.setTextColor(colorSecundario[0], colorSecundario[1], colorSecundario[2])
-        pdf.text(`TIPO: ${reporte.tipo_dano.toUpperCase()}`, margin + 5, yPos + 5)
+        pdf.text(`TIPO: ${reporte.tipo_dano.toUpperCase()}`, col1X + 3, col1Y + 4.5)
         pdf.setTextColor(0, 0, 0)
-        yPos += 13
-      } else {
-        yPos += 3
+        col1Y += 9
       }
 
-      // ============================================================
-      // 1. DATOS DEL TESTIGO con diseño corporativo
-      // ============================================================
-      pdf.setFillColor(colorAzul[0], colorAzul[1], colorAzul[2])
-      pdf.rect(margin, yPos - 2, 3, 8, 'F')
+      // COLUMNA 2: DATOS DEL TESTIGO
+      let col2X = margin + colWidth + 5
+      let col2Y = startYFor3Cols
       
+      pdf.setFillColor(colorAzul[0], colorAzul[1], colorAzul[2])
+      pdf.rect(col2X, col2Y - 2, 3, 8, 'F')
+      
+      pdf.setFontSize(11)
       pdf.setFont('helvetica', 'bold')
-      pdf.setFontSize(14)
-      pdf.text('DATOS DEL TESTIGO', margin + 6, yPos + 3)
-      yPos += 10
+      pdf.text('TESTIGO', col2X + 5, col2Y + 3)
+      col2Y += 8
 
-      pdf.setFontSize(10)
+      pdf.setFontSize(8)
       
       if (!reporte.es_anonimo) {
         pdf.setFont('helvetica', 'bold')
-        pdf.text('Nombre:', margin, yPos)
+        pdf.text('Nombre:', col2X, col2Y)
+        col2Y += 4
         pdf.setFont('helvetica', 'normal')
-        pdf.text(reporte.testigo_nombre, margin + 20, yPos)
-        yPos += 5
+        const nombreLines = pdf.splitTextToSize(reporte.testigo_nombre, colWidth - 2)
+        pdf.text(nombreLines, col2X, col2Y)
+        col2Y += nombreLines.length * 4 + 2
         
         if (reporte.testigo_email) {
           pdf.setFont('helvetica', 'bold')
-          pdf.text('Email:', margin, yPos)
+          pdf.text('Email:', col2X, col2Y)
+          col2Y += 4
           pdf.setFont('helvetica', 'normal')
-          pdf.text(reporte.testigo_email, margin + 20, yPos)
-          yPos += 5
+          const emailLines = pdf.splitTextToSize(reporte.testigo_email, colWidth - 2)
+          pdf.text(emailLines, col2X, col2Y)
+          col2Y += emailLines.length * 4 + 2
         }
         if (reporte.testigo_telefono) {
           pdf.setFont('helvetica', 'bold')
-          pdf.text('Telefono:', margin, yPos)
+          pdf.text('Telefono:', col2X, col2Y)
+          col2Y += 4
           pdf.setFont('helvetica', 'normal')
-          pdf.text(reporte.testigo_telefono, margin + 20, yPos)
-          yPos += 5
+          pdf.text(reporte.testigo_telefono, col2X, col2Y)
+          col2Y += 6
         }
       } else {
         pdf.setFont('helvetica', 'italic')
         pdf.setTextColor(100, 100, 100)
-        pdf.setFontSize(9)
-        pdf.text('Reporte anonimo - El testigo ha elegido no compartir sus datos', margin, yPos)
+        pdf.setFontSize(7)
+        const anonimoLines = pdf.splitTextToSize('Reporte anonimo - El testigo oculto su identidad', colWidth - 2)
+        pdf.text(anonimoLines, col2X, col2Y)
         pdf.setTextColor(0, 0, 0)
-        yPos += 5
+        col2Y += anonimoLines.length * 3.5 + 2
       }
-      yPos += 10
 
-      // ============================================================
-      // 2. FECHA DEL ACCIDENTE con diseño
-      // ============================================================
-      pdf.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2])
-      pdf.rect(margin, yPos - 2, 3, 8, 'F')
+      // COLUMNA 3: FECHA DEL ACCIDENTE
+      let col3X = margin + 2 * colWidth + 10
+      let col3Y = startYFor3Cols
       
+      pdf.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2])
+      pdf.rect(col3X, col3Y - 2, 3, 8, 'F')
+      
+      pdf.setFontSize(11)
       pdf.setFont('helvetica', 'bold')
-      pdf.setFontSize(14)
-      pdf.text('FECHA DEL ACCIDENTE', margin + 6, yPos + 3)
-      yPos += 10
+      pdf.text('FECHA', col3X + 5, col3Y + 3)
+      col3Y += 8
 
       pdf.setFont('helvetica', 'normal')
-      pdf.setFontSize(10)
-      pdf.text(new Date(reporte.fecha_accidente).toLocaleString('es-ES', {
+      pdf.setFontSize(8)
+      const fechaCompleta = new Date(reporte.fecha_accidente).toLocaleString('es-ES', {
         dateStyle: 'full',
         timeStyle: 'short'
-      }), margin, yPos)
-      yPos += 12
+      })
+      const fechaLines = pdf.splitTextToSize(fechaCompleta, colWidth - 2)
+      pdf.text(fechaLines, col3X, col3Y)
+      col3Y += fechaLines.length * 4
+
+      // Ajustar yPos al máximo de las 3 columnas
+      yPos = Math.max(col1Y, col2Y, col3Y) + 10
 
       // ============================================================
       // 3. UBICACION DEL ACCIDENTE con mapa
       // ============================================================
       pdf.setFillColor(colorPrimario[0], colorPrimario[1], colorPrimario[2])
       pdf.rect(margin, yPos - 2, 3, 8, 'F')
-      
+
       pdf.setFont('helvetica', 'bold')
       pdf.setFontSize(14)
       pdf.text('UBICACION DEL ACCIDENTE', margin + 6, yPos + 3)
@@ -351,10 +376,10 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       pdf.setFontSize(10)
       pdf.text('Direccion:', margin, yPos)
       yPos += 5
-      
+
       pdf.setFont('helvetica', 'normal')
       pdf.setFontSize(9)
-      
+
       if (reporte.ubicacion_direccion) {
         const direccionLines = pdf.splitTextToSize(reporte.ubicacion_direccion, leftColumnWidth - 5)
         pdf.text(direccionLines, margin, yPos)
@@ -363,7 +388,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
         pdf.text('(No disponible)', margin, yPos)
         yPos += 7
       }
-      
+
       if (reporte.ubicacion_descripcion) {
         const descripcionLines = pdf.splitTextToSize(reporte.ubicacion_descripcion, leftColumnWidth - 5)
         pdf.text(descripcionLines, margin, yPos)
@@ -382,7 +407,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       // Columna derecha: Mapa (mantener aspect ratio 2:1)
       try {
         const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${reporte.ubicacion_lat},${reporte.ubicacion_lng}&zoom=15&size=600x300&markers=color:red%7C${reporte.ubicacion_lat},${reporte.ubicacion_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
-        
+
         const mapImg = await fetch(mapUrl)
         const mapBlob = await mapImg.blob()
         const mapBase64 = await new Promise<string>((resolve) => {
@@ -393,7 +418,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
 
         // Insertar mapa en la derecha con proporciones correctas (aspect ratio 2:1)
         pdf.addImage(mapBase64, 'PNG', margin + leftColumnWidth + 5, startYForMap, mapWidth, mapWidth / 2)
-        
+
         pdf.setFontSize(7)
         pdf.setTextColor(100, 100, 100)
         pdf.text('Ubicacion exacta del accidente visualizada en Google Maps', margin + leftColumnWidth + 5, startYForMap + mapWidth / 2 + 3)
@@ -418,7 +443,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       pdf.roundedRect(margin, yPos - 3, pageWidth - 2 * margin, 10, 2, 2, 'F')
       pdf.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2])
       pdf.rect(margin, yPos - 3, 4, 10, 'F')
-      
+
       pdf.setTextColor(0, 0, 0)
       pdf.setFont('helvetica', 'bold')
       pdf.setFontSize(14)
@@ -436,7 +461,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
         pdf.setFillColor(colorGrisClaro[0], colorGrisClaro[1], colorGrisClaro[2])
         const alturaVehiculoCausante = reporte.descripcion_tercero ? 25 : 15
         pdf.roundedRect(margin, yPos - 3, pageWidth - 2 * margin, alturaVehiculoCausante, 2, 2, 'F')
-        
+
         pdf.setFont('helvetica', 'bold')
         pdf.setFontSize(11)
         pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2])
@@ -463,7 +488,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       // ============================================================
       // PÁGINA 2: EVIDENCIAS FOTOGRÁFICAS (sin deformar)
       // ============================================================
-      
+
       if (reporte.fotos_urls && reporte.fotos_urls.length > 0) {
         pdf.addPage()
         yPos = 20
@@ -471,16 +496,16 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
         // Header de evidencias con diseño corporativo
         pdf.setFillColor(colorAzul[0], colorAzul[1], colorAzul[2])
         pdf.rect(0, 0, pageWidth, 35, 'F')
-        
+
         // Línea naranja decorativa
         pdf.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2])
         pdf.rect(0, 35, pageWidth, 2, 'F')
-        
+
         pdf.setTextColor(255, 255, 255)
         pdf.setFontSize(20)
         pdf.setFont('helvetica', 'bold')
         pdf.text('EVIDENCIAS FOTOGRAFICAS', pageWidth / 2, 18, { align: 'center' })
-        
+
         pdf.setFontSize(10)
         pdf.setFont('helvetica', 'normal')
         pdf.text(`Reporte ID: ${reporte.id}`, pageWidth / 2, 27, { align: 'center' })
@@ -499,7 +524,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
             const fotoUrl = reporte.fotos_urls[i]
             const fotoResponse = await fetch(fotoUrl)
             const fotoBlob = await fotoResponse.blob()
-            
+
             // Crear una imagen temporal para obtener dimensiones reales
             const fotoBase64 = await new Promise<string>((resolve) => {
               const reader = new FileReader()
@@ -521,7 +546,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
             // Calcular dimensiones para el PDF manteniendo aspect ratio
             const maxWidth = pageWidth - 2 * margin
             const maxHeight = 80 // Altura máxima por foto
-            
+
             let imgWidth, imgHeight
             if (aspectRatio > maxWidth / maxHeight) {
               // La imagen es más ancha
@@ -567,12 +592,12 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       const totalPages = pdf.getNumberOfPages()
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i)
-        
+
         // Línea decorativa superior del footer
         pdf.setDrawColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2])
         pdf.setLineWidth(0.3)
         pdf.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15)
-        
+
         // Texto del footer
         pdf.setTextColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2])
         pdf.setFontSize(8)
@@ -582,7 +607,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
         pdf.text('www.mapafurgocasa.com', pageWidth / 2, pageHeight - 10, { align: 'center' })
         pdf.setFont('helvetica', 'normal')
         pdf.text(`Pagina ${i} de ${totalPages}`, pageWidth - margin, pageHeight - 10, { align: 'right' })
-        
+
         pdf.setFontSize(7)
         pdf.setFont('helvetica', 'italic')
         pdf.text('Sistema de Reportes de Accidentes', pageWidth / 2, pageHeight - 6, { align: 'center' })
@@ -590,7 +615,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
 
       // Descargar
       pdf.save(`Reporte-Accidente-${reporte.vehiculo_matricula}-${new Date(reporte.fecha_accidente).toISOString().slice(0, 10)}.pdf`)
-      
+
       setToast({ message: 'PDF completo descargado correctamente', type: 'success' })
     } catch (error) {
       console.error('Error generando PDF:', error)
