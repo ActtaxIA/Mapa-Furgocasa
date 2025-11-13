@@ -87,6 +87,8 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/icon-192.png" />
         <link rel="shortcut icon" href="/favicon.png" />
+        {/* Meta tag moderno para reemplazar el deprecado apple-mobile-web-app-capable */}
+        <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="antialiased">
         {/* Google Analytics */}
