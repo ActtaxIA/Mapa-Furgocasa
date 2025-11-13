@@ -45,6 +45,7 @@ export default function AdminVehiculosPage() {
   const [metricas, setMetricas] = useState<DashboardMetricas | null>(null)
   const [analisis, setAnalisis] = useState<AnalisisMarcaModelo[]>([])
   const [ordenPor, setOrdenPor] = useState<'cantidad' | 'valor' | 'depreciacion'>('cantidad')
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -54,7 +55,7 @@ export default function AdminVehiculosPage() {
   const checkAdminAndLoad = async () => {
     const supabase = createClient()
     const { data: { session } } = await supabase.auth.getSession()
-    
+
     if (!session?.user || !session.user.user_metadata?.is_admin) {
       router.push('/mapa')
       return
@@ -72,14 +73,33 @@ export default function AdminVehiculosPage() {
     try {
       const supabase = createClient()
       const { data, error } = await supabase.rpc('admin_dashboard_metricas')
-      
-      if (error) throw error
-      
+
+      if (error) {
+        console.error('Error en RPC admin_dashboard_metricas:', error)
+        setError(`Error cargando métricas: ${error.message}. Asegúrate de que las funciones SQL estén creadas en Supabase.`)
+        throw error
+      }
+
+      console.log('Métricas cargadas:', data)
+
       if (data && data.length > 0) {
         setMetricas(data[0])
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error cargando métricas:', error)
+      setError(`Error: ${error.message || 'Error desconocido al cargar métricas'}`)
+      // Establecer valores por defecto si hay error
+      setMetricas({
+        total_vehiculos: 0,
+        vehiculos_mes_actual: 0,
+        valor_total_parque: 0,
+        total_reportes_accidentes: 0,
+        reportes_pendientes: 0,
+        datos_mercado_verificados: 0,
+        datos_mercado_pendientes: 0,
+        usuarios_con_vehiculos: 0,
+        usuarios_compartiendo_datos: 0
+      })
     }
   }
 
@@ -87,12 +107,18 @@ export default function AdminVehiculosPage() {
     try {
       const supabase = createClient()
       const { data, error } = await supabase.rpc('admin_analisis_por_marca_modelo')
-      
-      if (error) throw error
-      
+
+      if (error) {
+        console.error('Error en RPC admin_analisis_por_marca_modelo:', error)
+        throw error
+      }
+
+      console.log('Análisis cargado:', data)
+
       setAnalisis(data || [])
     } catch (error) {
       console.error('Error cargando análisis:', error)
+      setAnalisis([])
     }
   }
 
@@ -139,7 +165,7 @@ export default function AdminVehiculosPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
@@ -150,7 +176,7 @@ export default function AdminVehiculosPage() {
             <ArrowLeftIcon className="w-5 h-5" />
             Volver al Panel
           </Link>
-          
+
           <div className="flex items-center gap-3 mb-2">
             <TruckIcon className="w-10 h-10 text-cyan-600" />
             <h1 className="text-4xl font-bold text-gray-900">
@@ -161,6 +187,22 @@ export default function AdminVehiculosPage() {
             Análisis completo del parque de autocaravanas registradas
           </p>
         </div>
+
+        {/* Mensaje de Error */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <ExclamationTriangleIcon className="w-6 h-6 text-red-600 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-red-900 mb-1">Error al cargar datos</h3>
+                <p className="text-sm text-red-700">{error}</p>
+                <p className="text-sm text-red-600 mt-2">
+                  <strong>Solución:</strong> Ejecuta el archivo <code className="bg-red-100 px-2 py-1 rounded">reportes/12_funciones_admin.sql</code> en el Editor SQL de Supabase.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Métricas Clave */}
         {metricas && (
@@ -370,4 +412,3 @@ export default function AdminVehiculosPage() {
     </div>
   )
 }
-

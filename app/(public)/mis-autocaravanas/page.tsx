@@ -8,7 +8,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { MiAutocaravanaTab } from '@/components/perfil/MiAutocaravanaTab'
 import { MisReportesTab } from '@/components/perfil/MisReportesTab'
-import { 
+import {
   TruckIcon,
   QrCodeIcon,
   ExclamationTriangleIcon,
@@ -27,7 +27,7 @@ export default function MisAutocaravanasPage() {
     const loadUser = async () => {
       const supabase = createClient()
       const { data: { session } } = await supabase.auth.getSession()
-      
+
       if (!session?.user) {
         router.push('/auth/login')
         return
@@ -56,7 +56,7 @@ export default function MisAutocaravanasPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -185,4 +185,3 @@ export default function MisAutocaravanasPage() {
     </div>
   )
 }
-
