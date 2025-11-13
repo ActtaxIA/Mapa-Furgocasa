@@ -305,3 +305,5 @@ Para problemas o preguntas sobre este script, revisa:
 
 **Última actualización**: 2025-01-11  
 **Versión**: 1.0.0
+
+

@@ -228,14 +228,14 @@ export default function ReporteAccidentePage() {
       google.maps.event.addListener(newMarker, 'dragend', async function(event: any) {
         const newLat = event.latLng.lat();
         const newLng = event.latLng.lng();
-        
+
         setUbicacionAjustada(true);
-        
+
         // Actualizar ubicación
         try {
           const geocoder = new google.maps.Geocoder();
           const result = await geocoder.geocode({ location: { lat: newLat, lng: newLng } });
-          
+
           if (result.results && result.results[0]) {
             const nuevaDireccion = result.results[0].formatted_address;
             setUbicacion({ lat: newLat, lng: newLng, direccion: nuevaDireccion });
