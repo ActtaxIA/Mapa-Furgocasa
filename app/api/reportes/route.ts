@@ -227,9 +227,9 @@ export async function POST(request: Request) {
         fecha_accidente,
         ip_address,
         captcha_verificado: false, // Por ahora sin captcha
-        verificado: false,
         leido: false,
         cerrado: false
+        // Nota: 'verificado' removido temporalmente para debugging
       })
       .select()
       .single()
