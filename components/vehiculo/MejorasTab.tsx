@@ -14,19 +14,15 @@ import {
 interface Mejora {
   id: string
   vehiculo_id: string
-  tipo_mejora: string
-  nombre: string
-  descripcion: string | null
-  fecha_instalacion: string
-  coste_producto: number | null
-  coste_instalacion: number | null
+  user_id: string
+  titulo: string // NOT NULL (antes 'nombre' en formulario)
+  categoria: string // Antes 'tipo_mejora' en formulario
+  descripcion: string // NOT NULL
+  fecha: string // Antes 'fecha_instalacion' en formulario
+  coste_materiales: number | null // Antes 'coste_producto' en formulario
+  coste_mano_obra: number | null // Antes 'coste_instalacion' en formulario
   coste_total: number | null
-  marca: string | null
-  modelo: string | null
-  proveedor: string | null
-  ubicacion_instalacion: string | null
-  garantia_meses: number | null
-  mejora_valor: boolean
+  instalado_por: string | null // Antes 'proveedor' en formulario
   notas: string | null
   created_at: string
   updated_at: string

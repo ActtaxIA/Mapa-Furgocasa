@@ -15,18 +15,19 @@ import {
 interface Mantenimiento {
   id: string
   vehiculo_id: string
-  tipo_mantenimiento: string
-  descripcion: string | null
-  fecha_programada: string | null
-  fecha_realizada: string | null
+  user_id: string
+  tipo: string // Antes 'tipo_mantenimiento' en formulario
+  fecha: string // Antes 'fecha_realizada' o 'fecha_programada' en formulario
   kilometraje: number | null
+  descripcion: string | null
   coste: number | null
+  proximo_mantenimiento: string | null // Antes 'proximo_mantenimiento_fecha' en formulario
+  kilometraje_proximo: number | null // Antes 'proximo_mantenimiento_km' en formulario
+  alertar_dias_antes: number | null
   taller: string | null
-  ubicacion_taller: string | null
+  direccion_taller: string | null // Antes 'ubicacion_taller' en formulario
+  telefono_taller: string | null
   notas: string | null
-  proximo_mantenimiento_km: number | null
-  proximo_mantenimiento_fecha: string | null
-  estado: 'pendiente' | 'completado' | 'vencido'
   created_at: string
   updated_at: string
 }
