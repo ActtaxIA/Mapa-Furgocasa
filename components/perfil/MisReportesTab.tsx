@@ -34,7 +34,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
 
       if (response.ok) {
         console.log('📥 Reportes recibidos del API:', data.reportes)
-        
+
         // Mapear reporte_id a id para compatibilidad con el tipo ReporteCompletoUsuario
         const reportesMapeados = (data.reportes || []).map((r: any) => {
           const mapeado = {
@@ -42,14 +42,14 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
             id: r.reporte_id || r.id,
             vehiculo_afectado_id: r.vehiculo_id || r.vehiculo_afectado_id
           }
-          console.log('🔄 Reporte mapeado:', { 
-            original_reporte_id: r.reporte_id, 
+          console.log('🔄 Reporte mapeado:', {
+            original_reporte_id: r.reporte_id,
             original_id: r.id,
-            final_id: mapeado.id 
+            final_id: mapeado.id
           })
           return mapeado
         })
-        
+
         console.log('✅ Reportes mapeados finales:', reportesMapeados)
         setReportes(reportesMapeados)
       } else {
@@ -64,18 +64,18 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
 
   const handleMarcarLeido = async (reporteId: string) => {
     console.log('🔵 handleMarcarLeido llamado con ID:', reporteId)
-    
+
     if (!reporteId || reporteId === 'undefined') {
       console.error('❌ ERROR: reporteId es undefined o inválido')
       alert('Error: No se puede marcar como leído. ID de reporte inválido. Por favor, recarga la página.')
       return
     }
-    
+
     setUpdating(true)
     try {
       const url = `/api/reportes/${reporteId}`
       console.log('📤 Haciendo PATCH a:', url)
-      
+
       const response = await fetch(url, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },

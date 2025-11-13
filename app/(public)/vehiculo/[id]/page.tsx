@@ -204,11 +204,11 @@ export default function VehiculoPage() {
         {/* Header */}
         <div className="mb-6">
           <Link
-            href="/perfil"
+            href="/mis-autocaravanas"
             className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 mb-4"
           >
             <ArrowLeftIcon className="w-5 h-5" />
-            Volver a Mi Perfil
+            Volver a Mis Autocaravanas
           </Link>
 
           <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
