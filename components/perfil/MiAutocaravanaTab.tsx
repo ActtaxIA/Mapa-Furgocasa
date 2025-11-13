@@ -514,10 +514,13 @@ export function MiAutocaravanaTab({ userId }: Props) {
                     Descarga un cartel llamativo para motivar a los testigos a reportar. Imprime en tamaño A5 o A6.
                   </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Mostrar una tarjeta por fila para evitar recortes */}
+                <div className="flex flex-col gap-4">
                   {/* Diseño 1 - Urgente */}
                   <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                    <img src="/designs/qr-urgente.svg" alt="Diseño Urgente - ¿Viste un golpe?" className="w-full h-44 object-cover" />
+                    <div className="w-full bg-white flex items-center justify-center p-3">
+                      <img src="/designs/qr-urgente.svg" alt="Diseño Urgente - ¿Viste un golpe?" className="w-full max-h-64 object-contain" />
+                    </div>
                     <div className="p-3 flex items-center justify-between">
                       <div>
                         <p className="text-sm font-semibold text-gray-900">Urgente / Alta visibilidad</p>
@@ -534,7 +537,9 @@ export function MiAutocaravanaTab({ userId }: Props) {
                   </div>
                   {/* Diseño 2 - Emocional */}
                   <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                    <img src="/designs/qr-emocional.svg" alt="Diseño Emocional - Haz lo que te gustaría..." className="w-full h-44 object-cover" />
+                    <div className="w-full bg-white flex items-center justify-center p-3">
+                      <img src="/designs/qr-emocional.svg" alt="Diseño Emocional - Haz lo que te gustaría..." className="w-full max-h-64 object-contain" />
+                    </div>
                     <div className="p-3 flex items-center justify-between">
                       <div>
                         <p className="text-sm font-semibold text-gray-900">Emocional / Solidario</p>
@@ -551,7 +556,9 @@ export function MiAutocaravanaTab({ userId }: Props) {
                   </div>
                   {/* Diseño 3 - Comunidad */}
                   <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                    <img src="/designs/qr-comunidad.svg" alt="Diseño Comunidad - Nos cuidamos entre todos" className="w-full h-44 object-cover" />
+                    <div className="w-full bg-white flex items-center justify-center p-3">
+                      <img src="/designs/qr-comunidad.svg" alt="Diseño Comunidad - Nos cuidamos entre todos" className="w-full max-h-64 object-contain" />
+                    </div>
                     <div className="p-3 flex items-center justify-between">
                       <div>
                         <p className="text-sm font-semibold text-gray-900">Comunidad / Viajeros</p>
