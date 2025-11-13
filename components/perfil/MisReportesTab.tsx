@@ -155,10 +155,17 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
 
   const descargarReportePDF = async (reporte: ReporteCompletoUsuario) => {
     try {
+      setToast({ message: '📄 Generando PDF completo...', type: 'info' })
+      
       const pdf = new jsPDF('p', 'mm', 'a4')
       const pageWidth = pdf.internal.pageSize.getWidth()
       const pageHeight = pdf.internal.pageSize.getHeight()
+      const margin = 15
       let yPos = 20
+
+      // ============================================================
+      // PÁGINA 1: INFORMACIÓN GENERAL
+      // ============================================================
 
       // Header
       pdf.setFillColor(239, 68, 68)
@@ -168,118 +175,113 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       pdf.setFont('helvetica', 'bold')
       pdf.text('REPORTE DE ACCIDENTE', pageWidth / 2, 18, { align: 'center' })
       pdf.setFontSize(12)
-      pdf.text('Mapa Furgocasa', pageWidth / 2, 28, { align: 'center' })
+      pdf.text('Mapa Furgocasa - Documento Oficial', pageWidth / 2, 28, { align: 'center' })
 
       yPos = 50
+
+      // ID y Fecha de reporte (destacado)
+      pdf.setFillColor(249, 250, 251)
+      pdf.roundedRect(margin, yPos - 5, pageWidth - 2 * margin, 18, 2, 2, 'F')
+      pdf.setTextColor(0, 0, 0)
+      pdf.setFontSize(9)
+      pdf.setFont('helvetica', 'normal')
+      pdf.text(`ID Reporte: ${reporte.id}`, margin + 3, yPos)
+      pdf.text(`Generado: ${new Date().toLocaleString('es-ES')}`, pageWidth - margin - 3, yPos, { align: 'right' })
+      pdf.text(`Reportado el: ${new Date(reporte.created_at).toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'short' })}`, margin + 3, yPos + 7)
+      yPos += 25
 
       // Información del vehículo
       pdf.setTextColor(0, 0, 0)
       pdf.setFontSize(16)
       pdf.setFont('helvetica', 'bold')
-      pdf.text('Vehículo Afectado', 15, yPos)
+      pdf.text('🚐 Vehículo Afectado', margin, yPos)
       yPos += 8
 
       pdf.setFontSize(11)
       pdf.setFont('helvetica', 'normal')
-      pdf.text(`Matrícula: ${reporte.vehiculo_matricula}`, 15, yPos)
+      pdf.text(`Matrícula: ${reporte.vehiculo_matricula}`, margin, yPos)
       yPos += 6
       if (reporte.vehiculo_marca || reporte.vehiculo_modelo) {
-        pdf.text(`Vehículo: ${reporte.vehiculo_marca || ''} ${reporte.vehiculo_modelo || ''}`, 15, yPos)
+        pdf.text(`Vehículo: ${reporte.vehiculo_marca || 'N/A'} ${reporte.vehiculo_modelo || 'N/A'}`, margin, yPos)
         yPos += 6
       }
-
-      yPos += 5
+      yPos += 3
 
       // Tipo de daño
       if (reporte.tipo_dano) {
         pdf.setFillColor(254, 243, 199)
-        pdf.roundedRect(15, yPos - 5, 60, 10, 2, 2, 'F')
+        pdf.roundedRect(margin, yPos - 3, 60, 10, 2, 2, 'F')
         pdf.setFont('helvetica', 'bold')
-        pdf.text(`Tipo: ${reporte.tipo_dano}`, 17, yPos)
+        pdf.setFontSize(10)
+        pdf.text(`Tipo: ${reporte.tipo_dano}`, margin + 2, yPos + 3)
         yPos += 12
       }
 
-      // Descripción
+      // Descripción del accidente
       pdf.setFont('helvetica', 'bold')
       pdf.setFontSize(14)
-      pdf.text('Descripción del Accidente', 15, yPos)
+      pdf.text('📝 Descripción del Accidente', margin, yPos)
       yPos += 7
 
       pdf.setFont('helvetica', 'normal')
       pdf.setFontSize(10)
-      const descripcionLines = pdf.splitTextToSize(reporte.descripcion, pageWidth - 30)
-      pdf.text(descripcionLines, 15, yPos)
-      yPos += descripcionLines.length * 5 + 10
+      const descripcionLines = pdf.splitTextToSize(reporte.descripcion, pageWidth - 2 * margin)
+      pdf.text(descripcionLines, margin, yPos)
+      yPos += descripcionLines.length * 5 + 8
 
-      // Vehículo causante
+      // Vehículo causante (si existe)
       if (reporte.matricula_tercero) {
         pdf.setFont('helvetica', 'bold')
         pdf.setFontSize(14)
-        pdf.text('Vehículo Causante', 15, yPos)
+        pdf.text('🚗 Vehículo Causante', margin, yPos)
         yPos += 7
 
         pdf.setFont('helvetica', 'normal')
         pdf.setFontSize(10)
-        pdf.text(`Matrícula: ${reporte.matricula_tercero}`, 15, yPos)
+        pdf.text(`Matrícula: ${reporte.matricula_tercero}`, margin, yPos)
         yPos += 5
 
         if (reporte.descripcion_tercero) {
-          const terceroLines = pdf.splitTextToSize(reporte.descripcion_tercero, pageWidth - 30)
-          pdf.text(terceroLines, 15, yPos)
+          const terceroLines = pdf.splitTextToSize(reporte.descripcion_tercero, pageWidth - 2 * margin)
+          pdf.text(terceroLines, margin, yPos)
           yPos += terceroLines.length * 5 + 5
         }
-        yPos += 5
+        yPos += 3
       }
 
       // Datos del testigo
-      if (!reporte.es_anonimo) {
-        pdf.setFont('helvetica', 'bold')
-        pdf.setFontSize(14)
-        pdf.text('Datos del Testigo', 15, yPos)
-        yPos += 7
-
-        pdf.setFont('helvetica', 'normal')
-        pdf.setFontSize(10)
-        pdf.text(`Nombre: ${reporte.testigo_nombre}`, 15, yPos)
-        yPos += 5
-        if (reporte.testigo_email) {
-          pdf.text(`Email: ${reporte.testigo_email}`, 15, yPos)
-          yPos += 5
-        }
-        if (reporte.testigo_telefono) {
-          pdf.text(`Teléfono: ${reporte.testigo_telefono}`, 15, yPos)
-          yPos += 5
-        }
-        yPos += 5
-      } else {
-        pdf.setFont('helvetica', 'italic')
-        pdf.setFontSize(10)
-        pdf.setTextColor(100, 100, 100)
-        pdf.text('(Reporte anónimo - Sin datos de contacto)', 15, yPos)
-        pdf.setTextColor(0, 0, 0)
-        yPos += 10
-      }
-
-      // Ubicación
       pdf.setFont('helvetica', 'bold')
       pdf.setFontSize(14)
-      pdf.text('Ubicación del Accidente', 15, yPos)
+      pdf.text('👤 Datos del Testigo', margin, yPos)
       yPos += 7
 
       pdf.setFont('helvetica', 'normal')
       pdf.setFontSize(10)
-      if (reporte.ubicacion_descripcion) {
-        const ubicacionLines = pdf.splitTextToSize(reporte.ubicacion_descripcion, pageWidth - 30)
-        pdf.text(ubicacionLines, 15, yPos)
-        yPos += ubicacionLines.length * 5 + 3
+      
+      if (!reporte.es_anonimo) {
+        pdf.text(`Nombre: ${reporte.testigo_nombre}`, margin, yPos)
+        yPos += 5
+        if (reporte.testigo_email) {
+          pdf.text(`Email: ${reporte.testigo_email}`, margin, yPos)
+          yPos += 5
+        }
+        if (reporte.testigo_telefono) {
+          pdf.text(`Teléfono: ${reporte.testigo_telefono}`, margin, yPos)
+          yPos += 5
+        }
+      } else {
+        pdf.setFont('helvetica', 'italic')
+        pdf.setTextColor(100, 100, 100)
+        pdf.text('(Reporte anónimo - El testigo ha elegido no compartir sus datos)', margin, yPos)
+        pdf.setTextColor(0, 0, 0)
+        yPos += 5
       }
-      pdf.text(`Coordenadas: ${reporte.ubicacion_lat}, ${reporte.ubicacion_lng}`, 15, yPos)
-      yPos += 10
+      yPos += 5
 
-      // Fecha
+      // Fecha del accidente
       pdf.setFont('helvetica', 'bold')
       pdf.setFontSize(14)
-      pdf.text('Fecha del Accidente', 15, yPos)
+      pdf.text('📅 Fecha del Accidente', margin, yPos)
       yPos += 7
 
       pdf.setFont('helvetica', 'normal')
@@ -287,28 +289,151 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       pdf.text(new Date(reporte.fecha_accidente).toLocaleString('es-ES', {
         dateStyle: 'full',
         timeStyle: 'short'
-      }), 15, yPos)
+      }), margin, yPos)
       yPos += 10
 
-      // Fecha de reporte
-      pdf.setFont('helvetica', 'italic')
-      pdf.setFontSize(9)
-      pdf.setTextColor(100, 100, 100)
-      pdf.text(`Reportado el: ${new Date(reporte.created_at).toLocaleString('es-ES', {
-        dateStyle: 'full',
-        timeStyle: 'short'
-      })}`, 15, yPos)
+      // Ubicación - MEJORADO con mapa
+      pdf.setFont('helvetica', 'bold')
+      pdf.setFontSize(14)
+      pdf.text('📍 Ubicación del Accidente', margin, yPos)
+      yPos += 7
 
-      // Footer
-      pdf.setTextColor(150, 150, 150)
-      pdf.setFontSize(8)
-      pdf.text('Documento generado por Mapa Furgocasa', pageWidth / 2, pageHeight - 10, { align: 'center' })
-      pdf.text('www.mapafurgocasa.com', pageWidth / 2, pageHeight - 6, { align: 'center' })
+      pdf.setFont('helvetica', 'normal')
+      pdf.setFontSize(10)
+      
+      if (reporte.ubicacion_descripcion) {
+        pdf.setFont('helvetica', 'bold')
+        pdf.text('Dirección:', margin, yPos)
+        pdf.setFont('helvetica', 'normal')
+        yPos += 5
+        const ubicacionLines = pdf.splitTextToSize(reporte.ubicacion_descripcion, pageWidth - 2 * margin)
+        pdf.text(ubicacionLines, margin, yPos)
+        yPos += ubicacionLines.length * 5 + 3
+      }
+      
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('Coordenadas GPS:', margin, yPos)
+      pdf.setFont('helvetica', 'normal')
+      yPos += 5
+      pdf.text(`Latitud: ${reporte.ubicacion_lat}`, margin + 5, yPos)
+      yPos += 4
+      pdf.text(`Longitud: ${reporte.ubicacion_lng}`, margin + 5, yPos)
+      yPos += 8
+
+      // Insertar mapa estático de Google Maps
+      try {
+        const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${reporte.ubicacion_lat},${reporte.ubicacion_lng}&zoom=15&size=600x300&markers=color:red%7C${reporte.ubicacion_lat},${reporte.ubicacion_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+        
+        // Cargar imagen del mapa
+        const mapImg = await fetch(mapUrl)
+        const mapBlob = await mapImg.blob()
+        const mapBase64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader()
+          reader.onloadend = () => resolve(reader.result as string)
+          reader.readAsDataURL(mapBlob)
+        })
+
+        if (yPos + 60 > pageHeight - 20) {
+          pdf.addPage()
+          yPos = 20
+        }
+
+        pdf.addImage(mapBase64, 'PNG', margin, yPos, pageWidth - 2 * margin, 60)
+        yPos += 65
+        
+        pdf.setFontSize(8)
+        pdf.setTextColor(100, 100, 100)
+        pdf.text('Ubicación exacta del accidente visualizada en Google Maps', margin, yPos)
+        pdf.setTextColor(0, 0, 0)
+        yPos += 8
+      } catch (mapError) {
+        console.warn('No se pudo cargar el mapa:', mapError)
+        pdf.setFontSize(9)
+        pdf.setTextColor(150, 150, 150)
+        pdf.text('(Mapa no disponible - Usar coordenadas GPS para localización)', margin, yPos)
+        pdf.setTextColor(0, 0, 0)
+        yPos += 8
+      }
+
+      // ============================================================
+      // PÁGINA 2: EVIDENCIAS FOTOGRÁFICAS
+      // ============================================================
+      
+      if (reporte.fotos_urls && reporte.fotos_urls.length > 0) {
+        pdf.addPage()
+        yPos = 20
+
+        // Header de evidencias
+        pdf.setFillColor(59, 130, 246)
+        pdf.rect(0, 0, pageWidth, 30, 'F')
+        pdf.setTextColor(255, 255, 255)
+        pdf.setFontSize(18)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text('📸 EVIDENCIAS FOTOGRÁFICAS', pageWidth / 2, 18, { align: 'center' })
+
+        yPos = 40
+
+        pdf.setTextColor(0, 0, 0)
+        pdf.setFontSize(11)
+        pdf.setFont('helvetica', 'normal')
+        pdf.text(`Total de fotografías: ${reporte.fotos_urls.length}`, margin, yPos)
+        yPos += 10
+
+        // Insertar fotos (máximo 4 por página)
+        for (let i = 0; i < reporte.fotos_urls.length; i++) {
+          try {
+            const fotoUrl = reporte.fotos_urls[i]
+            const fotoResponse = await fetch(fotoUrl)
+            const fotoBlob = await fotoResponse.blob()
+            const fotoBase64 = await new Promise<string>((resolve) => {
+              const reader = new FileReader()
+              reader.onloadend = () => resolve(reader.result as string)
+              reader.readAsDataURL(fotoBlob)
+            })
+
+            // Si no cabe en la página, crear nueva
+            if (yPos + 70 > pageHeight - 20) {
+              pdf.addPage()
+              yPos = 20
+            }
+
+            // Título de la foto
+            pdf.setFont('helvetica', 'bold')
+            pdf.setFontSize(10)
+            pdf.text(`Fotografía ${i + 1}:`, margin, yPos)
+            yPos += 5
+
+            // Insertar imagen (ocupa 80% del ancho)
+            const imgWidth = pageWidth - 2 * margin
+            const imgHeight = 60
+            pdf.addImage(fotoBase64, 'JPEG', margin, yPos, imgWidth, imgHeight)
+            yPos += imgHeight + 8
+
+          } catch (fotoError) {
+            console.warn(`No se pudo cargar la foto ${i + 1}:`, fotoError)
+            pdf.setFontSize(9)
+            pdf.setTextColor(150, 150, 150)
+            pdf.text(`Foto ${i + 1}: Error al cargar imagen`, margin, yPos)
+            pdf.setTextColor(0, 0, 0)
+            yPos += 8
+          }
+        }
+      }
+
+      // Footer en todas las páginas
+      const totalPages = pdf.getNumberOfPages()
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i)
+        pdf.setTextColor(150, 150, 150)
+        pdf.setFontSize(8)
+        pdf.text('Documento generado por Mapa Furgocasa · www.mapafurgocasa.com', pageWidth / 2, pageHeight - 10, { align: 'center' })
+        pdf.text(`Página ${i} de ${totalPages}`, pageWidth / 2, pageHeight - 6, { align: 'center' })
+      }
 
       // Descargar
       pdf.save(`Reporte-Accidente-${reporte.vehiculo_matricula}-${new Date(reporte.fecha_accidente).toISOString().slice(0, 10)}.pdf`)
       
-      setToast({ message: '✅ PDF descargado correctamente', type: 'success' })
+      setToast({ message: '✅ PDF completo descargado correctamente', type: 'success' })
     } catch (error) {
       console.error('Error generando PDF:', error)
       setToast({ message: '❌ Error al generar el PDF', type: 'error' })
