@@ -44,6 +44,5 @@ SELECT
 FROM pg_policies
 WHERE schemaname = 'storage'
   AND tablename = 'objects'
-  AND bucket_id = 'vehiculos'
+  AND policyname LIKE '%vehiculos%'
 ORDER BY policyname;
-
