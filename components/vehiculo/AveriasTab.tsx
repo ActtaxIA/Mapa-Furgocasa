@@ -16,19 +16,18 @@ import {
 interface Averia {
   id: string
   vehiculo_id: string
-  tipo_averia: string
+  titulo: string
+  categoria: string // Nombre en BD (antes tipo_averia en formulario)
   descripcion: string
   fecha_averia: string
   fecha_resolucion: string | null
   kilometraje: number | null
-  coste_mano_obra: number | null
-  coste_piezas: number | null
+  coste_reparacion: number | null // Nombre en BD (antes coste_mano_obra)
   coste_total: number | null
   taller: string | null
-  ubicacion_averia: string | null
-  gravedad: 'leve' | 'moderada' | 'grave' | 'critica'
-  estado: 'pendiente' | 'en_reparacion' | 'reparada'
-  garantia: boolean
+  severidad: 'baja' | 'media' | 'alta' | 'critica' // Nombre en BD (antes gravedad en formulario)
+  estado: 'pendiente' | 'en_reparacion' | 'resuelto' // Nombre en BD (antes 'reparada' en formulario)
+  en_garantia: boolean // Nombre en BD (antes garantia en formulario)
   notas: string | null
   created_at: string
   updated_at: string
