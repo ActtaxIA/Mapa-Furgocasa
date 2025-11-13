@@ -292,6 +292,8 @@ export default function VentaTab({ vehiculoId }: Props) {
                   </label>
                   <input
                     type="number"
+                    step="1"
+                    min="0"
                     value={formData.kilometros_venta}
                     onChange={(e) => setFormData({ ...formData, kilometros_venta: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
