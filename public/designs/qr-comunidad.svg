@@ -1,37 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+<svg xmlns="http://www.w3.org/2000/svg" width="2100" height="1485" viewBox="0 0 2100 1485">
+  <!-- Fondo degradado verde -->
   <defs>
-    <linearGradient id="c" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#DCFCE7"/>
-      <stop offset="1" stop-color="#86EFAC"/>
+    <linearGradient id="gGreen" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#D1FAE5"/>
+      <stop offset="1" stop-color="#6EE7B7"/>
     </linearGradient>
   </defs>
-  <rect width="1200" height="1200" fill="url(#c)"/>
-  <rect x="40" y="40" width="1120" height="1120" rx="32" ry="32" fill="white" stroke="#22C55E" stroke-width="14"/>
+  <rect width="2100" height="1485" fill="url(#gGreen)"/>
+  <rect x="30" y="30" width="2040" height="1425" rx="48" ry="48" fill="white" stroke="#10B981" stroke-width="20"/>
 
-  <!-- Cabecera -->
-  <g transform="translate(80,120)">
-    <rect x="0" y="-20" width="1040" height="140" rx="18" ry="18" fill="#16A34A"/>
-    <text x="520" y="70" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="64" font-weight="800" fill="white">COMUNIDAD FURGOCASA · Nos cuidamos entre todos</text>
+  <!-- Cabecera comunidad -->
+  <g transform="translate(105,150)">
+    <rect x="0" y="0" width="1890" height="200" rx="24" ry="24" fill="#10B981"/>
+    <text x="945" y="130" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="110" font-weight="900" fill="white">🚐 COMUNIDAD FURGOCASA</text>
   </g>
 
-  <!-- Caja QR -->
-  <g transform="translate(100,340)">
-    <rect x="0" y="0" width="500" height="500" rx="24" ry="24" fill="#ECFDF5" stroke="#16A34A" stroke-dasharray="12 10" stroke-width="10"/>
-    <text x="250" y="240" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="700" fill="#16A34A">PEGA AQUÍ TU QR</text>
+  <!-- Mensaje -->
+  <g transform="translate(105,420)">
+    <text x="945" y="0" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="80" font-weight="700" fill="#111827">NOS CUIDAMOS ENTRE TODOS</text>
   </g>
 
-  <!-- Mensajes -->
-  <g transform="translate(660,380)">
-    <text x="0" y="0" font-family="Inter, Arial, sans-serif" font-size="56" font-weight="800" fill="#111827">¿Fuiste testigo de un daño?</text>
-    <text x="0" y="90" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="700" fill="#111827">🚐 Con tu reporte ayudas a otro viajero</text>
-    <text x="0" y="170" font-family="Inter, Arial, sans-serif" font-size="40" font-weight="600" fill="#111827">📸 Escanea | ⚡ Rápido | 🎭 Anónimo si quieres</text>
-    <text x="0" y="260" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="700" fill="#16A34A">#SomosComunidad</text>
+  <!-- Caja QR (más grande) -->
+  <g transform="translate(600,550)">
+    <rect x="0" y="0" width="900" height="900" rx="32" ry="32" fill="#ECFDF5" stroke="#10B981" stroke-dasharray="20 16" stroke-width="14"/>
+    <text x="450" y="400" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="80" font-weight="700" fill="#10B981">PEGA TU</text>
+    <text x="450" y="520" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="80" font-weight="700" fill="#10B981">QR AQUÍ</text>
+  </g>
+
+  <!-- Instrucciones -->
+  <g transform="translate(105,600)">
+    <text x="0" y="0" font-family="Inter, Arial, sans-serif" font-size="65" font-weight="700" fill="#111827">¿Fuiste testigo de</text>
+    <text x="0" y="140" font-family="Inter, Arial, sans-serif" font-size="65" font-weight="700" fill="#111827">un golpe?</text>
+    <text x="0" y="280" font-family="Inter, Arial, sans-serif" font-size="65" font-weight="700" fill="#10B981">✓ Con tu reporte ayudas</text>
+    <text x="0" y="420" font-family="Inter, Arial, sans-serif" font-size="65" font-weight="700" fill="#10B981">✓ Rápido y anónimo</text>
+    <text x="0" y="560" font-family="Inter, Arial, sans-serif" font-size="65" font-weight="700" fill="#10B981">✓ ¡Gracias compañero!</text>
   </g>
 
   <!-- Pie -->
-  <g transform="translate(80,1040)">
-    <text x="0" y="0" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="600" fill="#6B7280">Mapa Furgocasa · www.mapafurgocasa.com</text>
+  <g transform="translate(105,1300)">
+    <text x="945" y="0" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="50" font-weight="600" fill="#6B7280">#SomosComunidad · Mapa Furgocasa · www.mapafurgocasa.com</text>
   </g>
 </svg>
-
-

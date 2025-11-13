@@ -12,8 +12,10 @@ import {
   EnvelopeIcon,
   CalendarIcon,
   CheckCircleIcon,
-  XCircleIcon
+  XCircleIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline'
+import jsPDF from 'jspdf'
 
 interface Props {
   userId: string
@@ -148,6 +150,168 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       case 'Abolladura': return 'bg-orange-100 text-orange-800'
       case 'Rayón': return 'bg-yellow-100 text-yellow-800'
       default: return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const descargarReportePDF = async (reporte: ReporteCompletoUsuario) => {
+    try {
+      const pdf = new jsPDF('p', 'mm', 'a4')
+      const pageWidth = pdf.internal.pageSize.getWidth()
+      const pageHeight = pdf.internal.pageSize.getHeight()
+      let yPos = 20
+
+      // Header
+      pdf.setFillColor(239, 68, 68)
+      pdf.rect(0, 0, pageWidth, 40, 'F')
+      pdf.setTextColor(255, 255, 255)
+      pdf.setFontSize(24)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('REPORTE DE ACCIDENTE', pageWidth / 2, 18, { align: 'center' })
+      pdf.setFontSize(12)
+      pdf.text('Mapa Furgocasa', pageWidth / 2, 28, { align: 'center' })
+
+      yPos = 50
+
+      // Información del vehículo
+      pdf.setTextColor(0, 0, 0)
+      pdf.setFontSize(16)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('Vehículo Afectado', 15, yPos)
+      yPos += 8
+
+      pdf.setFontSize(11)
+      pdf.setFont('helvetica', 'normal')
+      pdf.text(`Matrícula: ${reporte.vehiculo_matricula}`, 15, yPos)
+      yPos += 6
+      if (reporte.vehiculo_marca || reporte.vehiculo_modelo) {
+        pdf.text(`Vehículo: ${reporte.vehiculo_marca || ''} ${reporte.vehiculo_modelo || ''}`, 15, yPos)
+        yPos += 6
+      }
+
+      yPos += 5
+
+      // Tipo de daño
+      if (reporte.tipo_dano) {
+        pdf.setFillColor(254, 243, 199)
+        pdf.roundedRect(15, yPos - 5, 60, 10, 2, 2, 'F')
+        pdf.setFont('helvetica', 'bold')
+        pdf.text(`Tipo: ${reporte.tipo_dano}`, 17, yPos)
+        yPos += 12
+      }
+
+      // Descripción
+      pdf.setFont('helvetica', 'bold')
+      pdf.setFontSize(14)
+      pdf.text('Descripción del Accidente', 15, yPos)
+      yPos += 7
+
+      pdf.setFont('helvetica', 'normal')
+      pdf.setFontSize(10)
+      const descripcionLines = pdf.splitTextToSize(reporte.descripcion, pageWidth - 30)
+      pdf.text(descripcionLines, 15, yPos)
+      yPos += descripcionLines.length * 5 + 10
+
+      // Vehículo causante
+      if (reporte.matricula_tercero) {
+        pdf.setFont('helvetica', 'bold')
+        pdf.setFontSize(14)
+        pdf.text('Vehículo Causante', 15, yPos)
+        yPos += 7
+
+        pdf.setFont('helvetica', 'normal')
+        pdf.setFontSize(10)
+        pdf.text(`Matrícula: ${reporte.matricula_tercero}`, 15, yPos)
+        yPos += 5
+
+        if (reporte.descripcion_tercero) {
+          const terceroLines = pdf.splitTextToSize(reporte.descripcion_tercero, pageWidth - 30)
+          pdf.text(terceroLines, 15, yPos)
+          yPos += terceroLines.length * 5 + 5
+        }
+        yPos += 5
+      }
+
+      // Datos del testigo
+      if (!reporte.es_anonimo) {
+        pdf.setFont('helvetica', 'bold')
+        pdf.setFontSize(14)
+        pdf.text('Datos del Testigo', 15, yPos)
+        yPos += 7
+
+        pdf.setFont('helvetica', 'normal')
+        pdf.setFontSize(10)
+        pdf.text(`Nombre: ${reporte.testigo_nombre}`, 15, yPos)
+        yPos += 5
+        if (reporte.testigo_email) {
+          pdf.text(`Email: ${reporte.testigo_email}`, 15, yPos)
+          yPos += 5
+        }
+        if (reporte.testigo_telefono) {
+          pdf.text(`Teléfono: ${reporte.testigo_telefono}`, 15, yPos)
+          yPos += 5
+        }
+        yPos += 5
+      } else {
+        pdf.setFont('helvetica', 'italic')
+        pdf.setFontSize(10)
+        pdf.setTextColor(100, 100, 100)
+        pdf.text('(Reporte anónimo - Sin datos de contacto)', 15, yPos)
+        pdf.setTextColor(0, 0, 0)
+        yPos += 10
+      }
+
+      // Ubicación
+      pdf.setFont('helvetica', 'bold')
+      pdf.setFontSize(14)
+      pdf.text('Ubicación del Accidente', 15, yPos)
+      yPos += 7
+
+      pdf.setFont('helvetica', 'normal')
+      pdf.setFontSize(10)
+      if (reporte.ubicacion_descripcion) {
+        const ubicacionLines = pdf.splitTextToSize(reporte.ubicacion_descripcion, pageWidth - 30)
+        pdf.text(ubicacionLines, 15, yPos)
+        yPos += ubicacionLines.length * 5 + 3
+      }
+      pdf.text(`Coordenadas: ${reporte.ubicacion_lat}, ${reporte.ubicacion_lng}`, 15, yPos)
+      yPos += 10
+
+      // Fecha
+      pdf.setFont('helvetica', 'bold')
+      pdf.setFontSize(14)
+      pdf.text('Fecha del Accidente', 15, yPos)
+      yPos += 7
+
+      pdf.setFont('helvetica', 'normal')
+      pdf.setFontSize(10)
+      pdf.text(new Date(reporte.fecha_accidente).toLocaleString('es-ES', {
+        dateStyle: 'full',
+        timeStyle: 'short'
+      }), 15, yPos)
+      yPos += 10
+
+      // Fecha de reporte
+      pdf.setFont('helvetica', 'italic')
+      pdf.setFontSize(9)
+      pdf.setTextColor(100, 100, 100)
+      pdf.text(`Reportado el: ${new Date(reporte.created_at).toLocaleString('es-ES', {
+        dateStyle: 'full',
+        timeStyle: 'short'
+      })}`, 15, yPos)
+
+      // Footer
+      pdf.setTextColor(150, 150, 150)
+      pdf.setFontSize(8)
+      pdf.text('Documento generado por Mapa Furgocasa', pageWidth / 2, pageHeight - 10, { align: 'center' })
+      pdf.text('www.mapafurgocasa.com', pageWidth / 2, pageHeight - 6, { align: 'center' })
+
+      // Descargar
+      pdf.save(`Reporte-Accidente-${reporte.vehiculo_matricula}-${new Date(reporte.fecha_accidente).toISOString().slice(0, 10)}.pdf`)
+      
+      setToast({ message: '✅ PDF descargado correctamente', type: 'success' })
+    } catch (error) {
+      console.error('Error generando PDF:', error)
+      setToast({ message: '❌ Error al generar el PDF', type: 'error' })
     }
   }
 
@@ -367,28 +531,39 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
               </div>
 
               {/* Acciones */}
-              {!reporte.cerrado && (
-                <div className="mt-6 flex flex-wrap gap-3">
-                  {!reporte.leido && (
+              <div className="mt-6 flex flex-wrap gap-3">
+                {/* Botón de descargar PDF (siempre visible) */}
+                <button
+                  onClick={() => descargarReportePDF(reporte)}
+                  className="inline-flex items-center px-4 py-2 border border-blue-600 rounded-lg shadow-sm text-sm font-medium text-blue-600 bg-white hover:bg-blue-50 transition-colors"
+                >
+                  <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
+                  Descargar PDF
+                </button>
+
+                {!reporte.cerrado && (
+                  <>
+                    {!reporte.leido && (
+                      <button
+                        onClick={() => handleMarcarLeido(reporte.id)}
+                        disabled={updating}
+                        className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 transition-colors"
+                      >
+                        <CheckCircleIcon className="h-4 w-4 mr-2" />
+                        Marcar como Leído
+                      </button>
+                    )}
                     <button
-                      onClick={() => handleMarcarLeido(reporte.id)}
+                      onClick={() => handleCerrarReporte(reporte.id)}
                       disabled={updating}
-                      className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 transition-colors"
+                      className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors"
                     >
-                      <CheckCircleIcon className="h-4 w-4 mr-2" />
-                      Marcar como Leído
+                      <XCircleIcon className="h-4 w-4 mr-2" />
+                      Cerrar Reporte
                     </button>
-                  )}
-                  <button
-                    onClick={() => handleCerrarReporte(reporte.id)}
-                    disabled={updating}
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors"
-                  >
-                    <XCircleIcon className="h-4 w-4 mr-2" />
-                    Cerrar Reporte
-                  </button>
-                </div>
-              )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         ))}
