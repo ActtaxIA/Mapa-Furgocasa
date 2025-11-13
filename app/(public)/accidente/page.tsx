@@ -12,6 +12,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { Loader } from "@googlemaps/js-api-loader";
+import { createClient } from "@/lib/supabase/client";
 
 // Tipos simplificados para Google Maps (se cargan dinámicamente)
 type GoogleMap = any;
@@ -303,35 +304,85 @@ export default function ReporteAccidentePage() {
     try {
       console.log('📸 [Frontend] Fotos en formData.fotos:', formData.fotos.length, formData.fotos);
 
-      // Crear FormData para enviar fotos
-      const formDataToSend = new FormData();
-      formDataToSend.append('matricula', vehiculo.matricula);
-      if (formData.matricula_tercero) formDataToSend.append('matricula_tercero', formData.matricula_tercero);
-      if (formData.descripcion_tercero) formDataToSend.append('descripcion_tercero', formData.descripcion_tercero);
-      formDataToSend.append('testigo_nombre', formData.testigo_nombre);
-      if (formData.testigo_email) formDataToSend.append('testigo_email', formData.testigo_email);
-      if (formData.testigo_telefono) formDataToSend.append('testigo_telefono', formData.testigo_telefono);
-      formDataToSend.append('descripcion', formData.descripcion);
-      if (formData.tipo_dano) formDataToSend.append('tipo_dano', formData.tipo_dano);
-      formDataToSend.append('fecha_accidente', formData.fecha_accidente);
-      formDataToSend.append('ubicacion_lat', ubicacion.lat.toString());
-      formDataToSend.append('ubicacion_lng', ubicacion.lng.toString());
-      if (ubicacion.direccion) formDataToSend.append('ubicacion_direccion', ubicacion.direccion);
-      if (formData.ubicacion_descripcion) formDataToSend.append('ubicacion_descripcion', formData.ubicacion_descripcion);
-      formDataToSend.append('es_anonimo', formData.es_anonimo.toString());
+      // ============================================================
+      // NUEVO: Subir fotos DIRECTAMENTE a Supabase Storage
+      // Bypasea AWS Amplify completamente
+      // ============================================================
+      let fotosUrls: string[] = [];
+      
+      if (formData.fotos.length > 0) {
+        console.log('📸 [Frontend] Subiendo fotos directamente a Supabase Storage...');
+        const supabase = createClient();
+        const timestamp = Date.now();
 
-      // Añadir fotos
-      console.log('📸 [Frontend] Añadiendo fotos al FormData...');
-      formData.fotos.forEach((foto, index) => {
-        console.log(`📸 [Frontend] Añadiendo foto ${index + 1}:`, foto.name, foto.size);
-        formDataToSend.append(`fotos`, foto);
-      });
+        for (let i = 0; i < formData.fotos.length; i++) {
+          const foto = formData.fotos[i];
+          console.log(`📸 [Frontend] Subiendo foto ${i + 1}/${formData.fotos.length}: ${foto.name}`);
 
-      console.log('📸 [Frontend] FormData preparado, enviando...');
+          // Validar tamaño (máx 10MB)
+          if (foto.size > 10 * 1024 * 1024) {
+            console.warn(`⚠️ Foto ${i + 1} excede 10MB, se omite`);
+            continue;
+          }
+
+          const fileExt = foto.name.split('.').pop() || 'jpg';
+          const fileName = `reportes/${vehiculo.id}/${timestamp}_${i}.${fileExt}`;
+
+          // Subir directamente a Supabase Storage
+          const { error: uploadError } = await supabase.storage
+            .from('vehiculos')
+            .upload(fileName, foto, {
+              contentType: foto.type || 'image/jpeg',
+              upsert: false
+            });
+
+          if (uploadError) {
+            console.error(`❌ Error subiendo foto ${i + 1}:`, uploadError);
+            continue;
+          }
+
+          // Obtener URL pública
+          const { data: { publicUrl } } = supabase.storage
+            .from('vehiculos')
+            .getPublicUrl(fileName);
+
+          console.log(`✅ Foto ${i + 1} subida: ${publicUrl}`);
+          fotosUrls.push(publicUrl);
+        }
+
+        console.log(`📸 [Frontend] Total fotos subidas: ${fotosUrls.length}`);
+      }
+
+      // ============================================================
+      // Enviar reporte con JSON (NO FormData)
+      // Incluye las URLs de las fotos ya subidas
+      // ============================================================
+      const reporteData = {
+        matricula: vehiculo.matricula,
+        matricula_tercero: formData.matricula_tercero || null,
+        descripcion_tercero: formData.descripcion_tercero || null,
+        testigo_nombre: formData.testigo_nombre,
+        testigo_email: formData.testigo_email || null,
+        testigo_telefono: formData.testigo_telefono || null,
+        descripcion: formData.descripcion,
+        tipo_dano: formData.tipo_dano || null,
+        fecha_accidente: formData.fecha_accidente,
+        ubicacion_lat: ubicacion.lat,
+        ubicacion_lng: ubicacion.lng,
+        ubicacion_direccion: ubicacion.direccion || null,
+        ubicacion_descripcion: formData.ubicacion_descripcion || null,
+        es_anonimo: formData.es_anonimo,
+        fotos_urls: fotosUrls // URLs ya subidas a Supabase
+      };
+
+      console.log('📤 [Frontend] Enviando reporte con JSON:', reporteData);
 
       const response = await fetch("/api/reportes", {
         method: "POST",
-        body: formDataToSend,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reporteData),
       });
 
       const data = await response.json();

@@ -65,76 +65,27 @@ export async function POST(request: Request) {
     // Es seguro porque validamos todos los datos antes de insertar
     const supabase = createServiceClient()
 
-    // Detectar si es FormData o JSON
-    const contentType = request.headers.get('content-type') || ''
-    const isFormData = contentType.includes('multipart/form-data')
-
-    let qr_code_id: string | null = null
-    let vehiculo_id: string | null = null
-    let matricula: string | null = null
-    let matricula_tercero: string | null = null
-    let descripcion_tercero: string | null = null
-    let testigo_nombre: string = ''
-    let testigo_email: string | null = null
-    let testigo_telefono: string | null = null
-    let descripcion: string = ''
-    let tipo_dano: string | null = null
-    let ubicacion_lat: string = ''
-    let ubicacion_lng: string = ''
-    let ubicacion_direccion: string | null = null
-    let ubicacion_descripcion: string | null = null
-    let fecha_accidente: string = ''
-    let es_anonimo: boolean = false
-    const fotosFiles: File[] = []
-
-    if (isFormData) {
-      // Procesar FormData (con fotos)
-      const formData = await request.formData()
-      qr_code_id = formData.get('qr_code_id') as string | null
-      vehiculo_id = formData.get('vehiculo_id') as string | null
-      matricula = formData.get('matricula') as string | null
-      matricula_tercero = formData.get('matricula_tercero') as string | null
-      descripcion_tercero = formData.get('descripcion_tercero') as string | null
-      testigo_nombre = formData.get('testigo_nombre') as string
-      testigo_email = formData.get('testigo_email') as string | null
-      testigo_telefono = formData.get('testigo_telefono') as string | null
-      descripcion = formData.get('descripcion') as string
-      tipo_dano = formData.get('tipo_dano') as string | null
-      ubicacion_lat = formData.get('ubicacion_lat') as string
-      ubicacion_lng = formData.get('ubicacion_lng') as string
-      ubicacion_direccion = formData.get('ubicacion_direccion') as string | null
-      ubicacion_descripcion = formData.get('ubicacion_descripcion') as string | null
-      fecha_accidente = formData.get('fecha_accidente') as string
-      const es_anonimoStr = formData.get('es_anonimo') as string | null
-      es_anonimo = es_anonimoStr === 'true'
-
-      // Obtener todas las fotos
-      const fotosEntries = formData.getAll('fotos')
-      fotosEntries.forEach((entry) => {
-        if (entry instanceof File && entry.size > 0) {
-          fotosFiles.push(entry)
-        }
-      })
-    } else {
-      // Procesar JSON (sin fotos - retrocompatibilidad)
-      const body = await request.json()
-      qr_code_id = body.qr_code_id || null
-      vehiculo_id = body.vehiculo_id || null
-      matricula = body.matricula || null
-      matricula_tercero = body.matricula_tercero || null
-      descripcion_tercero = body.descripcion_tercero || null
-      testigo_nombre = body.testigo_nombre || ''
-      testigo_email = body.testigo_email || null
-      testigo_telefono = body.testigo_telefono || null
-      descripcion = body.descripcion || ''
-      tipo_dano = body.tipo_dano || null
-      ubicacion_lat = body.ubicacion_lat || ''
-      ubicacion_lng = body.ubicacion_lng || ''
-      ubicacion_direccion = body.ubicacion_direccion || null
-      ubicacion_descripcion = body.ubicacion_descripcion || null
-      fecha_accidente = body.fecha_accidente || ''
-      es_anonimo = body.es_anonimo === true || body.es_anonimo === 'true'
-    }
+    // Procesar siempre como JSON
+    // Las fotos se suben DIRECTAMENTE a Supabase Storage desde el frontend
+    const body = await request.json()
+    
+    const qr_code_id: string | null = body.qr_code_id || null
+    const vehiculo_id: string | null = body.vehiculo_id || null
+    const matricula: string | null = body.matricula || null
+    const matricula_tercero: string | null = body.matricula_tercero || null
+    const descripcion_tercero: string | null = body.descripcion_tercero || null
+    const testigo_nombre: string = body.testigo_nombre || ''
+    const testigo_email: string | null = body.testigo_email || null
+    const testigo_telefono: string | null = body.testigo_telefono || null
+    const descripcion: string = body.descripcion || ''
+    const tipo_dano: string | null = body.tipo_dano || null
+    const ubicacion_lat: number = typeof body.ubicacion_lat === 'number' ? body.ubicacion_lat : parseFloat(body.ubicacion_lat || '0')
+    const ubicacion_lng: number = typeof body.ubicacion_lng === 'number' ? body.ubicacion_lng : parseFloat(body.ubicacion_lng || '0')
+    const ubicacion_direccion: string | null = body.ubicacion_direccion || null
+    const ubicacion_descripcion: string | null = body.ubicacion_descripcion || null
+    const fecha_accidente: string = body.fecha_accidente || ''
+    const es_anonimo: boolean = body.es_anonimo === true || body.es_anonimo === 'true'
+    const fotos_urls: string[] = body.fotos_urls || [] // URLs ya subidas desde el frontend
 
     // Validaciones básicas - aceptar qr_code_id, vehiculo_id o matricula
     if (!qr_code_id && !vehiculo_id && !matricula) {
@@ -269,63 +220,11 @@ export async function POST(request: Request) {
       vehiculo_afectado_id = vehiculo.vehiculo_id
     }
 
-    // Subir fotos a Supabase Storage si existen
-    const fotos_urls: string[] = []
-    console.log(`📸 [Reportes] Procesando ${fotosFiles.length} fotos`)
-
-    if (fotosFiles.length > 0) {
-      try {
-        const timestamp = Date.now()
-        for (let i = 0; i < fotosFiles.length; i++) {
-          const foto = fotosFiles[i]
-          console.log(`📸 [Reportes] Foto ${i + 1}: ${foto.name}, size: ${(foto.size / 1024 / 1024).toFixed(2)} MB`)
-
-          // Validar tamaño (máx 10MB)
-          if (foto.size > 10 * 1024 * 1024) {
-            console.warn(`⚠️ [Reportes] Foto ${i + 1} excede 10MB (${(foto.size / 1024 / 1024).toFixed(2)} MB), se omite`)
-            continue
-          }
-
-          const fileExt = foto.name.split('.').pop() || 'jpg'
-          const fileName = `reportes/${vehiculo_afectado_id}/${timestamp}_${i}.${fileExt}`
-
-          // Convertir File a ArrayBuffer
-          const fileBuffer = await foto.arrayBuffer()
-
-          console.log(`📸 [Reportes] Subiendo a: ${fileName}`)
-
-          const { error: uploadError } = await supabase
-            .storage
-            .from('vehiculos')
-            .upload(fileName, fileBuffer, {
-              contentType: foto.type || 'image/jpeg',
-              upsert: false
-            })
-
-          if (uploadError) {
-            console.error(`❌ [Reportes] Error subiendo foto ${i + 1}:`, uploadError)
-            // Continuar con las demás fotos
-            continue
-          }
-
-          // Obtener URL pública
-          const { data: { publicUrl } } = supabase
-            .storage
-            .from('vehiculos')
-            .getPublicUrl(fileName)
-
-          console.log(`✅ [Reportes] Foto ${i + 1} subida: ${publicUrl}`)
-          fotos_urls.push(publicUrl)
-        }
-
-        console.log(`📸 [Reportes] Total fotos subidas: ${fotos_urls.length}`)
-      } catch (fotoError) {
-        console.error('❌ [Reportes] Error procesando fotos:', fotoError)
-        // Continuar sin fotos, no es crítico
-      }
-    } else {
-      console.log(`📸 [Reportes] No hay fotos para subir`)
-    }
+    // ============================================================
+    // Las fotos ya vienen como URLs desde el frontend
+    // El frontend sube directamente a Supabase Storage
+    // ============================================================
+    console.log(`📸 [Backend] Recibidas ${fotos_urls.length} URLs de fotos desde frontend`)
 
     // Obtener IP del cliente (para prevenir spam)
     const forwarded = request.headers.get('x-forwarded-for')
@@ -345,8 +244,8 @@ export async function POST(request: Request) {
         testigo_telefono: testigo_telefono?.trim() || null,
         descripcion: descripcion.trim(),
         tipo_dano: tipo_dano || null,
-        ubicacion_lat: lat,
-        ubicacion_lng: lng,
+        ubicacion_lat: ubicacion_lat,
+        ubicacion_lng: ubicacion_lng,
         ubicacion_direccion: ubicacion_direccion?.trim() || null,
         ubicacion_descripcion: ubicacion_descripcion?.trim() || null,
         fotos_urls: fotos_urls,
