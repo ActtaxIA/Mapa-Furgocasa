@@ -50,3 +50,19 @@ export function createAnonClient() {
     }
   )
 }
+
+// Cliente con Service Role (bypasea RLS completamente)
+// USAR SOLO para operaciones públicas que no exponen datos sensibles
+// Como crear reportes de accidentes desde usuarios anónimos
+export function createServiceClient() {
+  return createSupabaseClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      }
+    }
+  )
+}

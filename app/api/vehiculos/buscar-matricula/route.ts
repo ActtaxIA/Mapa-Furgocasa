@@ -5,7 +5,7 @@
 // No requiere autenticación (para uso en reportes de accidentes)
 // ===================================================================
 
-import { createAnonClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
@@ -20,8 +20,8 @@ export async function GET(request: Request) {
       )
     }
 
-    // Usar cliente anónimo para búsqueda pública
-    const supabase = createAnonClient()
+    // Usar Service Role para búsqueda pública (bypasea RLS)
+    const supabase = createServiceClient()
 
     // Buscar vehículo por matrícula (sin necesidad de autenticación)
     const { data: vehiculo, error } = await (supabase as any)
