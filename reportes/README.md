@@ -301,6 +301,28 @@ SELECT * FROM admin_listado_reportes_accidentes();
 
 ---
 
+### 📸 `21_storage_policy_fotos_vehiculos_lectura_publica.sql`
+
+**Descripción:** Permite lectura pública de fotos de vehículos
+
+**Política creada:**
+
+- **`Usuarios pueden ver fotos de vehiculos publicas`** (SELECT)
+  - Permite a usuarios autenticados ver TODAS las fotos del bucket `vehiculos`
+  - Necesario para que los propietarios vean fotos en reportes
+  - Solo lectura - no pueden modificar ni borrar
+
+**Ejecución en Supabase:**
+
+1. Ve a **SQL Editor** en el menú lateral
+2. Crea una nueva query
+3. Copia y pega el contenido de `21_storage_policy_fotos_vehiculos_lectura_publica.sql`
+4. Click en **Run** (Ejecutar)
+
+**Nota:** Sin esta política, las fotos de los vehículos NO se verán en la aplicación.
+
+---
+
 ## 📖 Documentación Adicional
 
 Para más información detallada, consulta:
