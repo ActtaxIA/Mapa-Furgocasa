@@ -66,13 +66,10 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
     }
   }
 
+  // Función para formatear números sin decimales (formato español: 55.000)
   const formatCurrency = (value: number | null) => {
     if (value === null || value === undefined) return '-'
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR',
-      maximumFractionDigits: 0
-    }).format(value)
+    return `${Math.round(value).toLocaleString('es-ES')} €`
   }
 
   const formatPercentage = (value: number | null) => {
