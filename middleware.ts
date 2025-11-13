@@ -80,13 +80,9 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except:
-     * - Static files
-     * - API routes
-     *
-     * Nota: La exclusión real se hace en el código del middleware
-     * para mayor control y evitar problemas con AWS Amplify
+     * EXCLUIR API ROUTES DEL MATCHER COMPLETAMENTE
+     * Esto evita que el middleware se ejecute para /api/*
      */
-    '/((?!_next|favicon).*)',
+    '/((?!api|_next|favicon).*)',
   ],
 }
