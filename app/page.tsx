@@ -319,7 +319,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Final potente */}
-      <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <div className="bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] rounded-3xl p-12 md:p-16 shadow-2xl">
