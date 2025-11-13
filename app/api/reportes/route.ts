@@ -145,7 +145,7 @@ export async function POST(request: Request) {
 
     if (matricula) {
       // Si se proporciona matrícula directamente, buscar vehículo por matrícula
-      const { data: vehiculoData, error: vehiculoError } = await supabase
+      const { data: vehiculoData, error: vehiculoError } = await (supabase as any)
         .from('vehiculos_registrados')
         .select('id')
         .eq('matricula', matricula.trim().toUpperCase())
@@ -163,7 +163,7 @@ export async function POST(request: Request) {
       vehiculo_afectado_id = (vehiculoData as { id: string }).id
     } else if (vehiculo_id) {
       // Si se proporciona vehiculo_id directamente, validar que existe
-      const { data: vehiculoData, error: vehiculoError } = await supabase
+      const { data: vehiculoData, error: vehiculoError } = await (supabase as any)
         .from('vehiculos_registrados')
         .select('id')
         .eq('id', vehiculo_id)
@@ -210,7 +210,7 @@ export async function POST(request: Request) {
     const ip_address = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown'
 
     // Insertar reporte
-    const { data: nuevoReporte, error: insertError } = await supabase
+    const { data: nuevoReporte, error: insertError } = await (supabase as any)
       .from('reportes_accidentes')
       .insert({
         vehiculo_afectado_id,
