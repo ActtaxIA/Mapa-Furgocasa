@@ -377,8 +377,9 @@ export function MiAutocaravanaTab({ userId }: Props) {
       ) : (
         <div className="grid grid-cols-1 gap-6">
           {vehiculos.map((vehiculo) => (
-            <div key={vehiculo.id} className="bg-white rounded-xl shadow p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="flex items-start gap-6">
+            <div key={vehiculo.id} className="bg-white rounded-xl shadow p-4 sm:p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+              {/* Layout Vertical en Móvil, Horizontal en Desktop */}
+              <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-6">
                 {/* Foto del Vehículo */}
                 <div className="flex-shrink-0">
                   {vehiculo.foto_url ? (
@@ -395,8 +396,8 @@ export function MiAutocaravanaTab({ userId }: Props) {
                 </div>
 
                 {/* Datos del Vehículo */}
-                <div className="flex-1">
-                  <div className="flex items-center">
+                <div className="flex-1 text-center lg:text-left w-full lg:w-auto">
+                  <div className="flex items-center justify-center lg:justify-start">
                     <TruckIcon className="h-6 w-6 text-primary-600 mr-2" />
                     <h3 className="text-xl font-bold text-gray-900">{vehiculo.matricula}</h3>
                   </div>
@@ -413,21 +414,19 @@ export function MiAutocaravanaTab({ userId }: Props) {
 
                 {/* QR Code */}
                 {vehiculo.qr_image_url && (
-                  <div className="flex-shrink-0">
-                    <div className="text-center">
-                      <img
-                        src={vehiculo.qr_image_url}
-                        alt={`QR ${vehiculo.matricula}`}
-                        className="w-32 h-32 border-2 border-gray-200 rounded-lg"
-                      />
-                      <button
-                        onClick={() => handleDownloadQR(vehiculo)}
-                        className="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-lg text-primary-700 bg-primary-100 hover:bg-primary-200 transition-colors"
-                      >
-                        <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
-                        Descargar QR
-                      </button>
-                    </div>
+                  <div className="flex-shrink-0 w-full lg:w-auto flex flex-col items-center">
+                    <img
+                      src={vehiculo.qr_image_url}
+                      alt={`QR ${vehiculo.matricula}`}
+                      className="w-32 h-32 border-2 border-gray-200 rounded-lg"
+                    />
+                    <button
+                      onClick={() => handleDownloadQR(vehiculo)}
+                      className="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-lg text-primary-700 bg-primary-100 hover:bg-primary-200 transition-colors"
+                    >
+                      <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
+                      Descargar QR
+                    </button>
                   </div>
                 )}
               </div>

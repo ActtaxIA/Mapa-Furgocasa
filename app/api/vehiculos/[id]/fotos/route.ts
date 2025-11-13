@@ -139,10 +139,14 @@ export async function POST(
       )
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error en POST /api/vehiculos/[id]/fotos:', error)
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { 
+        error: 'Error interno del servidor',
+        details: error?.message || 'Sin detalles',
+        stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+      },
       { status: 500 }
     )
   }

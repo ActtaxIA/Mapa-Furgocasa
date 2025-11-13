@@ -77,11 +77,13 @@ export function GaleriaFotosTab({ vehiculoId, fotoUrl, fotosAdicionales }: Props
         // Recargar para actualizar desde el servidor
         window.location.reload()
       } else {
-        setToast({ message: data.error || 'Error al subir foto', type: 'error' })
+        const errorMsg = data.details ? `${data.error}: ${data.details}` : (data.error || 'Error al subir foto')
+        console.error('Error del servidor:', data)
+        setToast({ message: errorMsg, type: 'error' })
       }
     } catch (error) {
       console.error('Error subiendo foto:', error)
-      setToast({ message: 'Error al subir foto', type: 'error' })
+      setToast({ message: `Error de red: ${error}`, type: 'error' })
     } finally {
       setSubiendo(false)
       // Reset input
