@@ -84,9 +84,9 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * MATCHER ULTRA ESPECÍFICO: Solo incluir rutas que REALMENTE necesitan middleware
-     * Excluir explícitamente: /api/*, /_next/*, /favicon.*, archivos estáticos
+     * CRÍTICO: NUNCA ejecutar middleware en rutas /api/*
+     * Solo ejecutar en rutas de páginas que necesitan autenticación
      */
-    '/((?!api|_next|favicon|.*\\..*).*)',
+    '/((?!api/|_next/static|_next/image|favicon.ico).*)',
   ],
 }
