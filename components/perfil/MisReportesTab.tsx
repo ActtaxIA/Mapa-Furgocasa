@@ -249,28 +249,43 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
                   )}
 
                   {/* Información del testigo */}
-                  <div className="mt-4 p-3 bg-primary-50 rounded-lg border border-primary-200">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-2">Datos del Testigo:</h4>
-                    <div className="space-y-1 text-sm">
-                      <p><strong>Nombre:</strong> {reporte.testigo_nombre}</p>
-                      {reporte.testigo_email && (
-                        <p className="flex items-center">
-                          <EnvelopeIcon className="h-4 w-4 mr-2" />
-                          <a href={`mailto:${reporte.testigo_email}`} className="text-primary-600 hover:text-primary-700 hover:underline transition-colors">
-                            {reporte.testigo_email}
-                          </a>
+                  {reporte.es_anonimo ? (
+                    <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                        <span>🎭</span>
+                        Datos del Testigo:
+                      </h4>
+                      <div className="text-sm">
+                        <p className="text-purple-700 italic">
+                          <strong>Reporte anónimo:</strong> El testigo ha elegido mantener su identidad privada.
+                          Solo puedes ver la información del accidente.
                         </p>
-                      )}
-                      {reporte.testigo_telefono && (
-                        <p className="flex items-center">
-                          <PhoneIcon className="h-4 w-4 mr-2" />
-                          <a href={`tel:${reporte.testigo_telefono}`} className="text-primary-600 hover:text-primary-700 hover:underline transition-colors">
-                            {reporte.testigo_telefono}
-                          </a>
-                        </p>
-                      )}
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="mt-4 p-3 bg-primary-50 rounded-lg border border-primary-200">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-2">Datos del Testigo:</h4>
+                      <div className="space-y-1 text-sm">
+                        <p><strong>Nombre:</strong> {reporte.testigo_nombre}</p>
+                        {reporte.testigo_email && (
+                          <p className="flex items-center">
+                            <EnvelopeIcon className="h-4 w-4 mr-2" />
+                            <a href={`mailto:${reporte.testigo_email}`} className="text-primary-600 hover:text-primary-700 hover:underline transition-colors">
+                              {reporte.testigo_email}
+                            </a>
+                          </p>
+                        )}
+                        {reporte.testigo_telefono && (
+                          <p className="flex items-center">
+                            <PhoneIcon className="h-4 w-4 mr-2" />
+                            <a href={`tel:${reporte.testigo_telefono}`} className="text-primary-600 hover:text-primary-700 hover:underline transition-colors">
+                              {reporte.testigo_telefono}
+                            </a>
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Ubicación y fecha */}
                   <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">

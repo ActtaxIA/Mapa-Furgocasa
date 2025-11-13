@@ -41,6 +41,7 @@ export interface ReporteAccidente {
   verificado: boolean
   leido: boolean
   cerrado: boolean
+  es_anonimo: boolean
   notas_propietario?: string
   created_at: string
   updated_at: string
