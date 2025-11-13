@@ -209,8 +209,8 @@ export default function MisAutocaravanasPage() {
         <div className="bg-white rounded-xl shadow p-6">
           {activeTab === 'vehiculos' && <MiAutocaravanaTab userId={user.id} />}
           {activeTab === 'reportes' && (
-            <MisReportesTab 
-              userId={user.id} 
+            <MisReportesTab
+              userId={user.id}
               onReporteUpdate={() => {
                 // Recargar contador cuando se actualiza un reporte
                 if (user) loadUnreadCount(user.id)
