@@ -1,24 +1,8 @@
 import { createBrowserClient } from '@supabase/ssr'
 import type { Database } from '@/types/database.types'
 
-// Singleton pattern: almacenar la instancia del cliente para reutilizarla
-// Esto evita crear múltiples instancias de GoTrueClient que causan warnings
-let supabaseClient: ReturnType<typeof createBrowserClient<Database>> | null = null
-
 export function createClient() {
-  // Si ya existe una instancia, reutilizarla
-  if (supabaseClient) {
-    return supabaseClient
-  }
-
-  // Solo crear cliente en el navegador, no durante SSR
-  if (typeof window === 'undefined') {
-    // Durante SSR, retornar un cliente mock que no hará nada
-    // Esto evita errores durante el build pero mantiene el singleton en el cliente
-    return null as any
-  }
-
-  supabaseClient = createBrowserClient<Database>(
+  return createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -83,6 +67,4 @@ export function createClient() {
       },
     }
   )
-
-  return supabaseClient
 }
