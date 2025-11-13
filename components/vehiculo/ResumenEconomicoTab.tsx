@@ -213,21 +213,21 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
             <div className="space-y-4">
               {/* Mantenimientos */}
               <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-blue-100 rounded-full">
-                    <WrenchScrewdriverIcon className="w-6 h-6 text-blue-600" />
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                  <div className="p-2 sm:p-3 bg-blue-100 rounded-full flex-shrink-0">
+                    <WrenchScrewdriverIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Mantenimientos</p>
-                    <p className="text-xs text-gray-600">Revisiones, cambios, ITV...</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base">Mantenimientos</p>
+                    <p className="text-xs text-gray-600 hidden sm:block">Revisiones, cambios, ITV...</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-blue-900">
+                <div className="text-right flex-shrink-0 ml-2">
+                  <p className="text-xl sm:text-2xl font-bold text-blue-900 whitespace-nowrap">
                     {formatCurrency(resumen.total_mantenimientos)}
                   </p>
                   {totalGastos > 0 && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 hidden sm:block">
                       {((resumen.total_mantenimientos || 0) / totalGastos * 100).toFixed(1)}% del total
                     </p>
                   )}
@@ -236,21 +236,21 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
 
               {/* Averías */}
               <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg border border-red-200 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-red-100 rounded-full">
-                    <ExclamationTriangleIcon className="w-6 h-6 text-red-600" />
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                  <div className="p-2 sm:p-3 bg-red-100 rounded-full flex-shrink-0">
+                    <ExclamationTriangleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Averías y Reparaciones</p>
-                    <p className="text-xs text-gray-600">Reparaciones inesperadas</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base">Averías y Reparaciones</p>
+                    <p className="text-xs text-gray-600 hidden sm:block">Reparaciones inesperadas</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-red-900">
+                <div className="text-right flex-shrink-0 ml-2">
+                  <p className="text-xl sm:text-2xl font-bold text-red-900 whitespace-nowrap">
                     {formatCurrency(resumen.total_averias)}
                   </p>
                   {totalGastos > 0 && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 hidden sm:block">
                       {((resumen.total_averias || 0) / totalGastos * 100).toFixed(1)}% del total
                     </p>
                   )}
@@ -259,21 +259,21 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
 
               {/* Mejoras */}
               <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg border border-purple-200 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-purple-100 rounded-full">
-                    <SparklesIcon className="w-6 h-6 text-purple-600" />
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                  <div className="p-2 sm:p-3 bg-purple-100 rounded-full flex-shrink-0">
+                    <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Mejoras y Accesorios</p>
-                    <p className="text-xs text-gray-600">Inversiones que añaden valor</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base">Mejoras y Accesorios</p>
+                    <p className="text-xs text-gray-600 hidden sm:block">Inversiones que añaden valor</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-purple-900">
+                <div className="text-right flex-shrink-0 ml-2">
+                  <p className="text-xl sm:text-2xl font-bold text-purple-900 whitespace-nowrap">
                     {formatCurrency(resumen.total_mejoras)}
                   </p>
                   {totalGastos > 0 && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 hidden sm:block">
                       {((resumen.total_mejoras || 0) / totalGastos * 100).toFixed(1)}% del total
                     </p>
                   )}
@@ -282,11 +282,11 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
 
               {/* Total */}
               <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg border-2 border-gray-300 mt-4">
-                <div>
-                  <p className="font-bold text-gray-900 text-lg">Total Gastos</p>
-                  <p className="text-xs text-gray-600">Suma de todos los gastos</p>
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold text-gray-900 text-base sm:text-lg">Total Gastos</p>
+                  <p className="text-xs text-gray-600 hidden sm:block">Suma de todos los gastos</p>
                 </div>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900 whitespace-nowrap ml-2">
                   {formatCurrency(totalGastos)}
                 </p>
               </div>
