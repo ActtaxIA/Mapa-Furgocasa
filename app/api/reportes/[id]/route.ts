@@ -63,6 +63,7 @@ export async function PATCH(
     if (notas_propietario !== undefined) updateData.notas_propietario = notas_propietario
 
     // Actualizar reporte
+    console.log('Intentando actualizar reporte:', reporte_id, 'con datos:', updateData);
     const { data: reporteActualizado, error: updateError } = await supabase
       .from('reportes_accidentes')
       .update(updateData)
@@ -73,7 +74,11 @@ export async function PATCH(
     if (updateError) {
       console.error('Error actualizando reporte:', updateError)
       return NextResponse.json(
-        { error: 'Error al actualizar reporte' },
+        { 
+          error: 'Error al actualizar reporte',
+          details: updateError.message,
+          code: updateError.code
+        },
         { status: 500 }
       )
     }

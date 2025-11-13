@@ -16,8 +16,25 @@ export function Navbar() {
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [unreadReports, setUnreadReports] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
+
+  // Función para cargar reportes no leídos
+  const loadUnreadReports = async (userId: string) => {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .rpc('obtener_reportes_usuario', { usuario_uuid: userId });
+
+      if (!error && data) {
+        const noLeidos = data.filter((reporte: any) => !reporte.leido).length;
+        setUnreadReports(noLeidos);
+      }
+    } catch (error) {
+      console.error('Error cargando reportes no leídos:', error);
+    }
+  };
 
   useEffect(() => {
     const checkUser = async () => {
@@ -29,6 +46,8 @@ export function Navbar() {
       if (session?.user) {
         setUser(session.user);
         setIsAdmin(session.user.user_metadata?.is_admin === true);
+        // Cargar reportes no leídos
+        loadUnreadReports(session.user.id);
       }
     };
 
@@ -41,14 +60,28 @@ export function Navbar() {
       if (session?.user) {
         setUser(session.user);
         setIsAdmin(session.user.user_metadata?.is_admin === true);
+        // Cargar reportes no leídos cuando cambia la sesión
+        loadUnreadReports(session.user.id);
       } else {
         setUser(null);
         setIsAdmin(false);
+        setUnreadReports(0);
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Actualizar reportes no leídos cada 30 segundos si hay usuario
+  useEffect(() => {
+    if (!user) return;
+
+    const interval = setInterval(() => {
+      loadUnreadReports(user.id);
+    }, 30000); // 30 segundos
+
+    return () => clearInterval(interval);
+  }, [user]);
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -140,17 +173,31 @@ export function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 px-3 py-2 bg-white text-primary-600 rounded-lg font-semibold hover:bg-primary-50 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 bg-white text-primary-600 rounded-lg font-semibold hover:bg-primary-50 transition-colors relative"
                 >
                   {user.user_metadata?.profile_photo &&
                   user.user_metadata.profile_photo !== "default_profile.png" ? (
-                    <img
-                      src={user.user_metadata.profile_photo}
-                      alt={user.user_metadata?.full_name || user.email}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
+                    <div className="relative">
+                      <img
+                        src={user.user_metadata.profile_photo}
+                        alt={user.user_metadata?.full_name || user.email}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                      {unreadReports > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                          {unreadReports}
+                        </span>
+                      )}
+                    </div>
                   ) : (
-                    <UserCircleIcon className="w-8 h-8" />
+                    <div className="relative">
+                      <UserCircleIcon className="w-8 h-8" />
+                      {unreadReports > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                          {unreadReports}
+                        </span>
+                      )}
+                    </div>
                   )}
                   <span className="hidden sm:inline text-sm">
                     {user.user_metadata?.first_name ||
@@ -197,11 +244,18 @@ export function Navbar() {
                         </Link>
                         <Link
                           href="/mis-autocaravanas"
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                          className="flex items-center justify-between gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                           onClick={() => setShowUserMenu(false)}
                         >
-                          <TruckIcon className="w-5 h-5" />
-                          Mis Autocaravanas
+                          <div className="flex items-center gap-3">
+                            <TruckIcon className="w-5 h-5" />
+                            Mis Autocaravanas
+                          </div>
+                          {unreadReports > 0 && (
+                            <span className="bg-red-600 text-white text-xs font-bold rounded-full px-2 py-0.5 min-w-[20px] text-center">
+                              {unreadReports}
+                            </span>
+                          )}
                         </Link>
                         <button
                           onClick={handleLogout}
