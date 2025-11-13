@@ -5,6 +5,33 @@ interface RouteParams {
   params: { id: string }
 }
 
+// Helper: Normalizar valores numéricos (DECIMAL de PostgreSQL viene como string en JSON)
+function normalizeNumericFields(data: any): any {
+  if (Array.isArray(data)) {
+    return data.map(item => normalizeNumericFields(item))
+  }
+  
+  if (data && typeof data === 'object') {
+    const normalized: any = { ...data }
+    
+    // Campos numéricos conocidos
+    const numericFields = ['coste', 'kilometraje', 'kilometraje_proximo']
+    
+    numericFields.forEach(field => {
+      if (normalized[field] !== null && normalized[field] !== undefined) {
+        const parsed = typeof normalized[field] === 'string' 
+          ? parseFloat(normalized[field]) 
+          : normalized[field]
+        normalized[field] = isNaN(parsed) ? null : parsed
+      }
+    })
+    
+    return normalized
+  }
+  
+  return data
+}
+
 // GET: Obtener todos los mantenimientos de un vehículo
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
@@ -50,7 +77,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       )
     }
 
-    return NextResponse.json(mantenimientos || [])
+    // Normalizar campos numéricos antes de devolver
+    const normalized = normalizeNumericFields(mantenimientos || [])
+    return NextResponse.json(normalized)
   } catch (error) {
     console.error('Error:', error)
     return NextResponse.json(
