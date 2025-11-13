@@ -1,20 +1,20 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
+import {
   ChartBarIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   MinusIcon,
   CalendarIcon
 } from '@heroicons/react/24/outline'
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   Area,
   AreaChart
@@ -81,7 +81,7 @@ export default function HistoricoValoracion({ vehiculoId }: Props) {
       })
 
       if (!response.ok) throw new Error('Error al guardar')
-      
+
       await fetchHistorico()
       setShowAddManual(false)
       setValorManual(null)
@@ -252,8 +252,8 @@ export default function HistoricoValoracion({ vehiculoId }: Props) {
               </div>
 
               <div className={`rounded-lg p-4 border ${
-                cambio.cambio >= 0 
-                  ? 'bg-green-50 border-green-200' 
+                cambio.cambio >= 0
+                  ? 'bg-green-50 border-green-200'
                   : 'bg-red-50 border-red-200'
               }`}>
                 <div className="flex items-center mb-1">
@@ -297,30 +297,30 @@ export default function HistoricoValoracion({ vehiculoId }: Props) {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis 
-                    dataKey="fecha" 
+                  <XAxis
+                    dataKey="fecha"
                     stroke="#6b7280"
                     style={{ fontSize: '12px' }}
                   />
-                  <YAxis 
+                  <YAxis
                     stroke="#6b7280"
                     style={{ fontSize: '12px' }}
                     tickFormatter={formatNumberK}
                   />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'white', 
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'white',
                       border: '1px solid #e5e7eb',
                       borderRadius: '8px'
                     }}
                     formatter={(value: number) => [`${value.toLocaleString('es-ES')} €`, 'Valor']}
                   />
-                  <Area 
-                    type="monotone" 
-                    dataKey="valor" 
-                    stroke="#4f46e5" 
+                  <Area
+                    type="monotone"
+                    dataKey="valor"
+                    stroke="#4f46e5"
                     strokeWidth={2}
-                    fill="url(#colorValor)" 
+                    fill="url(#colorValor)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -332,8 +332,8 @@ export default function HistoricoValoracion({ vehiculoId }: Props) {
             <h4 className="font-semibold text-gray-900 mb-3">Histórico detallado</h4>
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {historico.slice().reverse().map((item) => (
-                <div 
-                  key={item.id} 
+                <div
+                  key={item.id}
                   className="flex items-start justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
                 >
                   <div className="flex-1">
@@ -347,7 +347,7 @@ export default function HistoricoValoracion({ vehiculoId }: Props) {
                         })}
                       </span>
                       <span className={`text-xs px-2 py-0.5 rounded ${
-                        item.fuente === 'automatico' 
+                        item.fuente === 'automatico'
                           ? 'bg-blue-100 text-blue-700'
                           : item.fuente === 'manual'
                           ? 'bg-purple-100 text-purple-700'
@@ -381,4 +381,3 @@ export default function HistoricoValoracion({ vehiculoId }: Props) {
     </div>
   )
 }
-
