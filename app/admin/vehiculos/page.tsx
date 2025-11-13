@@ -106,7 +106,7 @@ export default function AdminVehiculosPage() {
   const loadAnalisis = async () => {
     try {
       const supabase = createClient()
-      
+
       // Primero verificamos si la función existe
       const { data, error } = await supabase.rpc('admin_analisis_por_marca_modelo')
 

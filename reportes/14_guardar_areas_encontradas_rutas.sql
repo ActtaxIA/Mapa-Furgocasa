@@ -22,4 +22,3 @@ BEGIN
   RAISE NOTICE '   - Los puntos encontrados ahora se guardan en caché';
   RAISE NOTICE '   - Las rutas guardadas cargarán los puntos instantáneamente';
 END $$;
-

@@ -237,7 +237,7 @@ export async function POST(request: Request) {
     if (insertError) {
       console.error('Error insertando reporte:', insertError)
       return NextResponse.json(
-        { 
+        {
           error: 'Error al crear reporte',
           details: insertError.message,
           code: insertError.code
@@ -257,7 +257,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('Error en POST /api/reportes:', error)
     return NextResponse.json(
-      { 
+      {
         error: 'Error interno del servidor',
         details: error.message || 'Error desconocido',
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
