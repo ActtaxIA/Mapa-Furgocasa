@@ -6,12 +6,13 @@ import { Loader } from '@googlemaps/js-api-loader'
 import { createClient } from '@/lib/supabase/client'
 import type { Area, Ruta } from '@/types/database.types'
 import { ListaResultados } from '@/components/mapa/ListaResultados'
-import { 
-  MagnifyingGlassIcon, 
+import {
+  MagnifyingGlassIcon,
   MapPinIcon,
   ArrowPathIcon,
   FunnelIcon,
-  XMarkIcon
+  XMarkIcon,
+  BookmarkIcon
 } from '@heroicons/react/24/outline'
 import { useToast } from '@/hooks/useToast'
 
@@ -43,13 +44,13 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
   const destinoInputRef = useRef<HTMLInputElement>(null)
   const { toast, showToast, hideToast } = useToast()
   const searchParams = useSearchParams()
-  
+
   const [map, setMap] = useState<GoogleMap | null>(null)
   const [directionsService, setDirectionsService] = useState<GoogleDirectionsService | null>(null)
   const [directionsRenderer, setDirectionsRenderer] = useState<GoogleDirectionsRenderer | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isCalculating, setIsCalculating] = useState(false)
-  
+
   const [origen, setOrigen] = useState<RoutePoint | null>(null)
   const [destino, setDestino] = useState<RoutePoint | null>(null)
   const [waypoints, setWaypoints] = useState<RoutePoint[]>([])
@@ -62,7 +63,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
   const [gpsActive, setGpsActive] = useState(false) // Siempre false inicialmente para evitar hidratación
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const watchIdRef = useRef<number | null>(null)
-  
+
   // Estados para guardar ruta
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -71,15 +72,16 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
     nombre: '',
     descripcion: ''
   })
-  
+
   const [loadedRuta, setLoadedRuta] = useState<Ruta | null>(null)
+  const [rutaGuardada, setRutaGuardada] = useState(false) // Indica si la ruta actual está guardada
 
   // Estados de progreso del cálculo
   const [calculandoRuta, setCalculandoRuta] = useState(false)
   const [progreso, setProgreso] = useState(0)
   const [mensajeProgreso, setMensajeProgreso] = useState('')
   const cancelarCalculoRef = useRef(false)
-  
+
   // Cargar estado del GPS desde localStorage DESPUÉS de montar (solo cliente)
   useEffect(() => {
     const savedGpsState = localStorage.getItem('gpsActive') === 'true'
@@ -87,7 +89,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       setGpsActive(true)
     }
   }, [])
-  
+
   // Cargar ruta desde URL si existe
   useEffect(() => {
     const rutaId = searchParams.get('ruta')
@@ -120,7 +122,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
   const initMap = async () => {
     try {
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-      
+
       if (!apiKey) {
         console.error('❌ Google Maps API Key no está configurada')
         showToast('Error: No se encontró la API Key de Google Maps', 'error')
@@ -129,7 +131,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       }
 
       console.log('🗺️ Cargando Google Maps para rutas...')
-      
+
       const loader = new Loader({
         apiKey,
         version: 'weekly',
@@ -250,9 +252,9 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
     const distanciaKm = (distanciaTotal / 1000).toFixed(1)
     const horas = Math.floor(duracionTotal / 3600)
     const minutos = Math.round((duracionTotal % 3600) / 60)
-    
-    const duracionTexto = horas > 0 
-      ? `${horas}h ${minutos}min` 
+
+    const duracionTexto = horas > 0
+      ? `${horas}h ${minutos}min`
       : `${minutos}min`
 
     setRutaInfo({
@@ -270,7 +272,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
             lat: position.coords.latitude,
             lng: position.coords.longitude
           }
-          
+
           // Crear o actualizar marcador de usuario
           const google = (window as any).google
           if (!userMarkerRef.current) {
@@ -288,7 +290,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
               zIndex: 999999,
               title: 'Tu ubicación'
             })
-            
+
             // Solo centrar si es activación MANUAL (clic en botón), no auto-activación
             if (!autoActivate) {
               map.setCenter(pos)
@@ -317,10 +319,10 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
   // Auto-activar GPS si estaba activo anteriormente
   useEffect(() => {
     console.log('📍 useEffect GPS (RUTA) - map:', !!map, 'gpsActive:', gpsActive, 'watchIdRef:', !!watchIdRef.current)
-    
+
     if (map && gpsActive && !watchIdRef.current && navigator.geolocation) {
       console.log('🟢 Auto-activando GPS desde localStorage')
-      
+
       // Activar directamente sin pasar por toggleGPS
       const watchId = navigator.geolocation.watchPosition(
         (position) => {
@@ -328,7 +330,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
             lat: position.coords.latitude,
             lng: position.coords.longitude
           }
-          
+
           const google = (window as any).google
           // Crear o actualizar marcador de usuario
           if (!userMarkerRef.current) {
@@ -411,7 +413,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       // Preparar waypoints para Google Maps
       setProgreso(10)
       setMensajeProgreso('Configurando puntos intermedios...')
-      
+
       const waypointsFormatted = waypoints.map((wp: any) => ({
         location: new google.maps.LatLng(wp.lat, wp.lng),
         stopover: true
@@ -420,7 +422,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       // Calcular ruta
       setProgreso(20)
       setMensajeProgreso('Calculando ruta óptima...')
-      
+
       const request: GoogleDirectionsRequest = {
         origin: new google.maps.LatLng(origen.lat, origen.lng),
         destination: new google.maps.LatLng(destino.lat, destino.lng),
@@ -439,34 +441,35 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         if (status === 'OK' && result) {
           setProgreso(40)
           setMensajeProgreso('Ruta calculada. Dibujando en el mapa...')
-          
+
           directionsRenderer.setDirections(result)
-          
+
           // Guardar la ruta actual
           setCurrentRoute(result.routes[0])
-          
+          setRutaGuardada(false) // Nueva ruta calculada, no está guardada aún
+
           // Actualizar info de la ruta
           setProgreso(50)
           setMensajeProgreso('Analizando distancia y duración...')
           actualizarInfoRuta(result)
-          
+
           // Verificar cancelación antes de buscar áreas
           if (cancelarCalculoRef.current) {
             console.log('🚫 Cálculo cancelado antes de buscar áreas')
             return
           }
-          
+
           // Buscar áreas cercanas a la ruta
           setProgreso(60)
           setMensajeProgreso('Buscando áreas disponibles en la ruta...')
           await buscarAreasCercanasARuta(result.routes[0])
-          
+
           // Verificar cancelación después de buscar áreas
           if (cancelarCalculoRef.current) {
             console.log('🚫 Cálculo cancelado después de buscar áreas')
             return
           }
-          
+
           // Hacer zoom automático a la ruta
           setProgreso(95)
           setMensajeProgreso('Ajustando vista del mapa...')
@@ -476,15 +479,15 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
             bounds.extend(leg.end_location)
           })
           map.fitBounds(bounds, { padding: 100 })
-          
+
           setProgreso(100)
           setMensajeProgreso('¡Ruta lista!')
-          
+
           // En móvil, cambiar a vista mapa automáticamente
           if (onRutaCalculada) {
             onRutaCalculada()
           }
-          
+
           // Cerrar modal de progreso después de un breve delay
           setTimeout(() => {
             setCalculandoRuta(false)
@@ -514,7 +517,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       // Obtener TODOS los puntos detallados de la ruta (no solo overview)
       // Esto incluye todos los steps de cada leg para rutas largas
       const allPoints: any[] = []
-      
+
       route.legs.forEach((leg: any) => {
         leg.steps.forEach((step: any) => {
           // Añadir puntos del path de cada step
@@ -529,9 +532,9 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
 
       // Si no hay puntos detallados, usar overview_path como fallback
       const path = allPoints.length > 0 ? allPoints : route.overview_path
-      
+
       console.log(`🗺️ Analizando ruta con ${path.length} puntos (radio: ${radio}km)`)
-      
+
       // Obtener TODAS las áreas activas con paginación (evitar límite de 1000)
       const supabase = createClient()
       const todasLasAreas: Area[] = []
@@ -559,13 +562,13 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         if (data && data.length > 0) {
           todasLasAreas.push(...data)
           console.log(`   ✓ Página ${page + 1}: ${data.length} áreas cargadas`)
-          
+
           // Actualizar progreso: 60% base + 10% para carga de áreas (hasta 70%)
           // Dejamos más margen para el filtrado que es lo más lento
           const progresoAreas = 60 + Math.min(10, (page * 2))
           setProgreso(progresoAreas)
           setMensajeProgreso(`Cargando base de datos... ${todasLasAreas.length} áreas`)
-          
+
           page++
           if (data.length < pageSize) {
             hasMore = false
@@ -586,12 +589,12 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       // Procesamiento en lotes para actualizar UI de forma fluida
       setProgreso(70)
       setMensajeProgreso('Filtrando áreas cercanas a la ruta...')
-      
+
       const areasCercanas: Area[] = []
       const radioMetros = radio * 1000
       const loteSize = 200 // Procesar 200 áreas a la vez
       const totalAreas = todasLasAreas.length
-      
+
       console.log(`🔍 Iniciando filtrado de ${totalAreas} áreas en lotes de ${loteSize}`)
 
       for (let i = 0; i < totalAreas; i += loteSize) {
@@ -602,31 +605,31 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         }
 
         const lote = todasLasAreas.slice(i, Math.min(i + loteSize, totalAreas))
-        
+
         // Procesar lote
         lote.forEach((area: Area) => {
           const areaLatLng = new google.maps.LatLng(area.latitud, area.longitud)
-          
+
           // Comprobar si el área está cerca de algún punto de la ruta
           for (const point of path) {
             const distancia = google.maps.geometry.spherical.computeDistanceBetween(
               point,
               areaLatLng
             )
-            
+
             if (distancia <= radioMetros) {
               areasCercanas.push(area)
               break
             }
           }
         })
-        
+
         // Actualizar progreso después de cada lote (70% a 90%)
         const porcentajeProcesado = ((i + loteSize) / totalAreas)
         const progresoActual = 70 + Math.floor(porcentajeProcesado * 20)
         setProgreso(Math.min(90, progresoActual))
         setMensajeProgreso(`Analizando ${i + loteSize}/${totalAreas} áreas... ${areasCercanas.length} encontradas`)
-        
+
         // Pequeña pausa para permitir que React actualice la UI
         await new Promise(resolve => setTimeout(resolve, 0))
       }
@@ -635,13 +638,13 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       const paisesCubiertos = [...new Set(areasCercanas.map(a => a.pais))].sort()
       console.log(`✅ Encontradas ${areasCercanas.length} áreas en un radio de ${radio}km`)
       console.log(`🌍 Países cubiertos: ${paisesCubiertos.join(', ')}`)
-      
+
       setProgreso(92)
       setMensajeProgreso(`Colocando ${areasCercanas.length} áreas en el mapa...`)
-      
+
       setAreasEnRuta(areasCercanas)
       mostrarAreasEnMapa(areasCercanas)
-      
+
       // Pequeña pausa para que el usuario vea el mensaje final
       await new Promise(resolve => setTimeout(resolve, 300))
     } catch (error) {
@@ -715,7 +718,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       'zona_mascotas'
     ]
 
-    const serviciosDisponibles = area.servicios && typeof area.servicios === 'object' 
+    const serviciosDisponibles = area.servicios && typeof area.servicios === 'object'
       ? Object.entries(area.servicios)
           .filter(([key, value]) => value === true && serviciosValidos.includes(key))
           .map(([key]: any) => ({
@@ -731,8 +734,8 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       <div style="max-width: 360px; font-family: system-ui, -apple-system, sans-serif;">
         ${area.foto_principal ? `
           <div style="margin: -20px -20px 12px -20px; width: calc(100% + 40px); height: 180px; overflow: hidden; position: relative;">
-            <img 
-              src="${area.foto_principal}" 
+            <img
+              src="${area.foto_principal}"
               alt="${area.nombre}"
               style="width: 100%; height: 100%; object-fit: cover;"
               onerror="this.style.display='none'"
@@ -745,7 +748,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
             ` : ''}
           </div>
         ` : ''}
-        
+
         <div style="padding: ${area.foto_principal ? '0' : '8px 0'};">
           <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: #111827; line-height: 1.3;">
             ${area.nombre}
@@ -819,7 +822,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
 
           <!-- Botones de Acción -->
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px;">
-            <a 
+            <a
               href="/area/${area.slug}"
               style="text-align: center; background: #0284c7; color: white; padding: 12px 16px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.3);"
               onmouseover="this.style.background='#0369a1'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 6px rgba(2, 132, 199, 0.4)'"
@@ -831,9 +834,9 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
               </svg>
               Ver Detalles
             </a>
-            
+
             ${area.google_maps_url || (area.latitud && area.longitud) ? `
-              <a 
+              <a
                 href="${area.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${area.latitud},${area.longitud}`}"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -861,7 +864,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
 
     areas.forEach((area) => {
       const pinColor = getTipoAreaColor(area.tipo_area)
-      
+
       const marker = new google.maps.Marker({
         position: { lat: area.latitud, lng: area.longitud },
         map: map,
@@ -929,7 +932,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         lat: origenData.latitud,
         lng: origenData.longitud
       }
-      
+
       const destinoPoint: RoutePoint = {
         name: destinoData.nombre,
         lat: destinoData.latitud,
@@ -961,13 +964,13 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       // Esto ahorra llamadas a la API de Google Maps
       if (geometriaData?.features?.[0]?.properties?.legs && directionsRenderer && map) {
         console.log('📦 Cargando ruta desde caché (sin llamada a API)')
-        
+
         const google = (window as any).google
         const savedLegs = geometriaData.features[0].properties.legs
         const coordinates = geometriaData.features[0].geometry.coordinates
-        
+
         // Recrear el path desde las coordenadas guardadas
-        const path = coordinates.map((coord: [number, number]) => 
+        const path = coordinates.map((coord: [number, number]) =>
           new google.maps.LatLng(coord[1], coord[0])
         )
 
@@ -1020,17 +1023,18 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         // Limpiar cualquier ruta anterior
         directionsRenderer.setMap(null)
         directionsRenderer.setMap(map)
-        
+
         // Mostrar la ruta en el mapa
         directionsRenderer.setDirections(mockResult)
         setCurrentRoute(mockResult.routes[0])
-        
+        setRutaGuardada(true) // Ruta cargada desde guardada, está guardada
+
         // Actualizar info de la ruta
         actualizarInfoRuta(mockResult)
-        
+
         // Ajustar el mapa a los bounds de la ruta
         map.fitBounds(mockResult.routes[0].bounds, { padding: 100 })
-        
+
         // Cargar áreas encontradas desde caché si existen
         if (areasEncontradasData && areasEncontradasData.length > 0) {
           console.log(`📦 Cargando ${areasEncontradasData.length} áreas desde caché`)
@@ -1046,17 +1050,18 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       } else {
           // Si no tenemos geometría guardada, calcular la ruta (legacy)
           console.log('🔄 Calculando ruta (ruta antigua sin caché)')
-          
+
           // Si hay áreas encontradas guardadas, cargarlas directamente
           if (areasEncontradasData && areasEncontradasData.length > 0) {
             console.log(`📦 Cargando ${areasEncontradasData.length} áreas desde caché (ruta antigua)`)
             setAreasEnRuta(areasEncontradasData as Area[])
             mostrarAreasEnMapa(areasEncontradasData as Area[])
           }
-          
+
           setTimeout(() => {
             calcularRutaConPuntos(origenPoint, destinoPoint, paradasData)
           }, 500)
+          setRutaGuardada(true) // Ruta cargada desde guardada, está guardada
           showToast('Ruta cargada correctamente', 'success')
         }
     } catch (error: any) {
@@ -1121,6 +1126,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
     setRutaInfo(null)
     setCurrentRoute(null)
     setLoadedRuta(null)
+    setRutaGuardada(false) // Resetear estado de guardado
     if (origenInputRef.current) origenInputRef.current.value = ''
     if (destinoInputRef.current) destinoInputRef.current.value = ''
   }
@@ -1137,13 +1143,13 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
     }
 
     setSaving(true)
-    
+
     try {
       const supabase = createClient()
-      
+
       // Verificar que el usuario esté autenticado
       const { data: { session } } = await supabase.auth.getSession()
-      
+
       if (!session?.user) {
         showToast('Debes iniciar sesión para guardar rutas', 'error')
         window.location.href = '/auth/login'
@@ -1153,7 +1159,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       // Calcular distancia y duración totales
       let distanciaTotal = 0
       let duracionTotal = 0
-      
+
       currentRoute.legs.forEach((leg: any) => {
         if (leg.distance) distanciaTotal += leg.distance.value
         if (leg.duration) duracionTotal += leg.duration.value
@@ -1265,7 +1271,8 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       // Primero cerrar el modal
       setShowSaveModal(false)
       setSaveForm({ nombre: '', descripcion: '' })
-      
+      setRutaGuardada(true) // Marcar que la ruta está guardada
+
       // Luego mostrar el toast con un pequeño delay
       setTimeout(() => {
         showToast('✅ Ruta guardada correctamente', 'success')
@@ -1434,7 +1441,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                         const autocomplete = new google.maps.places.Autocomplete(e.target, {
                           componentRestrictions: { country: ['es', 'fr', 'pt', 'it'] }
                         })
-                        
+
                         autocomplete.addListener('place_changed', () => {
                           const place = autocomplete.getPlace()
                           if (place.geometry?.location) {
@@ -1534,15 +1541,24 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
             </button>
 
             {currentRoute && rutaInfo && (
-              <button
-                onClick={() => setShowSaveModal(true)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                </svg>
-                Guardar Ruta
-              </button>
+              <>
+                {!rutaGuardada ? (
+                  <button
+                    onClick={() => setShowSaveModal(true)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-lg shadow-green-500/30"
+                  >
+                    <BookmarkIcon className="w-5 h-5" />
+                    Guardar Ruta
+                  </button>
+                ) : (
+                  <div className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-600 rounded-lg font-semibold border-2 border-green-500">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Ruta Guardada
+                  </div>
+                )}
+              </>
             )}
 
             <button
@@ -1599,7 +1615,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         vistaMovil === 'mapa' ? 'block' : 'hidden md:block'
       }`}>
         <div ref={mapRef} className="w-full h-full" />
-        
+
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
             <div className="text-center">
@@ -1629,8 +1645,8 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
             }
           }}
           className={`absolute top-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full shadow-lg font-semibold transition-all z-30 flex items-center gap-2 ${
-            gpsActive 
-              ? 'bg-orange-500 text-white hover:bg-orange-600' 
+            gpsActive
+              ? 'bg-orange-500 text-white hover:bg-orange-600'
               : 'bg-white text-gray-700 hover:bg-gray-50'
           }`}
         >
@@ -1678,7 +1694,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
 
       {/* Modal de Progreso del Cálculo */}
       {calculandoRuta && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-fadeIn"
           onClick={(e) => {
             // Permitir cerrar haciendo clic fuera del modal
@@ -1711,7 +1727,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
             <h3 className="text-2xl font-bold text-gray-900 text-center mb-2">
               {progreso === 100 ? '¡Ruta Calculada!' : 'Calculando Ruta'}
             </h3>
-            
+
             <p className="text-center text-gray-600 mb-6 min-h-[24px] font-medium">
               {mensajeProgreso}
             </p>
@@ -1723,7 +1739,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                 <span className="text-sm font-bold text-[#0b3c74]">{progreso}%</span>
               </div>
               <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-[#0b3c74] to-[#0d4a8f] rounded-full transition-all duration-300 ease-linear shadow-lg relative"
                   style={{ width: `${progreso}%` }}
                 >
@@ -1745,7 +1761,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                 </p>
               </div>
             )}
-            
+
             {/* Mensaje durante el filtrado */}
             {progreso >= 70 && progreso < 92 && (
               <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-4 text-center">
@@ -1787,11 +1803,11 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
           to { opacity: 1; }
         }
         @keyframes scaleIn {
-          from { 
+          from {
             opacity: 0;
             transform: scale(0.9);
           }
-          to { 
+          to {
             opacity: 1;
             transform: scale(1);
           }
@@ -1813,4 +1829,3 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
     </div>
   )
 }
-
