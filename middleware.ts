@@ -5,9 +5,13 @@ export async function middleware(request: NextRequest) {
   // CRÍTICO: Excluir rutas API ANTES DE CUALQUIER PROCESAMIENTO
   const pathname = request.nextUrl.pathname
 
-  // Lista completa de rutas a excluir
+  // EXCLUSIÓN ABSOLUTA DE RUTAS API - RETORNAR INMEDIATAMENTE
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next()
+  }
+
+  // Lista completa de otras rutas a excluir
   if (
-    pathname.startsWith('/api/') ||
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/favicon') ||
     pathname.includes('.')
@@ -80,9 +84,9 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * EXCLUIR API ROUTES DEL MATCHER COMPLETAMENTE
-     * Esto evita que el middleware se ejecute para /api/*
+     * MATCHER ULTRA ESPECÍFICO: Solo incluir rutas que REALMENTE necesitan middleware
+     * Excluir explícitamente: /api/*, /_next/*, /favicon.*, archivos estáticos
      */
-    '/((?!api|_next|favicon).*)',
+    '/((?!api|_next|favicon|.*\\..*).*)',
   ],
 }
