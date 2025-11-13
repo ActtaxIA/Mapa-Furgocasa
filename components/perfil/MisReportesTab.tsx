@@ -112,7 +112,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
   const confirmCerrarReporte = async () => {
     const reporteId = confirmModal.reporteId
     setConfirmModal({ isOpen: false, reporteId: null })
-    
+
     if (!reporteId) return
 
     setUpdating(true)

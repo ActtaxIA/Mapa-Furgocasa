@@ -10,7 +10,7 @@ interface ConfirmModalProps {
   cancelText?: string
   onConfirm: () => void
   onCancel: () => void
-  type?: 'danger' | 'warning' | 'info'
+  type?: 'danger' | 'warning' | 'info' | 'error'
 }
 
 export function ConfirmModal({
@@ -27,6 +27,7 @@ export function ConfirmModal({
 
   const colors = {
     danger: 'bg-red-600 hover:bg-red-700',
+    error: 'bg-red-600 hover:bg-red-700',
     warning: 'bg-yellow-600 hover:bg-yellow-700',
     info: 'bg-blue-600 hover:bg-blue-700'
   }
@@ -34,11 +35,11 @@ export function ConfirmModal({
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onCancel}
       />
-      
+
       {/* Modal */}
       <div className="relative bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
         {/* Close button */}
