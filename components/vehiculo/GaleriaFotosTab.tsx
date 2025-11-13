@@ -48,82 +48,101 @@ export function GaleriaFotosTab({ vehiculoId, fotoUrl, fotosAdicionales }: Props
     setFotos(todasLasFotos)
   }
 
-  const handleSubirFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const handleSubirFotos = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
 
-    // Validar tamaño (10MB como en reportes)
-    if (file.size > 10 * 1024 * 1024) {
-      setToast({ message: 'La foto no puede superar los 10MB', type: 'error' })
+    // Validar cantidad total (máximo 10 fotos totales)
+    const espacioDisponible = 10 - fotos.length
+    if (files.length > espacioDisponible) {
+      setToast({ message: `Solo puedes añadir ${espacioDisponible} foto(s) más. Máximo 10 fotos por vehículo.`, type: 'error' })
+      e.target.value = ''
+      return
+    }
+
+    // Validar tamaño de cada foto (10MB)
+    const fotosGrandes = files.filter(f => f.size > 10 * 1024 * 1024)
+    if (fotosGrandes.length > 0) {
+      const nombres = fotosGrandes.map(f => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`).join(', ')
+      setToast({ message: `Estas fotos exceden 10 MB: ${nombres}`, type: 'error' })
+      e.target.value = ''
       return
     }
 
     setSubiendo(true)
+    setToast({ message: `Subiendo ${files.length} foto(s)...`, type: 'info' })
 
     try {
-      // ============================================================
-      // NUEVO: Subir foto DIRECTAMENTE a Supabase Storage
-      // Bypasea AWS Amplify completamente
-      // ============================================================
-      console.log('📸 [Frontend] Subiendo foto adicional directamente a Supabase Storage...')
       const supabase = createClient()
-      const timestamp = Date.now()
+      const fotosSubidas: string[] = []
+      const errores: string[] = []
 
-      const fileExt = file.name.split('.').pop() || 'jpg'
-      const fileName = `vehiculos/${vehiculoId}/adicionales/${timestamp}.${fileExt}`
+      // Subir cada foto individualmente
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const timestamp = Date.now() + i // Añadir índice para evitar colisiones
+        const fileExt = file.name.split('.').pop() || 'jpg'
+        const fileName = `vehiculos/${vehiculoId}/adicionales/${timestamp}.${fileExt}`
 
-      // Subir directamente a Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('vehiculos')
-        .upload(fileName, file, {
-          contentType: file.type || 'image/jpeg',
-          upsert: false
+        console.log(`📸 [${i + 1}/${files.length}] Subiendo ${file.name}...`)
+
+        // Subir a Supabase Storage
+        const { error: uploadError } = await supabase.storage
+          .from('vehiculos')
+          .upload(fileName, file, {
+            contentType: file.type || 'image/jpeg',
+            upsert: false
+          })
+
+        if (uploadError) {
+          console.error(`❌ Error subiendo ${file.name}:`, uploadError)
+          errores.push(file.name)
+          continue
+        }
+
+        // Obtener URL pública
+        const { data: { publicUrl } } = supabase.storage
+          .from('vehiculos')
+          .getPublicUrl(fileName)
+
+        console.log(`✅ ${file.name} subida: ${publicUrl}`)
+
+        // Enviar URL al backend
+        const response = await fetch(`/api/vehiculos/${vehiculoId}/fotos`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ foto_url: publicUrl })
         })
 
-      if (uploadError) {
-        console.error('❌ Error subiendo foto:', uploadError)
-        setToast({ message: 'Error al subir la foto. Intenta de nuevo.', type: 'error' })
-        setSubiendo(false)
-        e.target.value = ''
-        return
+        if (response.ok) {
+          fotosSubidas.push(file.name)
+        } else {
+          const data = await response.json()
+          console.error(`Error del servidor para ${file.name}:`, data)
+          errores.push(file.name)
+        }
       }
 
-      // Obtener URL pública
-      const { data: { publicUrl } } = supabase.storage
-        .from('vehiculos')
-        .getPublicUrl(fileName)
-
-      console.log(`✅ Foto subida: ${publicUrl}`)
-
-      // ============================================================
-      // Enviar URL al backend con JSON (NO FormData)
-      // ============================================================
-      const response = await fetch(`/api/vehiculos/${vehiculoId}/fotos`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ foto_url: publicUrl })
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        setToast({ message: '¡Foto subida con éxito!', type: 'success' })
-        cargarFotos()
-        // Recargar para actualizar desde el servidor
-        window.location.reload()
+      // Mostrar resultados
+      if (fotosSubidas.length > 0 && errores.length === 0) {
+        setToast({ message: `¡${fotosSubidas.length} foto(s) subida(s) con éxito!`, type: 'success' })
+        setTimeout(() => window.location.reload(), 1000)
+      } else if (fotosSubidas.length > 0 && errores.length > 0) {
+        setToast({ 
+          message: `${fotosSubidas.length} foto(s) subida(s). ${errores.length} fallaron: ${errores.join(', ')}`, 
+          type: 'info' 
+        })
+        setTimeout(() => window.location.reload(), 2000)
       } else {
-        const errorMsg = data.details ? `${data.error}: ${data.details}` : (data.error || 'Error al subir foto')
-        console.error('Error del servidor:', data)
-        setToast({ message: errorMsg, type: 'error' })
+        setToast({ message: `Error al subir todas las fotos: ${errores.join(', ')}`, type: 'error' })
       }
     } catch (error) {
-      console.error('Error subiendo foto:', error)
+      console.error('Error general:', error)
       setToast({ message: `Error de red: ${error}`, type: 'error' })
     } finally {
       setSubiendo(false)
-      // Reset input
       e.target.value = ''
     }
   }
@@ -208,12 +227,13 @@ export function GaleriaFotosTab({ vehiculoId, fotoUrl, fotosAdicionales }: Props
         {fotos.length < 10 && (
           <label className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg cursor-pointer hover:bg-primary-700 transition-colors disabled:opacity-50">
             <PlusIcon className="w-5 h-5 mr-2" />
-            {subiendo ? 'Subiendo...' : 'Añadir Foto'}
+            {subiendo ? 'Subiendo...' : 'Añadir Fotos'}
             <input
               type="file"
               className="hidden"
               accept="image/*"
-              onChange={handleSubirFoto}
+              multiple
+              onChange={handleSubirFotos}
               disabled={subiendo}
             />
           </label>
@@ -230,12 +250,13 @@ export function GaleriaFotosTab({ vehiculoId, fotoUrl, fotosAdicionales }: Props
           </p>
           <label className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg cursor-pointer hover:bg-primary-700 transition-colors">
             <PlusIcon className="w-5 h-5 mr-2" />
-            Subir Primera Foto
+            Subir Fotos
             <input
               type="file"
               className="hidden"
               accept="image/*"
-              onChange={handleSubirFoto}
+              multiple
+              onChange={handleSubirFotos}
               disabled={subiendo}
             />
           </label>

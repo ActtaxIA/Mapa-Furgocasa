@@ -5,7 +5,8 @@ import {
   CheckCircleIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
+  CurrencyEuroIcon
 } from '@heroicons/react/24/outline'
 
 interface VentaData {
