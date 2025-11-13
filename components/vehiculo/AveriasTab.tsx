@@ -37,6 +37,12 @@ interface Props {
   vehiculoId: string
 }
 
+// Función para formatear números en formato español sin decimales
+const formatNumber = (value: number | null | undefined): string => {
+  if (value === null || value === undefined) return '0'
+  return Math.round(value).toLocaleString('es-ES')
+}
+
 export default function AveriasTab({ vehiculoId }: Props) {
   const [averias, setAverias] = useState<Averia[]>([])
   const [cargando, setCargando] = useState(true)
@@ -522,7 +528,7 @@ export default function AveriasTab({ vehiculoId }: Props) {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-blue-900">Coste Total Estimado:</span>
                       <span className="text-2xl font-bold text-blue-900">
-                        {((parseFloat(formData.coste_mano_obra) || 0) + (parseFloat(formData.coste_piezas) || 0)).toFixed(2)} €
+                        {formatNumber((parseFloat(formData.coste_mano_obra) || 0) + (parseFloat(formData.coste_piezas) || 0))} €
                       </span>
                     </div>
                   </div>
@@ -661,11 +667,11 @@ export default function AveriasTab({ vehiculoId }: Props) {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {averia.coste_total ? `${averia.coste_total.toFixed(2)} €` : '-'}
+                        {averia.coste_total ? `${formatNumber(averia.coste_total)} €` : '-'}
                       </div>
                       {(averia.coste_reparacion || averia.coste_total) && (
                         <div className="text-xs text-gray-500">
-                          {averia.coste_reparacion && `Reparación: ${averia.coste_reparacion.toFixed(2)}€`}
+                          {averia.coste_reparacion && `Reparación: ${formatNumber(averia.coste_reparacion)} €`}
                         </div>
                       )}
                     </td>

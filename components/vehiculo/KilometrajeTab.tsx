@@ -30,6 +30,12 @@ interface Props {
   vehiculoId: string
 }
 
+// Función para formatear números en formato español sin decimales
+const formatNumber = (value: number | null | undefined): string => {
+  if (value === null || value === undefined) return '0'
+  return Math.round(value).toLocaleString('es-ES')
+}
+
 export default function KilometrajeTab({ vehiculoId }: Props) {
   const [registros, setRegistros] = useState<RegistroKilometraje[]>([])
   const [cargando, setCargando] = useState(true)
@@ -258,7 +264,7 @@ export default function KilometrajeTab({ vehiculoId }: Props) {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Gasto Total Combustible</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {stats.gastoTotalCombustible.toFixed(2)} €
+                  {formatNumber(stats.gastoTotalCombustible)} €
                 </p>
               </div>
             </div>
@@ -481,7 +487,7 @@ export default function KilometrajeTab({ vehiculoId }: Props) {
                       {registro.coste_total_combustible ? (
                         <div>
                           <div className="text-sm font-medium text-gray-900">
-                            {registro.coste_total_combustible.toFixed(2)} €
+                            {formatNumber(registro.coste_total_combustible)} €
                           </div>
                           {registro.precio_litro && (
                             <div className="text-xs text-gray-500">

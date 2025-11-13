@@ -28,6 +28,12 @@ interface Props {
   vehiculoId: string
 }
 
+// Función para formatear números en formato español sin decimales
+const formatNumber = (value: number | null | undefined): string => {
+  if (value === null || value === undefined) return '0'
+  return Math.round(value).toLocaleString('es-ES')
+}
+
 export default function GastosAdicionalesTab({ vehiculoId }: Props) {
   const [gastos, setGastos] = useState<GastoAdicional[]>([])
   const [cargando, setCargando] = useState(true)
@@ -228,7 +234,7 @@ export default function GastosAdicionalesTab({ vehiculoId }: Props) {
               <p className="text-xs text-primary-700 mt-1">Incluye todos los gastos adicionales</p>
             </div>
             <div className="text-2xl font-bold text-primary-900">
-              {calcularTotalGastos().toFixed(2)} €
+              {formatNumber(calcularTotalGastos())} €
             </div>
           </div>
         </div>
@@ -452,7 +458,7 @@ export default function GastosAdicionalesTab({ vehiculoId }: Props) {
                       {formatearFecha(gasto.fecha)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {gasto.importe.toFixed(2)} €
+                      {formatNumber(gasto.importe)} €
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {gasto.periodicidad || 'Único'}

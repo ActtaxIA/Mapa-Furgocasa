@@ -36,6 +36,12 @@ interface Props {
   vehiculoId: string
 }
 
+// Función para formatear números en formato español sin decimales
+const formatNumber = (value: number | null | undefined): string => {
+  if (value === null || value === undefined) return '0'
+  return Math.round(value).toLocaleString('es-ES')
+}
+
 export default function MantenimientosTab({ vehiculoId }: Props) {
   const [mantenimientos, setMantenimientos] = useState<Mantenimiento[]>([])
   const [cargando, setCargando] = useState(true)
@@ -526,7 +532,7 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
                       {mantenimiento.kilometraje ? `${mantenimiento.kilometraje.toLocaleString()} km` : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {mantenimiento.coste ? `${mantenimiento.coste.toFixed(2)} €` : '-'}
+                      {mantenimiento.coste ? `${formatNumber(mantenimiento.coste)} €` : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{mantenimiento.taller || '-'}</div>

@@ -32,6 +32,12 @@ interface Props {
   vehiculoId: string
 }
 
+// Función para formatear números en formato español sin decimales
+const formatNumber = (value: number | null | undefined): string => {
+  if (value === null || value === undefined) return '0'
+  return Math.round(value).toLocaleString('es-ES')
+}
+
 export default function MejorasTab({ vehiculoId }: Props) {
   const [mejoras, setMejoras] = useState<Mejora[]>([])
   const [cargando, setCargando] = useState(true)
@@ -468,7 +474,7 @@ export default function MejorasTab({ vehiculoId }: Props) {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-blue-900">Inversión Total:</span>
                       <span className="text-2xl font-bold text-blue-900">
-                        {((parseFloat(formData.coste_producto) || 0) + (parseFloat(formData.coste_instalacion) || 0)).toFixed(2)} €
+                        {formatNumber((parseFloat(formData.coste_producto) || 0) + (parseFloat(formData.coste_instalacion) || 0))} €
                       </span>
                     </div>
                   </div>
@@ -577,13 +583,13 @@ export default function MejorasTab({ vehiculoId }: Props) {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {mejora.coste_total ? `${mejora.coste_total.toFixed(2)} €` : '-'}
+                        {mejora.coste_total ? `${formatNumber(mejora.coste_total)} €` : '-'}
                       </div>
                       {(mejora.coste_materiales || mejora.coste_mano_obra) && (
                         <div className="text-xs text-gray-500">
-                          {mejora.coste_materiales && `Mat: ${mejora.coste_materiales.toFixed(2)}€`}
+                          {mejora.coste_materiales && `Mat: ${formatNumber(mejora.coste_materiales)} €`}
                           {mejora.coste_materiales && mejora.coste_mano_obra && ' | '}
-                          {mejora.coste_mano_obra && `MO: ${mejora.coste_mano_obra.toFixed(2)}€`}
+                          {mejora.coste_mano_obra && `MO: ${formatNumber(mejora.coste_mano_obra)} €`}
                         </div>
                       )}
                     </td>
