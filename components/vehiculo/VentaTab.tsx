@@ -17,6 +17,7 @@ interface VentaData {
   notas_venta: string | null
   // Para cálculos
   precio_compra: number | null
+  fecha_compra: string | null
   inversion_total: number | null
 }
 
@@ -109,6 +110,53 @@ export default function VentaTab({ vehiculoId }: Props) {
     return datos.precio_venta_final - datos.inversion_total
   }
 
+  const calcularTiempoPropiedad = () => {
+    if (!datos?.fecha_compra || !formData.fecha_venta) return null
+    const fechaCompra = new Date(datos.fecha_compra)
+    const fechaVenta = new Date(formData.fecha_venta)
+    const diffTime = Math.abs(fechaVenta.getTime() - fechaCompra.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    const años = diffDays / 365.25
+    const meses = (años % 1) * 12
+    return {
+      años: Math.floor(años),
+      meses: Math.floor(meses),
+      totalAños: años,
+      dias: diffDays
+    }
+  }
+
+  const calcularTiempoPropiedadFinal = () => {
+    if (!datos?.fecha_compra || !datos?.fecha_venta) return null
+    const fechaCompra = new Date(datos.fecha_compra)
+    const fechaVenta = new Date(datos.fecha_venta)
+    const diffTime = Math.abs(fechaVenta.getTime() - fechaCompra.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    const años = diffDays / 365.25
+    const meses = (años % 1) * 12
+    return {
+      años: Math.floor(años),
+      meses: Math.floor(meses),
+      totalAños: años,
+      dias: diffDays
+    }
+  }
+
+  const calcularCosteAnual = () => {
+    const ganancia = calcularGananciaPerdida()
+    const tiempo = calcularTiempoPropiedad()
+    if (!ganancia || !tiempo || tiempo.totalAños === 0) return null
+    // Si es pérdida (negativo), el coste anual es positivo
+    return Math.abs(ganancia / tiempo.totalAños)
+  }
+
+  const calcularCosteAnualFinal = () => {
+    const ganancia = calcularGananciaPerdidaFinal()
+    const tiempo = calcularTiempoPropiedadFinal()
+    if (!ganancia || !tiempo || tiempo.totalAños === 0) return null
+    return Math.abs(ganancia / tiempo.totalAños)
+  }
+
   if (cargando) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -184,21 +232,37 @@ export default function VentaTab({ vehiculoId }: Props) {
                   </p>
                 </div>
                 {datos.inversion_total && datos.precio_venta_final && (
-                  <div className={`rounded p-3 ${calcularGananciaPerdidaFinal()! >= 0 ? 'bg-green-100' : 'bg-red-100'}`}>
-                    <span className="font-medium text-gray-700">Resultado final:</span>
-                    <p className={`text-xl font-bold mt-1 flex items-center ${calcularGananciaPerdidaFinal()! >= 0 ? 'text-green-700' : 'text-red-700'}`}>
-                      {calcularGananciaPerdidaFinal()! >= 0 ? (
-                        <ArrowTrendingUpIcon className="h-5 w-5 mr-1" />
-                      ) : (
-                        <ArrowTrendingDownIcon className="h-5 w-5 mr-1" />
-                      )}
-                      {calcularGananciaPerdidaFinal()! >= 0 ? '+' : ''}
-                      {calcularGananciaPerdidaFinal()!.toFixed(2)} €
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Inversión total: {datos.inversion_total.toFixed(2)} €
-                    </p>
-                  </div>
+                  <>
+                    <div className={`rounded p-3 ${calcularGananciaPerdidaFinal()! >= 0 ? 'bg-green-100' : 'bg-red-100'}`}>
+                      <span className="font-medium text-gray-700">Resultado final:</span>
+                      <p className={`text-xl font-bold mt-1 flex items-center ${calcularGananciaPerdidaFinal()! >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+                        {calcularGananciaPerdidaFinal()! >= 0 ? (
+                          <ArrowTrendingUpIcon className="h-5 w-5 mr-1" />
+                        ) : (
+                          <ArrowTrendingDownIcon className="h-5 w-5 mr-1" />
+                        )}
+                        {calcularGananciaPerdidaFinal()! >= 0 ? '+' : ''}
+                        {calcularGananciaPerdidaFinal()!.toFixed(2)} €
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Inversión total: {datos.inversion_total.toFixed(2)} €
+                      </p>
+                    </div>
+                    {calcularTiempoPropiedadFinal() && (
+                      <div className="bg-blue-50 rounded p-3">
+                        <span className="font-medium text-gray-700">Tiempo de propiedad:</span>
+                        <p className="text-lg font-semibold text-blue-900 mt-1">
+                          {calcularTiempoPropiedadFinal()!.años} años
+                          {calcularTiempoPropiedadFinal()!.meses > 0 && ` y ${calcularTiempoPropiedadFinal()!.meses} meses`}
+                        </p>
+                        {calcularCosteAnualFinal() && (
+                          <p className="text-sm text-blue-700 mt-2 font-medium">
+                            📊 Coste anual: {calcularCosteAnualFinal()!.toFixed(2)} €/año
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
               {datos.notas_venta && (
@@ -355,7 +419,7 @@ export default function VentaTab({ vehiculoId }: Props) {
                     {calcularGananciaPerdida()!.toFixed(2)} €
                   </span>
                 </div>
-                <div className="text-sm text-gray-700 space-y-2 bg-white rounded-lg p-4">
+                <div className="text-sm text-gray-700 space-y-2 bg-white rounded-lg p-4 mb-4">
                   <div className="flex justify-between">
                     <span>Tu inversión total:</span>
                     <span className="font-semibold">{datos.inversion_total.toFixed(2)} €</span>
@@ -365,6 +429,31 @@ export default function VentaTab({ vehiculoId }: Props) {
                     <span className="font-semibold">{parseFloat(formData.precio_venta_final).toFixed(2)} €</span>
                   </div>
                 </div>
+                {calcularTiempoPropiedad() && (
+                  <div className="bg-white rounded-lg p-4 border-t-2 border-blue-200">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">⏱️ Tiempo de propiedad:</span>
+                      <span className="text-lg font-bold text-blue-900">
+                        {calcularTiempoPropiedad()!.años} años
+                        {calcularTiempoPropiedad()!.meses > 0 && ` y ${calcularTiempoPropiedad()!.meses} meses`}
+                      </span>
+                    </div>
+                    {calcularCosteAnual() && (
+                      <div className="flex justify-between items-center pt-2 border-t border-blue-100">
+                        <span className="text-sm font-medium text-gray-700">📊 Coste anual promedio:</span>
+                        <span className="text-xl font-bold text-blue-700">
+                          {calcularCosteAnual()!.toFixed(2)} €/año
+                        </span>
+                      </div>
+                    )}
+                    <p className="text-xs text-gray-500 mt-2 italic">
+                      {calcularGananciaPerdida()! < 0 
+                        ? `Tu vehículo te ha costado ${calcularCosteAnual()?.toFixed(2)} € al año de media`
+                        : `Has ganado ${calcularCosteAnual()?.toFixed(2)} € al año de media`
+                      }
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
