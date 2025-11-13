@@ -31,7 +31,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .from('gastos_adicionales')
       .select('*')
       .eq('vehiculo_id', vehiculoId)
-      .order('fecha_gasto', { ascending: false })
+      .order('fecha', { ascending: false })
 
     if (error) {
       console.error('Error obteniendo gastos:', error)
