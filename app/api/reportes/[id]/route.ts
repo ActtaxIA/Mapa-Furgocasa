@@ -14,10 +14,10 @@ export async function PATCH(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     if (authError || !user) {
       return NextResponse.json(
         { error: 'No autenticado' },
@@ -74,7 +74,7 @@ export async function PATCH(
     if (updateError) {
       console.error('Error actualizando reporte:', updateError)
       return NextResponse.json(
-        { 
+        {
           error: 'Error al actualizar reporte',
           details: updateError.message,
           code: updateError.code
@@ -97,4 +97,3 @@ export async function PATCH(
     )
   }
 }
-

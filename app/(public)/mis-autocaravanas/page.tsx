@@ -21,7 +21,24 @@ export default function MisAutocaravanasPage() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<TabType>('vehiculos')
+  const [unreadCount, setUnreadCount] = useState(0)
   const router = useRouter()
+
+  // Cargar reportes no leídos
+  const loadUnreadCount = async (userId: string) => {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .rpc('obtener_reportes_usuario', { usuario_uuid: userId })
+
+      if (!error && data) {
+        const noLeidos = data.filter((reporte: any) => !reporte.leido).length
+        setUnreadCount(noLeidos)
+      }
+    } catch (error) {
+      console.error('Error cargando reportes no leídos:', error)
+    }
+  }
 
   useEffect(() => {
     const loadUser = async () => {
@@ -35,10 +52,19 @@ export default function MisAutocaravanasPage() {
 
       setUser(session.user)
       setLoading(false)
+      // Cargar contador de no leídos
+      loadUnreadCount(session.user.id)
     }
 
     loadUser()
   }, [router])
+
+  // Actualizar contador cuando cambia a la pestaña de reportes
+  useEffect(() => {
+    if (user && activeTab === 'reportes') {
+      loadUnreadCount(user.id)
+    }
+  }, [activeTab, user])
 
   if (loading) {
     return (
@@ -161,7 +187,7 @@ export default function MisAutocaravanasPage() {
               </button>
               <button
                 onClick={() => setActiveTab('reportes')}
-                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors relative ${
                   activeTab === 'reportes'
                     ? 'border-primary-600 text-primary-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -169,6 +195,11 @@ export default function MisAutocaravanasPage() {
               >
                 <ExclamationTriangleIcon className="w-5 h-5" />
                 Mis Reportes
+                {unreadCount > 0 && (
+                  <span className="inline-flex items-center justify-center px-2 py-0.5 ml-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full animate-pulse">
+                    {unreadCount}
+                  </span>
+                )}
               </button>
             </nav>
           </div>
@@ -177,7 +208,15 @@ export default function MisAutocaravanasPage() {
         {/* Tab Content */}
         <div className="bg-white rounded-xl shadow p-6">
           {activeTab === 'vehiculos' && <MiAutocaravanaTab userId={user.id} />}
-          {activeTab === 'reportes' && <MisReportesTab userId={user.id} />}
+          {activeTab === 'reportes' && (
+            <MisReportesTab 
+              userId={user.id} 
+              onReporteUpdate={() => {
+                // Recargar contador cuando se actualiza un reporte
+                if (user) loadUnreadCount(user.id)
+              }}
+            />
+          )}
         </div>
       </main>
 

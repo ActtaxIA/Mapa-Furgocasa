@@ -15,9 +15,10 @@ import {
 
 interface Props {
   userId: string
+  onReporteUpdate?: () => void
 }
 
-export function MisReportesTab({ userId }: Props) {
+export function MisReportesTab({ userId, onReporteUpdate }: Props) {
   const [reportes, setReportes] = useState<ReporteCompletoUsuario[]>([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
@@ -54,8 +55,8 @@ export function MisReportesTab({ userId }: Props) {
 
       if (response.ok) {
         loadReportes()
-        // Recargar página para actualizar estadísticas en el sidebar
-        window.location.reload()
+        // Llamar al callback para actualizar contadores en la página padre
+        if (onReporteUpdate) onReporteUpdate()
       } else {
         const data = await response.json()
         console.error('Error marcando como leído:', data.error)
@@ -82,8 +83,8 @@ export function MisReportesTab({ userId }: Props) {
 
       if (response.ok) {
         loadReportes()
-        // Recargar página para actualizar estadísticas en el sidebar
-        window.location.reload()
+        // Llamar al callback para actualizar contadores en la página padre
+        if (onReporteUpdate) onReporteUpdate()
       } else {
         const data = await response.json()
         console.error('Error cerrando reporte:', data.error)
