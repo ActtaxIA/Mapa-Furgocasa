@@ -32,25 +32,25 @@ BEGIN
   SELECT
     r.id,
     v.matricula as vehiculo_matricula,
-    v.marca as vehiculo_marca,
-    v.modelo as vehiculo_modelo,
-    COALESCE(u.raw_user_meta_data->>'first_name', u.raw_user_meta_data->>'full_name', u.email) as propietario_nombre,
-    u.email as propietario_email,
+    COALESCE(v.marca, 'Sin marca')::VARCHAR as vehiculo_marca,
+    COALESCE(v.modelo, 'Sin modelo')::VARCHAR as vehiculo_modelo,
+    'Propietario'::VARCHAR as propietario_nombre,
+    'Ver en detalle'::VARCHAR as propietario_email,
     r.testigo_nombre,
-    r.testigo_email,
-    r.testigo_telefono,
+    COALESCE(r.testigo_email, 'Sin email')::VARCHAR as testigo_email,
+    COALESCE(r.testigo_telefono, 'Sin teléfono')::VARCHAR as testigo_telefono,
     r.fecha_accidente,
     r.ubicacion_lat,
     r.ubicacion_lng,
-    r.ubicacion_descripcion,
+    COALESCE(r.ubicacion_descripcion, '')::TEXT as ubicacion_descripcion,
     r.descripcion,
-    r.tipo_dano,
+    COALESCE(r.tipo_dano, 'No especificado')::TEXT as tipo_dano,
     r.leido,
     r.cerrado,
     r.created_at
   FROM public.reportes_accidentes r
   INNER JOIN public.vehiculos_registrados v ON r.vehiculo_afectado_id = v.id
-  INNER JOIN auth.users u ON v.user_id = u.id
+  WHERE v.activo = true
   ORDER BY r.created_at DESC;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
