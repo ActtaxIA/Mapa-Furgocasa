@@ -1137,9 +1137,10 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       return
     }
 
-    if (!saveForm.nombre.trim()) {
-      showToast('Por favor ingresa un nombre para la ruta', 'error')
-      return
+    // Generar nombre automático si está vacío
+    let nombreRuta = saveForm.nombre.trim()
+    if (!nombreRuta) {
+      nombreRuta = `De ${origen.name} a ${destino.name}`
     }
 
     setSaving(true)
@@ -1169,7 +1170,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       // Guardar la ruta completa de Google Maps para no tener que recalcularla
       const rutaData = {
         user_id: session.user.id,
-        nombre: saveForm.nombre.trim(),
+        nombre: nombreRuta,
         descripcion: saveForm.descripcion.trim() || null,
         origen: {
           nombre: origen.name,
@@ -1313,7 +1314,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                   type="text"
                   value={saveForm.nombre}
                   onChange={(e) => setSaveForm({ ...saveForm, nombre: e.target.value })}
-                  placeholder="Ej: Viaje a la Costa"
+                  placeholder="De Murcia a Lugo"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   maxLength={100}
                 />
@@ -1544,7 +1545,14 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
               <>
                 {!rutaGuardada ? (
                   <button
-                    onClick={() => setShowSaveModal(true)}
+                    onClick={() => {
+                      // Generar nombre automático si no hay uno
+                      if (!saveForm.nombre.trim() && origen && destino) {
+                        const nombreAuto = `De ${origen.name} a ${destino.name}`
+                        setSaveForm({ ...saveForm, nombre: nombreAuto })
+                      }
+                      setShowSaveModal(true)
+                    }}
                     className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-lg shadow-green-500/30"
                   >
                     <BookmarkIcon className="w-5 h-5" />
