@@ -14,7 +14,10 @@ import {
   SparklesIcon,
   DocumentTextIcon,
   ChartBarIcon,
-  TagIcon
+  TagIcon,
+  PencilIcon,
+  CheckIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { ResumenEconomicoTab } from '@/components/vehiculo/ResumenEconomicoTab'
@@ -35,6 +38,14 @@ export default function VehiculoPage() {
   const [vehiculo, setVehiculo] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<TabType>('resumen')
+  const [isEditing, setIsEditing] = useState(false)
+  const [editData, setEditData] = useState({
+    marca: '',
+    modelo: '',
+    año: '',
+    color: ''
+  })
+  const [saving, setSaving] = useState(false)
 
   // Detectar parámetro tab en la URL
   useEffect(() => {
@@ -78,10 +89,82 @@ export default function VehiculoPage() {
       }
 
       setVehiculo(vehiculoData)
+      // Inicializar datos de edición
+      setEditData({
+        marca: vehiculoData.marca || '',
+        modelo: vehiculoData.modelo || '',
+        año: vehiculoData.año?.toString() || '',
+        color: vehiculoData.color || ''
+      })
     } catch (error) {
       console.error('Error:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleEditClick = () => {
+    setEditData({
+      marca: vehiculo.marca || '',
+      modelo: vehiculo.modelo || '',
+      año: vehiculo.año?.toString() || '',
+      color: vehiculo.color || ''
+    })
+    setIsEditing(true)
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditing(false)
+    setEditData({
+      marca: vehiculo.marca || '',
+      modelo: vehiculo.modelo || '',
+      año: vehiculo.año?.toString() || '',
+      color: vehiculo.color || ''
+    })
+  }
+
+  const handleSaveEdit = async () => {
+    setSaving(true)
+    try {
+      const supabase = createClient()
+      
+      const updateData: any = {
+        marca: editData.marca.trim() || null,
+        modelo: editData.modelo.trim() || null,
+        color: editData.color.trim() || null,
+      }
+
+      // Solo añadir año si tiene valor válido
+      if (editData.año && editData.año.trim() !== '') {
+        const añoNum = parseInt(editData.año)
+        if (!isNaN(añoNum) && añoNum >= 1900 && añoNum <= new Date().getFullYear() + 1) {
+          updateData.año = añoNum
+        }
+      } else {
+        updateData.año = null
+      }
+
+      const { error } = await supabase
+        .from('vehiculos_registrados')
+        .update(updateData)
+        .eq('id', vehiculoId)
+        .eq('user_id', user.id)
+
+      if (error) {
+        console.error('Error actualizando vehículo:', error)
+        alert('Error al actualizar los datos del vehículo')
+        return
+      }
+
+      // Recargar datos
+      await loadData()
+      setIsEditing(false)
+      alert('✅ Datos actualizados correctamente')
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Error al actualizar los datos del vehículo')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -129,19 +212,128 @@ export default function VehiculoPage() {
           </Link>
 
           <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-primary-100 rounded-lg">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-4 flex-1">
+                <div className="p-3 bg-primary-100 rounded-lg flex-shrink-0">
                   <TruckIcon className="w-8 h-8 text-primary-600" />
                 </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">{vehiculo.matricula}</h1>
-                  <p className="text-gray-600">
-                    {vehiculo.marca} {vehiculo.modelo} {vehiculo.año && `• ${vehiculo.año}`}
-                  </p>
-                </div>
+                
+                {!isEditing ? (
+                  // Modo Vista
+                  <div className="flex-1">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-1">{vehiculo.matricula}</h1>
+                    <p className="text-gray-600">
+                      {vehiculo.marca || 'Sin marca'} {vehiculo.modelo || 'Sin modelo'} 
+                      {vehiculo.año && ` • ${vehiculo.año}`}
+                      {vehiculo.color && ` • ${vehiculo.color}`}
+                    </p>
+                  </div>
+                ) : (
+                  // Modo Edición
+                  <div className="flex-1 space-y-3">
+                    {/* Matrícula - NO EDITABLE */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Matrícula <span className="text-xs text-gray-500">(no editable)</span>
+                      </label>
+                      <div className="text-2xl font-bold text-gray-400 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
+                        {vehiculo.matricula}
+                      </div>
+                    </div>
+                    
+                    {/* Campos Editables */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Marca</label>
+                        <input
+                          type="text"
+                          value={editData.marca}
+                          onChange={(e) => setEditData({ ...editData, marca: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          placeholder="Ej: Fiat, Volkswagen..."
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Modelo</label>
+                        <input
+                          type="text"
+                          value={editData.modelo}
+                          onChange={(e) => setEditData({ ...editData, modelo: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          placeholder="Ej: Ducato, California..."
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Año</label>
+                        <input
+                          type="number"
+                          value={editData.año}
+                          onChange={(e) => setEditData({ ...editData, año: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          placeholder="Ej: 2020"
+                          min="1900"
+                          max={new Date().getFullYear() + 1}
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                        <input
+                          type="text"
+                          value={editData.color}
+                          onChange={(e) => setEditData({ ...editData, color: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          placeholder="Ej: Blanco, Gris..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Botones de Acción */}
+              <div className="flex gap-2 flex-shrink-0">
+                {!isEditing ? (
+                  <button
+                    onClick={handleEditClick}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                  >
+                    <PencilIcon className="w-5 h-5" />
+                    <span className="hidden sm:inline">Editar</span>
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleSaveEdit}
+                      disabled={saving}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                    >
+                      <CheckIcon className="w-5 h-5" />
+                      <span className="hidden sm:inline">{saving ? 'Guardando...' : 'Guardar'}</span>
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      disabled={saving}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50"
+                    >
+                      <XMarkIcon className="w-5 h-5" />
+                      <span className="hidden sm:inline">Cancelar</span>
+                    </button>
+                  </>
+                )}
               </div>
             </div>
+            
+            {/* Advertencia sobre matrícula */}
+            {isEditing && (
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  ℹ️ <strong>Nota:</strong> La matrícula NO se puede modificar. Si necesitas cambiarla, deberás eliminar este vehículo y crear uno nuevo.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
