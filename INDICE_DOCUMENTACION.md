@@ -1,7 +1,7 @@
 # 📚 Índice de Documentación - Mapa Furgocasa
 
-**Versión:** BETA 1.0  
-**Última actualización:** 29 de octubre de 2025
+**Versión:** 2.0  
+**Última actualización:** 13 de noviembre de 2025
 
 ---
 
@@ -22,106 +22,133 @@
 |-----------|-------------|--------|
 | [INSTALACION_RAPIDA.md](./INSTALACION_RAPIDA.md) | Guía rápida de instalación en 5 pasos | ✅ Vigente |
 | [COMANDOS_UTILES.md](./COMANDOS_UTILES.md) | Comandos útiles para desarrollo y BD | ✅ Vigente |
-| [CONFIGURACION_SUPABASE_URLS.md](./CONFIGURACION_SUPABASE_URLS.md) | Configuración de URLs autorizadas en Supabase | ✅ Vigente |
-| [CONFIGURACION_GTM.md](./CONFIGURACION_GTM.md) | Configuración de Google Tag Manager | ✅ Vigente |
-| [CONFIGURACION_SEO.md](./CONFIGURACION_SEO.md) | **Configuración completa de SEO, Sitemap y Robots.txt** | ✅ Vigente |
+| [docs/configuracion/CONFIGURACION_SUPABASE_URLS.md](./docs/configuracion/CONFIGURACION_SUPABASE_URLS.md) | Configuración de URLs autorizadas en Supabase | ✅ Vigente |
+| [docs/configuracion/CONFIGURACION_GTM.md](./docs/configuracion/CONFIGURACION_GTM.md) | Configuración de Google Tag Manager | ✅ Vigente |
+| [docs/configuracion/CONFIGURACION_SEO.md](./docs/configuracion/CONFIGURACION_SEO.md) | **Configuración completa de SEO, Sitemap y Robots.txt** | ✅ Vigente |
+| [docs/configuracion/GUIA_GOOGLE_SEARCH_CONSOLE.md](./docs/configuracion/GUIA_GOOGLE_SEARCH_CONSOLE.md) | **Guía paso a paso para configurar Google Search Console** | ✅ Vigente |
 | [GUIA_MANTENIMIENTO_DOCS.md](./GUIA_MANTENIMIENTO_DOCS.md) | Guía para mantener la documentación organizada | ✅ Vigente |
 
-### 2️⃣ Sistemas y Funcionalidades
+### 2️⃣ Deployment y Producción
 
 | Documento | Descripción | Estado |
 |-----------|-------------|--------|
-| [SISTEMA_VISITAS_VALORACIONES_COMPLETO.md](./SISTEMA_VISITAS_VALORACIONES_COMPLETO.md) | Sistema completo de visitas y valoraciones | ✅ Vigente |
-| [SISTEMA_DETECCION_DUPLICADOS.md](./SISTEMA_DETECCION_DUPLICADOS.md) | Sistema de 7 criterios para detectar duplicados | ✅ Vigente |
-| [SISTEMA_PROMPTS_FLEXIBLE.md](./SISTEMA_PROMPTS_FLEXIBLE.md) | Sistema flexible de prompts para IA | ✅ Vigente |
-| [BUSQUEDA_MASIVA_AREAS.md](./BUSQUEDA_MASIVA_AREAS.md) | Búsqueda e importación masiva desde Google Places | ✅ Vigente |
-| [OPTIMIZACION_CACHE_RUTAS.md](./OPTIMIZACION_CACHE_RUTAS.md) | Sistema de caché para rutas guardadas | ✅ Vigente |
-| [MEJORAS_COMPLETAS_SISTEMA_IA.md](./MEJORAS_COMPLETAS_SISTEMA_IA.md) | Mejoras en sistema de IA (textos, servicios, imágenes) | ✅ Vigente |
-| [MEJORAS_FILTROS_Y_NORMALIZACION.md](./MEJORAS_FILTROS_Y_NORMALIZACION.md) | **Mejoras de filtros admin + normalización global de países y regiones** | ✅ Vigente |
+| [docs/deployment/GUIA_DEPLOYMENT_AWS.md](./docs/deployment/GUIA_DEPLOYMENT_AWS.md) | **Guía consolidada de deployment en AWS Amplify** | ✅ Vigente |
+| [docs/deployment/AWS_DEPLOYMENT_FIX.md](./docs/deployment/AWS_DEPLOYMENT_FIX.md) | Arreglo de error de deploy en AWS Amplify | ✅ Vigente |
+| [docs/deployment/AWS_DEPLOYMENT_PROGRESS.md](./docs/deployment/AWS_DEPLOYMENT_PROGRESS.md) | Progreso del deployment en AWS Amplify | ⚠️ Histórico |
+| [docs/deployment/PASOS_ARREGLAR_AWS.md](./docs/deployment/PASOS_ARREGLAR_AWS.md) | Pasos para arreglar AWS Amplify (APIs devuelven HTML) | ✅ Vigente |
+| [docs/deployment/ENTORNO_PRODUCCION.md](./docs/deployment/ENTORNO_PRODUCCION.md) | Configuración de entorno de producción | ✅ Vigente |
+| [docs/deployment/AUDITORIA_DOCUMENTACION_MD.md](./docs/deployment/AUDITORIA_DOCUMENTACION_MD.md) | Auditoría de documentación | ✅ Vigente |
+| [docs/deployment/AUDITORIA_SEO.md](./docs/deployment/AUDITORIA_SEO.md) | Auditoría SEO | ✅ Vigente |
 
-### 3️⃣ Soluciones y Fixes Aplicados
-
-| Documento | Descripción | Estado |
-|-----------|-------------|--------|
-| [SOLUCION_ADMIN_AREAS_FINAL.md](./SOLUCION_ADMIN_AREAS_FINAL.md) | Solución final de permisos de admin | ✅ Vigente |
-| [SOLUCION_FUNCIONES_IA_ADMIN.md](./SOLUCION_FUNCIONES_IA_ADMIN.md) | Solución de funciones de IA para admin | ✅ Vigente |
-| [OAUTH_GOOGLE_SOLUCION_FINAL.md](./OAUTH_GOOGLE_SOLUCION_FINAL.md) | Solución OAuth Google - redirect a producción | ✅ Vigente |
-| [VERIFICACION_CONEXIONES_COMPLETA.md](./VERIFICACION_CONEXIONES_COMPLETA.md) | Verificación de conexiones Frontend → Backend → Supabase | ✅ Vigente |
-| [MIGRACION_IA_CLIENTE.md](./MIGRACION_IA_CLIENTE.md) | Migración de funciones de IA al cliente | ✅ Vigente |
-| [INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md](./INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md) | Instrucciones para arreglar filtro de descuento FURGOCASA | ✅ Vigente |
-
-### 4️⃣ Diagnóstico y Debugging
+### 3️⃣ Diagnóstico y Debugging
 
 | Documento | Descripción | Estado |
 |-----------|-------------|--------|
-| [GUIA_DEBUGGING_IA.md](./GUIA_DEBUGGING_IA.md) | Guía completa de debugging de funciones IA | ✅ Vigente |
-| [DIAGNOSTICO_SESION_NO_PERSISTE.md](./DIAGNOSTICO_SESION_NO_PERSISTE.md) | Diagnóstico de problemas de sesión | ✅ Vigente |
-| [DIAGNOSTICO_GOOGLE_PLACES_API.md](./DIAGNOSTICO_GOOGLE_PLACES_API.md) | Diagnóstico de Google Places API | ✅ Vigente |
-| [TEST_GOOGLE_API.md](./TEST_GOOGLE_API.md) | Pruebas manuales de Google API | ✅ Vigente |
+| [docs/diagnosticos/DIAGNOSTICO_CHATBOT_500.md](./docs/diagnosticos/DIAGNOSTICO_CHATBOT_500.md) | Diagnóstico de error 500 en chatbot | ✅ Vigente |
+| [docs/diagnosticos/DIAGNOSTICO_FILTRO_PAISES.md](./docs/diagnosticos/DIAGNOSTICO_FILTRO_PAISES.md) | Diagnóstico de filtro de países | ✅ Vigente |
+| [docs/diagnosticos/DIAGNOSTICO_GOOGLE_PLACES_API.md](./docs/diagnosticos/DIAGNOSTICO_GOOGLE_PLACES_API.md) | Diagnóstico de Google Places API | ✅ Vigente |
+| [docs/diagnosticos/DIAGNOSTICO_SESION_NO_PERSISTE.md](./docs/diagnosticos/DIAGNOSTICO_SESION_NO_PERSISTE.md) | Diagnóstico de problemas de sesión | ✅ Vigente |
+| [docs/diagnosticos/VERIFICACION_CONEXIONES_COMPLETA.md](./docs/diagnosticos/VERIFICACION_CONEXIONES_COMPLETA.md) | Verificación de conexiones Frontend → Backend → Supabase | ✅ Vigente |
+| [docs/temporales/GUIA_DEBUGGING_IA.md](./docs/temporales/GUIA_DEBUGGING_IA.md) | Guía completa de debugging de funciones IA | ✅ Vigente |
+| [docs/temporales/TEST_GOOGLE_API.md](./docs/temporales/TEST_GOOGLE_API.md) | Pruebas manuales de Google API | ✅ Vigente |
 
-### 5️⃣ Deployment y Producción
+### 4️⃣ Mejoras y Optimizaciones
 
 | Documento | Descripción | Estado |
 |-----------|-------------|--------|
-| [GUIA_DEPLOYMENT_AWS.md](./GUIA_DEPLOYMENT_AWS.md) | **Guía consolidada de deployment en AWS Amplify** | ✅ Vigente |
-| [GUIA_GOOGLE_SEARCH_CONSOLE.md](./GUIA_GOOGLE_SEARCH_CONSOLE.md) | **🆕 Guía paso a paso para configurar Google Search Console** - Verificación, sitemap, indexación, monitoreo | ✅ Vigente |
-| [AWS_DEPLOYMENT_FIX.md](./AWS_DEPLOYMENT_FIX.md) | Arreglo de error de deploy en AWS Amplify | ✅ Vigente |
-| [AWS_DEPLOYMENT_PROGRESS.md](./AWS_DEPLOYMENT_PROGRESS.md) | Progreso del deployment en AWS Amplify | ⚠️ Histórico |
-| [PASOS_ARREGLAR_AWS.md](./PASOS_ARREGLAR_AWS.md) | Pasos para arreglar AWS Amplify (APIs devuelven HTML) | ✅ Vigente |
-| [FIX_IA_PRODUCCION.md](./FIX_IA_PRODUCCION.md) | Solución de funciones de IA rotas en producción | ✅ Vigente |
+| [docs/mejoras/MEJORAS_ACTUALIZAR_SERVICIOS.md](./docs/mejoras/MEJORAS_ACTUALIZAR_SERVICIOS.md) | Mejoras en actualización de servicios | ✅ Vigente |
+| [docs/mejoras/MEJORAS_COMPLETAS_SISTEMA_IA.md](./docs/mejoras/MEJORAS_COMPLETAS_SISTEMA_IA.md) | Mejoras en sistema de IA (textos, servicios, imágenes) | ✅ Vigente |
+| [docs/mejoras/MEJORAS_FILTROS_ADMIN.md](./docs/mejoras/MEJORAS_FILTROS_ADMIN.md) | Mejoras de filtros en panel admin | ✅ Vigente |
+| [docs/mejoras/MEJORAS_FILTROS_Y_NORMALIZACION.md](./docs/mejoras/MEJORAS_FILTROS_Y_NORMALIZACION.md) | **Mejoras de filtros admin + normalización global de países y regiones** | ✅ Vigente |
+| [docs/mejoras/MEJORAS_FUTURAS.md](./docs/mejoras/MEJORAS_FUTURAS.md) | Mejoras planificadas (no urgentes) | ✅ Vigente |
+| [docs/mejoras/OPTIMIZACION_CACHE_RUTAS.md](./docs/mejoras/OPTIMIZACION_CACHE_RUTAS.md) | Sistema de caché para rutas guardadas | ✅ Vigente |
+| [docs/mejoras/OPTIMIZACION_RENDIMIENTO_MAPA.md](./docs/mejoras/OPTIMIZACION_RENDIMIENTO_MAPA.md) | Optimización de rendimiento del mapa | ✅ Vigente |
+| [docs/mejoras/RESUMEN_OPTIMIZACION_DOCS.md](./docs/mejoras/RESUMEN_OPTIMIZACION_DOCS.md) | Resumen de la optimización de documentación realizada | ✅ Vigente |
 
-### 6️⃣ Historial y Releases
+### 5️⃣ Sistemas y Funcionalidades
+
+| Documento | Descripción | Estado |
+|-----------|-------------|--------|
+| [docs/temporales/SISTEMA_VISITAS_VALORACIONES_COMPLETO.md](./docs/temporales/SISTEMA_VISITAS_VALORACIONES_COMPLETO.md) | Sistema completo de visitas y valoraciones | ✅ Vigente |
+| [docs/temporales/SISTEMA_DETECCION_DUPLICADOS.md](./docs/temporales/SISTEMA_DETECCION_DUPLICADOS.md) | Sistema de 7 criterios para detectar duplicados | ✅ Vigente |
+| [docs/temporales/SISTEMA_PROMPTS_FLEXIBLE.md](./docs/temporales/SISTEMA_PROMPTS_FLEXIBLE.md) | Sistema flexible de prompts para IA | ✅ Vigente |
+| [docs/temporales/SISTEMA_FILTROS_PERSISTENTES_GPS.md](./docs/temporales/SISTEMA_FILTROS_PERSISTENTES_GPS.md) | Sistema de filtros persistentes con GPS | ✅ Vigente |
+| [RESUMEN_BUSQUEDA_MAPA.md](./RESUMEN_BUSQUEDA_MAPA.md) | Resumen del sistema de búsqueda en mapa | ✅ Vigente |
+| [docs/temporales/BUSQUEDA_MASIVA_AREAS.md](./docs/temporales/BUSQUEDA_MASIVA_AREAS.md) | Búsqueda e importación masiva desde Google Places | ✅ Vigente |
+
+### 6️⃣ Soluciones y Fixes Aplicados
+
+| Documento | Descripción | Estado |
+|-----------|-------------|--------|
+| [docs/temporales/SOLUCION_ADMIN_AREAS_FINAL.md](./docs/temporales/SOLUCION_ADMIN_AREAS_FINAL.md) | Solución final de permisos de admin | ✅ Vigente |
+| [docs/temporales/SOLUCION_FUNCIONES_IA_ADMIN.md](./docs/temporales/SOLUCION_FUNCIONES_IA_ADMIN.md) | Solución de funciones de IA para admin | ✅ Vigente |
+| [docs/temporales/SOLUCION_FILTRO_PAISES_COMPLETA.md](./docs/temporales/SOLUCION_FILTRO_PAISES_COMPLETA.md) | Solución completa del filtro de países | ✅ Vigente |
+| [docs/temporales/OAUTH_GOOGLE_SOLUCION_FINAL.md](./docs/temporales/OAUTH_GOOGLE_SOLUCION_FINAL.md) | Solución OAuth Google - redirect a producción | ✅ Vigente |
+| [docs/temporales/MIGRACION_IA_CLIENTE.md](./docs/temporales/MIGRACION_IA_CLIENTE.md) | Migración de funciones de IA al cliente | ✅ Vigente |
+| [docs/temporales/FIX_CHATBOT_SUPABASE.md](./docs/temporales/FIX_CHATBOT_SUPABASE.md) | Fix de chatbot con Supabase | ✅ Vigente |
+| [docs/temporales/FIX_IA_PRODUCCION.md](./docs/temporales/FIX_IA_PRODUCCION.md) | Solución de funciones de IA rotas en producción | ✅ Vigente |
+| [docs/temporales/FIX_MENSAJES_ERROR_ENRIQUECIMIENTO.md](./docs/temporales/FIX_MENSAJES_ERROR_ENRIQUECIMIENTO.md) | Fix de mensajes de error en enriquecimiento | ✅ Vigente |
+| [docs/temporales/INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md](./docs/temporales/INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md) | Instrucciones para arreglar filtro de descuento FURGOCASA | ✅ Vigente |
+| [docs/temporales/INSTRUCCIONES_CACHE_USUARIOS.md](./docs/temporales/INSTRUCCIONES_CACHE_USUARIOS.md) | Instrucciones de caché de usuarios | ✅ Vigente |
+| [docs/temporales/INSTRUCCIONES_ELIMINAR_FREE2STAY.md](./docs/temporales/INSTRUCCIONES_ELIMINAR_FREE2STAY.md) | Instrucciones para eliminar Free2Stay | ✅ Vigente |
+| [docs/temporales/CAMBIOS_RESTRICCION_MAPA.md](./docs/temporales/CAMBIOS_RESTRICCION_MAPA.md) | Cambios en restricción del mapa | ✅ Vigente |
+| [docs/temporales/BANNERS_CASICINCO_IMPLEMENTACION.md](./docs/temporales/BANNERS_CASICINCO_IMPLEMENTACION.md) | Implementación de banners Casicinco | ✅ Vigente |
+| [docs/temporales/BUSQUEDA_MAPA_IMPLEMENTACION.md](./docs/temporales/BUSQUEDA_MAPA_IMPLEMENTACION.md) | Implementación de búsqueda en mapa | ✅ Vigente |
+| [docs/temporales/CHATBOT_FUNCIONANDO.md](./docs/temporales/CHATBOT_FUNCIONANDO.md) | Documentación de chatbot funcionando | ✅ Vigente |
+| [docs/temporales/PROYECTO_CREADO.md](./docs/temporales/PROYECTO_CREADO.md) | Documentación inicial del proyecto | 📁 Archivo |
+
+### 7️⃣ Historial y Releases
 
 | Documento | Descripción | Estado |
 |-----------|-------------|--------|
 | [CHANGELOG.md](./CHANGELOG.md) | Historial completo de cambios | ✅ Actualizado |
+| [CHANGELOG_GESTION_VEHICULOS.md](./CHANGELOG_GESTION_VEHICULOS.md) | Changelog específico de gestión de vehículos | ✅ Vigente |
 | [BETA_1.0_RELEASE_NOTES.md](./BETA_1.0_RELEASE_NOTES.md) | Notas de la versión BETA 1.0 | ✅ Vigente |
-| [MEJORAS_FUTURAS.md](./MEJORAS_FUTURAS.md) | Mejoras planificadas (no urgentes) | ✅ Vigente |
-
-### 7️⃣ Archivo y Meta-Documentación
-
-| Documento | Descripción | Estado |
-|-----------|-------------|--------|
-| [RESUMEN_OPTIMIZACION_DOCS.md](./RESUMEN_OPTIMIZACION_DOCS.md) | Resumen de la optimización de documentación realizada | ✅ Vigente |
-| [PROYECTO_CREADO.md](./PROYECTO_CREADO.md) | Documentación inicial del proyecto | 📁 Archivo |
-| [SOLUCION_ADMIN_AREAS.md](./SOLUCION_ADMIN_AREAS.md) | Primera solución de admin (supersedida por FINAL) | 📁 Archivo |
+| [VERSION_1.1_RELEASE_NOTES.md](./VERSION_1.1_RELEASE_NOTES.md) | Notas de la versión 1.1 | ✅ Vigente |
+| [RESUMEN_CAMBIOS_PAISES.md](./RESUMEN_CAMBIOS_PAISES.md) | Resumen de cambios en países | ✅ Vigente |
 
 ---
 
 ## 🔍 Buscar por Tema
 
 ### Problemas de Autenticación
-- [OAUTH_GOOGLE_SOLUCION_FINAL.md](./OAUTH_GOOGLE_SOLUCION_FINAL.md) - Redirect de OAuth
-- [DIAGNOSTICO_SESION_NO_PERSISTE.md](./DIAGNOSTICO_SESION_NO_PERSISTE.md) - Sesión no se mantiene
-- [CONFIGURACION_SUPABASE_URLS.md](./CONFIGURACION_SUPABASE_URLS.md) - URLs autorizadas
+- [docs/temporales/OAUTH_GOOGLE_SOLUCION_FINAL.md](./docs/temporales/OAUTH_GOOGLE_SOLUCION_FINAL.md) - Redirect de OAuth
+- [docs/diagnosticos/DIAGNOSTICO_SESION_NO_PERSISTE.md](./docs/diagnosticos/DIAGNOSTICO_SESION_NO_PERSISTE.md) - Sesión no se mantiene
+- [docs/configuracion/CONFIGURACION_SUPABASE_URLS.md](./docs/configuracion/CONFIGURACION_SUPABASE_URLS.md) - URLs autorizadas
 
 ### Funciones de IA
-- [SOLUCION_FUNCIONES_IA_ADMIN.md](./SOLUCION_FUNCIONES_IA_ADMIN.md) - Solución completa
-- [GUIA_DEBUGGING_IA.md](./GUIA_DEBUGGING_IA.md) - Debugging paso a paso
-- [MEJORAS_COMPLETAS_SISTEMA_IA.md](./MEJORAS_COMPLETAS_SISTEMA_IA.md) - Mejoras implementadas
-- [SISTEMA_PROMPTS_FLEXIBLE.md](./SISTEMA_PROMPTS_FLEXIBLE.md) - Configuración de prompts
-- [MIGRACION_IA_CLIENTE.md](./MIGRACION_IA_CLIENTE.md) - Migración al cliente
-- [FIX_IA_PRODUCCION.md](./FIX_IA_PRODUCCION.md) - Fix en producción
+- [docs/temporales/SOLUCION_FUNCIONES_IA_ADMIN.md](./docs/temporales/SOLUCION_FUNCIONES_IA_ADMIN.md) - Solución completa
+- [docs/temporales/GUIA_DEBUGGING_IA.md](./docs/temporales/GUIA_DEBUGGING_IA.md) - Debugging paso a paso
+- [docs/mejoras/MEJORAS_COMPLETAS_SISTEMA_IA.md](./docs/mejoras/MEJORAS_COMPLETAS_SISTEMA_IA.md) - Mejoras implementadas
+- [docs/temporales/SISTEMA_PROMPTS_FLEXIBLE.md](./docs/temporales/SISTEMA_PROMPTS_FLEXIBLE.md) - Configuración de prompts
+- [docs/temporales/MIGRACION_IA_CLIENTE.md](./docs/temporales/MIGRACION_IA_CLIENTE.md) - Migración al cliente
+- [docs/temporales/FIX_IA_PRODUCCION.md](./docs/temporales/FIX_IA_PRODUCCION.md) - Fix en producción
 
 ### Permisos y RLS
-- [SOLUCION_ADMIN_AREAS_FINAL.md](./SOLUCION_ADMIN_AREAS_FINAL.md) - Permisos de administrador
-- [VERIFICACION_CONEXIONES_COMPLETA.md](./VERIFICACION_CONEXIONES_COMPLETA.md) - Conexiones y políticas
+- [docs/temporales/SOLUCION_ADMIN_AREAS_FINAL.md](./docs/temporales/SOLUCION_ADMIN_AREAS_FINAL.md) - Permisos de administrador
+- [docs/diagnosticos/VERIFICACION_CONEXIONES_COMPLETA.md](./docs/diagnosticos/VERIFICACION_CONEXIONES_COMPLETA.md) - Conexiones y políticas
 
 ### Google APIs
-- [DIAGNOSTICO_GOOGLE_PLACES_API.md](./DIAGNOSTICO_GOOGLE_PLACES_API.md) - Places API
-- [TEST_GOOGLE_API.md](./TEST_GOOGLE_API.md) - Pruebas manuales
-- [BUSQUEDA_MASIVA_AREAS.md](./BUSQUEDA_MASIVA_AREAS.md) - Búsqueda masiva
-- [CONFIGURACION_GTM.md](./CONFIGURACION_GTM.md) - Google Tag Manager
+- [docs/diagnosticos/DIAGNOSTICO_GOOGLE_PLACES_API.md](./docs/diagnosticos/DIAGNOSTICO_GOOGLE_PLACES_API.md) - Places API
+- [docs/temporales/TEST_GOOGLE_API.md](./docs/temporales/TEST_GOOGLE_API.md) - Pruebas manuales
+- [docs/temporales/BUSQUEDA_MASIVA_AREAS.md](./docs/temporales/BUSQUEDA_MASIVA_AREAS.md) - Búsqueda masiva
+- [docs/configuracion/CONFIGURACION_GTM.md](./docs/configuracion/CONFIGURACION_GTM.md) - Google Tag Manager
 
 ### Deployment
-- [AWS_DEPLOYMENT_FIX.md](./AWS_DEPLOYMENT_FIX.md) - Arreglo de deploy
-- [PASOS_ARREGLAR_AWS.md](./PASOS_ARREGLAR_AWS.md) - APIs devuelven HTML
-- [FIX_IA_PRODUCCION.md](./FIX_IA_PRODUCCION.md) - Variables de entorno
+- [docs/deployment/AWS_DEPLOYMENT_FIX.md](./docs/deployment/AWS_DEPLOYMENT_FIX.md) - Arreglo de deploy
+- [docs/deployment/PASOS_ARREGLAR_AWS.md](./docs/deployment/PASOS_ARREGLAR_AWS.md) - APIs devuelven HTML
+- [docs/temporales/FIX_IA_PRODUCCION.md](./docs/temporales/FIX_IA_PRODUCCION.md) - Variables de entorno
+- [docs/deployment/GUIA_DEPLOYMENT_AWS.md](./docs/deployment/GUIA_DEPLOYMENT_AWS.md) - Guía completa
 
 ### Base de Datos
-- [SISTEMA_VISITAS_VALORACIONES_COMPLETO.md](./SISTEMA_VISITAS_VALORACIONES_COMPLETO.md) - Tablas y RLS
-- [OPTIMIZACION_CACHE_RUTAS.md](./OPTIMIZACION_CACHE_RUTAS.md) - Cache de geometría
-- [INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md](./INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md) - Nuevo campo
+- [docs/temporales/SISTEMA_VISITAS_VALORACIONES_COMPLETO.md](./docs/temporales/SISTEMA_VISITAS_VALORACIONES_COMPLETO.md) - Tablas y RLS
+- [docs/mejoras/OPTIMIZACION_CACHE_RUTAS.md](./docs/mejoras/OPTIMIZACION_CACHE_RUTAS.md) - Cache de geometría
+- [docs/temporales/INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md](./docs/temporales/INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md) - Nuevo campo
+
+### Gestión de Vehículos (v2.0)
+- [CHANGELOG_GESTION_VEHICULOS.md](./CHANGELOG_GESTION_VEHICULOS.md) - Changelog completo
+- [reportes/README_GESTION_VEHICULOS.md](./reportes/README_GESTION_VEHICULOS.md) - Documentación técnica
+- Ver carpeta `reportes/` para scripts SQL de gestión de vehículos
 
 ---
 
@@ -131,79 +158,115 @@
 1. Lee [README.md](./README.md) para entender el proyecto
 2. Sigue [INSTALACION_RAPIDA.md](./INSTALACION_RAPIDA.md) para setup
 3. Consulta [COMANDOS_UTILES.md](./COMANDOS_UTILES.md) para comandos frecuentes
-4. Revisa [CONFIGURACION_SUPABASE_URLS.md](./CONFIGURACION_SUPABASE_URLS.md) para configurar OAuth
+4. Revisa [docs/configuracion/CONFIGURACION_SUPABASE_URLS.md](./docs/configuracion/CONFIGURACION_SUPABASE_URLS.md) para configurar OAuth
 
 ### Deploy a Producción
-1. Verifica [AWS_DEPLOYMENT_FIX.md](./AWS_DEPLOYMENT_FIX.md) para errores comunes
-2. Revisa [PASOS_ARREGLAR_AWS.md](./PASOS_ARREGLAR_AWS.md) si las APIs fallan
-3. Consulta [FIX_IA_PRODUCCION.md](./FIX_IA_PRODUCCION.md) para variables de entorno
+1. Verifica [docs/deployment/AWS_DEPLOYMENT_FIX.md](./docs/deployment/AWS_DEPLOYMENT_FIX.md) para errores comunes
+2. Revisa [docs/deployment/PASOS_ARREGLAR_AWS.md](./docs/deployment/PASOS_ARREGLAR_AWS.md) si las APIs fallan
+3. Consulta [docs/temporales/FIX_IA_PRODUCCION.md](./docs/temporales/FIX_IA_PRODUCCION.md) para variables de entorno
+4. Sigue [docs/deployment/GUIA_DEPLOYMENT_AWS.md](./docs/deployment/GUIA_DEPLOYMENT_AWS.md) para guía completa
 
 ### Añadir Funcionalidad de IA
-1. Lee [SISTEMA_PROMPTS_FLEXIBLE.md](./SISTEMA_PROMPTS_FLEXIBLE.md) para configurar prompts
-2. Consulta [MEJORAS_COMPLETAS_SISTEMA_IA.md](./MEJORAS_COMPLETAS_SISTEMA_IA.md) para patrones
-3. Usa [GUIA_DEBUGGING_IA.md](./GUIA_DEBUGGING_IA.md) si algo falla
+1. Lee [docs/temporales/SISTEMA_PROMPTS_FLEXIBLE.md](./docs/temporales/SISTEMA_PROMPTS_FLEXIBLE.md) para configurar prompts
+2. Consulta [docs/mejoras/MEJORAS_COMPLETAS_SISTEMA_IA.md](./docs/mejoras/MEJORAS_COMPLETAS_SISTEMA_IA.md) para patrones
+3. Usa [docs/temporales/GUIA_DEBUGGING_IA.md](./docs/temporales/GUIA_DEBUGGING_IA.md) si algo falla
 
 ### Importar Áreas Masivamente
-1. Sigue [BUSQUEDA_MASIVA_AREAS.md](./BUSQUEDA_MASIVA_AREAS.md)
-2. Entiende [SISTEMA_DETECCION_DUPLICADOS.md](./SISTEMA_DETECCION_DUPLICADOS.md)
+1. Sigue [docs/temporales/BUSQUEDA_MASIVA_AREAS.md](./docs/temporales/BUSQUEDA_MASIVA_AREAS.md)
+2. Entiende [docs/temporales/SISTEMA_DETECCION_DUPLICADOS.md](./docs/temporales/SISTEMA_DETECCION_DUPLICADOS.md)
 
 ---
 
-## 📊 Estado Actual del Proyecto
+## 📊 Estructura de Documentación
 
-### ✅ Funcionalidades Completadas (BETA 1.0)
-- Mapa interactivo con Google Maps
-- Sistema de autenticación con Supabase
-- Panel de administración completo
-- Búsqueda masiva de áreas
-- Detección inteligente de duplicados (7 criterios)
-- Sistema de IA para enriquecimiento (textos, servicios, imágenes)
-- Planificador de rutas con caché
-- Dashboard de perfil con visitas, valoraciones y rutas
-- Sistema de notificaciones toast
-- PWA instalable
+```
+📁 Raíz
+├── README.md                          # Documentación principal
+├── CHANGELOG.md                       # Historial de cambios
+├── INSTALACION_RAPIDA.md              # Setup rápido
+├── COMANDOS_UTILES.md                 # Comandos frecuentes
+├── INDICE_DOCUMENTACION.md            # Este archivo
+├── GUIA_MANTENIMIENTO_DOCS.md         # Guía de mantenimiento
+├── BETA_1.0_RELEASE_NOTES.md          # Release notes
+├── VERSION_1.1_RELEASE_NOTES.md       # Release notes
+├── CHANGELOG_GESTION_VEHICULOS.md     # Changelog vehículos
+├── RESUMEN_BUSQUEDA_MAPA.md           # Resumen funcionalidad
+└── RESUMEN_CAMBIOS_PAISES.md          # Resumen cambios
 
-### 🔧 Configuraciones Aplicadas
-- OAuth Google apuntando a producción
-- Funciones de IA ejecutándose en cliente
-- RLS policies optimizadas
-- Sistema de prompts flexible
-- Cache de rutas con geometría
-- Migración completa a Google Maps API
+📁 docs/
+├── 📁 configuracion/                  # Guías de configuración
+│   ├── CONFIGURACION_GTM.md
+│   ├── CONFIGURACION_SEO.md
+│   ├── CONFIGURACION_SUPABASE_URLS.md
+│   └── GUIA_GOOGLE_SEARCH_CONSOLE.md
+│
+├── 📁 deployment/                     # Deployment y producción
+│   ├── GUIA_DEPLOYMENT_AWS.md
+│   ├── AWS_DEPLOYMENT_FIX.md
+│   ├── AWS_DEPLOYMENT_PROGRESS.md
+│   ├── PASOS_ARREGLAR_AWS.md
+│   ├── ENTORNO_PRODUCCION.md
+│   ├── AUDITORIA_DOCUMENTACION_MD.md
+│   └── AUDITORIA_SEO.md
+│
+├── 📁 diagnosticos/                   # Troubleshooting
+│   ├── DIAGNOSTICO_CHATBOT_500.md
+│   ├── DIAGNOSTICO_FILTRO_PAISES.md
+│   ├── DIAGNOSTICO_GOOGLE_PLACES_API.md
+│   ├── DIAGNOSTICO_SESION_NO_PERSISTE.md
+│   └── VERIFICACION_CONEXIONES_COMPLETA.md
+│
+├── 📁 mejoras/                        # Optimizaciones
+│   ├── MEJORAS_ACTUALIZAR_SERVICIOS.md
+│   ├── MEJORAS_COMPLETAS_SISTEMA_IA.md
+│   ├── MEJORAS_FILTROS_ADMIN.md
+│   ├── MEJORAS_FILTROS_Y_NORMALIZACION.md
+│   ├── MEJORAS_FUTURAS.md
+│   ├── OPTIMIZACION_CACHE_RUTAS.md
+│   ├── OPTIMIZACION_RENDIMIENTO_MAPA.md
+│   └── RESUMEN_OPTIMIZACION_DOCS.md
+│
+└── 📁 temporales/                     # Implementaciones temporales
+    ├── BANNERS_CASICINCO_IMPLEMENTACION.md
+    ├── BUSQUEDA_MAPA_IMPLEMENTACION.md
+    ├── BUSQUEDA_MASIVA_AREAS.md
+    ├── CAMBIOS_RESTRICCION_MAPA.md
+    ├── CHATBOT_FUNCIONANDO.md
+    ├── FIX_CHATBOT_SUPABASE.md
+    ├── FIX_IA_PRODUCCION.md
+    ├── FIX_MENSAJES_ERROR_ENRIQUECIMIENTO.md
+    ├── GUIA_DEBUGGING_IA.md
+    ├── INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md
+    ├── INSTRUCCIONES_CACHE_USUARIOS.md
+    ├── INSTRUCCIONES_ELIMINAR_FREE2STAY.md
+    ├── MIGRACION_IA_CLIENTE.md
+    ├── OAUTH_GOOGLE_SOLUCION_FINAL.md
+    ├── PROYECTO_CREADO.md
+    ├── SISTEMA_DETECCION_DUPLICADOS.md
+    ├── SISTEMA_FILTROS_PERSISTENTES_GPS.md
+    ├── SISTEMA_PROMPTS_FLEXIBLE.md
+    ├── SISTEMA_VISITAS_VALORACIONES_COMPLETO.md
+    ├── SOLUCION_ADMIN_AREAS_FINAL.md
+    ├── SOLUCION_FILTRO_PAISES_COMPLETA.md
+    ├── SOLUCION_FUNCIONES_IA_ADMIN.md
+    └── TEST_GOOGLE_API.md
 
-### 🎯 Próximas Mejoras (Ver MEJORAS_FUTURAS.md)
-- Paginación en panel de administración (cuando > 1000 áreas)
-- Compartir rutas con otros usuarios
-- Exportar rutas a GPX
-- Sistema de notificaciones push
-
----
-
-## 💡 Convenciones de Nombres
-
-### Prefijos de Documentos
-- **SOLUCION_** - Soluciones definitivas aplicadas
-- **DIAGNOSTICO_** - Guías de diagnóstico de problemas
-- **SISTEMA_** - Documentación de sistemas completos
-- **CONFIGURACION_** - Guías de configuración
-- **FIX_** - Arreglos específicos aplicados
-- **GUIA_** - Guías paso a paso
-
-### Estado de Documentos
-- ✅ **Vigente** - Información actual y aplicable
-- ⚠️ **Histórico** - Información de referencia histórica
-- 📁 **Archivo** - Documentación supersedida o ya no relevante
+📁 reportes/                           # Scripts SQL y documentación técnica
+├── README_GESTION_VEHICULOS.md
+└── [scripts SQL numerados]
+```
 
 ---
 
 ## 📝 Cómo Mantener esta Documentación
 
-1. **Al aplicar un fix importante:** Crea un documento SOLUCION_ o FIX_
-2. **Al implementar un sistema nuevo:** Crea un documento SISTEMA_
-3. **Al diagnosticar un problema recurrente:** Crea un documento DIAGNOSTICO_
-4. **Actualiza CHANGELOG.md** con cada cambio significativo
-5. **Actualiza este índice** cuando añadas nueva documentación
-6. **Marca como 📁 Archivo** los documentos supersedidos (no los borres)
+1. **Al aplicar un fix importante:** Crea un documento SOLUCION_ o FIX_ en `docs/temporales/`
+2. **Al implementar un sistema nuevo:** Crea un documento SISTEMA_ en `docs/temporales/`
+3. **Al diagnosticar un problema recurrente:** Crea un documento DIAGNOSTICO_ en `docs/diagnosticos/`
+4. **Al configurar algo:** Crea un documento CONFIGURACION_ en `docs/configuracion/`
+5. **Actualiza CHANGELOG.md** con cada cambio significativo
+6. **Actualiza este índice** cuando añadas nueva documentación
+7. **Marca como 📁 Archivo** los documentos supersedidos (no los borres)
 
 ---
 
@@ -217,8 +280,6 @@
 
 ---
 
-**Última actualización:** 28 de octubre de 2025  
+**Última actualización:** 13 de noviembre de 2025  
 **Mantenedor:** Equipo Mapa Furgocasa  
-**Versión del índice:** 1.0
-
-
+**Versión del índice:** 2.0

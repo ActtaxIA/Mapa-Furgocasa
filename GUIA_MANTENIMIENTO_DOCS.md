@@ -1,7 +1,7 @@
 # 📚 Guía de Mantenimiento de Documentación
 
-**Versión:** 1.0  
-**Última actualización:** 28 de octubre de 2025
+**Versión:** 2.0  
+**Última actualización:** 13 de noviembre de 2025
 
 ---
 
@@ -36,13 +36,16 @@ Marca claramente el estado de cada documento:
 
 ```
 1. ¿Es un sistema completo?
-   → Crea: SISTEMA_[nombre].md
+   → Crea: docs/temporales/SISTEMA_[nombre].md
    
 2. ¿Es una configuración?
-   → Crea: CONFIGURACION_[nombre].md
+   → Crea: docs/configuracion/CONFIGURACION_[nombre].md
    
-3. ¿Qué actualizar?
-   ✓ El documento específico
+3. ¿Es una mejora/optimización?
+   → Crea: docs/mejoras/MEJORAS_[nombre].md
+   
+4. ¿Qué actualizar?
+   ✓ El documento específico en la carpeta correspondiente
    ✓ README.md (si es funcionalidad principal)
    ✓ INDICE_DOCUMENTACION.md
    ✓ CHANGELOG.md
@@ -52,8 +55,8 @@ Marca claramente el estado de cada documento:
 ```markdown
 # Acabas de implementar sistema de notificaciones push
 
-1. Creas: SISTEMA_NOTIFICACIONES_PUSH.md
-2. Añades entrada en INDICE_DOCUMENTACION.md
+1. Creas: docs/temporales/SISTEMA_NOTIFICACIONES_PUSH.md
+2. Añades entrada en INDICE_DOCUMENTACION.md (categoría "Sistemas")
 3. Actualizas README.md en "Características Principales"
 4. Añades entrada en CHANGELOG.md
 ```
@@ -62,37 +65,40 @@ Marca claramente el estado de cada documento:
 
 ```
 1. ¿Es un problema recurrente?
-   → Crea: SOLUCION_[problema].md
+   → Crea: docs/temporales/SOLUCION_[problema].md
    
 2. ¿Es un fix rápido?
-   → Crea: FIX_[problema].md
+   → Crea: docs/temporales/FIX_[problema].md
    
-3. ¿Qué actualizar?
-   ✓ El documento de solución
-   ✓ INDICE_DOCUMENTACION.md (categoría "Soluciones y Fixes")
+3. ¿Es un diagnóstico?
+   → Crea: docs/diagnosticos/DIAGNOSTICO_[problema].md
+   
+4. ¿Qué actualizar?
+   ✓ El documento de solución en la carpeta correspondiente
+   ✓ INDICE_DOCUMENTACION.md (categoría apropiada)
    ✓ CHANGELOG.md
-   ✓ GUIA_DEBUGGING si es un problema de diagnóstico
+   ✓ docs/temporales/GUIA_DEBUGGING_IA.md si es problema de IA
 ```
 
 **Ejemplo:**
 ```markdown
 # Acabas de solucionar problema de caché en producción
 
-1. Creas: SOLUCION_CACHE_PRODUCCION.md
+1. Creas: docs/temporales/SOLUCION_CACHE_PRODUCCION.md
    - Describes el problema
    - Explicas la causa
    - Documentas la solución
    - Añades pasos de verificación
 
 2. Añades en INDICE_DOCUMENTACION.md:
-   | [SOLUCION_CACHE_PRODUCCION.md] | Solución de problemas de caché | ✅ Vigente |
+   | [docs/temporales/SOLUCION_CACHE_PRODUCCION.md] | Solución de problemas de caché | ✅ Vigente |
 
 3. Actualizas CHANGELOG.md:
    ## [Patch 1.0.1] - 2025-XX-XX
    ### 🐛 Correcciones
    - Solucionado problema de caché en producción
 
-4. Si aplica, referencias desde GUIA_DEPLOYMENT_AWS.md en "Problemas Comunes"
+4. Si aplica, referencias desde docs/deployment/GUIA_DEPLOYMENT_AWS.md en "Problemas Comunes"
 ```
 
 ### Cuando Haces un Refactor Grande
@@ -119,7 +125,8 @@ NO LO BORRES - Márcalo como archivo histórico
    
 3. Actualiza CHANGELOG.md si es relevante
 
-4. Considera mover a carpeta /docs/06-archivo/ en el futuro
+4. Mantén en su carpeta actual (docs/temporales/, docs/deployment/, etc.)
+   Los documentos históricos se mantienen en sus carpetas originales
 ```
 
 ---
@@ -128,15 +135,16 @@ NO LO BORRES - Márcalo como archivo histórico
 
 ### Prefijos de Archivos
 
-| Prefijo | Cuándo Usar | Ejemplo |
-|---------|-------------|---------|
-| `SOLUCION_` | Solución definitiva de un problema | `SOLUCION_ADMIN_AREAS_FINAL.md` |
-| `FIX_` | Arreglo específico aplicado | `FIX_IA_PRODUCCION.md` |
-| `SISTEMA_` | Documentación de sistema completo | `SISTEMA_DETECCION_DUPLICADOS.md` |
-| `CONFIGURACION_` | Guía de configuración | `CONFIGURACION_SUPABASE_URLS.md` |
-| `DIAGNOSTICO_` | Guía de diagnóstico | `DIAGNOSTICO_SESION_NO_PERSISTE.md` |
-| `GUIA_` | Guía paso a paso | `GUIA_DEBUGGING_IA.md` |
-| (Sin prefijo) | Documentos generales | `README.md`, `CHANGELOG.md` |
+| Prefijo | Carpeta | Cuándo Usar | Ejemplo |
+|---------|---------|-------------|---------|
+| `SOLUCION_` | `docs/temporales/` | Solución definitiva de un problema | `docs/temporales/SOLUCION_ADMIN_AREAS_FINAL.md` |
+| `FIX_` | `docs/temporales/` | Arreglo específico aplicado | `docs/temporales/FIX_IA_PRODUCCION.md` |
+| `SISTEMA_` | `docs/temporales/` | Documentación de sistema completo | `docs/temporales/SISTEMA_DETECCION_DUPLICADOS.md` |
+| `CONFIGURACION_` | `docs/configuracion/` | Guía de configuración | `docs/configuracion/CONFIGURACION_SUPABASE_URLS.md` |
+| `DIAGNOSTICO_` | `docs/diagnosticos/` | Guía de diagnóstico | `docs/diagnosticos/DIAGNOSTICO_SESION_NO_PERSISTE.md` |
+| `MEJORAS_` | `docs/mejoras/` | Mejoras y optimizaciones | `docs/mejoras/MEJORAS_COMPLETAS_SISTEMA_IA.md` |
+| `GUIA_` | `docs/deployment/` o `docs/temporales/` | Guía paso a paso | `docs/deployment/GUIA_DEPLOYMENT_AWS.md` |
+| (Sin prefijo) | Raíz | Documentos generales | `README.md`, `CHANGELOG.md` |
 
 ### Formato de Nombres
 
@@ -146,18 +154,21 @@ NO LO BORRES - Márcalo como archivo histórico
 
 **Buenos ejemplos:**
 ```
-✅ SISTEMA_NOTIFICACIONES_PUSH.md
-✅ SOLUCION_OAUTH_REDIRECT.md
-✅ CONFIGURACION_ANALYTICS.md
-✅ FIX_DEPLOY_VARIABLES.md
+✅ docs/temporales/SISTEMA_NOTIFICACIONES_PUSH.md
+✅ docs/temporales/SOLUCION_OAUTH_REDIRECT.md
+✅ docs/configuracion/CONFIGURACION_ANALYTICS.md
+✅ docs/temporales/FIX_DEPLOY_VARIABLES.md
+✅ docs/mejoras/MEJORAS_RENDIMIENTO.md
+✅ docs/diagnosticos/DIAGNOSTICO_CACHE.md
 ```
 
 **Malos ejemplos:**
 ```
-❌ sistema-notificaciones.md (minúsculas)
-❌ SOLUCION1.md (no descriptivo)
+❌ sistema-notificaciones.md (minúsculas, sin carpeta)
+❌ SOLUCION1.md (no descriptivo, sin carpeta)
 ❌ configuracion_de_google_analytics_y_tag_manager.md (demasiado largo)
 ❌ fix.md (demasiado genérico)
+❌ docs/SISTEMA_NOTIFICACIONES.md (carpeta incorrecta)
 ```
 
 ---
@@ -374,7 +385,15 @@ Los emojis ayudan a identificar rápidamente el tipo de información:
 
 **Interno (mismo repositorio):**
 ```markdown
+# Desde raíz
 [Texto del enlace](./NOMBRE_ARCHIVO.md)
+[docs/configuracion/CONFIGURACION_SEO.md](./docs/configuracion/CONFIGURACION_SEO.md)
+
+# Desde dentro de docs/
+[Texto del enlace](../README.md)
+[Otra carpeta](../deployment/GUIA_DEPLOYMENT_AWS.md)
+
+# Sección específica
 [Sección específica](./ARCHIVO.md#seccion)
 ```
 
@@ -392,7 +411,7 @@ Los emojis ayudan a identificar rápidamente el tipo de información:
 
 **Ejemplo bueno:**
 ```markdown
-Consulta la [guía de deployment en AWS](./GUIA_DEPLOYMENT_AWS.md) para más detalles.
+Consulta la [guía de deployment en AWS](./docs/deployment/GUIA_DEPLOYMENT_AWS.md) para más detalles.
 ```
 
 **Ejemplo malo:**
@@ -503,7 +522,8 @@ Si tienes dudas sobre cómo documentar algo:
 ---
 
 **Guía creada:** 28 de octubre de 2025  
+**Última actualización:** 13 de noviembre de 2025  
 **Mantenedor:** Equipo Mapa Furgocasa  
-**Versión:** 1.0
+**Versión:** 2.0
 
 
