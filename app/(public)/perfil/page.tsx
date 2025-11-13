@@ -11,7 +11,7 @@ import { VisitasTab } from '@/components/perfil/VisitasTab'
 import { ValoracionesTab } from '@/components/perfil/ValoracionesTab'
 import { FavoritosTab } from '@/components/perfil/FavoritosTab'
 import { RutasTab } from '@/components/perfil/RutasTab'
-import { 
+import {
   UserCircleIcon,
   EnvelopeIcon,
   KeyIcon,
@@ -53,7 +53,7 @@ export default function PerfilPage() {
     const loadUser = async () => {
       const supabase = createClient()
       const { data: { session } } = await supabase.auth.getSession()
-      
+
       if (!session?.user) {
         router.push('/auth/login')
         return
@@ -68,7 +68,7 @@ export default function PerfilPage() {
 
       // Cargar estadísticas
       loadStats(session.user.id)
-      
+
       setLoading(false)
     }
 
@@ -144,7 +144,7 @@ export default function PerfilPage() {
 
       setMessage({ type: 'success', text: '¡Perfil actualizado correctamente!' })
       setEditing(false)
-      
+
       // Recargar usuario
       const { data: { user: updatedUser } } = await supabase.auth.getUser()
       if (updatedUser) setUser(updatedUser)
@@ -198,8 +198,8 @@ export default function PerfilPage() {
               {/* Avatar */}
               <div className="text-center">
                 {user.user_metadata?.profile_photo && user.user_metadata.profile_photo !== 'default_profile.png' ? (
-                  <img 
-                    src={user.user_metadata.profile_photo} 
+                  <img
+                    src={user.user_metadata.profile_photo}
                     alt={user.user_metadata?.full_name || user.email}
                     className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-gray-100"
                   />
@@ -208,7 +208,7 @@ export default function PerfilPage() {
                     <UserCircleIcon className="w-16 h-16 text-sky-600" />
                   </div>
                 )}
-                
+
                 <h2 className="mt-4 text-xl font-bold text-gray-900">
                   {user.user_metadata?.full_name || 'Usuario'}
                 </h2>
@@ -301,9 +301,9 @@ export default function PerfilPage() {
                   </span>
                 </div>
                 <p className="text-sm font-semibold text-gray-900 mt-1">
-                  {new Date(user.created_at).toLocaleDateString('es-ES', { 
-                    month: 'long', 
-                    year: 'numeric' 
+                  {new Date(user.created_at).toLocaleDateString('es-ES', {
+                    month: 'long',
+                    year: 'numeric'
                   })}
                 </p>
               </div>
@@ -341,7 +341,7 @@ export default function PerfilPage() {
                         </button>
                       )}
                     </div>
-                    
+
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {/* Nombre */}
@@ -472,4 +472,3 @@ export default function PerfilPage() {
     </div>
   )
 }
-
