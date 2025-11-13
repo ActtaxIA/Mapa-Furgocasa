@@ -149,20 +149,20 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
     }
   }
 
-  const handleEditar = (mantenimiento: Mantenimiento) => {
+  const handleEditar = (mantenimiento: any) => {
     setFormData({
-      tipo_mantenimiento: mantenimiento.tipo_mantenimiento,
+      tipo_mantenimiento: mantenimiento.tipo || '',
       descripcion: mantenimiento.descripcion || '',
-      fecha_programada: mantenimiento.fecha_programada || '',
-      fecha_realizada: mantenimiento.fecha_realizada || '',
+      fecha_programada: '',
+      fecha_realizada: mantenimiento.fecha || '',
       kilometraje: mantenimiento.kilometraje?.toString() || '',
       coste: mantenimiento.coste?.toString() || '',
       taller: mantenimiento.taller || '',
-      ubicacion_taller: mantenimiento.ubicacion_taller || '',
+      ubicacion_taller: mantenimiento.direccion_taller || '',
       notas: mantenimiento.notas || '',
-      proximo_mantenimiento_km: mantenimiento.proximo_mantenimiento_km?.toString() || '',
-      proximo_mantenimiento_fecha: mantenimiento.proximo_mantenimiento_fecha || '',
-      estado: mantenimiento.estado
+      proximo_mantenimiento_km: mantenimiento.kilometraje_proximo?.toString() || '',
+      proximo_mantenimiento_fecha: mantenimiento.proximo_mantenimiento || '',
+      estado: mantenimiento.estado || 'pendiente'
     })
     setEditandoId(mantenimiento.id)
     setMostrarFormulario(true)
@@ -536,7 +536,7 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
                         <WrenchScrewdriverIcon className="h-5 w-5 text-gray-400 mr-2" />
                         <div>
                           <div className="text-sm font-medium text-gray-900">
-                            {mantenimiento.tipo_mantenimiento.replace('_', ' ')}
+                            {mantenimiento.tipo?.replace('_', ' ') || 'Sin tipo'}
                           </div>
                           {mantenimiento.descripcion && (
                             <div className="text-sm text-gray-500 truncate max-w-xs">
@@ -548,11 +548,11 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {formatearFecha(mantenimiento.fecha_realizada || mantenimiento.fecha_programada)}
+                        {formatearFecha(mantenimiento.fecha)}
                       </div>
-                      {mantenimiento.proximo_mantenimiento_fecha && (
+                      {mantenimiento.proximo_mantenimiento && (
                         <div className="text-xs text-gray-500">
-                          Próximo: {formatearFecha(mantenimiento.proximo_mantenimiento_fecha)}
+                          Próximo: {formatearFecha(mantenimiento.proximo_mantenimiento)}
                         </div>
                       )}
                     </td>
@@ -564,13 +564,13 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{mantenimiento.taller || '-'}</div>
-                      {mantenimiento.ubicacion_taller && (
-                        <div className="text-xs text-gray-500">{mantenimiento.ubicacion_taller}</div>
+                      {mantenimiento.direccion_taller && (
+                        <div className="text-xs text-gray-500">{mantenimiento.direccion_taller}</div>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoColor(mantenimiento.estado)}`}>
-                        {mantenimiento.estado}
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoColor(mantenimiento.estado || 'pendiente')}`}>
+                        {mantenimiento.estado || 'pendiente'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">

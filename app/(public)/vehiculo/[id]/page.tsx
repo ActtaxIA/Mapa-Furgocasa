@@ -43,6 +43,7 @@ export default function VehiculoPage() {
   const [activeTab, setActiveTab] = useState<TabType>('resumen')
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState({
+    tipo_vehiculo: '',
     marca: '',
     modelo: '',
     año: '',
@@ -95,6 +96,7 @@ export default function VehiculoPage() {
       setVehiculo(vehiculoData)
       // Inicializar datos de edición
       setEditData({
+        tipo_vehiculo: vehiculoData.tipo_vehiculo || '',
         marca: vehiculoData.marca || '',
         modelo: vehiculoData.modelo || '',
         año: vehiculoData.año?.toString() || '',
@@ -109,6 +111,7 @@ export default function VehiculoPage() {
 
   const handleEditClick = () => {
     setEditData({
+      tipo_vehiculo: vehiculo.tipo_vehiculo || '',
       marca: vehiculo.marca || '',
       modelo: vehiculo.modelo || '',
       año: vehiculo.año?.toString() || '',
@@ -120,6 +123,7 @@ export default function VehiculoPage() {
   const handleCancelEdit = () => {
     setIsEditing(false)
     setEditData({
+      tipo_vehiculo: vehiculo.tipo_vehiculo || '',
       marca: vehiculo.marca || '',
       modelo: vehiculo.modelo || '',
       año: vehiculo.año?.toString() || '',
@@ -133,6 +137,7 @@ export default function VehiculoPage() {
       const supabase = createClient()
 
       const updateData: any = {
+        tipo_vehiculo: editData.tipo_vehiculo.trim() || null,
         marca: editData.marca.trim() || null,
         modelo: editData.modelo.trim() || null,
         color: editData.color.trim() || null,
@@ -227,11 +232,18 @@ export default function VehiculoPage() {
                   // Modo Vista
                   <div className="flex-1">
                     <h1 className="text-3xl font-bold text-gray-900 mb-1">{vehiculo.matricula}</h1>
-                    <p className="text-gray-600">
-                      {vehiculo.marca || 'Sin marca'} {vehiculo.modelo || 'Sin modelo'}
-                      {vehiculo.año && ` • ${vehiculo.año}`}
-                      {vehiculo.color && ` • ${vehiculo.color}`}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                      {vehiculo.tipo_vehiculo && (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800 border border-primary-200">
+                          {vehiculo.tipo_vehiculo}
+                        </span>
+                      )}
+                      <p className="text-gray-600">
+                        {vehiculo.marca || 'Sin marca'} {vehiculo.modelo || 'Sin modelo'}
+                        {vehiculo.año && ` • ${vehiculo.año}`}
+                        {vehiculo.color && ` • ${vehiculo.color}`}
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   // Modo Edición
@@ -244,6 +256,28 @@ export default function VehiculoPage() {
                       <div className="text-2xl font-bold text-gray-400 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
                         {vehiculo.matricula}
                       </div>
+                    </div>
+
+                    {/* Tipo de Vehículo - 2º en importancia */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Tipo de Vehículo <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        value={editData.tipo_vehiculo}
+                        onChange={(e) => setEditData({ ...editData, tipo_vehiculo: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        required
+                      >
+                        <option value="">Selecciona un tipo</option>
+                        <option value="Furgoneta Camper">🚐 Furgoneta Camper</option>
+                        <option value="Autocaravana Perfilada">🚙 Autocaravana Perfilada</option>
+                        <option value="Autocaravana Integral">🚌 Autocaravana Integral</option>
+                        <option value="Autocaravana Capuchina">🏕️ Autocaravana Capuchina</option>
+                        <option value="Camper">🚗 Camper</option>
+                        <option value="Furgoneta">🚐 Furgoneta</option>
+                        <option value="Otro">📦 Otro</option>
+                      </select>
                     </div>
 
                     {/* Campos Editables */}

@@ -18,4 +18,3 @@ DO $$
 BEGIN
   RAISE NOTICE '✅ Columna tipo_vehiculo agregada correctamente a vehiculos_registrados';
 END $$;
-

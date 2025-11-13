@@ -558,10 +558,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
                     )}
                   </div>
                   <div className="mt-2 text-sm text-gray-600 space-y-1">
-                    {vehiculo.marca && <p><strong>Marca:</strong> {vehiculo.marca}</p>}
-                    {vehiculo.modelo && <p><strong>Modelo:</strong> {vehiculo.modelo}</p>}
-                    {vehiculo.año && <p><strong>Año:</strong> {vehiculo.año}</p>}
-                    {vehiculo.color && <p><strong>Color:</strong> {vehiculo.color}</p>}
+                    {/* Tipo de vehículo - 2º en importancia */}
                     {vehiculo.tipo_vehiculo && (
                       <p className="flex items-center gap-1">
                         <strong>Tipo:</strong> 
@@ -570,6 +567,10 @@ export function MiAutocaravanaTab({ userId }: Props) {
                         </span>
                       </p>
                     )}
+                    {vehiculo.marca && <p><strong>Marca:</strong> {vehiculo.marca}</p>}
+                    {vehiculo.modelo && <p><strong>Modelo:</strong> {vehiculo.modelo}</p>}
+                    {vehiculo.año && <p><strong>Año:</strong> {vehiculo.año}</p>}
+                    {vehiculo.color && <p><strong>Color:</strong> {vehiculo.color}</p>}
                     <p className="text-xs text-gray-400 mt-2">
                       Registrado: {new Date(vehiculo.created_at).toLocaleDateString('es-ES')}
                     </p>
