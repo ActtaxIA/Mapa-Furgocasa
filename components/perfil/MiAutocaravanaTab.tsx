@@ -77,18 +77,73 @@ export function MiAutocaravanaTab({ userId }: Props) {
     }
 
     try {
-      // Crear FormData para enviar la foto
-      const formDataToSend = new FormData()
-      formDataToSend.append('matricula', formData.matricula.toUpperCase())
-      if (formData.marca) formDataToSend.append('marca', formData.marca)
-      if (formData.modelo) formDataToSend.append('modelo', formData.modelo)
-      if (añoNumero !== null) formDataToSend.append('año', añoNumero.toString())
-      if (formData.color) formDataToSend.append('color', formData.color)
-      if (fotoFile) formDataToSend.append('foto', fotoFile)
+      // ============================================================
+      // NUEVO: Subir foto DIRECTAMENTE a Supabase Storage
+      // Bypasea AWS Amplify completamente
+      // ============================================================
+      let foto_url: string | null = null
+      
+      if (fotoFile) {
+        console.log('📸 [Frontend] Subiendo foto de vehículo directamente a Supabase Storage...')
+        const supabase = createClient()
+        const timestamp = Date.now()
+
+        // Validar tamaño (máx 10MB)
+        if (fotoFile.size > 10 * 1024 * 1024) {
+          setMessage({ type: 'error', text: 'La foto no puede superar 10MB' })
+          setSaving(false)
+          return
+        }
+
+        const fileExt = fotoFile.name.split('.').pop() || 'jpg'
+        // Usar matrícula como referencia temporal (se actualizará con el vehiculo_id después)
+        const fileName = `vehiculos/${userId}/${formData.matricula.toUpperCase()}_${timestamp}.${fileExt}`
+
+        // Subir directamente a Supabase Storage
+        const { error: uploadError } = await supabase.storage
+          .from('vehiculos')
+          .upload(fileName, fotoFile, {
+            contentType: fotoFile.type || 'image/jpeg',
+            upsert: false
+          })
+
+        if (uploadError) {
+          console.error('❌ Error subiendo foto:', uploadError)
+          setMessage({ type: 'error', text: 'Error al subir la foto. Intenta de nuevo.' })
+          setSaving(false)
+          return
+        }
+
+        // Obtener URL pública
+        const { data: { publicUrl } } = supabase.storage
+          .from('vehiculos')
+          .getPublicUrl(fileName)
+
+        console.log(`✅ Foto subida: ${publicUrl}`)
+        foto_url = publicUrl
+      }
+
+      // ============================================================
+      // Enviar datos del vehículo con JSON (NO FormData)
+      // Incluye la URL de la foto ya subida
+      // ============================================================
+      const vehiculoData = {
+        matricula: formData.matricula.toUpperCase(),
+        marca: formData.marca || null,
+        modelo: formData.modelo || null,
+        año: añoNumero,
+        color: formData.color || null,
+        foto_url: foto_url // URL ya subida a Supabase
+      }
+
+      console.log('📤 [Frontend] Enviando datos del vehículo con JSON:', vehiculoData)
 
       const response = await fetch('/api/vehiculos', {
         method: 'POST',
-        body: formDataToSend
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(vehiculoData)
       })
 
       const data = await response.json()

@@ -79,58 +79,25 @@ export async function POST(
       )
     }
 
-    // Obtener FormData
-    const formData = await request.formData()
-    const fotoFile = formData.get('foto') as File | null
+    // ============================================================
+    // NUEVO: Recibir URL de foto ya subida desde el frontend
+    // El frontend sube directamente a Supabase Storage
+    // ============================================================
+    const body = await request.json()
+    const foto_url = body.foto_url as string | null
 
-    if (!fotoFile || fotoFile.size === 0) {
+    if (!foto_url) {
       return jsonResponse(
-        { error: 'No se proporcionó ninguna foto' },
+        { error: 'No se proporcionó ninguna URL de foto' },
         400
       )
     }
 
-    // Validar tamaño (máx 5MB)
-    if (fotoFile.size > 5 * 1024 * 1024) {
-      return jsonResponse(
-        { error: 'La foto no puede superar los 5MB' },
-        400
-      )
-    }
+    console.log('📸 [Backend] Recibida URL de foto adicional:', foto_url)
 
-    // Subir foto a Supabase Storage
+    // Actualizar base de datos con la nueva URL
     try {
-      const fileExt = fotoFile.name.split('.').pop()
-      const timestamp = Date.now()
-      const fileName = `${user.id}/${vehiculo.qr_code_id}_${timestamp}.${fileExt}`
-
-      // Convertir File a ArrayBuffer
-      const fileBuffer = await fotoFile.arrayBuffer()
-
-      const { error: uploadError } = await supabase
-        .storage
-        .from('vehiculos')
-        .upload(fileName, fileBuffer, {
-          contentType: fotoFile.type,
-          upsert: false
-        })
-
-      if (uploadError) {
-        console.error('Error subiendo foto:', uploadError)
-        return jsonResponse(
-          { error: 'Error al subir la foto al almacenamiento' },
-          500
-        )
-      }
-
-      // Obtener URL pública
-      const { data: { publicUrl } } = supabase
-        .storage
-        .from('vehiculos')
-        .getPublicUrl(fileName)
-
-      // Actualizar array de fotos_adicionales en la base de datos
-      const nuevasFotos = [...fotosAdicionales, publicUrl]
+      const nuevasFotos = [...fotosAdicionales, foto_url]
 
       const { error: updateError } = await supabase
         .from('vehiculos_registrados')
@@ -139,8 +106,6 @@ export async function POST(
 
       if (updateError) {
         console.error('Error actualizando BD:', updateError)
-        // Intentar limpiar la foto subida
-        await supabase.storage.from('vehiculos').remove([fileName])
         return jsonResponse(
           { error: 'Error al actualizar el registro' },
           500
@@ -149,12 +114,12 @@ export async function POST(
 
       return jsonResponse({
         success: true,
-        fotoUrl: publicUrl,
-        message: 'Foto subida con éxito'
+        fotoUrl: foto_url,
+        message: 'Foto guardada con éxito'
       })
 
-    } catch (storageError) {
-      console.error('Error en storage:', storageError)
+    } catch (error) {
+      console.error('Error guardando foto:', error)
       return jsonResponse(
         { error: 'Error procesando la foto' },
         500

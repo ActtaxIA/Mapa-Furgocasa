@@ -52,21 +52,58 @@ export function GaleriaFotosTab({ vehiculoId, fotoUrl, fotosAdicionales }: Props
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Validar tamaño
-    if (file.size > 5 * 1024 * 1024) {
-      setToast({ message: 'La foto no puede superar los 5MB', type: 'error' })
+    // Validar tamaño (10MB como en reportes)
+    if (file.size > 10 * 1024 * 1024) {
+      setToast({ message: 'La foto no puede superar los 10MB', type: 'error' })
       return
     }
 
     setSubiendo(true)
 
     try {
-      const formData = new FormData()
-      formData.append('foto', file)
+      // ============================================================
+      // NUEVO: Subir foto DIRECTAMENTE a Supabase Storage
+      // Bypasea AWS Amplify completamente
+      // ============================================================
+      console.log('📸 [Frontend] Subiendo foto adicional directamente a Supabase Storage...')
+      const supabase = createClient()
+      const timestamp = Date.now()
 
+      const fileExt = file.name.split('.').pop() || 'jpg'
+      const fileName = `vehiculos/${vehiculoId}/adicionales/${timestamp}.${fileExt}`
+
+      // Subir directamente a Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('vehiculos')
+        .upload(fileName, file, {
+          contentType: file.type || 'image/jpeg',
+          upsert: false
+        })
+
+      if (uploadError) {
+        console.error('❌ Error subiendo foto:', uploadError)
+        setToast({ message: 'Error al subir la foto. Intenta de nuevo.', type: 'error' })
+        setSubiendo(false)
+        e.target.value = ''
+        return
+      }
+
+      // Obtener URL pública
+      const { data: { publicUrl } } = supabase.storage
+        .from('vehiculos')
+        .getPublicUrl(fileName)
+
+      console.log(`✅ Foto subida: ${publicUrl}`)
+
+      // ============================================================
+      // Enviar URL al backend con JSON (NO FormData)
+      // ============================================================
       const response = await fetch(`/api/vehiculos/${vehiculoId}/fotos`, {
         method: 'POST',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ foto_url: publicUrl })
       })
 
       const data = await response.json()

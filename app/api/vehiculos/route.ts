@@ -65,16 +65,16 @@ export async function POST(request: Request) {
       )
     }
 
-    // Obtener FormData para manejar la foto
-    const formData = await request.formData()
-    const matricula = formData.get('matricula') as string
-    const marca = formData.get('marca') as string | null
-    const modelo = formData.get('modelo') as string | null
-    const añoStr = formData.get('año') as string | null
-    const color = formData.get('color') as string | null
-    const fotoFile = formData.get('foto') as File | null
+    // Procesar siempre como JSON
+    // Las fotos se suben DIRECTAMENTE a Supabase Storage desde el frontend
+    const body = await request.json()
     
-    const año = añoStr ? parseInt(añoStr) : null
+    const matricula = body.matricula as string
+    const marca = body.marca as string | null
+    const modelo = body.modelo as string | null
+    const año = body.año as number | null
+    const color = body.color as string | null
+    const foto_url = body.foto_url as string | null // URL ya subida desde el frontend
 
     // Validación básica
     if (!matricula || matricula.trim() === '') {
@@ -121,41 +121,11 @@ export async function POST(request: Request) {
       )
     }
 
-    // Subir foto a Supabase Storage si existe
-    let foto_url: string | null = null
-    if (fotoFile && fotoFile.size > 0) {
-      try {
-        const fileExt = fotoFile.name.split('.').pop()
-        const fileName = `${user.id}/${qr_code_id}.${fileExt}`
-        
-        // Convertir File a ArrayBuffer
-        const fileBuffer = await fotoFile.arrayBuffer()
-        
-        const { data: uploadData, error: uploadError } = await supabase
-          .storage
-          .from('vehiculos')
-          .upload(fileName, fileBuffer, {
-            contentType: fotoFile.type,
-            upsert: true
-          })
-
-        if (uploadError) {
-          console.error('Error subiendo foto:', uploadError)
-          // Continuar sin foto, no es crítico
-        } else {
-          // Obtener URL pública
-          const { data: { publicUrl } } = supabase
-            .storage
-            .from('vehiculos')
-            .getPublicUrl(fileName)
-          
-          foto_url = publicUrl
-        }
-      } catch (fotoError) {
-        console.error('Error procesando foto:', fotoError)
-        // Continuar sin foto
-      }
-    }
+    // ============================================================
+    // La foto ya viene como URL desde el frontend
+    // El frontend sube directamente a Supabase Storage
+    // ============================================================
+    console.log(`📸 [Backend] Recibida URL de foto desde frontend:`, foto_url ? 'SÍ' : 'NO')
 
     // Generar imagen del QR (base64 data URL)
     // El QR ahora lleva a /accidente con la matrícula como sugerencia
