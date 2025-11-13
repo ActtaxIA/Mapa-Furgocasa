@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
+import {
   CheckCircleIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
@@ -47,7 +47,7 @@ export default function VentaTab({ vehiculoId }: Props) {
     try {
       setCargando(true)
       const response = await fetch(`/api/vehiculos/${vehiculoId}/venta`)
-      
+
       if (response.ok) {
         const data = await response.json()
         setDatos(data)
@@ -61,7 +61,7 @@ export default function VentaTab({ vehiculoId }: Props) {
 
   const handleRegistrarVenta = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       setGuardando(true)
       setMensaje(null)
@@ -212,144 +212,173 @@ export default function VentaTab({ vehiculoId }: Props) {
         </div>
       ) : (
         /* Formulario de registro de venta */
-        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-          <h3 className="text-lg font-medium text-gray-900 mb-6">
-            Registrar Venta Realizada
-          </h3>
-          
-          <form onSubmit={handleRegistrarVenta} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Precio de venta */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Precio de venta final (€) *
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  required
-                  value={formData.precio_venta_final}
-                  onChange={(e) => setFormData({ ...formData, precio_venta_final: e.target.value })}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Ej: 33500.00"
-                />
-                <p className="text-xs text-gray-500 mt-1">Precio real al que vendiste el vehículo</p>
-              </div>
+        <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+          <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-4">
+            <h3 className="text-lg font-bold text-white">
+              💰 Registrar Venta Realizada
+            </h3>
+          </div>
 
-              {/* Fecha de venta */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Fecha de venta *
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={formData.fecha_venta}
-                  onChange={(e) => setFormData({ ...formData, fecha_venta: e.target.value })}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                />
-              </div>
+          <form onSubmit={handleRegistrarVenta} className="p-6 space-y-6">
+            {/* Precio de Venta */}
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <CurrencyEuroIcon className="w-6 h-6 text-green-600" />
+                Precio de Venta
+              </h3>
 
-              {/* Tipo de comprador */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tipo de comprador *
-                </label>
-                <select
-                  required
-                  value={formData.comprador_tipo}
-                  onChange={(e) => setFormData({ ...formData, comprador_tipo: e.target.value })}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                >
-                  <option value="particular">Particular</option>
-                  <option value="concesionario">Concesionario</option>
-                  <option value="empresa">Empresa</option>
-                  <option value="plataforma_online">Plataforma online</option>
-                </select>
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Precio de venta */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Precio de venta final (€) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={formData.precio_venta_final}
+                    onChange={(e) => setFormData({ ...formData, precio_venta_final: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Ej: 33500.00"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Precio real al que vendiste el vehículo</p>
+                </div>
 
-              {/* Kilometraje en la venta */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kilometraje al vender
-                </label>
-                <input
-                  type="number"
-                  value={formData.kilometros_venta}
-                  onChange={(e) => setFormData({ ...formData, kilometros_venta: e.target.value })}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Ej: 85000"
-                />
+                {/* Fecha de venta */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fecha de venta <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.fecha_venta}
+                    onChange={(e) => setFormData({ ...formData, fecha_venta: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  />
+                </div>
               </div>
+            </div>
 
-              {/* Estado del vehículo */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Estado del vehículo al vender *
-                </label>
-                <select
-                  required
-                  value={formData.estado_venta}
-                  onChange={(e) => setFormData({ ...formData, estado_venta: e.target.value })}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                >
-                  <option value="excelente">Excelente - Como nuevo</option>
-                  <option value="muy_bueno">Muy bueno - Bien mantenido</option>
-                  <option value="bueno">Bueno - Estado normal</option>
-                  <option value="regular">Regular - Con desgaste visible</option>
-                  <option value="para_reparar">Para reparar - Necesita trabajo</option>
-                </select>
+            {/* Comprador y Estado */}
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Comprador y Estado del Vehículo</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Tipo de comprador */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tipo de comprador <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    required
+                    value={formData.comprador_tipo}
+                    onChange={(e) => setFormData({ ...formData, comprador_tipo: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="particular">Particular</option>
+                    <option value="concesionario">Concesionario</option>
+                    <option value="empresa">Empresa</option>
+                    <option value="plataforma_online">Plataforma online</option>
+                  </select>
+                </div>
+
+                {/* Kilometraje en la venta */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Kilometraje al vender
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.kilometros_venta}
+                    onChange={(e) => setFormData({ ...formData, kilometros_venta: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Ej: 85000"
+                  />
+                </div>
+
+                {/* Estado del vehículo */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Estado del vehículo al vender <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    required
+                    value={formData.estado_venta}
+                    onChange={(e) => setFormData({ ...formData, estado_venta: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="excelente">Excelente - Como nuevo</option>
+                    <option value="muy_bueno">Muy bueno - Bien mantenido</option>
+                    <option value="bueno">Bueno - Estado normal</option>
+                    <option value="regular">Regular - Con desgaste visible</option>
+                    <option value="para_reparar">Para reparar - Necesita trabajo</option>
+                  </select>
+                </div>
               </div>
             </div>
 
             {/* Notas */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Notas sobre la venta (opcional)
-              </label>
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Notas Adicionales</h3>
+
               <textarea
-                rows={3}
+                rows={4}
                 value={formData.notas_venta}
                 onChange={(e) => setFormData({ ...formData, notas_venta: e.target.value })}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                placeholder="¿Cómo fue la negociación? ¿Dónde anunciaste? ¿Cuánto tiempo tardó en venderse? Cualquier detalle útil..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder="¿Cómo fue la negociación? ¿Dónde anunciaste? ¿Cuánto tiempo tardó en venderse? Cualquier detalle útil para otros usuarios..."
               />
             </div>
 
             {/* Cálculo de ganancia/pérdida */}
             {datos?.inversion_total && formData.precio_venta_final && (
-              <div className={`p-4 rounded-lg border-2 ${calcularGananciaPerdida()! >= 0 ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
-                <div className="flex items-center justify-between mb-2">
+              <div className={`rounded-xl p-6 border-2 ${calcularGananciaPerdida()! >= 0 ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
+                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                  {calcularGananciaPerdida()! >= 0 ? (
+                    <ArrowTrendingUpIcon className="h-6 w-6 text-green-600" />
+                  ) : (
+                    <ArrowTrendingDownIcon className="h-6 w-6 text-red-600" />
+                  )}
+                  <span className={calcularGananciaPerdida()! >= 0 ? 'text-green-900' : 'text-red-900'}>
+                    Resultado de la Venta
+                  </span>
+                </h3>
+                <div className="flex items-center justify-between mb-4">
                   <span className="text-sm font-medium text-gray-700">Tu resultado:</span>
-                  <span className={`text-2xl font-bold flex items-center ${calcularGananciaPerdida()! >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {calcularGananciaPerdida()! >= 0 ? (
-                      <ArrowTrendingUpIcon className="h-6 w-6 mr-1" />
-                    ) : (
-                      <ArrowTrendingDownIcon className="h-6 w-6 mr-1" />
-                    )}
+                  <span className={`text-3xl font-bold flex items-center ${calcularGananciaPerdida()! >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {calcularGananciaPerdida()! >= 0 ? '+' : ''}
                     {calcularGananciaPerdida()!.toFixed(2)} €
                   </span>
                 </div>
-                <div className="text-xs text-gray-600 space-y-1">
-                  <p>• Tu inversión total: {datos.inversion_total.toFixed(2)} €</p>
-                  <p>• Precio de venta: {parseFloat(formData.precio_venta_final).toFixed(2)} €</p>
+                <div className="text-sm text-gray-700 space-y-2 bg-white rounded-lg p-4">
+                  <div className="flex justify-between">
+                    <span>Tu inversión total:</span>
+                    <span className="font-semibold">{datos.inversion_total.toFixed(2)} €</span>
+                  </div>
+                  <div className="flex justify-between border-t pt-2">
+                    <span>Precio de venta:</span>
+                    <span className="font-semibold">{parseFloat(formData.precio_venta_final).toFixed(2)} €</span>
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Botón de envío */}
-            <button
-              type="submit"
-              disabled={guardando}
-              className="w-full px-6 py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 font-medium text-lg shadow-sm"
-            >
-              {guardando ? 'Registrando venta...' : 'Registrar Venta'}
-            </button>
+            {/* Botones */}
+            <div className="flex flex-col gap-4 pt-4 border-t border-gray-200">
+              <button
+                type="submit"
+                disabled={guardando}
+                className="w-full px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 disabled:opacity-50 font-bold text-lg shadow-lg transition-all"
+              >
+                {guardando ? '⏳ Registrando venta...' : '💾 Registrar Venta Definitivamente'}
+              </button>
 
-            <p className="text-xs text-gray-500 text-center">
-              🔒 Tus datos personales son privados. Solo se compartirán estadísticas anónimas de mercado.
-            </p>
+              <p className="text-xs text-gray-500 text-center bg-blue-50 border border-blue-200 rounded-lg p-3">
+                🔒 <strong>Privacidad garantizada:</strong> Tus datos personales son privados. Solo se compartirán estadísticas anónimas de mercado para ayudar a otros usuarios.
+              </p>
+            </div>
           </form>
         </div>
       )}

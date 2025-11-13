@@ -90,109 +90,208 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
 
   const hasData = resumen && resumen.precio_compra !== null
 
+  // Calcular totales
+  const totalGastos = (resumen?.total_mantenimientos || 0) + (resumen?.total_averias || 0) + (resumen?.total_mejoras || 0)
+  const inversionRealConGastos = (resumen?.precio_compra || 0) + totalGastos
+
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Resumen Económico</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">📊 Resumen Económico</h2>
+          <p className="text-sm text-gray-600 mt-1">Vista general de la inversión y valor de tu vehículo</p>
+        </div>
         {!hasData && (
-          <p className="text-sm text-amber-600 bg-amber-50 px-4 py-2 rounded-lg">
-            ℹ️ Completa los "Datos de Compra" para ver el resumen
-          </p>
+          <div className="text-sm text-amber-600 bg-amber-50 px-4 py-3 rounded-lg border border-amber-200">
+            <p className="font-semibold">ℹ️ Completa los "Datos de Compra"</p>
+            <p className="text-xs mt-1">Para ver el resumen económico completo</p>
+          </div>
         )}
       </div>
 
       {!hasData ? (
-        <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
-          <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Sin datos económicos</h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Añade los datos de compra de tu vehículo para comenzar a ver el resumen económico
+        <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-dashed border-gray-300">
+          <ChartBarIcon className="mx-auto h-16 w-16 text-gray-400 mb-4" />
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Sin datos económicos</h3>
+          <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
+            Añade los datos de compra de tu vehículo en la pestaña <strong>"Datos de Compra"</strong> para comenzar a ver el resumen económico completo
           </p>
+          <div className="inline-flex items-center gap-2 text-sm text-primary-600 bg-primary-50 px-4 py-2 rounded-lg border border-primary-200">
+            <CurrencyEuroIcon className="w-4 h-4" />
+            <span>Ve a "Datos de Compra" para empezar</span>
+          </div>
         </div>
       ) : (
         <>
-          {/* KPIs Principales */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* KPIs Principales - Fila Superior */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Precio de Compra */}
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-blue-700">Precio de Compra</span>
-                <CurrencyEuroIcon className="w-6 h-6 text-blue-600" />
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-200 shadow-md hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold text-blue-700">Precio de Compra</span>
+                <CurrencyEuroIcon className="w-7 h-7 text-blue-600" />
               </div>
-              <p className="text-3xl font-bold text-blue-900">
+              <p className="text-3xl font-bold text-blue-900 mb-1">
                 {formatCurrency(resumen.precio_compra)}
+              </p>
+              <p className="text-xs text-blue-600">
+                Inversión inicial
+              </p>
+            </div>
+
+            {/* Total Gastos */}
+            <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 border-2 border-red-200 shadow-md hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold text-red-700">Total Gastos</span>
+                <ArrowTrendingDownIcon className="w-7 h-7 text-red-600" />
+              </div>
+              <p className="text-3xl font-bold text-red-900 mb-1">
+                {formatCurrency(totalGastos)}
+              </p>
+              <p className="text-xs text-red-600">
+                Mant. + Averías + Mejoras
               </p>
             </div>
 
             {/* Inversión Total */}
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-purple-700">Inversión Total</span>
-                <ChartBarIcon className="w-6 h-6 text-purple-600" />
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border-2 border-purple-200 shadow-md hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold text-purple-700">Inversión Total</span>
+                <ChartBarIcon className="w-7 h-7 text-purple-600" />
               </div>
-              <p className="text-3xl font-bold text-purple-900">
-                {formatCurrency(resumen.inversion_total)}
+              <p className="text-3xl font-bold text-purple-900 mb-1">
+                {formatCurrency(inversionRealConGastos)}
               </p>
-              <p className="text-xs text-purple-600 mt-1">
-                Compra + Gastos
+              <p className="text-xs text-purple-600">
+                Compra + Todos los gastos
               </p>
             </div>
 
-            {/* Valor Actual */}
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-green-700">Valor Estimado</span>
-                <ArrowTrendingUpIcon className="w-6 h-6 text-green-600" />
+            {/* Valor Estimado */}
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border-2 border-green-200 shadow-md hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold text-green-700">Valor Estimado</span>
+                <ArrowTrendingUpIcon className="w-7 h-7 text-green-600" />
               </div>
-              <p className="text-3xl font-bold text-green-900">
+              <p className="text-3xl font-bold text-green-900 mb-1">
                 {formatCurrency(resumen.valor_estimado_actual)}
               </p>
-            </div>
-
-            {/* Depreciación */}
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-orange-700">Depreciación Anual</span>
-                <ArrowTrendingDownIcon className="w-6 h-6 text-orange-600" />
-              </div>
-              <p className="text-3xl font-bold text-orange-900">
-                {formatPercentage(resumen.depreciacion_anual_porcentaje)}
+              <p className="text-xs text-green-600">
+                Valor actual aproximado
               </p>
             </div>
           </div>
 
+          {/* KPI Depreciación - Destacado */}
+          {resumen.depreciacion_anual_porcentaje !== null && (
+            <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6 border-2 border-orange-200 shadow-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-4 bg-orange-100 rounded-full">
+                    <ArrowTrendingDownIcon className="w-8 h-8 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-orange-700 mb-1">Depreciación Anual</p>
+                    <p className="text-4xl font-bold text-orange-900">
+                      {formatPercentage(resumen.depreciacion_anual_porcentaje)}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-600">Pérdida de valor estimada por año</p>
+                  <p className="text-xs text-gray-500 mt-1">Basado en precio de compra</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Desglose de Gastos */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Desglose de Gastos</h3>
+          <div className="bg-white rounded-xl border-2 border-gray-200 p-6 shadow-md">
+            <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <ChartBarIcon className="w-6 h-6 text-primary-600" />
+              Desglose Detallado de Gastos
+            </h3>
+
             <div className="space-y-4">
-              <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                <div className="flex items-center gap-3">
-                  <WrenchScrewdriverIcon className="w-5 h-5 text-blue-600" />
-                  <span className="font-medium text-gray-700">Mantenimientos</span>
+              {/* Mantenimientos */}
+              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-blue-100 rounded-full">
+                    <WrenchScrewdriverIcon className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Mantenimientos</p>
+                    <p className="text-xs text-gray-600">Revisiones, cambios, ITV...</p>
+                  </div>
                 </div>
-                <span className="font-bold text-gray-900">
-                  {formatCurrency(resumen.total_mantenimientos)}
-                </span>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-blue-900">
+                    {formatCurrency(resumen.total_mantenimientos)}
+                  </p>
+                  {totalGastos > 0 && (
+                    <p className="text-xs text-gray-500">
+                      {((resumen.total_mantenimientos || 0) / totalGastos * 100).toFixed(1)}% del total
+                    </p>
+                  )}
+                </div>
               </div>
 
-              <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                <div className="flex items-center gap-3">
-                  <ExclamationTriangleIcon className="w-5 h-5 text-red-600" />
-                  <span className="font-medium text-gray-700">Averías</span>
+              {/* Averías */}
+              <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg border border-red-200 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-red-100 rounded-full">
+                    <ExclamationTriangleIcon className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Averías y Reparaciones</p>
+                    <p className="text-xs text-gray-600">Reparaciones inesperadas</p>
+                  </div>
                 </div>
-                <span className="font-bold text-gray-900">
-                  {formatCurrency(resumen.total_averias)}
-                </span>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-red-900">
+                    {formatCurrency(resumen.total_averias)}
+                  </p>
+                  {totalGastos > 0 && (
+                    <p className="text-xs text-gray-500">
+                      {((resumen.total_averias || 0) / totalGastos * 100).toFixed(1)}% del total
+                    </p>
+                  )}
+                </div>
               </div>
 
-              <div className="flex items-center justify-between py-3">
-                <div className="flex items-center gap-3">
-                  <SparklesIcon className="w-5 h-5 text-purple-600" />
-                  <span className="font-medium text-gray-700">Mejoras y Accesorios</span>
+              {/* Mejoras */}
+              <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg border border-purple-200 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-purple-100 rounded-full">
+                    <SparklesIcon className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Mejoras y Accesorios</p>
+                    <p className="text-xs text-gray-600">Inversiones que añaden valor</p>
+                  </div>
                 </div>
-                <span className="font-bold text-gray-900">
-                  {formatCurrency(resumen.total_mejoras)}
-                </span>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-purple-900">
+                    {formatCurrency(resumen.total_mejoras)}
+                  </p>
+                  {totalGastos > 0 && (
+                    <p className="text-xs text-gray-500">
+                      {((resumen.total_mejoras || 0) / totalGastos * 100).toFixed(1)}% del total
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Total */}
+              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg border-2 border-gray-300 mt-4">
+                <div>
+                  <p className="font-bold text-gray-900 text-lg">Total Gastos</p>
+                  <p className="text-xs text-gray-600">Suma de todos los gastos</p>
+                </div>
+                <p className="text-3xl font-bold text-gray-900">
+                  {formatCurrency(totalGastos)}
+                </p>
               </div>
             </div>
           </div>
@@ -228,4 +327,3 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
     </div>
   )
 }
-

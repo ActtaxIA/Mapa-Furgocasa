@@ -23,10 +23,17 @@ export async function GET() {
       )
     }
 
-    // Obtener vehículos del usuario
+    // Obtener vehículos del usuario con estado de venta
     const { data: vehiculos, error } = await supabase
       .from('vehiculos_registrados')
-      .select('*')
+      .select(`
+        *,
+        vehiculo_valoracion_economica (
+          vendido,
+          fecha_venta,
+          precio_venta_final
+        )
+      `)
       .eq('user_id', user.id)
       .eq('activo', true)
       .order('created_at', { ascending: false })
@@ -39,7 +46,13 @@ export async function GET() {
       )
     }
 
-    return NextResponse.json({ vehiculos: vehiculos || [] })
+    // Transformar los datos para incluir el campo vendido directamente
+    const vehiculosTransformados = (vehiculos || []).map((v: any) => ({
+      ...v,
+      vendido: v.vehiculo_valoracion_economica?.vendido || false
+    }))
+
+    return NextResponse.json({ vehiculos: vehiculosTransformados })
 
   } catch (error) {
     console.error('Error en GET /api/vehiculos:', error)

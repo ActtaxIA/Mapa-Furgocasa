@@ -16,6 +16,7 @@ export interface VehiculoRegistrado {
   qr_image_url?: string
   activo: boolean
   verificado: boolean
+  vendido?: boolean // Estado de venta del vehículo
   created_at: string
   updated_at: string
 }

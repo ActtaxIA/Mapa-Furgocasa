@@ -12,20 +12,33 @@ import {
   TrashIcon,
   ArrowDownTrayIcon,
   ExclamationTriangleIcon,
-  ChartBarIcon
+  ChartBarIcon,
+  TagIcon
 } from '@heroicons/react/24/outline'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 interface Props {
   userId: string
 }
 
+interface VehiculosStats {
+  total: number
+  enPropiedad: number
+  vendidos: number
+}
+
 export function MiAutocaravanaTab({ userId }: Props) {
   const router = useRouter()
   const [vehiculos, setVehiculos] = useState<VehiculoRegistrado[]>([])
+  const [stats, setStats] = useState<VehiculosStats>({ total: 0, enPropiedad: 0, vendidos: 0 })
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; vehiculo: VehiculoRegistrado | null }>({
+    isOpen: false,
+    vehiculo: null
+  })
 
   // Form state
   const [formData, setFormData] = useState({
@@ -48,7 +61,15 @@ export function MiAutocaravanaTab({ userId }: Props) {
       const data = await response.json()
 
       if (response.ok) {
-        setVehiculos(data.vehiculos || [])
+        const vehiculosData = data.vehiculos || []
+        setVehiculos(vehiculosData)
+
+        // Calcular estadísticas
+        const total = vehiculosData.length
+        const vendidos = vehiculosData.filter((v: any) => v.vendido === true).length
+        const enPropiedad = total - vendidos
+
+        setStats({ total, enPropiedad, vendidos })
       } else {
         console.error('Error cargando vehículos:', data.error)
       }
@@ -170,13 +191,15 @@ export function MiAutocaravanaTab({ userId }: Props) {
     }
   }
 
-  const handleDelete = async (vehiculoId: string) => {
-    if (!confirm('¿Seguro que quieres eliminar este vehículo? Los reportes asociados se mantendrán.')) {
-      return
-    }
+  const handleDeleteClick = (vehiculo: VehiculoRegistrado) => {
+    setDeleteModal({ isOpen: true, vehiculo })
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.vehiculo) return
 
     try {
-      const response = await fetch(`/api/vehiculos?id=${vehiculoId}`, {
+      const response = await fetch(`/api/vehiculos?id=${deleteModal.vehiculo.id}`, {
         method: 'DELETE'
       })
 
@@ -184,6 +207,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
 
       if (response.ok) {
         setMessage({ type: 'success', text: data.message })
+        setDeleteModal({ isOpen: false, vehiculo: null })
         loadVehiculos()
       } else {
         setMessage({ type: 'error', text: data.error })
@@ -241,22 +265,62 @@ export function MiAutocaravanaTab({ userId }: Props) {
         </div>
       )}
 
-      {/* Header con botón de añadir */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Mi Autocaravana</h2>
-          <p className="mt-1 text-sm text-gray-600">
-            Registra tu autocaravana y genera un código QR para reportes de accidentes
-          </p>
+      {/* Header con contadores y botón */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">🚐 Mis Vehículos</h2>
+            <p className="mt-1 text-sm text-gray-600">
+              Gestiona tus autocaravanas y genera códigos QR para reportes de accidentes
+            </p>
+          </div>
+          {!showForm && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors"
+            >
+              <PlusIcon className="h-5 w-5 mr-2" />
+              Registrar Vehículo
+            </button>
+          )}
         </div>
-        {!showForm && (
-          <button
-            onClick={() => setShowForm(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors"
-          >
-            <PlusIcon className="h-5 w-5 mr-2" />
-            Registrar Vehículo
-          </button>
+
+        {/* Contadores de Vehículos */}
+        {stats.total > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Total */}
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border-2 border-blue-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-blue-700">Total Vehículos</p>
+                  <p className="text-3xl font-bold text-blue-900 mt-1">{stats.total}</p>
+                </div>
+                <TruckIcon className="w-10 h-10 text-blue-600 opacity-70" />
+              </div>
+            </div>
+
+            {/* En Propiedad */}
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border-2 border-green-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-green-700">En Propiedad</p>
+                  <p className="text-3xl font-bold text-green-900 mt-1">{stats.enPropiedad}</p>
+                </div>
+                <ChartBarIcon className="w-10 h-10 text-green-600 opacity-70" />
+              </div>
+            </div>
+
+            {/* Vendidos */}
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border-2 border-orange-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-orange-700">Vendidos</p>
+                  <p className="text-3xl font-bold text-orange-900 mt-1">{stats.vendidos}</p>
+                </div>
+                <TagIcon className="w-10 h-10 text-orange-600 opacity-70" />
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
@@ -437,7 +501,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
               {/* Layout Vertical en Móvil, Horizontal en Desktop */}
               <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-6">
                 {/* Foto del Vehículo */}
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 relative">
                   {vehiculo.foto_url ? (
                     <img
                       src={vehiculo.foto_url}
@@ -449,13 +513,25 @@ export function MiAutocaravanaTab({ userId }: Props) {
                       <TruckIcon className="h-16 w-16 text-primary-600" />
                     </div>
                   )}
+                  {/* Badge de Estado */}
+                  {vehiculo.vendido && (
+                    <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white">
+                      VENDIDO
+                    </div>
+                  )}
                 </div>
 
                 {/* Datos del Vehículo */}
                 <div className="flex-1 text-center lg:text-left w-full lg:w-auto">
-                  <div className="flex items-center justify-center lg:justify-start">
-                    <TruckIcon className="h-6 w-6 text-primary-600 mr-2" />
+                  <div className="flex items-center justify-center lg:justify-start gap-2">
+                    <TruckIcon className="h-6 w-6 text-primary-600" />
                     <h3 className="text-xl font-bold text-gray-900">{vehiculo.matricula}</h3>
+                    {vehiculo.vendido && (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded-full border border-orange-300">
+                        <TagIcon className="w-3 h-3" />
+                        Vendido
+                      </span>
+                    )}
                   </div>
                   <div className="mt-2 text-sm text-gray-600 space-y-1">
                     {vehiculo.marca && <p><strong>Marca:</strong> {vehiculo.marca}</p>}
@@ -517,7 +593,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
                   Gestionar Vehículo
                 </Link>
                 <button
-                  onClick={() => handleDelete(vehiculo.id)}
+                  onClick={() => handleDeleteClick(vehiculo)}
                   className="inline-flex items-center px-3 py-2 border border-red-300 rounded-lg text-sm font-medium text-red-700 bg-white hover:bg-red-50 transition-colors"
                 >
                   <TrashIcon className="h-4 w-4 mr-2" />
@@ -526,6 +602,93 @@ export function MiAutocaravanaTab({ userId }: Props) {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Modal de Confirmación para Eliminar */}
+      {deleteModal.vehiculo && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setDeleteModal({ isOpen: false, vehiculo: null })}
+          />
+
+          {/* Modal */}
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 animate-in zoom-in-95 duration-200">
+            {/* Header con gradiente */}
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 -mx-6 -mt-6 px-6 py-4 rounded-t-2xl border-b-2 border-red-200 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-red-100 rounded-full">
+                  <ExclamationTriangleIcon className="w-8 h-8 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">⚠️ Advertencia</h3>
+                  <p className="text-sm text-gray-600">Eliminar vehículo permanentemente</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Vehículo que se va a eliminar */}
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex items-center gap-3">
+                <TruckIcon className="w-8 h-8 text-gray-600" />
+                <div>
+                  <p className="font-bold text-gray-900">{deleteModal.vehiculo.matricula}</p>
+                  <p className="text-sm text-gray-600">
+                    {deleteModal.vehiculo.marca} {deleteModal.vehiculo.modelo}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Mensaje principal */}
+            <div className="space-y-4 mb-6">
+              <div className="bg-red-50 border-l-4 border-red-600 p-4 rounded-r-lg">
+                <p className="text-sm font-semibold text-red-900 mb-2">
+                  La eliminación de un vehículo lo borrará del sistema de forma permanente e irreversible.
+                </p>
+                <p className="text-sm text-red-800">
+                  Los reportes asociados se mantendrán, pero no estarán vinculados al vehículo.
+                </p>
+              </div>
+
+              {/* Sugerencia de venta */}
+              <div className="bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-lg">
+                <p className="text-sm font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                  <TagIcon className="w-5 h-5" />
+                  ¿Lo has vendido?
+                </p>
+                <p className="text-sm text-blue-800 mb-3">
+                  Si no lo quieres eliminar o ya lo has vendido, deberías <strong>añadir la venta</strong> en la gestión del vehículo. Así podrás conservar el histórico completo del mismo.
+                </p>
+                <Link
+                  href={`/vehiculo/${deleteModal.vehiculo.id}?tab=venta`}
+                  onClick={() => setDeleteModal({ isOpen: false, vehiculo: null })}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  <TagIcon className="w-4 h-4" />
+                  Registrar Venta
+                </Link>
+              </div>
+            </div>
+
+            {/* Botones */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteModal({ isOpen: false, vehiculo: null })}
+                className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="flex-1 px-4 py-3 rounded-lg text-white font-semibold bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 transition-all shadow-lg"
+              >
+                Eliminar Definitivamente
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

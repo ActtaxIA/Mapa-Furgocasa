@@ -241,225 +241,274 @@ export default function MejorasTab({ vehiculoId }: Props) {
 
       {/* Formulario */}
       {mostrarFormulario && (
-        <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">
-            {editandoId ? 'Editar Mejora' : 'Nueva Mejora'}
-          </h3>
+        <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+          <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4">
+            <h3 className="text-lg font-bold text-white">
+              {editandoId ? '✏️ Editar Mejora' : '➕ Nueva Mejora'}
+            </h3>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Tipo de mejora */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Tipo de mejora *
-                </label>
-                <select
-                  required
-                  value={formData.tipo_mejora}
-                  onChange={(e) => setFormData({ ...formData, tipo_mejora: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                >
-                  <option value="electronica">Electrónica</option>
-                  <option value="mecanica">Mecánica</option>
-                  <option value="habitabilidad">Habitabilidad</option>
-                  <option value="seguridad">Seguridad</option>
-                  <option value="exterior">Exterior</option>
-                  <option value="interior">Interior</option>
-                  <option value="energia">Energía</option>
-                  <option value="agua">Agua</option>
-                  <option value="otro">Otro</option>
-                </select>
-              </div>
+          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            {/* Información Básica */}
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <SparklesIcon className="w-6 h-6 text-purple-600" />
+                Información Básica de la Mejora
+              </h3>
 
-              {/* Nombre */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Nombre *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.nombre}
-                  onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Ej: Panel solar 200W"
-                />
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Tipo de mejora */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tipo de mejora <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    required
+                    value={formData.tipo_mejora}
+                    onChange={(e) => setFormData({ ...formData, tipo_mejora: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="electronica">Electrónica</option>
+                    <option value="mecanica">Mecánica</option>
+                    <option value="habitabilidad">Habitabilidad</option>
+                    <option value="seguridad">Seguridad</option>
+                    <option value="exterior">Exterior</option>
+                    <option value="interior">Interior</option>
+                    <option value="energia">Energía</option>
+                    <option value="agua">Agua</option>
+                    <option value="otro">Otro</option>
+                  </select>
+                </div>
 
-              {/* Marca */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Marca
-                </label>
-                <input
-                  type="text"
-                  value={formData.marca}
-                  onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Ej: Victron Energy"
-                />
-              </div>
+                {/* Nombre */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre de la mejora <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.nombre}
+                    onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Ej: Panel solar 200W, Toldo Fiamma..."
+                  />
+                </div>
 
-              {/* Modelo */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Modelo
-                </label>
-                <input
-                  type="text"
-                  value={formData.modelo}
-                  onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Ej: BlueSolar 150/35"
-                />
-              </div>
+                {/* Mejora el valor */}
+                <div className="md:col-span-2 flex items-center p-4 bg-green-50 rounded-lg border border-green-200">
+                  <input
+                    type="checkbox"
+                    checked={formData.mejora_valor}
+                    onChange={(e) => setFormData({ ...formData, mejora_valor: e.target.checked })}
+                    className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                  />
+                  <label className="ml-2 block text-sm font-medium text-green-900">
+                    ✨ Esta mejora aumenta el valor del vehículo
+                  </label>
+                </div>
 
-              {/* Fecha instalación */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Fecha de instalación *
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={formData.fecha_instalacion}
-                  onChange={(e) => setFormData({ ...formData, fecha_instalacion: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                />
-              </div>
-
-              {/* Coste producto */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Coste del producto (€)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.coste_producto}
-                  onChange={(e) => setFormData({ ...formData, coste_producto: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Ej: 450.00"
-                />
-              </div>
-
-              {/* Coste instalación */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Coste de instalación (€)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.coste_instalacion}
-                  onChange={(e) => setFormData({ ...formData, coste_instalacion: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Ej: 150.00"
-                />
-              </div>
-
-              {/* Proveedor */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Proveedor
-                </label>
-                <input
-                  type="text"
-                  value={formData.proveedor}
-                  onChange={(e) => setFormData({ ...formData, proveedor: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Donde lo compraste"
-                />
-              </div>
-
-              {/* Ubicación instalación */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Lugar de instalación
-                </label>
-                <input
-                  type="text"
-                  value={formData.ubicacion_instalacion}
-                  onChange={(e) => setFormData({ ...formData, ubicacion_instalacion: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Taller o ciudad"
-                />
-              </div>
-
-              {/* Garantía */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Garantía (meses)
-                </label>
-                <input
-                  type="number"
-                  value={formData.garantia_meses}
-                  onChange={(e) => setFormData({ ...formData, garantia_meses: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Ej: 24"
-                />
-              </div>
-
-              {/* Mejora el valor */}
-              <div className="flex items-center pt-6">
-                <input
-                  type="checkbox"
-                  checked={formData.mejora_valor}
-                  onChange={(e) => setFormData({ ...formData, mejora_valor: e.target.checked })}
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                />
-                <label className="ml-2 block text-sm text-gray-900">
-                  Mejora el valor del vehículo
-                </label>
+                {/* Descripción */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Descripción
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={formData.descripcion}
+                    onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Detalles de la mejora, características técnicas, motivo de la instalación..."
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Descripción */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Descripción
-              </label>
-              <textarea
-                rows={3}
-                value={formData.descripcion}
-                onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                placeholder="Detalles de la mejora..."
-              />
+            {/* Producto */}
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Detalles del Producto</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Marca */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Marca
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.marca}
+                    onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Ej: Victron Energy, Fiamma..."
+                  />
+                </div>
+
+                {/* Modelo */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Modelo
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.modelo}
+                    onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Ej: BlueSolar 150/35"
+                  />
+                </div>
+
+                {/* Proveedor */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Proveedor / Tienda
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.proveedor}
+                    onChange={(e) => setFormData({ ...formData, proveedor: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Donde lo compraste"
+                  />
+                </div>
+
+                {/* Garantía */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Garantía (meses)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.garantia_meses}
+                    onChange={(e) => setFormData({ ...formData, garantia_meses: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Ej: 24"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Notas */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Notas adicionales
-              </label>
+            {/* Instalación */}
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <WrenchScrewdriverIcon className="w-6 h-6 text-primary-600" />
+                Instalación
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Fecha instalación */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fecha de instalación <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.fecha_instalacion}
+                    onChange={(e) => setFormData({ ...formData, fecha_instalacion: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  />
+                </div>
+
+                {/* Ubicación instalación */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Lugar de instalación
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.ubicacion_instalacion}
+                    onChange={(e) => setFormData({ ...formData, ubicacion_instalacion: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Taller, ciudad, o DIY"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Costes */}
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <CurrencyEuroIcon className="w-6 h-6 text-green-600" />
+                Costes
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Coste producto */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Coste del producto (€)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.coste_producto}
+                    onChange={(e) => setFormData({ ...formData, coste_producto: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Ej: 450.00"
+                  />
+                </div>
+
+                {/* Coste instalación */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Coste de instalación (€)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.coste_instalacion}
+                    onChange={(e) => setFormData({ ...formData, coste_instalacion: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Ej: 150.00"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Deja en 0 si la instalaste tú mismo</p>
+                </div>
+
+                {/* Coste total calculado */}
+                {(formData.coste_producto || formData.coste_instalacion) && (
+                  <div className="md:col-span-2 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-blue-900">Inversión Total:</span>
+                      <span className="text-2xl font-bold text-blue-900">
+                        {((parseFloat(formData.coste_producto) || 0) + (parseFloat(formData.coste_instalacion) || 0)).toFixed(2)} €
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Notas Adicionales */}
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Notas Adicionales</h3>
+
               <textarea
-                rows={3}
+                rows={4}
                 value={formData.notas}
                 onChange={(e) => setFormData({ ...formData, notas: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                placeholder="Observaciones, instrucciones..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Observaciones, instrucciones de uso, mantenimiento requerido, número de serie, etc..."
               />
             </div>
 
             {/* Botones */}
-            <div className="flex justify-end space-x-3">
+            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
               <button
                 type="button"
                 onClick={() => {
                   setMostrarFormulario(false)
                   limpiarFormulario()
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={guardando}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50"
+                className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 transition-colors"
               >
-                {guardando ? 'Guardando...' : (editandoId ? 'Actualizar' : 'Guardar')}
+                {guardando ? 'Guardando...' : (editandoId ? '💾 Actualizar' : '💾 Guardar Mejora')}
               </button>
             </div>
           </form>

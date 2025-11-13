@@ -250,208 +250,241 @@ export default function MantenimientosTab({ vehiculoId }: Props) {
 
       {/* Formulario */}
       {mostrarFormulario && (
-        <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">
-            {editandoId ? 'Editar Mantenimiento' : 'Nuevo Mantenimiento'}
-          </h3>
+        <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+          <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4">
+            <h3 className="text-lg font-bold text-white">
+              {editandoId ? '✏️ Editar Mantenimiento' : '➕ Nuevo Mantenimiento'}
+            </h3>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Tipo de mantenimiento */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Tipo de mantenimiento *
-                </label>
-                <select
-                  required
-                  value={formData.tipo_mantenimiento}
-                  onChange={(e) => setFormData({ ...formData, tipo_mantenimiento: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                >
-                  <option value="revision">Revisión</option>
-                  <option value="cambio_aceite">Cambio de aceite</option>
-                  <option value="cambio_filtros">Cambio de filtros</option>
-                  <option value="cambio_neumaticos">Cambio de neumáticos</option>
-                  <option value="cambio_frenos">Cambio de frenos</option>
-                  <option value="itv">ITV</option>
-                  <option value="otro">Otro</option>
-                </select>
-              </div>
+          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            {/* Información Básica */}
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <WrenchScrewdriverIcon className="w-6 h-6 text-primary-600" />
+                Información Básica
+              </h3>
 
-              {/* Estado */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Estado *
-                </label>
-                <select
-                  required
-                  value={formData.estado}
-                  onChange={(e) => setFormData({ ...formData, estado: e.target.value as any })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                >
-                  <option value="pendiente">Pendiente</option>
-                  <option value="completado">Completado</option>
-                  <option value="vencido">Vencido</option>
-                </select>
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Tipo de mantenimiento */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tipo de mantenimiento <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    required
+                    value={formData.tipo_mantenimiento}
+                    onChange={(e) => setFormData({ ...formData, tipo_mantenimiento: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="revision">Revisión</option>
+                    <option value="cambio_aceite">Cambio de aceite</option>
+                    <option value="cambio_filtros">Cambio de filtros</option>
+                    <option value="cambio_neumaticos">Cambio de neumáticos</option>
+                    <option value="cambio_frenos">Cambio de frenos</option>
+                    <option value="itv">ITV</option>
+                    <option value="otro">Otro</option>
+                  </select>
+                </div>
 
-              {/* Fecha programada */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Fecha programada
-                </label>
-                <input
-                  type="date"
-                  value={formData.fecha_programada}
-                  onChange={(e) => setFormData({ ...formData, fecha_programada: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                />
-              </div>
+                {/* Estado */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Estado <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    required
+                    value={formData.estado}
+                    onChange={(e) => setFormData({ ...formData, estado: e.target.value as any })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="pendiente">Pendiente</option>
+                    <option value="completado">Completado</option>
+                    <option value="vencido">Vencido</option>
+                  </select>
+                </div>
 
-              {/* Fecha realizada */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Fecha realizada
-                </label>
-                <input
-                  type="date"
-                  value={formData.fecha_realizada}
-                  onChange={(e) => setFormData({ ...formData, fecha_realizada: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                />
-              </div>
-
-              {/* Kilometraje */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Kilometraje
-                </label>
-                <input
-                  type="number"
-                  value={formData.kilometraje}
-                  onChange={(e) => setFormData({ ...formData, kilometraje: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Ej: 50000"
-                />
-              </div>
-
-              {/* Coste */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Coste (€)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.coste}
-                  onChange={(e) => setFormData({ ...formData, coste: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Ej: 150.00"
-                />
-              </div>
-
-              {/* Taller */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Taller
-                </label>
-                <input
-                  type="text"
-                  value={formData.taller}
-                  onChange={(e) => setFormData({ ...formData, taller: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Nombre del taller"
-                />
-              </div>
-
-              {/* Ubicación del taller */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Ubicación del taller
-                </label>
-                <input
-                  type="text"
-                  value={formData.ubicacion_taller}
-                  onChange={(e) => setFormData({ ...formData, ubicacion_taller: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Ciudad, dirección..."
-                />
-              </div>
-
-              {/* Próximo mantenimiento KM */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Próximo mantenimiento (KM)
-                </label>
-                <input
-                  type="number"
-                  value={formData.proximo_mantenimiento_km}
-                  onChange={(e) => setFormData({ ...formData, proximo_mantenimiento_km: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="Ej: 60000"
-                />
-              </div>
-
-              {/* Próximo mantenimiento fecha */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Próximo mantenimiento (Fecha)
-                </label>
-                <input
-                  type="date"
-                  value={formData.proximo_mantenimiento_fecha}
-                  onChange={(e) => setFormData({ ...formData, proximo_mantenimiento_fecha: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                />
+                {/* Descripción */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Descripción
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={formData.descripcion}
+                    onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Detalles del mantenimiento..."
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Descripción */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Descripción
-              </label>
-              <textarea
-                rows={3}
-                value={formData.descripcion}
-                onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                placeholder="Detalles del mantenimiento..."
-              />
+            {/* Fechas y Kilometraje */}
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <CalendarIcon className="w-6 h-6 text-primary-600" />
+                Fechas y Kilometraje
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Fecha programada */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fecha programada
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.fecha_programada}
+                    onChange={(e) => setFormData({ ...formData, fecha_programada: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  />
+                </div>
+
+                {/* Fecha realizada */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fecha realizada
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.fecha_realizada}
+                    onChange={(e) => setFormData({ ...formData, fecha_realizada: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  />
+                </div>
+
+                {/* Kilometraje */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Kilometraje
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.kilometraje}
+                    onChange={(e) => setFormData({ ...formData, kilometraje: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Ej: 50000"
+                  />
+                </div>
+
+                {/* Coste */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Coste (€)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.coste}
+                    onChange={(e) => setFormData({ ...formData, coste: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Ej: 150.00"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Notas */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Notas adicionales
-              </label>
+            {/* Taller */}
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Taller</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Taller */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre del Taller
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.taller}
+                    onChange={(e) => setFormData({ ...formData, taller: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Nombre del taller"
+                  />
+                </div>
+
+                {/* Ubicación del taller */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ubicación del taller
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.ubicacion_taller}
+                    onChange={(e) => setFormData({ ...formData, ubicacion_taller: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Ciudad, dirección..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Próximo Mantenimiento */}
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Próximo Mantenimiento</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Próximo mantenimiento KM */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Próximo mantenimiento (KM)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.proximo_mantenimiento_km}
+                    onChange={(e) => setFormData({ ...formData, proximo_mantenimiento_km: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Ej: 60000"
+                  />
+                </div>
+
+                {/* Próximo mantenimiento fecha */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Próximo mantenimiento (Fecha)
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.proximo_mantenimiento_fecha}
+                    onChange={(e) => setFormData({ ...formData, proximo_mantenimiento_fecha: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Notas Adicionales */}
+            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Notas Adicionales</h3>
+
               <textarea
-                rows={3}
+                rows={4}
                 value={formData.notas}
                 onChange={(e) => setFormData({ ...formData, notas: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                placeholder="Observaciones, recomendaciones..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Observaciones, recomendaciones del taller, repuestos utilizados, etc..."
               />
             </div>
 
             {/* Botones */}
-            <div className="flex justify-end space-x-3">
+            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
               <button
                 type="button"
                 onClick={() => {
                   setMostrarFormulario(false)
                   limpiarFormulario()
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={guardando}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50"
+                className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 transition-colors"
               >
-                {guardando ? 'Guardando...' : (editandoId ? 'Actualizar' : 'Guardar')}
+                {guardando ? 'Guardando...' : (editandoId ? '💾 Actualizar' : '💾 Guardar Mantenimiento')}
               </button>
             </div>
           </form>
