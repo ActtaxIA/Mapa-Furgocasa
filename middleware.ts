@@ -2,8 +2,16 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // Excluir rutas API explícitamente
-  if (request.nextUrl.pathname.startsWith('/api/')) {
+  // CRÍTICO: Excluir rutas API ANTES DE CUALQUIER PROCESAMIENTO
+  const pathname = request.nextUrl.pathname
+  
+  // Lista completa de rutas a excluir
+  if (
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/favicon') ||
+    pathname.includes('.')
+  ) {
     return NextResponse.next()
   }
 
@@ -72,13 +80,13 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (public folder)
-     * - api routes (handled by route handlers)
+     * Match all request paths except:
+     * - Static files
+     * - API routes
+     * 
+     * Nota: La exclusión real se hace en el código del middleware
+     * para mayor control y evitar problemas con AWS Amplify
      */
-    '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next|favicon).*)',
   ],
 }
