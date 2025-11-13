@@ -235,14 +235,15 @@ export default function VentaTab({ vehiculoId }: Props) {
                   </label>
                   <input
                     type="number"
-                    step="0.01"
+                    step="1"
+                    min="0"
                     required
                     value={formData.precio_venta_final}
                     onChange={(e) => setFormData({ ...formData, precio_venta_final: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Ej: 33500.00"
+                    placeholder="Ej: 33500"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Precio real al que vendiste el vehículo</p>
+                  <p className="text-xs text-gray-500 mt-1">Precio real al que vendiste el vehículo (sin decimales)</p>
                 </div>
 
                 {/* Fecha de venta */}
