@@ -1,16 +1,18 @@
 # 🔧 Resumen de Corrección de Campos BD - 13 Nov 2025
 
 ## 🎯 Problema Principal
-Los componentes de gestión de vehículos (Mantenimientos, Averías, Mejoras) tenían **desalineación crítica** entre:
+Los componentes de gestión de vehículos (Mantenimientos, Averías, Mejoras, Venta) tenían **desalineación crítica** entre:
 - Nombres de campos en los formularios
 - Nombres de campos en las interfaces TypeScript
 - Nombres de campos reales en la base de datos
+- Uso incorrecto de campos en UPDATE (vehiculo_id vs id)
 
 Esto causaba:
 - ❌ Errores de compilación TypeScript
 - ❌ Datos que se guardaban pero no aparecían en las listas
-- ❌ Errores 500 al intentar guardar
+- ❌ Errores 500 al intentar guardar (especialmente Venta)
 - ❌ Campos que se enviaban pero no existían en BD
+- ❌ UPDATE fallando por usar campo incorrecto
 
 ---
 
@@ -190,6 +192,22 @@ Resumen ejecutivo de todas las correcciones realizadas.
 - [x] Campos inexistentes removidos (marca, modelo, etc.)
 - [x] TypeScript compila sin errores
 
+### VentaTab ✅ (13-nov-2025)
+- [x] API corregida: Usa `.eq('id', existingData.id)` para UPDATE
+- [x] Validaciones estrictas de campos requeridos
+- [x] Validación de formato de fecha (YYYY-MM-DD)
+- [x] Validación de tipos de datos (precio numérico)
+- [x] Cálculo automático de rentabilidad y coste anual
+- [x] Campos opcionales solo se añaden si tienen valor
+- [x] Eliminado `updated_at` manual (hay trigger automático)
+- [x] Logs detallados para debugging
+- [x] Manejo de errores mejorado con detalles específicos
+- [x] **RESULTADO:** ✅ Venta se registra correctamente
+
+### GastosAdicionalesTab ✅ (13-nov-2025)
+- [x] Campo de ordenación corregido: `fecha_gasto` → `fecha`
+- [x] Coincide con el campo que envía el componente
+
 ---
 
 ## 🚀 Resultado Final
@@ -205,6 +223,8 @@ Resumen ejecutivo de todas las correcciones realizadas.
 - ✅ Datos se guardan Y aparecen en las listas
 - ✅ Todas las operaciones CRUD funcionan correctamente
 - ✅ Interfaces 100% alineadas con BD real
+- ✅ **Sistema de Venta funcionando correctamente** (13-nov-2025)
+- ✅ **Todos los endpoints verificados y funcionando** (Mantenimientos, Averías, Mejoras, Gastos, Venta, Compra)
 - ✅ Documentación completa para evitar futuros errores
 
 ---
@@ -231,11 +251,16 @@ Resumen ejecutivo de todas las correcciones realizadas.
 ---
 
 **Fecha:** 13 de noviembre de 2025  
-**Estado:** ✅ Completado y verificado  
+**Última actualización:** 13 de noviembre de 2025  
+**Estado:** ✅ **COMPLETADO Y VERIFICADO - TODOS LOS ENDPOINTS FUNCIONANDO**  
 **Commits:**
 - `3e31a2d` - Fix TypeScript: Corregir interfaces Mantenimiento y Mejora
 - `85674bb` - Fix TypeScript: Tipos estrictos en mapeos de AveriasTab
 - `cafe297` - Fix TypeScript: Corregir interface Averia con nombres de BD
 - `eabe1c0` - Fix: Eliminar campo 'estado' inexistente en Mantenimientos
 - `55e2eff` - Documentar mapeo completo de campos Formularios → BD
+- `7322793` - Fix CRÍTICO: API venta con logs detallados y cálculos
+- `fb86064` - Fix CRÍTICO: Validaciones y estructura API venta
+- `1d8ed97` - Fix CRÍTICO: Usar ID del registro en UPDATE (igual que DatosCompraTab)
+- `fae5194` - Fix: Corregir campo de ordenación en gastos (fecha_gasto → fecha)
 

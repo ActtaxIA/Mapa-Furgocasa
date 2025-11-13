@@ -302,8 +302,25 @@ titulo: formData.nombre || 'Mejora sin nombre' // ✅
 ### Mejoras
 ✅ **CORRECTO** - Campos mapeados, inexistentes removidos
 
+### Venta
+✅ **CORRECTO** - API corregida y funcionando (13-nov-2025)
+- ✅ Usa `.eq('id', existingData.id)` para UPDATE (igual que Compra)
+- ✅ Validaciones estrictas de campos requeridos
+- ✅ Cálculo automático de rentabilidad y coste anual
+- ✅ Campos opcionales manejados correctamente
+
+### Compra
+✅ **CORRECTO** - Funcionando desde el inicio
+- ✅ Usa `.eq('id', existingData.id)` para UPDATE
+- ✅ Todos los campos mapeados correctamente
+
+### Gastos Adicionales
+✅ **CORRECTO** - Campo de ordenación corregido (13-nov-2025)
+- ✅ Orden por `fecha` (no `fecha_gasto`)
+
 ---
 
 **Fecha de creación:** 13 de noviembre de 2025  
 **Última actualización:** 13 de noviembre de 2025  
-**Mantenedor:** Equipo Mapa Furgocasa
+**Mantenedor:** Equipo Mapa Furgocasa  
+**Estado:** ✅ **TODOS LOS ENDPOINTS FUNCIONANDO CORRECTAMENTE**

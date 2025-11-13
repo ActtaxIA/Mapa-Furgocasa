@@ -11,7 +11,7 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 
 **Estado:** 🟢 **100% OPERATIVO** - Chatbot IA funcionando, Editor de prompts activo, Sistema completo en producción, **Subida directa de fotos a Supabase Storage (bypass AWS Amplify)**.
 
-**Última actualización:** 13 de Noviembre 2025 - Sistema de subida directa de fotos a Supabase Storage implementado. Solución definitiva al problema de AWS Amplify bloqueando FormData.
+**Última actualización:** 13 de Noviembre 2025 - ✅ Sistema de venta funcionando correctamente. Todos los endpoints de gestión de vehículos verificados y operativos (Mantenimientos, Averías, Mejoras, Gastos, Venta, Compra).
 
 ---
 

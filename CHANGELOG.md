@@ -4,6 +4,42 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 ---
 
+## [2.1.1] - 2025-11-13 ✅💰
+
+### 🐛 Correcciones Críticas - Sistema de Venta
+
+#### ✅ Sistema de Registro de Venta FUNCIONANDO
+- **Problema resuelto:** Error 500 al registrar venta de vehículo
+- **Causa:** Uso incorrecto de `vehiculo_id` en UPDATE en lugar de `id` del registro
+- **Solución:** Cambiado a usar `.eq('id', existingData.id)` igual que DatosCompraTab
+- **Resultado:** ✅ Venta se registra correctamente con todos los datos económicos
+
+#### 🔧 Mejoras en API de Venta
+- ✅ Logs detallados en cada paso para debugging
+- ✅ Validación estricta de campos requeridos (precio, fecha)
+- ✅ Validación de formato de fecha (YYYY-MM-DD)
+- ✅ Validación de tipos de datos (precio numérico válido)
+- ✅ Cálculo automático de rentabilidad y coste anual
+- ✅ Campos opcionales solo se añaden si tienen valor
+- ✅ Eliminado `updated_at` manual (hay trigger automático)
+- ✅ Mejor manejo de errores con detalles específicos (code, hint, message)
+
+#### 🎯 Corrección en Gastos Adicionales
+- ✅ Corregido campo de ordenación: `fecha_gasto` → `fecha`
+- ✅ Coincide con el campo que envía el componente
+
+#### 📊 Verificación Completa de Endpoints
+- ✅ **Mantenimientos** - Tabla correcta, campos mapeados ✅
+- ✅ **Averías** - Tabla correcta, campos mapeados ✅
+- ✅ **Mejoras** - Tabla correcta, campos mapeados ✅
+- ✅ **Gastos** - Tabla correcta, campos corregidos ✅
+- ✅ **Venta** - Tabla correcta, UPDATE corregido ✅
+- ✅ **Compra** - Tabla correcta, funcionando ✅
+
+**Todos los endpoints ahora funcionan correctamente y usan el mismo patrón.**
+
+---
+
 ## [2.1.0] - 2025-11-13 📸🚀
 
 ### 🎯 SISTEMA DE SUBIDA DIRECTA DE FOTOS A SUPABASE STORAGE

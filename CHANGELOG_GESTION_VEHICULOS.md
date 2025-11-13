@@ -204,22 +204,26 @@ docs/
 ### 🚀 Próximos Pasos
 
 #### Pendientes (Priorizados)
-1. [ ] Ejecutar scripts 05-12 en Supabase
-2. [ ] Crear API endpoints para gestión
-3. [ ] Completar componentes UI de perfil
-4. [ ] Implementar panel de administración
-5. [ ] Sistema de alertas y notificaciones
-6. [ ] Exportación de informes PDF
-7. [ ] API pública para terceros
-8. [ ] Widget embebible de valoración
+1. ✅ Ejecutar scripts 05-12 en Supabase - **COMPLETADO**
+2. ✅ Crear API endpoints para gestión - **COMPLETADO**
+3. ✅ Completar componentes UI de perfil - **COMPLETADO**
+4. ✅ Verificar todos los endpoints funcionando - **COMPLETADO (13-nov-2025)**
+5. [ ] Implementar panel de administración
+6. [ ] Sistema de alertas y notificaciones
+7. [ ] Exportación de informes PDF
+8. [ ] API pública para terceros
+9. [ ] Widget embebible de valoración
 
 ### 🐛 Correcciones
 
-#### Bugs Corregidos
+#### Bugs Corregidos (13-nov-2025)
 - ✅ Triggers duplicados (añadido DROP TRIGGER IF EXISTS)
 - ✅ Import incorrecto en DashboardVehiculo (Link from 'next/link')
 - ✅ Colores inconsistentes (sky → primary)
 - ✅ Border radius inconsistente (md → lg/xl)
+- ✅ **Sistema de Venta:** Error 500 resuelto - Usa `.eq('id', existingData.id)` para UPDATE
+- ✅ **Gastos Adicionales:** Campo de ordenación corregido (`fecha_gasto` → `fecha`)
+- ✅ **Todos los endpoints verificados:** Mantenimientos, Averías, Mejoras, Gastos, Venta, Compra funcionando correctamente
 
 ### 📈 Métricas del Sistema
 
@@ -266,7 +270,8 @@ docs/
 **Desarrollado por:** Claude (Anthropic) + Narciso Pardo  
 **Proyecto:** Furgocasa - Mapa de Autocaravanas  
 **Fecha:** Noviembre 2024  
-**Versión:** 2.0.0
+**Versión:** 2.0.0  
+**Última actualización:** 13 de Noviembre 2025 - ✅ Sistema de venta funcionando correctamente
 
 ---
 
