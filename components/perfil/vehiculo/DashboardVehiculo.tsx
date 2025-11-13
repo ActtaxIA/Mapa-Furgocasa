@@ -24,6 +24,12 @@ interface Props {
   onTabChange: (tab: string) => void
 }
 
+// Función para formatear números en formato español sin decimales
+const formatNumber = (value: number | null | undefined): string => {
+  if (value === null || value === undefined) return '0'
+  return Math.round(value).toLocaleString('es-ES')
+}
+
 export function DashboardVehiculo({ vehiculo, onTabChange }: Props) {
   const [resumen, setResumen] = useState<ResumenEconomico | null>(null)
   const [loading, setLoading] = useState(true)
@@ -188,7 +194,7 @@ export function DashboardVehiculo({ vehiculo, onTabChange }: Props) {
             <div>
               <p className="text-sm font-medium text-gray-600">Coste por km</p>
               <p className="text-2xl font-bold text-gray-900 mt-2">
-                {resumen?.coste_por_km ? `${resumen.coste_por_km.toFixed(2)}€` : 'N/A'}
+                {resumen?.coste_por_km ? `${formatNumber(resumen.coste_por_km)} €` : 'N/A'}
               </p>
               <p className="text-xs text-gray-500 mt-1">Promedio</p>
             </div>

@@ -33,6 +33,11 @@ interface Props {
   vehiculoId: string
 }
 
+// Función para formatear números en formato español (miles con k)
+const formatNumberK = (value: number): string => {
+  return `${Math.round(value / 1000)}k €`
+}
+
 export default function HistoricoValoracion({ vehiculoId }: Props) {
   const [historico, setHistorico] = useState<ValoracionHistorica[]>([])
   const [loading, setLoading] = useState(true)
@@ -300,7 +305,7 @@ export default function HistoricoValoracion({ vehiculoId }: Props) {
                   <YAxis 
                     stroke="#6b7280"
                     style={{ fontSize: '12px' }}
-                    tickFormatter={(value) => `${(value / 1000).toFixed(0)}k €`}
+                    tickFormatter={formatNumberK}
                   />
                   <Tooltip 
                     contentStyle={{ 
