@@ -84,10 +84,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const vehiculoId = params.id
     const body = await request.json()
 
+    console.log('📤 [Venta API] Recibida solicitud POST para vehículo:', vehiculoId)
+    console.log('📤 [Venta API] Body recibido:', JSON.stringify(body, null, 2))
+
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
+      console.error('❌ [Venta API] Error de autenticación:', authError)
       return NextResponse.json(
         { error: 'No autenticado' },
         { status: 401 }
@@ -102,6 +106,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .single()
 
     if (vehiculoError || !vehiculo || vehiculo.user_id !== user.id) {
+      console.error('❌ [Venta API] Error verificando vehículo:', vehiculoError)
       return NextResponse.json(
         { error: 'Vehículo no encontrado o acceso denegado' },
         { status: 403 }
@@ -117,70 +122,130 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       notas_venta
     } = body
 
-    // Verificar si existe el registro
-    const { data: existingData } = await supabase
+    // Validar campos requeridos
+    if (!precio_venta_final || !fecha_venta) {
+      console.error('❌ [Venta API] Campos requeridos faltantes')
+      return NextResponse.json(
+        { error: 'Precio de venta y fecha son obligatorios' },
+        { status: 400 }
+      )
+    }
+
+    // Obtener datos existentes de valoración económica para calcular rentabilidad
+    const { data: existingData, error: fetchError } = await supabase
       .from('vehiculo_valoracion_economica')
-      .select('id')
+      .select('*')
       .eq('vehiculo_id', vehiculoId)
       .maybeSingle()
+
+    if (fetchError) {
+      console.error('❌ [Venta API] Error obteniendo datos existentes:', fetchError)
+      return NextResponse.json(
+        { error: 'Error obteniendo datos del vehículo', details: fetchError.message },
+        { status: 500 }
+      )
+    }
+
+    // Calcular rentabilidad y coste anual si tenemos datos de compra
+    let rentabilidad = null
+    let coste_anual = null
+
+    if (existingData?.fecha_compra && existingData?.inversion_total) {
+      const fechaCompra = new Date(existingData.fecha_compra)
+      const fechaVenta = new Date(fecha_venta)
+      const diffTime = Math.abs(fechaVenta.getTime() - fechaCompra.getTime())
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      const años = diffDays / 365.25
+
+      if (años > 0) {
+        rentabilidad = precio_venta_final - existingData.inversion_total
+        coste_anual = Math.abs(rentabilidad / años)
+      }
+    }
+
+    console.log('📊 [Venta API] Cálculos:', {
+      rentabilidad,
+      coste_anual,
+      inversion_total: existingData?.inversion_total,
+      precio_venta_final
+    })
+
+    // Preparar datos para guardar (solo campos que existen en BD)
+    const dataToSave: any = {
+      vendido: true,
+      precio_venta_final: parseFloat(precio_venta_final),
+      fecha_venta,
+      comprador_tipo: comprador_tipo || null,
+      kilometros_venta: kilometros_venta ? parseInt(kilometros_venta) : null,
+      estado_venta: estado_venta || null,
+      notas_venta: notas_venta || null,
+      en_venta: false,
+      updated_at: new Date().toISOString()
+    }
+
+    console.log('💾 [Venta API] Datos a guardar:', JSON.stringify(dataToSave, null, 2))
 
     let result
 
     if (existingData) {
       // Actualizar registro existente
+      console.log('🔄 [Venta API] Actualizando registro existente:', existingData.id)
       result = await supabase
         .from('vehiculo_valoracion_economica')
-        .update({
-          vendido: true,
-          precio_venta_final,
-          fecha_venta,
-          comprador_tipo,
-          kilometros_venta,
-          estado_venta,
-          notas_venta,
-          en_venta: false,
-          updated_at: new Date().toISOString()
-        })
+        .update(dataToSave)
         .eq('vehiculo_id', vehiculoId)
         .select()
         .single()
     } else {
       // Crear nuevo registro
+      console.log('➕ [Venta API] Creando nuevo registro')
       result = await supabase
         .from('vehiculo_valoracion_economica')
         .insert({
           vehiculo_id: vehiculoId,
           user_id: user.id,
-          vendido: true,
-          precio_venta_final,
-          fecha_venta,
-          comprador_tipo,
-          kilometros_venta,
-          estado_venta,
-          notas_venta,
-          en_venta: false
+          ...dataToSave
         })
         .select()
         .single()
     }
 
     if (result.error) {
-      console.error('Error registrando venta:', result.error)
+      console.error('❌ [Venta API] Error en operación BD:', result.error)
+      console.error('❌ [Venta API] Detalles del error:', JSON.stringify(result.error, null, 2))
       return NextResponse.json(
-        { error: 'Error registrando venta', details: result.error.message },
+        { 
+          error: 'Error registrando venta', 
+          details: result.error.message,
+          code: result.error.code,
+          hint: result.error.hint
+        },
         { status: 500 }
       )
     }
 
+    console.log('✅ [Venta API] Venta registrada exitosamente:', result.data)
+
+    // Añadir cálculos a la respuesta (aunque no se guarden en BD)
+    const responseData = {
+      ...result.data,
+      rentabilidad: rentabilidad !== null ? rentabilidad : undefined,
+      coste_anual: coste_anual !== null ? coste_anual : undefined
+    }
+
     return NextResponse.json({
       success: true,
-      data: result.data,
+      data: responseData,
       mensaje: '¡Venta registrada exitosamente!'
     }, { status: 201 })
-  } catch (error) {
-    console.error('Error:', error)
+  } catch (error: any) {
+    console.error('❌ [Venta API] Error catch:', error)
+    console.error('❌ [Venta API] Stack:', error.stack)
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { 
+        error: 'Error interno del servidor',
+        details: error.message 
+      },
       { status: 500 }
     )
   }
