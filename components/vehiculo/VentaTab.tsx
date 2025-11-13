@@ -68,11 +68,14 @@ export default function VentaTab({ vehiculoId }: Props) {
       setGuardando(true)
       setMensaje(null)
 
+      // Convertir precio a número entero (sin decimales) para evitar problemas de precisión
+      const precioEntero = Math.round(parseFloat(formData.precio_venta_final))
+
       const response = await fetch(`/api/vehiculos/${vehiculoId}/venta`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          precio_venta_final: parseFloat(formData.precio_venta_final),
+          precio_venta_final: precioEntero,
           fecha_venta: formData.fecha_venta,
           comprador_tipo: formData.comprador_tipo || null,
           kilometros_venta: formData.kilometros_venta ? parseInt(formData.kilometros_venta) : null,
@@ -101,13 +104,16 @@ export default function VentaTab({ vehiculoId }: Props) {
 
   const calcularGananciaPerdida = () => {
     if (!datos?.inversion_total || !formData.precio_venta_final) return null
-    const precioVenta = parseFloat(formData.precio_venta_final)
+    // Usar Math.round para evitar problemas de precisión de punto flotante
+    const precioVenta = Math.round(parseFloat(formData.precio_venta_final))
     return precioVenta - datos.inversion_total
   }
 
   const calcularGananciaPerdidaFinal = () => {
     if (!datos?.inversion_total || !datos?.precio_venta_final) return null
-    return datos.precio_venta_final - datos.inversion_total
+    // Usar precio redondeado para consistencia
+    const precioRedondeado = Math.round(datos.precio_venta_final)
+    return precioRedondeado - datos.inversion_total
   }
 
   const calcularTiempoPropiedad = () => {
@@ -212,7 +218,7 @@ export default function VentaTab({ vehiculoId }: Props) {
                 <div className="bg-white rounded p-3">
                   <span className="font-medium text-gray-700">Precio de venta:</span>
                   <p className="text-xl font-bold text-green-900 mt-1">
-                    {datos.precio_venta_final?.toFixed(2)} €
+                    {datos.precio_venta_final ? Math.round(datos.precio_venta_final).toLocaleString('es-ES') : '0'} €
                   </p>
                 </div>
                 <div className="bg-white rounded p-3">
@@ -426,7 +432,7 @@ export default function VentaTab({ vehiculoId }: Props) {
                   </div>
                   <div className="flex justify-between border-t pt-2">
                     <span>Precio de venta:</span>
-                    <span className="font-semibold">{parseFloat(formData.precio_venta_final).toFixed(2)} €</span>
+                    <span className="font-semibold">{Math.round(parseFloat(formData.precio_venta_final)).toLocaleString('es-ES')} €</span>
                   </div>
                 </div>
                 {calcularTiempoPropiedad() && (

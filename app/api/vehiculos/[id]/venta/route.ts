@@ -139,8 +139,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       )
     }
 
-    // Validar tipos de datos
-    const precioNumero = parseFloat(precio_venta_final)
+    // Validar tipos de datos y convertir a entero (sin decimales)
+    // Usar Math.round para evitar problemas de precisión de punto flotante
+    const precioNumero = Math.round(parseFloat(precio_venta_final))
     if (isNaN(precioNumero) || precioNumero < 0) {
       console.error('❌ [Venta API] precio_venta_final inválido:', precio_venta_final)
       return NextResponse.json(
@@ -186,7 +187,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       const años = diffDays / 365.25
 
       if (años > 0) {
-        rentabilidad = precio_venta_final - existingData.inversion_total
+        // Usar precioNumero (ya redondeado) en lugar de precio_venta_final para consistencia
+        rentabilidad = precioNumero - existingData.inversion_total
         coste_anual = Math.abs(rentabilidad / años)
       }
     }
@@ -195,7 +197,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       rentabilidad,
       coste_anual,
       inversion_total: existingData?.inversion_total,
-      precio_venta_final
+      precio_venta_final: precioNumero,
+      precio_venta_final_original: precio_venta_final
     })
 
     // Preparar datos para guardar (solo campos que existen en BD)
