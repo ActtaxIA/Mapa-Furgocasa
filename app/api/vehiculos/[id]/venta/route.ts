@@ -2,6 +2,69 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
+// GET - Obtener datos de valoración y venta
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const supabase = createRouteHandlerClient({ cookies })
+    
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    // Verificar que el vehículo pertenece al usuario
+    const { data: vehiculo, error: vehiculoError } = await supabase
+      .from('vehiculos_registrados')
+      .select('id')
+      .eq('id', params.id)
+      .eq('user_id', user.id)
+      .single()
+
+    if (vehiculoError || !vehiculo) {
+      return NextResponse.json({ error: 'Vehículo no encontrado' }, { status: 404 })
+    }
+
+    // Obtener datos de valoración económica
+    const { data, error } = await supabase
+      .from('vehiculo_valoracion_economica')
+      .select('*')
+      .eq('vehiculo_id', params.id)
+      .single()
+
+    if (error && error.code !== 'PGRST116') {
+      throw error
+    }
+
+    // Si no existe registro, devolver valores por defecto
+    if (!data) {
+      return NextResponse.json({
+        vendido: false,
+        en_venta: false,
+        precio_venta_deseado: null,
+        precio_venta_final: null,
+        fecha_venta: null,
+        fecha_puesta_venta: null,
+        comprador_tipo: null,
+        kilometros_venta: null,
+        estado_venta: null,
+        notas_venta: null,
+        inversion_total: 0
+      })
+    }
+
+    return NextResponse.json(data)
+  } catch (error) {
+    console.error('Error al obtener datos de venta:', error)
+    return NextResponse.json(
+      { error: 'Error al obtener datos de venta' },
+      { status: 500 }
+    )
+  }
+}
+
 // PUT - Poner vehículo en venta o actualizar precio
 export async function PUT(
   request: Request,
@@ -9,7 +72,7 @@ export async function PUT(
 ) {
   try {
     const supabase = createRouteHandlerClient({ cookies })
-    
+
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
@@ -65,20 +128,20 @@ export async function POST(
 ) {
   try {
     const supabase = createRouteHandlerClient({ cookies })
-    
+
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
     const body = await request.json()
-    const { 
-      precio_venta_final, 
-      fecha_venta, 
+    const {
+      precio_venta_final,
+      fecha_venta,
       comprador_tipo,
       kilometros_venta,
       estado_venta,
-      notas_venta 
+      notas_venta
     } = body
 
     // Verificar que el vehículo pertenece al usuario
@@ -126,4 +189,3 @@ export async function POST(
     )
   }
 }
-
