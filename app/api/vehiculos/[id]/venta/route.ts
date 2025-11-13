@@ -1,41 +1,53 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { NextResponse, NextRequest } from 'next/server'
 
-// GET - Obtener datos de valoración y venta
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+type RouteParams = {
+  params: { id: string }
+}
+
+// GET: Obtener datos de valoración y venta
+export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const supabase = await createClient()
+    const vehiculoId = params.id
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    // Verificar autenticación
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'No autenticado' },
+        { status: 401 }
+      )
     }
 
     // Verificar que el vehículo pertenece al usuario
     const { data: vehiculo, error: vehiculoError } = await supabase
       .from('vehiculos_registrados')
-      .select('id')
-      .eq('id', params.id)
-      .eq('user_id', user.id)
+      .select('user_id')
+      .eq('id', vehiculoId)
       .single()
 
-    if (vehiculoError || !vehiculo) {
-      return NextResponse.json({ error: 'Vehículo no encontrado' }, { status: 404 })
+    if (vehiculoError || !vehiculo || vehiculo.user_id !== user.id) {
+      return NextResponse.json(
+        { error: 'Vehículo no encontrado o acceso denegado' },
+        { status: 403 }
+      )
     }
 
     // Obtener datos de valoración económica
     const { data, error } = await supabase
       .from('vehiculo_valoracion_economica')
       .select('*')
-      .eq('vehiculo_id', params.id)
+      .eq('vehiculo_id', vehiculoId)
       .maybeSingle()
 
     if (error) {
-      throw error
+      console.error('Error obteniendo datos:', error)
+      return NextResponse.json(
+        { error: 'Error obteniendo datos de venta' },
+        { status: 500 }
+      )
     }
 
     // Si no existe registro, devolver valores por defecto
@@ -46,7 +58,7 @@ export async function GET(
         precio_venta_deseado: null,
         precio_venta_final: null,
         fecha_venta: null,
-        fecha_puesta_venta: null,
+        fecha_compra: null,
         comprador_tipo: null,
         kilometros_venta: null,
         estado_venta: null,
@@ -57,114 +69,45 @@ export async function GET(
 
     return NextResponse.json(data)
   } catch (error) {
-    console.error('Error al obtener datos de venta:', error)
+    console.error('Error:', error)
     return NextResponse.json(
-      { error: 'Error al obtener datos de venta' },
+      { error: 'Error interno del servidor' },
       { status: 500 }
     )
   }
 }
 
-// PUT - Poner vehículo en venta o actualizar precio
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+// POST: Registrar venta final
+export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
-    }
-
+    const supabase = await createClient()
+    const vehiculoId = params.id
     const body = await request.json()
-    const { en_venta, precio_venta_deseado } = body
+
+    // Verificar autenticación
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'No autenticado' },
+        { status: 401 }
+      )
+    }
 
     // Verificar que el vehículo pertenece al usuario
     const { data: vehiculo, error: vehiculoError } = await supabase
       .from('vehiculos_registrados')
-      .select('id')
-      .eq('id', params.id)
-      .eq('user_id', user.id)
+      .select('user_id')
+      .eq('id', vehiculoId)
       .single()
 
-    if (vehiculoError || !vehiculo) {
-      return NextResponse.json({ error: 'Vehículo no encontrado' }, { status: 404 })
+    if (vehiculoError || !vehiculo || vehiculo.user_id !== user.id) {
+      return NextResponse.json(
+        { error: 'Vehículo no encontrado o acceso denegado' },
+        { status: 403 }
+      )
     }
 
-    // Verificar si existe el registro
-    const { data: existingData } = await supabase
-      .from('vehiculo_valoracion_economica')
-      .select('id')
-      .eq('vehiculo_id', params.id)
-      .maybeSingle()
-
-    let data, error
-
-    if (existingData) {
-      // Actualizar registro existente
-      const result = await supabase
-        .from('vehiculo_valoracion_economica')
-        .update({
-          en_venta,
-          precio_venta_deseado,
-          fecha_puesta_venta: en_venta ? new Date().toISOString() : null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('vehiculo_id', params.id)
-        .select()
-        .single()
-
-      data = result.data
-      error = result.error
-    } else {
-      // Crear nuevo registro
-      const result = await supabase
-        .from('vehiculo_valoracion_economica')
-        .insert({
-          vehiculo_id: params.id,
-          user_id: user.id,
-          en_venta,
-          precio_venta_deseado,
-          fecha_puesta_venta: en_venta ? new Date().toISOString() : null
-        })
-        .select()
-        .single()
-
-      data = result.data
-      error = result.error
-    }
-
-    if (error) throw error
-
-    return NextResponse.json({
-      success: true,
-      data
-    })
-  } catch (error) {
-    console.error('Error al actualizar estado de venta:', error)
-    return NextResponse.json(
-      { error: 'Error al actualizar estado de venta' },
-      { status: 500 }
-    )
-  }
-}
-
-// POST - Registrar venta final
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const supabase = createRouteHandlerClient({ cookies })
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
-    }
-
-    const body = await request.json()
     const {
       precio_venta_final,
       fecha_venta,
@@ -174,30 +117,18 @@ export async function POST(
       notas_venta
     } = body
 
-    // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
-      .from('vehiculos_registrados')
-      .select('id')
-      .eq('id', params.id)
-      .eq('user_id', user.id)
-      .single()
-
-    if (vehiculoError || !vehiculo) {
-      return NextResponse.json({ error: 'Vehículo no encontrado' }, { status: 404 })
-    }
-
     // Verificar si existe el registro
     const { data: existingData } = await supabase
       .from('vehiculo_valoracion_economica')
       .select('id')
-      .eq('vehiculo_id', params.id)
+      .eq('vehiculo_id', vehiculoId)
       .maybeSingle()
 
-    let data, error
+    let result
 
     if (existingData) {
       // Actualizar registro existente
-      const result = await supabase
+      result = await supabase
         .from('vehiculo_valoracion_economica')
         .update({
           vendido: true,
@@ -210,18 +141,15 @@ export async function POST(
           en_venta: false,
           updated_at: new Date().toISOString()
         })
-        .eq('vehiculo_id', params.id)
+        .eq('vehiculo_id', vehiculoId)
         .select()
         .single()
-
-      data = result.data
-      error = result.error
     } else {
       // Crear nuevo registro
-      const result = await supabase
+      result = await supabase
         .from('vehiculo_valoracion_economica')
         .insert({
-          vehiculo_id: params.id,
+          vehiculo_id: vehiculoId,
           user_id: user.id,
           vendido: true,
           precio_venta_final,
@@ -234,22 +162,116 @@ export async function POST(
         })
         .select()
         .single()
-
-      data = result.data
-      error = result.error
     }
 
-    if (error) throw error
+    if (result.error) {
+      console.error('Error registrando venta:', result.error)
+      return NextResponse.json(
+        { error: 'Error registrando venta', details: result.error.message },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
-      data,
+      data: result.data,
       mensaje: '¡Venta registrada exitosamente!'
+    }, { status: 201 })
+  } catch (error) {
+    console.error('Error:', error)
+    return NextResponse.json(
+      { error: 'Error interno del servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+// PUT: Poner vehículo en venta o actualizar precio
+export async function PUT(request: NextRequest, { params }: RouteParams) {
+  try {
+    const supabase = await createClient()
+    const vehiculoId = params.id
+    const body = await request.json()
+
+    // Verificar autenticación
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'No autenticado' },
+        { status: 401 }
+      )
+    }
+
+    // Verificar que el vehículo pertenece al usuario
+    const { data: vehiculo, error: vehiculoError } = await supabase
+      .from('vehiculos_registrados')
+      .select('user_id')
+      .eq('id', vehiculoId)
+      .single()
+
+    if (vehiculoError || !vehiculo || vehiculo.user_id !== user.id) {
+      return NextResponse.json(
+        { error: 'Vehículo no encontrado o acceso denegado' },
+        { status: 403 }
+      )
+    }
+
+    const { en_venta, precio_venta_deseado } = body
+
+    // Verificar si existe el registro
+    const { data: existingData } = await supabase
+      .from('vehiculo_valoracion_economica')
+      .select('id')
+      .eq('vehiculo_id', vehiculoId)
+      .maybeSingle()
+
+    let result
+
+    if (existingData) {
+      // Actualizar registro existente
+      result = await supabase
+        .from('vehiculo_valoracion_economica')
+        .update({
+          en_venta,
+          precio_venta_deseado,
+          fecha_puesta_venta: en_venta ? new Date().toISOString() : null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('vehiculo_id', vehiculoId)
+        .select()
+        .single()
+    } else {
+      // Crear nuevo registro
+      result = await supabase
+        .from('vehiculo_valoracion_economica')
+        .insert({
+          vehiculo_id: vehiculoId,
+          user_id: user.id,
+          en_venta,
+          precio_venta_deseado,
+          fecha_puesta_venta: en_venta ? new Date().toISOString() : null
+        })
+        .select()
+        .single()
+    }
+
+    if (result.error) {
+      console.error('Error actualizando estado de venta:', result.error)
+      return NextResponse.json(
+        { error: 'Error actualizando estado de venta' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: result.data
     })
   } catch (error) {
-    console.error('Error al registrar venta:', error)
+    console.error('Error:', error)
     return NextResponse.json(
-      { error: 'Error al registrar venta' },
+      { error: 'Error interno del servidor' },
       { status: 500 }
     )
   }
