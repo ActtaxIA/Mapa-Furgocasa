@@ -88,6 +88,22 @@
   .card-mobile {
     @apply bg-white rounded-lg shadow-mobile p-4;
   }
+
+  /* Ocultar scrollbar pero mantener scroll */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+  }
+
+  /* Mejorar interacción táctil en móvil */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 /* Animaciones */

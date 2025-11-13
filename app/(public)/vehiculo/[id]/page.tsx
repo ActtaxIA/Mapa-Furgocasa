@@ -146,25 +146,36 @@ export default function VehiculoPage() {
         </div>
 
         {/* Tabs Navigation */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 mb-6 overflow-x-auto">
-          <div className="flex border-b border-gray-200">
-            {tabs.map((tab) => {
-              const Icon = tab.icon
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'border-b-2 border-primary-600 text-primary-600 bg-primary-50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  {tab.label}
-                </button>
-              )
-            })}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 mb-6 overflow-hidden">
+          <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="flex border-b border-gray-200 min-w-max">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                const shortLabels: Record<string, string> = {
+                  'Resumen': 'Resumen',
+                  'Datos de Compra': 'Compra',
+                  'Mantenimientos': 'Mant.',
+                  'Averías': 'Averías',
+                  'Mejoras': 'Mejoras',
+                  'Venta': 'Venta'
+                }
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as TabType)}
+                    className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 font-medium transition-colors whitespace-nowrap text-xs sm:text-base min-w-[70px] sm:min-w-0 touch-manipulation ${
+                      activeTab === tab.id
+                        ? 'border-b-2 border-primary-600 text-primary-600 bg-primary-50'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <span className="hidden sm:inline">{tab.label}</span>
+                    <span className="sm:hidden text-center leading-tight font-semibold">{shortLabels[tab.label] || tab.label}</span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
         </div>
 
