@@ -35,6 +35,8 @@ export function MiAutocaravanaTab({ userId }: Props) {
     año: '',
     color: ''
   })
+  const [fotoFile, setFotoFile] = useState<File | null>(null)
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null)
 
   useEffect(() => {
     loadVehiculos()
@@ -75,16 +77,18 @@ export function MiAutocaravanaTab({ userId }: Props) {
     }
 
     try {
+      // Crear FormData para enviar la foto
+      const formDataToSend = new FormData()
+      formDataToSend.append('matricula', formData.matricula.toUpperCase())
+      if (formData.marca) formDataToSend.append('marca', formData.marca)
+      if (formData.modelo) formDataToSend.append('modelo', formData.modelo)
+      if (añoNumero !== null) formDataToSend.append('año', añoNumero.toString())
+      if (formData.color) formDataToSend.append('color', formData.color)
+      if (fotoFile) formDataToSend.append('foto', fotoFile)
+
       const response = await fetch('/api/vehiculos', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          matricula: formData.matricula.toUpperCase(),
-          marca: formData.marca || null,
-          modelo: formData.modelo || null,
-          año: añoNumero,
-          color: formData.color || null
-        })
+        body: formDataToSend
       })
 
       const data = await response.json()
@@ -92,6 +96,8 @@ export function MiAutocaravanaTab({ userId }: Props) {
       if (response.ok) {
         setMessage({ type: 'success', text: '¡Vehículo registrado! Ahora completa los datos de compra...' })
         setFormData({ matricula: '', marca: '', modelo: '', año: '', color: '' })
+        setFotoFile(null)
+        setFotoPreview(null)
         setShowForm(false)
 
         // Redirigir a la página del vehículo con el tab de compra activo
@@ -267,12 +273,81 @@ export function MiAutocaravanaTab({ userId }: Props) {
               </div>
             </div>
 
+            {/* Campo de foto */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Foto del Vehículo (Opcional)
+              </label>
+              <div className="flex items-start gap-4">
+                {/* Preview de la foto */}
+                {fotoPreview && (
+                  <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-gray-200">
+                    <img
+                      src={fotoPreview}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFotoFile(null)
+                        setFotoPreview(null)
+                      }}
+                      className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+                
+                {/* Botón de subida */}
+                {!fotoPreview && (
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg className="w-8 h-8 mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      <p className="mb-1 text-sm text-gray-500 font-medium">Click para subir foto</p>
+                      <p className="text-xs text-gray-400">PNG, JPG hasta 5MB</p>
+                    </div>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          if (file.size > 5 * 1024 * 1024) {
+                            setMessage({ type: 'error', text: 'La foto no puede superar los 5MB' })
+                            return
+                          }
+                          setFotoFile(file)
+                          const reader = new FileReader()
+                          reader.onloadend = () => {
+                            setFotoPreview(reader.result as string)
+                          }
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+                  </label>
+                )}
+              </div>
+              <p className="mt-1 text-xs text-gray-500">
+                Sube una foto de tu vehículo para identificarlo fácilmente
+              </p>
+            </div>
+
             <div className="flex justify-end space-x-3">
               <button
                 type="button"
                 onClick={() => {
                   setShowForm(false)
                   setFormData({ matricula: '', marca: '', modelo: '', año: '', color: '' })
+                  setFotoFile(null)
+                  setFotoPreview(null)
                 }}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
               >
@@ -303,7 +378,23 @@ export function MiAutocaravanaTab({ userId }: Props) {
         <div className="grid grid-cols-1 gap-6">
           {vehiculos.map((vehiculo) => (
             <div key={vehiculo.id} className="bg-white rounded-xl shadow p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between">
+              <div className="flex items-start gap-6">
+                {/* Foto del Vehículo */}
+                <div className="flex-shrink-0">
+                  {vehiculo.foto_url ? (
+                    <img
+                      src={vehiculo.foto_url}
+                      alt={`${vehiculo.marca} ${vehiculo.modelo}`}
+                      className="w-32 h-32 rounded-lg object-cover border-2 border-gray-200"
+                    />
+                  ) : (
+                    <div className="w-32 h-32 rounded-lg bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center border-2 border-primary-300">
+                      <TruckIcon className="h-16 w-16 text-primary-600" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Datos del Vehículo */}
                 <div className="flex-1">
                   <div className="flex items-center">
                     <TruckIcon className="h-6 w-6 text-primary-600 mr-2" />
@@ -322,12 +413,12 @@ export function MiAutocaravanaTab({ userId }: Props) {
 
                 {/* QR Code */}
                 {vehiculo.qr_image_url && (
-                  <div className="ml-6 flex-shrink-0">
+                  <div className="flex-shrink-0">
                     <div className="text-center">
                       <img
                         src={vehiculo.qr_image_url}
                         alt={`QR ${vehiculo.matricula}`}
-                        className="w-32 h-32 border-2 border-gray-200 rounded"
+                        className="w-32 h-32 border-2 border-gray-200 rounded-lg"
                       />
                       <button
                         onClick={() => handleDownloadQR(vehiculo)}

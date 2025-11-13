@@ -65,8 +65,16 @@ export async function POST(request: Request) {
       )
     }
 
-    const body = await request.json()
-    const { matricula, marca, modelo, año, color, foto_url } = body
+    // Obtener FormData para manejar la foto
+    const formData = await request.formData()
+    const matricula = formData.get('matricula') as string
+    const marca = formData.get('marca') as string | null
+    const modelo = formData.get('modelo') as string | null
+    const añoStr = formData.get('año') as string | null
+    const color = formData.get('color') as string | null
+    const fotoFile = formData.get('foto') as File | null
+    
+    const año = añoStr ? parseInt(añoStr) : null
 
     // Validación básica
     if (!matricula || matricula.trim() === '') {
@@ -113,6 +121,42 @@ export async function POST(request: Request) {
       )
     }
 
+    // Subir foto a Supabase Storage si existe
+    let foto_url: string | null = null
+    if (fotoFile && fotoFile.size > 0) {
+      try {
+        const fileExt = fotoFile.name.split('.').pop()
+        const fileName = `${user.id}/${qr_code_id}.${fileExt}`
+        
+        // Convertir File a ArrayBuffer
+        const fileBuffer = await fotoFile.arrayBuffer()
+        
+        const { data: uploadData, error: uploadError } = await supabase
+          .storage
+          .from('vehiculos')
+          .upload(fileName, fileBuffer, {
+            contentType: fotoFile.type,
+            upsert: true
+          })
+
+        if (uploadError) {
+          console.error('Error subiendo foto:', uploadError)
+          // Continuar sin foto, no es crítico
+        } else {
+          // Obtener URL pública
+          const { data: { publicUrl } } = supabase
+            .storage
+            .from('vehiculos')
+            .getPublicUrl(fileName)
+          
+          foto_url = publicUrl
+        }
+      } catch (fotoError) {
+        console.error('Error procesando foto:', fotoError)
+        // Continuar sin foto
+      }
+    }
+
     // Generar imagen del QR (base64 data URL)
     // El QR ahora lleva a /accidente con la matrícula como sugerencia
     const qrUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://mapafurgocasa.com'}/accidente?matricula=${matricula.trim().toUpperCase()}`
@@ -142,7 +186,7 @@ export async function POST(request: Request) {
         modelo: modelo?.trim() || null,
         año: año || null,
         color: color?.trim() || null,
-        foto_url: foto_url || null,
+        foto_url: foto_url,
         qr_code_id,
         qr_image_url,
         activo: true,
