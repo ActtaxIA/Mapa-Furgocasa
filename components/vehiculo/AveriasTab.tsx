@@ -179,12 +179,17 @@ export default function AveriasTab({ vehiculoId }: Props) {
 
   const handleEditar = (averia: any) => {
     // Mapear de BD (severidad) a formulario (gravedad)
-    const severidadToGravedadMap: { [key: string]: string } = {
-      'baja': 'leve', 'media': 'moderada', 'alta': 'grave', 'critica': 'critica'
+    const severidadToGravedadMap: { [key: string]: 'leve' | 'moderada' | 'grave' | 'critica' } = {
+      'baja': 'leve', 
+      'media': 'moderada', 
+      'alta': 'grave', 
+      'critica': 'critica'
     }
     // Mapear de BD (estado) a formulario (estado)
-    const estadoMap: { [key: string]: string } = {
-      'pendiente': 'pendiente', 'en_reparacion': 'en_reparacion', 'resuelto': 'reparada'
+    const estadoMap: { [key: string]: 'pendiente' | 'en_reparacion' | 'reparada' } = {
+      'pendiente': 'pendiente', 
+      'en_reparacion': 'en_reparacion', 
+      'resuelto': 'reparada'
     }
     
     setFormData({
