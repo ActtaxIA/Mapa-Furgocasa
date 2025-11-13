@@ -635,28 +635,28 @@ node scripts/migrate-users-to-supabase.js # Migrar usuarios
 #### Instalación y Setup
 - **[INSTALACION_RAPIDA.md](./INSTALACION_RAPIDA.md)** - Guía de instalación en 5 pasos
 - **[COMANDOS_UTILES.md](./COMANDOS_UTILES.md)** - Comandos frecuentes de desarrollo
-- **[CONFIGURACION_SUPABASE_URLS.md](./CONFIGURACION_SUPABASE_URLS.md)** - Configurar OAuth y URLs
-- **[CONFIGURACION_SEO.md](./CONFIGURACION_SEO.md)** - 🆕 SEO, Sitemap XML y Robots.txt
+- **[docs/configuracion/CONFIGURACION_SUPABASE_URLS.md](./docs/configuracion/CONFIGURACION_SUPABASE_URLS.md)** - Configurar OAuth y URLs
+- **[docs/configuracion/CONFIGURACION_SEO.md](./docs/configuracion/CONFIGURACION_SEO.md)** - 🆕 SEO, Sitemap XML y Robots.txt
 
 #### Deployment y SEO
-- **[GUIA_DEPLOYMENT_AWS.md](./GUIA_DEPLOYMENT_AWS.md)** - Guía completa de deployment en AWS Amplify
-- **[GUIA_GOOGLE_SEARCH_CONSOLE.md](./GUIA_GOOGLE_SEARCH_CONSOLE.md)** - 🆕 Configuración paso a paso de Google Search Console
-- **[FIX_IA_PRODUCCION.md](./FIX_IA_PRODUCCION.md)** - Solución de funciones IA en producción
+- **[docs/deployment/GUIA_DEPLOYMENT_AWS.md](./docs/deployment/GUIA_DEPLOYMENT_AWS.md)** - Guía completa de deployment en AWS Amplify
+- **[docs/configuracion/GUIA_GOOGLE_SEARCH_CONSOLE.md](./docs/configuracion/GUIA_GOOGLE_SEARCH_CONSOLE.md)** - 🆕 Configuración paso a paso de Google Search Console
+- **[docs/temporales/FIX_IA_PRODUCCION.md](./docs/temporales/FIX_IA_PRODUCCION.md)** - Solución de funciones IA en producción
 
 #### Sistemas Principales
-- **[SISTEMA_VISITAS_VALORACIONES_COMPLETO.md](./SISTEMA_VISITAS_VALORACIONES_COMPLETO.md)** - Visitas y valoraciones
-- **[SISTEMA_DETECCION_DUPLICADOS.md](./SISTEMA_DETECCION_DUPLICADOS.md)** - 7 criterios anti-duplicados
-- **[BUSQUEDA_MASIVA_AREAS.md](./BUSQUEDA_MASIVA_AREAS.md)** - Importación masiva desde Google Places
-- **[SISTEMA_PROMPTS_FLEXIBLE.md](./SISTEMA_PROMPTS_FLEXIBLE.md)** - Configuración de IA
+- **[docs/temporales/SISTEMA_VISITAS_VALORACIONES_COMPLETO.md](./docs/temporales/SISTEMA_VISITAS_VALORACIONES_COMPLETO.md)** - Visitas y valoraciones
+- **[docs/temporales/SISTEMA_DETECCION_DUPLICADOS.md](./docs/temporales/SISTEMA_DETECCION_DUPLICADOS.md)** - 7 criterios anti-duplicados
+- **[docs/temporales/BUSQUEDA_MASIVA_AREAS.md](./docs/temporales/BUSQUEDA_MASIVA_AREAS.md)** - Importación masiva desde Google Places
+- **[docs/temporales/SISTEMA_PROMPTS_FLEXIBLE.md](./docs/temporales/SISTEMA_PROMPTS_FLEXIBLE.md)** - Configuración de IA
 
 #### Soluciones Aplicadas
-- **[SOLUCION_ADMIN_AREAS_FINAL.md](./SOLUCION_ADMIN_AREAS_FINAL.md)** - Permisos de administrador
-- **[SOLUCION_FUNCIONES_IA_ADMIN.md](./SOLUCION_FUNCIONES_IA_ADMIN.md)** - Funciones de IA
-- **[OAUTH_GOOGLE_SOLUCION_FINAL.md](./OAUTH_GOOGLE_SOLUCION_FINAL.md)** - OAuth redirect a producción
+- **[docs/temporales/SOLUCION_ADMIN_AREAS_FINAL.md](./docs/temporales/SOLUCION_ADMIN_AREAS_FINAL.md)** - Permisos de administrador
+- **[docs/temporales/SOLUCION_FUNCIONES_IA_ADMIN.md](./docs/temporales/SOLUCION_FUNCIONES_IA_ADMIN.md)** - Funciones de IA
+- **[docs/temporales/OAUTH_GOOGLE_SOLUCION_FINAL.md](./docs/temporales/OAUTH_GOOGLE_SOLUCION_FINAL.md)** - OAuth redirect a producción
 
 #### Debugging
-- **[GUIA_DEBUGGING_IA.md](./GUIA_DEBUGGING_IA.md)** - Debugging de funciones IA paso a paso
-- **[DIAGNOSTICO_GOOGLE_PLACES_API.md](./DIAGNOSTICO_GOOGLE_PLACES_API.md)** - Diagnóstico de Google Places API
+- **[docs/temporales/GUIA_DEBUGGING_IA.md](./docs/temporales/GUIA_DEBUGGING_IA.md)** - Debugging de funciones IA paso a paso
+- **[docs/diagnosticos/DIAGNOSTICO_GOOGLE_PLACES_API.md](./docs/diagnosticos/DIAGNOSTICO_GOOGLE_PLACES_API.md)** - Diagnóstico de Google Places API
 
 ### 📋 Otros Documentos
 
@@ -855,7 +855,7 @@ Este proyecto es de uso personal y educativo.
 Para más información, consulta:
 - **[INDICE_DOCUMENTACION.md](./INDICE_DOCUMENTACION.md)** - Índice completo de 30+ documentos
 - **[CHANGELOG.md](./CHANGELOG.md)** - Registro detallado de cambios
-- **[MEJORAS_FILTROS_Y_NORMALIZACION.md](./MEJORAS_FILTROS_Y_NORMALIZACION.md)** - Última actualización (29-oct-2025)
+- **[docs/mejoras/MEJORAS_FILTROS_Y_NORMALIZACION.md](./docs/mejoras/MEJORAS_FILTROS_Y_NORMALIZACION.md)** - Última actualización (29-oct-2025)
 
 ---
 
