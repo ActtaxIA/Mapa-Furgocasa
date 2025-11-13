@@ -13,20 +13,25 @@ export async function POST(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    console.log('🔵 POST /api/vehiculos/[id]/fotos iniciado')
     const supabase = await createClient()
+    console.log('✅ Supabase client creado')
     
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
+    console.log('👤 Usuario:', user?.id, 'Error auth:', authError)
     
     if (authError || !user) {
+      console.error('❌ No autenticado:', authError)
       return NextResponse.json(
-        { error: 'No autenticado' },
+        { error: 'No autenticado', details: authError?.message },
         { status: 401 }
       )
     }
 
     const params = await context.params
     const vehiculoId = params.id
+    console.log('🚗 Vehículo ID:', vehiculoId)
 
     // Verificar que el vehículo pertenece al usuario
     const { data: vehiculo, error: vehiculoError } = await supabase
