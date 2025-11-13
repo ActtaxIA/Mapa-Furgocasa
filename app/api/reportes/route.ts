@@ -7,6 +7,11 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
+// Configuración de runtime para evitar interceptaciones
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
 // GET: Obtener reportes del usuario autenticado
 export async function GET() {
   try {
@@ -34,7 +39,15 @@ export async function GET() {
       )
     }
 
-    return NextResponse.json({ reportes: reportes || [] })
+    return NextResponse.json(
+      { reportes: reportes || [] },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+        },
+      }
+    )
 
   } catch (error) {
     console.error('Error en GET /api/reportes:', error)
@@ -359,11 +372,19 @@ export async function POST(request: Request) {
 
     // El trigger de Supabase creará automáticamente la notificación
 
-    return NextResponse.json({
-      success: true,
-      reporte: nuevoReporte,
-      message: 'Reporte creado correctamente. El propietario ha sido notificado.'
-    })
+    return NextResponse.json(
+      {
+        success: true,
+        reporte: nuevoReporte,
+        message: 'Reporte creado correctamente. El propietario ha sido notificado.'
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+        },
+      }
+    )
 
   } catch (error: any) {
     console.error('Error en POST /api/reportes:', error)

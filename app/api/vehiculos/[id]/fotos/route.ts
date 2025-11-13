@@ -7,6 +7,22 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
+// Configuración de runtime para evitar interceptaciones
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
+// Helper para respuestas JSON con headers explícitos
+const jsonResponse = (data: any, status = 200) => {
+  return NextResponse.json(data, {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
+    },
+  })
+}
+
 // POST: Subir una foto adicional
 export async function POST(
   request: Request,
@@ -23,9 +39,9 @@ export async function POST(
     
     if (authError || !user) {
       console.error('❌ No autenticado:', authError)
-      return NextResponse.json(
+      return jsonResponse(
         { error: 'No autenticado', details: authError?.message },
-        { status: 401 }
+        401
       )
     }
 
@@ -41,25 +57,25 @@ export async function POST(
       .single()
 
     if (vehiculoError || !vehiculo) {
-      return NextResponse.json(
+      return jsonResponse(
         { error: 'Vehículo no encontrado' },
-        { status: 404 }
+        404
       )
     }
 
     if (vehiculo.user_id !== user.id) {
-      return NextResponse.json(
+      return jsonResponse(
         { error: 'No autorizado' },
-        { status: 403 }
+        403
       )
     }
 
     // Verificar límite de fotos (1 principal + 9 adicionales = 10 total)
     const fotosAdicionales = vehiculo.fotos_adicionales || []
     if (fotosAdicionales.length >= 9) {
-      return NextResponse.json(
+      return jsonResponse(
         { error: 'Has alcanzado el límite de 10 fotos por vehículo' },
-        { status: 400 }
+        400
       )
     }
 
@@ -68,17 +84,17 @@ export async function POST(
     const fotoFile = formData.get('foto') as File | null
 
     if (!fotoFile || fotoFile.size === 0) {
-      return NextResponse.json(
+      return jsonResponse(
         { error: 'No se proporcionó ninguna foto' },
-        { status: 400 }
+        400
       )
     }
 
     // Validar tamaño (máx 5MB)
     if (fotoFile.size > 5 * 1024 * 1024) {
-      return NextResponse.json(
+      return jsonResponse(
         { error: 'La foto no puede superar los 5MB' },
-        { status: 400 }
+        400
       )
     }
 
@@ -101,9 +117,9 @@ export async function POST(
 
       if (uploadError) {
         console.error('Error subiendo foto:', uploadError)
-        return NextResponse.json(
+        return jsonResponse(
           { error: 'Error al subir la foto al almacenamiento' },
-          { status: 500 }
+          500
         )
       }
 
@@ -125,13 +141,13 @@ export async function POST(
         console.error('Error actualizando BD:', updateError)
         // Intentar limpiar la foto subida
         await supabase.storage.from('vehiculos').remove([fileName])
-        return NextResponse.json(
+        return jsonResponse(
           { error: 'Error al actualizar el registro' },
-          { status: 500 }
+          500
         )
       }
 
-      return NextResponse.json({
+      return jsonResponse({
         success: true,
         fotoUrl: publicUrl,
         message: 'Foto subida con éxito'
@@ -139,21 +155,21 @@ export async function POST(
 
     } catch (storageError) {
       console.error('Error en storage:', storageError)
-      return NextResponse.json(
+      return jsonResponse(
         { error: 'Error procesando la foto' },
-        { status: 500 }
+        500
       )
     }
 
   } catch (error: any) {
     console.error('Error en POST /api/vehiculos/[id]/fotos:', error)
-    return NextResponse.json(
+    return jsonResponse(
       { 
         error: 'Error interno del servidor',
         details: error?.message || 'Sin detalles',
         stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
       },
-      { status: 500 }
+      500
     )
   }
 }
@@ -181,9 +197,9 @@ export async function DELETE(
     const { fotoUrl, esFotoPrincipal } = await request.json()
 
     if (!fotoUrl) {
-      return NextResponse.json(
+      return jsonResponse(
         { error: 'URL de foto no proporcionada' },
-        { status: 400 }
+        400
       )
     }
 
@@ -195,25 +211,25 @@ export async function DELETE(
       .single()
 
     if (vehiculoError || !vehiculo) {
-      return NextResponse.json(
+      return jsonResponse(
         { error: 'Vehículo no encontrado' },
-        { status: 404 }
+        404
       )
     }
 
     if (vehiculo.user_id !== user.id) {
-      return NextResponse.json(
+      return jsonResponse(
         { error: 'No autorizado' },
-        { status: 403 }
+        403
       )
     }
 
     // Extraer el path del archivo de la URL
     const urlParts = fotoUrl.split('/vehiculos/')
     if (urlParts.length < 2) {
-      return NextResponse.json(
+      return jsonResponse(
         { error: 'URL de foto inválida' },
-        { status: 400 }
+        400
       )
     }
     const filePath = urlParts[1]
@@ -247,16 +263,16 @@ export async function DELETE(
         .eq('id', vehiculoId)
     }
 
-    return NextResponse.json({
+    return jsonResponse({
       success: true,
       message: 'Foto eliminada con éxito'
     })
 
   } catch (error) {
     console.error('Error en DELETE /api/vehiculos/[id]/fotos:', error)
-    return NextResponse.json(
+    return jsonResponse(
       { error: 'Error interno del servidor' },
-      { status: 500 }
+      500
     )
   }
 }
