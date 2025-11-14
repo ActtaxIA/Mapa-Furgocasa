@@ -591,7 +591,7 @@ export default function VehiculoPage() {
                     Genera tu primera valoración con IA para conocer el valor real de tu vehículo
                   </p>
                   <button
-                    onClick={generarValoracionIA}
+                    onClick={handleGenerarValoracion}
                     disabled={generandoValoracion}
                     className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
                   >
