@@ -329,54 +329,64 @@ export function MiAutocaravanaTab({ userId }: Props) {
 
       {/* Formulario de registro */}
       {showForm && (
-        <div className="bg-white rounded-xl shadow p-6 border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Registrar Nuevo Vehículo</h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <TruckIcon className="w-6 h-6 text-primary-600" />
+            Registrar Nuevo Vehículo
+          </h3>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Matrícula - Campo destacado */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Matrícula <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.matricula}
-                  onChange={(e) => setFormData({ ...formData, matricula: e.target.value.toUpperCase() })}
-                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                  placeholder="1234ABC"
+                onChange={(e) => setFormData({ ...formData, matricula: e.target.value.toUpperCase() })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder="1234ABC"
                 maxLength={20}
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Marca</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Marca
+                </label>
                 <input
                   type="text"
                   value={formData.marca}
                   onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
-                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Hymer, Bürstner, etc."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Modelo</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Modelo
+                </label>
                 <input
                   type="text"
                   value={formData.modelo}
                   onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
-                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="B-Class, Elegance, etc."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Año</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Año
+                </label>
                 <input
                   type="number"
                   value={formData.año}
                   onChange={(e) => setFormData({ ...formData, año: e.target.value })}
-                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="2020"
                   min="1900"
                   max={new Date().getFullYear() + 1}
@@ -384,25 +394,27 @@ export function MiAutocaravanaTab({ userId }: Props) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Color</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Color
+                </label>
                 <input
                   type="text"
                   value={formData.color}
                   onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Blanco, Gris, etc."
                 />
               </div>
 
               {/* Tipo de vehículo */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Tipo de Vehículo <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.tipo_vehiculo}
                   onChange={(e) => setFormData({ ...formData, tipo_vehiculo: e.target.value })}
-                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   required
                 >
                   <option value="">Selecciona un tipo</option>
@@ -484,7 +496,8 @@ export function MiAutocaravanaTab({ userId }: Props) {
               </p>
             </div>
 
-            <div className="flex justify-end space-x-3">
+            {/* Botones de acción */}
+            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
               <button
                 type="button"
                 onClick={() => {
@@ -493,16 +506,29 @@ export function MiAutocaravanaTab({ userId }: Props) {
                   setFotoFile(null)
                   setFotoPreview(null)
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 transition-colors"
+                className="px-6 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               >
-                {saving ? 'Registrando...' : 'Registrar Vehículo'}
+                {saving ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Registrando...
+                  </>
+                ) : (
+                  <>
+                    <PlusIcon className="h-5 w-5" />
+                    Registrar Vehículo
+                  </>
+                )}
               </button>
             </div>
           </form>
