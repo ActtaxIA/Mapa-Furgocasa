@@ -10,9 +10,9 @@ function normalizeNumericFields(data: any): any {
   if (!data || typeof data !== 'object') {
     return data
   }
-  
+
   const normalized: any = { ...data }
-  
+
   // Todos los campos numéricos de la tabla vehiculo_valoracion_economica
   const numericFields = [
     'precio_compra',
@@ -27,16 +27,16 @@ function normalizeNumericFields(data: any): any {
     'precio_venta_deseado',
     'kilometros_venta'
   ]
-  
+
   numericFields.forEach(field => {
     if (normalized[field] !== null && normalized[field] !== undefined) {
-      const parsed = typeof normalized[field] === 'string' 
-        ? parseFloat(normalized[field]) 
+      const parsed = typeof normalized[field] === 'string'
+        ? parseFloat(normalized[field])
         : normalized[field]
       normalized[field] = isNaN(parsed) ? null : parsed
     }
   })
-  
+
   return normalized
 }
 

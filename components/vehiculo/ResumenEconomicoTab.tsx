@@ -38,7 +38,7 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
     try {
       // Usar API que normaliza los campos numéricos (DECIMAL → number)
       const response = await fetch(`/api/vehiculos/${vehiculoId}/resumen-economico`)
-      
+
       if (!response.ok) {
         console.error('Error cargando resumen:', response.statusText)
         return
