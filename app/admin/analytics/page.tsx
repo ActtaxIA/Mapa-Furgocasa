@@ -1807,29 +1807,44 @@ export default function AdminAnalyticsPage() {
               <p className="text-sm text-gray-600">Áreas con más visitas registradas por usuarios</p>
             </div>
             <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {analytics.areasMasVisitadas.map((item, index) => (
-                  <div key={item.area.id} className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                    <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-full text-lg font-bold shadow-md">
-                      {index + 1}
-                    </span>
-                    {item.area.foto_principal && (
-                      <img
-                        src={item.area.foto_principal}
-                        alt={item.area.nombre}
-                        className="w-16 h-16 rounded-lg object-cover"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-gray-900 truncate">{item.area.nombre}</h4>
-                      <p className="text-sm text-gray-500 truncate">{item.area.ciudad || item.area.provincia}, {item.area.pais}</p>
+              <div className="space-y-4">
+                {analytics.areasMasVisitadas.map((item, index) => {
+                  const maxVisitas = analytics.areasMasVisitadas[0]?.visitas || 1
+                  const porcentaje = (item.visitas / maxVisitas) * 100
+                  
+                  return (
+                    <div key={item.area.id} className="group">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-full text-sm font-bold shadow-md flex-shrink-0">
+                          {index + 1}
+                        </span>
+                        {item.area.foto_principal && (
+                          <img
+                            src={item.area.foto_principal}
+                            alt={item.area.nombre}
+                            className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-gray-900 truncate text-sm">{item.area.nombre}</h4>
+                          <p className="text-xs text-gray-500 truncate">{item.area.ciudad || item.area.provincia}, {item.area.pais}</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-xl font-bold text-green-600">{item.visitas}</p>
+                          <p className="text-xs text-gray-500">visitas</p>
+                        </div>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                        <div
+                          className="bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full transition-all duration-500 group-hover:from-green-600 group-hover:to-emerald-700 flex items-center justify-end pr-2"
+                          style={{ width: `${porcentaje}%` }}
+                        >
+                          <span className="text-white text-xs font-bold">{porcentaje.toFixed(0)}%</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-green-600">{item.visitas}</p>
-                      <p className="text-xs text-gray-500">visitas</p>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -1841,33 +1856,48 @@ export default function AdminAnalyticsPage() {
               <p className="text-sm text-gray-600">Áreas con más valoraciones de usuarios</p>
             </div>
             <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {analytics.areasMasValoradas.map((item, index) => (
-                  <div key={item.area.id} className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                    <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-yellow-500 to-amber-700 text-white rounded-full text-lg font-bold shadow-md">
-                      {index + 1}
-                    </span>
-                    {item.area.foto_principal && (
-                      <img
-                        src={item.area.foto_principal}
-                        alt={item.area.nombre}
-                        className="w-16 h-16 rounded-lg object-cover"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-gray-900 truncate">{item.area.nombre}</h4>
-                      <p className="text-sm text-gray-500 truncate">{item.area.ciudad || item.area.provincia}, {item.area.pais}</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        <StarIcon className="w-4 h-4 text-yellow-500 fill-current" />
-                        <span className="text-sm font-bold text-yellow-600">{item.promedio}</span>
+              <div className="space-y-4">
+                {analytics.areasMasValoradas.map((item, index) => {
+                  const maxValoraciones = analytics.areasMasValoradas[0]?.valoraciones || 1
+                  const porcentaje = (item.valoraciones / maxValoraciones) * 100
+                  
+                  return (
+                    <div key={item.area.id} className="group">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-yellow-500 to-amber-700 text-white rounded-full text-sm font-bold shadow-md flex-shrink-0">
+                          {index + 1}
+                        </span>
+                        {item.area.foto_principal && (
+                          <img
+                            src={item.area.foto_principal}
+                            alt={item.area.nombre}
+                            className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-gray-900 truncate text-sm">{item.area.nombre}</h4>
+                          <p className="text-xs text-gray-500 truncate">{item.area.ciudad || item.area.provincia}, {item.area.pais}</p>
+                          <div className="flex items-center gap-1 mt-1">
+                            <StarIcon className="w-3 h-3 text-yellow-500 fill-current" />
+                            <span className="text-xs font-bold text-yellow-600">{item.promedio} ⭐</span>
+                          </div>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-xl font-bold text-amber-600">{item.valoraciones}</p>
+                          <p className="text-xs text-gray-500">valoraciones</p>
+                        </div>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                        <div
+                          className="bg-gradient-to-r from-yellow-500 to-amber-600 h-3 rounded-full transition-all duration-500 group-hover:from-yellow-600 group-hover:to-amber-700 flex items-center justify-end pr-2"
+                          style={{ width: `${porcentaje}%` }}
+                        >
+                          <span className="text-white text-xs font-bold">{porcentaje.toFixed(0)}%</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-amber-600">{item.valoraciones}</p>
-                      <p className="text-xs text-gray-500">valoraciones</p>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -1879,29 +1909,44 @@ export default function AdminAnalyticsPage() {
               <p className="text-sm text-gray-600">Áreas más agregadas a listas de favoritos</p>
             </div>
             <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {analytics.areasEnMasFavoritos.map((item, index) => (
-                  <div key={item.area.id} className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                    <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-700 text-white rounded-full text-lg font-bold shadow-md">
-                      {index + 1}
-                    </span>
-                    {item.area.foto_principal && (
-                      <img
-                        src={item.area.foto_principal}
-                        alt={item.area.nombre}
-                        className="w-16 h-16 rounded-lg object-cover"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-gray-900 truncate">{item.area.nombre}</h4>
-                      <p className="text-sm text-gray-500 truncate">{item.area.ciudad || item.area.provincia}, {item.area.pais}</p>
+              <div className="space-y-4">
+                {analytics.areasEnMasFavoritos.map((item, index) => {
+                  const maxFavoritos = analytics.areasEnMasFavoritos[0]?.favoritos || 1
+                  const porcentaje = (item.favoritos / maxFavoritos) * 100
+                  
+                  return (
+                    <div key={item.area.id} className="group">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-pink-500 to-rose-700 text-white rounded-full text-sm font-bold shadow-md flex-shrink-0">
+                          {index + 1}
+                        </span>
+                        {item.area.foto_principal && (
+                          <img
+                            src={item.area.foto_principal}
+                            alt={item.area.nombre}
+                            className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-gray-900 truncate text-sm">{item.area.nombre}</h4>
+                          <p className="text-xs text-gray-500 truncate">{item.area.ciudad || item.area.provincia}, {item.area.pais}</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-xl font-bold text-pink-600">{item.favoritos}</p>
+                          <p className="text-xs text-gray-500">favoritos</p>
+                        </div>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                        <div
+                          className="bg-gradient-to-r from-pink-500 to-rose-600 h-3 rounded-full transition-all duration-500 group-hover:from-pink-600 group-hover:to-rose-700 flex items-center justify-end pr-2"
+                          style={{ width: `${porcentaje}%` }}
+                        >
+                          <span className="text-white text-xs font-bold">{porcentaje.toFixed(0)}%</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-pink-600">{item.favoritos}</p>
-                      <p className="text-xs text-gray-500">favoritos</p>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           </div>
