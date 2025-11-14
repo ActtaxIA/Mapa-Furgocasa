@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
 import type { Area } from '@/types/database.types'
-import { 
+import {
   MapPinIcon,
   UserGroupIcon,
   EyeIcon,
@@ -34,7 +34,7 @@ interface AnalyticsData {
   promedioRating: number
   distribucionPrecios: { rango: string; count: number }[]
   crecimientoMensual: { mes: string; nuevas: number }[]
-  
+
   // Métricas de rutas - Básicas
   totalRutas: number
   distanciaTotal: number
@@ -49,7 +49,7 @@ interface AnalyticsData {
   rutasEsteMes: number
   rutasPorDia: { fecha: string; count: number }[]
   rutasPorMes: { mes: string; count: number; distancia: number }[]
-  
+
   // Análisis de Rutas
   rutasPorNumeroPuntos: { puntos: string; count: number }[]
   distanciaPorMes: { mes: string; distancia: number }[]
@@ -121,7 +121,7 @@ interface AnalyticsData {
   vehiculosRegistradosEstaSemana: number
   vehiculosRegistradosEsteMes: number
   vehiculosPorMes: { mes: string; count: number }[]
-  
+
   // Vehículos - Métricas Financieras
   valorTotalParqueVehiculos: number
   promedioValorVehiculo: number
@@ -129,20 +129,20 @@ interface AnalyticsData {
   vehiculosMasBaratos: { vehiculo: any; precio: number }[]
   vehiculosConDatosFinancieros: number
   inversionTotalPromedio: number
-  
+
   // Vehículos - Datos de Mercado
   totalDatosMercado: number
   precioPromedioMercado: number
   marcasMasPopulares: { marca: string; count: number; porcentaje: number }[]
   modelosMasPopulares: { marca: string; modelo: string; count: number }[]
-  
+
   // Vehículos - Valoraciones IA
   vehiculosValorados: number
   valorPromedioEstimado: number
   vehiculosEnVenta: number
   precioPromedioVenta: number
   gananciaPromedioProyectada: number
-  
+
   // Vehículos - Distribución
   distribucionPreciosCompra: { rango: string; count: number; porcentaje: number }[]
   distribucionAños: { rango: string; count: number }[]
@@ -184,7 +184,7 @@ export default function AdminAnalyticsPage() {
   const checkAdminAndLoadAnalytics = async () => {
     const supabase = createClient()
     const { data: { session } } = await supabase.auth.getSession()
-    
+
     if (!session?.user || !session.user.user_metadata?.is_admin) {
       router.push('/mapa')
       return
@@ -196,7 +196,7 @@ export default function AdminAnalyticsPage() {
   const loadAnalytics = async () => {
     try {
       const supabase = createClient()
-      
+
       // Obtener todas las áreas (con paginación)
       const allAreas: Area[] = []
       const pageSize = 1000
@@ -248,7 +248,7 @@ export default function AdminAnalyticsPage() {
       const { data: rutas, error: rutasError } = await supabase
         .from('rutas')
         .select('*')
-      
+
       const totalRutas = rutas?.length || 0
       const distanciaTotal = rutas?.reduce((sum, r) => sum + (r.distancia_km || 0), 0) || 0
       console.log(`✅ ${totalRutas} rutas, ${distanciaTotal.toFixed(0)} km totales`)
@@ -258,7 +258,7 @@ export default function AdminAnalyticsPage() {
       const { data: mensajes, error: mensajesError } = await supabase
         .from('chatbot_mensajes')
         .select('id, created_at')
-      
+
       const totalInteraccionesIA = mensajes?.length || 0
       console.log(`✅ ${totalInteraccionesIA} interacciones con IA`)
 
@@ -341,10 +341,10 @@ export default function AdminAnalyticsPage() {
       ]
 
       const distribucionDistancias = rangosDistancia.map(rango => {
-        const count = rutas?.filter(r => 
+        const count = rutas?.filter(r =>
           (r.distancia_km || 0) >= rango.min && (r.distancia_km || 0) < rango.max
         ).length || 0
-        
+
         return {
           rango: rango.label,
           count,
@@ -373,12 +373,12 @@ export default function AdminAnalyticsPage() {
 
       const usuariosUnicos = Object.keys(rutasPorUsuario).length
       const promedioRutasPorUsuario = usuariosUnicos > 0 ? totalRutas / usuariosUnicos : 0
-      
+
       const distanciaPorUsuario = rutas?.reduce((acc: any, r) => {
         if (r.user_id) acc[r.user_id] = (acc[r.user_id] || 0) + (r.distancia_km || 0)
         return acc
       }, {}) || {}
-      
+
       const distanciaTotalPorUsuarios = Object.values(distanciaPorUsuario).reduce((sum: number, d: any) => sum + d, 0)
       const promedioDistanciaPorUsuario = usuariosUnicos > 0 ? distanciaTotalPorUsuarios / usuariosUnicos : 0
 
@@ -690,11 +690,11 @@ export default function AdminAnalyticsPage() {
 
       // ========== MÉTRICAS DE VEHÍCULOS ==========
       console.log('🚐 Calculando métricas financieras de vehículos...')
-      
+
       // Obtener vehículos con datos completos
       const { data: vehiculos } = await supabase
         .from('vehiculos_registrados')
-        .select('id, created_at, user_id, marca, modelo, año')
+        .select('id, created_at, user_id, marca, modelo')
 
       const totalVehiculosRegistrados = vehiculos?.length || 0
       const vehiculosRegistradosHoy = vehiculos?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
@@ -717,32 +717,32 @@ export default function AdminAnalyticsPage() {
       }
 
       // ========== MÉTRICAS FINANCIERAS DE VEHÍCULOS ==========
-      const { data: valoraciones } = await supabase
+      const { data: valoracionesEconomicas } = await supabase
         .from('vehiculo_valoracion_economica')
         .select('*')
 
-      const valorTotalParqueVehiculos = valoraciones?.reduce((sum, v) => sum + (v.precio_compra || 0), 0) || 0
-      const vehiculosConDatosFinancieros = valoraciones?.filter(v => v.precio_compra && v.precio_compra > 0).length || 0
+      const valorTotalParqueVehiculos = valoracionesEconomicas?.reduce((sum, v) => sum + (v.precio_compra || 0), 0) || 0
+      const vehiculosConDatosFinancieros = valoracionesEconomicas?.filter(v => v.precio_compra && v.precio_compra > 0).length || 0
       const promedioValorVehiculo = vehiculosConDatosFinancieros > 0 ? valorTotalParqueVehiculos / vehiculosConDatosFinancieros : 0
       
       // Inversión total promedio (incluye mantenimientos, averías, mejoras, etc)
       const inversionTotalPromedio = vehiculosConDatosFinancieros > 0
-        ? (valoraciones?.reduce((sum, v) => sum + (v.inversion_total || 0), 0) || 0) / vehiculosConDatosFinancieros
+        ? (valoracionesEconomicas?.reduce((sum, v) => sum + (v.inversion_total || 0), 0) || 0) / vehiculosConDatosFinancieros
         : 0
 
       // Top 5 vehículos más caros
-      const vehiculosConPrecio = valoraciones
+      const vehiculosConPrecio = valoracionesEconomicas
         ?.filter(v => v.precio_compra && v.precio_compra > 0)
         .map(v => {
           const vehiculo = vehiculos?.find(vh => vh.id === v.vehiculo_id)
           return { vehiculo, precio: v.precio_compra }
         })
         .filter(item => item.vehiculo) || []
-      
+
       const vehiculosMasCaros = vehiculosConPrecio
         .sort((a, b) => (b.precio || 0) - (a.precio || 0))
         .slice(0, 5)
-      
+
       const vehiculosMasBaratos = vehiculosConPrecio
         .sort((a, b) => (a.precio || 0) - (b.precio || 0))
         .slice(0, 5)
@@ -763,7 +763,7 @@ export default function AdminAnalyticsPage() {
         if (d.marca) acc[d.marca] = (acc[d.marca] || 0) + 1
         return acc
       }, {}) || {}
-      
+
       const marcasMasPopulares = Object.entries(marcasPorCount)
         .map(([marca, count]) => ({
           marca,
@@ -781,7 +781,7 @@ export default function AdminAnalyticsPage() {
         }
         return acc
       }, {}) || {}
-      
+
       const modelosMasPopulares = Object.entries(modelosPorCount)
         .map(([key, count]) => {
           const [marca, modelo] = (key as string).split('|')
@@ -791,19 +791,19 @@ export default function AdminAnalyticsPage() {
         .slice(0, 10)
 
       // ========== VALORACIONES IA ==========
-      const vehiculosValorados = valoraciones?.filter(v => v.valor_estimado_actual && v.valor_estimado_actual > 0).length || 0
+      const vehiculosValorados = valoracionesEconomicas?.filter(v => v.valor_estimado_actual && v.valor_estimado_actual > 0).length || 0
       const valorPromedioEstimado = vehiculosValorados > 0
-        ? (valoraciones?.reduce((sum, v) => sum + (v.valor_estimado_actual || 0), 0) || 0) / vehiculosValorados
+        ? (valoracionesEconomicas?.reduce((sum, v) => sum + (v.valor_estimado_actual || 0), 0) || 0) / vehiculosValorados
         : 0
 
-      const vehiculosEnVenta = valoraciones?.filter(v => v.en_venta).length || 0
+      const vehiculosEnVenta = valoracionesEconomicas?.filter(v => v.en_venta).length || 0
       const precioPromedioVenta = vehiculosEnVenta > 0
-        ? (valoraciones?.filter(v => v.en_venta).reduce((sum, v) => sum + (v.precio_venta_deseado || 0), 0) || 0) / vehiculosEnVenta
+        ? (valoracionesEconomicas?.filter(v => v.en_venta).reduce((sum, v) => sum + (v.precio_venta_deseado || 0), 0) || 0) / vehiculosEnVenta
         : 0
 
       // Ganancia proyectada (diferencia entre valor estimado y precio compra)
       const gananciaPromedioProyectada = vehiculosValorados > 0
-        ? (valoraciones
+        ? (valoracionesEconomicas
             ?.filter(v => v.valor_estimado_actual && v.precio_compra)
             .reduce((sum, v) => sum + ((v.valor_estimado_actual || 0) - (v.precio_compra || 0)), 0) || 0) / vehiculosValorados
         : 0
@@ -820,12 +820,12 @@ export default function AdminAnalyticsPage() {
       ]
 
       const distribucionPreciosCompra = rangosPrecios.map(rango => {
-        const count = valoraciones?.filter(v => 
+        const count = valoracionesEconomicas?.filter(v => 
           v.precio_compra && 
           v.precio_compra >= rango.min && 
           v.precio_compra < rango.max
         ).length || 0
-        
+
         return {
           rango: rango.label,
           count,
@@ -833,13 +833,12 @@ export default function AdminAnalyticsPage() {
         }
       })
 
-      // Distribución por años
-      const añoActual = new Date().getFullYear()
+      // Distribución por años - DESHABILITADO (campo año tiene problema con la ñ en Supabase)
       const distribucionAños = [
-        { rango: '< 2010', count: vehiculos?.filter(v => v.año < 2010).length || 0 },
-        { rango: '2010-2015', count: vehiculos?.filter(v => v.año >= 2010 && v.año < 2015).length || 0 },
-        { rango: '2015-2020', count: vehiculos?.filter(v => v.año >= 2015 && v.año < 2020).length || 0 },
-        { rango: '2020-2025', count: vehiculos?.filter(v => v.año >= 2020 && v.año <= añoActual).length || 0 }
+        { rango: '< 2010', count: 0 },
+        { rango: '2010-2015', count: 0 },
+        { rango: '2015-2020', count: 0 },
+        { rango: '2020-2025', count: 0 }
       ]
 
       // Distribución por kilometraje (de ficha técnica)
@@ -946,8 +945,8 @@ export default function AdminAnalyticsPage() {
 
       const totalPaises = Object.keys(areasPorPais).length
       const areasPorPaisArray = Object.entries(areasPorPais || {})
-        .map(([pais, count]) => ({ 
-          pais, 
+        .map(([pais, count]) => ({
+          pais,
           count: count as number,
           porcentaje: ((count as number) / areas.length) * 100
         }))
@@ -1023,32 +1022,32 @@ export default function AdminAnalyticsPage() {
       // ========== ÁREAS CON DESCRIPCIÓN E IMÁGENES ==========
       const DESCRIPCION_MIN_LENGTH = 200
       const PLACEHOLDER_TEXT = 'Área encontrada mediante búsqueda en Google Maps'
-      
-      const areasConDescripcion = areas?.filter(a => 
-        a.descripcion && 
-        a.descripcion.length >= DESCRIPCION_MIN_LENGTH && 
+
+      const areasConDescripcion = areas?.filter(a =>
+        a.descripcion &&
+        a.descripcion.length >= DESCRIPCION_MIN_LENGTH &&
         !a.descripcion.includes(PLACEHOLDER_TEXT)
       ).length || 0
 
-      const areasConImagenes = areas?.filter(a => 
+      const areasConImagenes = areas?.filter(a =>
         a.foto_principal || (a.fotos_urls && Array.isArray(a.fotos_urls) && a.fotos_urls.length > 0)
       ).length || 0
 
       // ========== CRECIMIENTO MENSUAL (últimos 6 meses) ==========
       const mesesAtras = 6
       const crecimientoMensual = []
-      
+
       for (let i = mesesAtras - 1; i >= 0; i--) {
         const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
         const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
-        
+
         const nuevasAreasMes = areas?.filter(a => {
           if (!a.created_at) return false
           const fechaCreacion = new Date(a.created_at)
           return fechaCreacion.getFullYear() === fechaMes.getFullYear() &&
                  fechaCreacion.getMonth() === fechaMes.getMonth()
         }).length || 0
-        
+
         crecimientoMensual.push({ mes: mesNombre, nuevas: nuevasAreasMes })
       }
 
@@ -1092,6 +1091,17 @@ export default function AdminAnalyticsPage() {
         rutasEsteMes,
         rutasPorDia,
         rutasPorMes,
+        
+        // Análisis de Rutas
+        distanciaPromedio,
+        rutaMasLarga,
+        rutaMasCorta,
+        rutasPorNumeroPuntos,
+        distanciaPorMes: rutasPorMes.map(m => ({ mes: m.mes, distancia: m.distancia })),
+        distribucionDistancias,
+        usuariosConMasRutas,
+        promedioRutasPorUsuario,
+        promedioDistanciaPorUsuario,
 
         // Métricas temporales - Visitas
         visitasHoy,
@@ -1156,7 +1166,7 @@ export default function AdminAnalyticsPage() {
         vehiculosRegistradosEstaSemana,
         vehiculosRegistradosEsteMes,
         vehiculosPorMes,
-        
+
         // Vehículos - Métricas Financieras
         valorTotalParqueVehiculos,
         promedioValorVehiculo,
@@ -1164,20 +1174,20 @@ export default function AdminAnalyticsPage() {
         vehiculosMasBaratos,
         vehiculosConDatosFinancieros,
         inversionTotalPromedio,
-        
+
         // Vehículos - Datos de Mercado
         totalDatosMercado,
         precioPromedioMercado,
         marcasMasPopulares,
         modelosMasPopulares,
-        
+
         // Vehículos - Valoraciones IA
         vehiculosValorados,
         valorPromedioEstimado,
         vehiculosEnVenta,
         precioPromedioVenta,
         gananciaPromedioProyectada,
-        
+
         // Vehículos - Distribución
         distribucionPreciosCompra,
         distribucionAños,
@@ -1247,7 +1257,7 @@ export default function AdminAnalyticsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-3">
@@ -1880,7 +1890,7 @@ export default function AdminAnalyticsPage() {
                   </div>
                 ))}
               </div>
-              
+
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-700">Áreas Gratis</span>
@@ -1909,8 +1919,8 @@ export default function AdminAnalyticsPage() {
                     {index + 1}
                   </span>
                   {area.foto_principal && (
-                    <img 
-                      src={area.foto_principal} 
+                    <img
+                      src={area.foto_principal}
                       alt={area.nombre}
                       className="w-16 h-16 rounded-lg object-cover"
                     />
@@ -1940,7 +1950,7 @@ export default function AdminAnalyticsPage() {
               {analytics.crecimientoMensual.map((mes, index) => {
                 const maxNuevas = Math.max(...analytics.crecimientoMensual.map(m => m.nuevas))
                 const alturaPorcentaje = maxNuevas > 0 ? (mes.nuevas / maxNuevas) * 100 : 0
-                
+
                 return (
                   <div key={index} className="flex-1 flex flex-col items-center gap-2">
                     <div className="text-center mb-2">
@@ -2428,8 +2438,8 @@ export default function AdminAnalyticsPage() {
                 </div>
 
                 <div className={`bg-gradient-to-br rounded-xl p-6 border-2 ${
-                  analytics.gananciaPromedioProyectada >= 0 
-                    ? 'from-green-50 to-green-100 border-green-300' 
+                  analytics.gananciaPromedioProyectada >= 0
+                    ? 'from-green-50 to-green-100 border-green-300'
                     : 'from-red-50 to-red-100 border-red-300'
                 }`}>
                   <p className="text-sm font-semibold mb-2" style={{ color: analytics.gananciaPromedioProyectada >= 0 ? '#15803d' : '#b91c1c' }}>
@@ -2920,7 +2930,7 @@ export default function AdminAnalyticsPage() {
                   {analytics.eventosMasComunes.map((evento, index) => {
                     const maxCount = analytics.eventosMasComunes[0]?.count || 1
                     const porcentaje = (evento.count / maxCount) * 100
-                    
+
                     // Definir colores específicos con mejor contraste
                     const coloresConfig = [
                       { from: 'from-amber-500', to: 'to-yellow-500', hover: 'group-hover:from-amber-600 group-hover:to-yellow-600', badge: 'bg-gradient-to-br from-amber-500 to-yellow-600' },
