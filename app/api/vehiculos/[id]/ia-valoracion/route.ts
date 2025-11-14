@@ -160,6 +160,12 @@ export async function POST(
       : 'No se encontraron comparables en esta búsqueda.'
 
     // 5. CONSTRUIR MENSAJES PARA OPENAI DESDE LOS PROMPTS
+    if (!config.prompts || !Array.isArray(config.prompts) || config.prompts.length === 0) {
+      console.error('❌ [IA-VALORACION] Configuración inválida: config.prompts no existe o está vacío')
+      console.error('   Por favor, ejecuta la migración SQL: supabase/migrations/20250114_add_valoracion_vehiculos_ia_config.sql')
+      throw new Error('Configuración del agente IA no encontrada. Contacta al administrador.')
+    }
+
     const messages = config.prompts
       .sort((a: any, b: any) => a.order - b.order)
       .map((prompt: any) => {
@@ -238,12 +244,29 @@ export async function POST(
     })
 
   } catch (error: any) {
-    console.error('❌ Error al generar valoración:', error)
+    console.error('❌ [IA-VALORACION] Error al generar valoración:', error)
+    console.error('   Stack:', error.stack)
+
+    // Mensajes de error más específicos
+    let errorMessage = 'Error al generar valoración'
+    let errorDetails = error.message
+
+    if (error.message?.includes('Configuración del agente IA no encontrada')) {
+      errorMessage = 'Configuración no encontrada'
+      errorDetails = 'El agente de valoración IA no está configurado. Por favor, contacta al administrador para ejecutar la configuración inicial.'
+    } else if (error.message?.includes('OpenAI')) {
+      errorMessage = 'Error de OpenAI'
+      errorDetails = 'No se pudo generar la valoración. Verifica la configuración de la API de OpenAI.'
+    } else if (error.code === '42P01') {
+      errorMessage = 'Tabla no encontrada'
+      errorDetails = 'La tabla de valoraciones no existe. Por favor, ejecuta las migraciones de base de datos.'
+    }
 
     return NextResponse.json(
       {
-        error: 'Error al generar valoración',
-        detalle: error.message
+        error: errorMessage,
+        detalle: errorDetails,
+        mensaje_tecnico: error.message
       },
       { status: 500 }
     )
