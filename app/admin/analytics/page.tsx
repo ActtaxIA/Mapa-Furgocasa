@@ -1685,7 +1685,7 @@ export default function AdminAnalyticsPage() {
               <p className="text-sm text-gray-500">Actividad diaria de planificación de rutas</p>
             </div>
             <div className="p-6">
-              <div className="flex items-end justify-between gap-1 h-48">
+              <div className="flex items-end justify-between gap-1 h-64">
                 {analytics.rutasPorDia.map((dia, index) => {
                   const maxCount = Math.max(...analytics.rutasPorDia.map(d => d.count), 1)
                   const altura = (dia.count / maxCount) * 100
@@ -1696,11 +1696,11 @@ export default function AdminAnalyticsPage() {
                           <p className="text-xs font-bold text-indigo-600">{dia.count}</p>
                         )}
                       </div>
-                      <div
-                        className="w-full bg-gradient-to-t from-indigo-500 to-indigo-400 rounded-t hover:from-indigo-600 hover:to-indigo-500 transition-all cursor-pointer"
-                        style={{ height: `${Math.max(altura, 3)}%` }}
-                        title={`${dia.fecha}: ${dia.count} rutas`}
-                      />
+                        <div
+                          className="w-full bg-gradient-to-t from-indigo-500 to-indigo-400 rounded-t hover:from-indigo-600 hover:to-indigo-500 transition-all cursor-pointer shadow-sm"
+                          style={{ height: `${dia.count === 0 ? '2' : Math.max(altura, 15)}%` }}
+                          title={`${dia.fecha}: ${dia.count} rutas`}
+                        />
                       {index % 5 === 0 && (
                         <p className="text-[9px] text-gray-500 mt-1 rotate-45 origin-top-left">{dia.fecha}</p>
                       )}
@@ -1728,7 +1728,7 @@ export default function AdminAnalyticsPage() {
               <p className="text-sm text-gray-500">Usuarios registrando visitas a áreas</p>
             </div>
             <div className="p-6">
-              <div className="flex items-end justify-between gap-1 h-48">
+              <div className="flex items-end justify-between gap-1 h-64">
                 {analytics.visitasPorDia.map((dia, index) => {
                   const maxCount = Math.max(...analytics.visitasPorDia.map(d => d.count), 1)
                   const altura = (dia.count / maxCount) * 100
@@ -1739,11 +1739,11 @@ export default function AdminAnalyticsPage() {
                           <p className="text-xs font-bold text-green-600">{dia.count}</p>
                         )}
                       </div>
-                      <div
-                        className="w-full bg-gradient-to-t from-green-500 to-green-400 rounded-t hover:from-green-600 hover:to-green-500 transition-all cursor-pointer"
-                        style={{ height: `${Math.max(altura, 3)}%` }}
-                        title={`${dia.fecha}: ${dia.count} visitas`}
-                      />
+                        <div
+                          className="w-full bg-gradient-to-t from-green-500 to-green-400 rounded-t hover:from-green-600 hover:to-green-500 transition-all cursor-pointer shadow-sm"
+                          style={{ height: `${dia.count === 0 ? '2' : Math.max(altura, 15)}%` }}
+                          title={`${dia.fecha}: ${dia.count} visitas`}
+                        />
                       {index % 5 === 0 && (
                         <p className="text-[9px] text-gray-500 mt-1 rotate-45 origin-top-left">{dia.fecha}</p>
                       )}
@@ -1771,7 +1771,7 @@ export default function AdminAnalyticsPage() {
               <p className="text-sm text-gray-500">Actividad del chatbot asistente</p>
             </div>
             <div className="p-6">
-              <div className="flex items-end justify-between gap-1 h-48">
+              <div className="flex items-end justify-between gap-1 h-64">
                 {analytics.interaccionesIAPorDia.map((dia, index) => {
                   const maxCount = Math.max(...analytics.interaccionesIAPorDia.map(d => d.count), 1)
                   const altura = (dia.count / maxCount) * 100
@@ -1782,11 +1782,11 @@ export default function AdminAnalyticsPage() {
                           <p className="text-xs font-bold text-purple-600">{dia.count}</p>
                         )}
                       </div>
-                      <div
-                        className="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t hover:from-purple-600 hover:to-purple-500 transition-all cursor-pointer"
-                        style={{ height: `${Math.max(altura, 3)}%` }}
-                        title={`${dia.fecha}: ${dia.count} mensajes`}
-                      />
+                        <div
+                          className="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t hover:from-purple-600 hover:to-purple-500 transition-all cursor-pointer shadow-sm"
+                          style={{ height: `${dia.count === 0 ? '2' : Math.max(altura, 15)}%` }}
+                          title={`${dia.fecha}: ${dia.count} mensajes`}
+                        />
                       {index % 5 === 0 && (
                         <p className="text-[9px] text-gray-500 mt-1 rotate-45 origin-top-left">{dia.fecha}</p>
                       )}
@@ -1917,7 +1917,7 @@ export default function AdminAnalyticsPage() {
                 {analytics.areasMasVisitadas.map((item, index) => {
                   const maxVisitas = analytics.areasMasVisitadas[0]?.visitas || 1
                   const porcentaje = (item.visitas / maxVisitas) * 100
-                  
+
                   return (
                     <div key={item.area.id} className="group">
                       <div className="flex items-center gap-3 mb-2">
@@ -1966,7 +1966,7 @@ export default function AdminAnalyticsPage() {
                 {analytics.areasMasValoradas.map((item, index) => {
                   const maxValoraciones = analytics.areasMasValoradas[0]?.valoraciones || 1
                   const porcentaje = (item.valoraciones / maxValoraciones) * 100
-                  
+
                   return (
                     <div key={item.area.id} className="group">
                       <div className="flex items-center gap-3 mb-2">
@@ -2019,7 +2019,7 @@ export default function AdminAnalyticsPage() {
                 {analytics.areasEnMasFavoritos.map((item, index) => {
                   const maxFavoritos = analytics.areasEnMasFavoritos[0]?.favoritos || 1
                   const porcentaje = (item.favoritos / maxFavoritos) * 100
-                  
+
                   return (
                     <div key={item.area.id} className="group">
                       <div className="flex items-center gap-3 mb-2">
