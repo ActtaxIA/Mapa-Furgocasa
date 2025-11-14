@@ -1,6 +1,6 @@
 # 📚 Índice de Documentación - Mapa Furgocasa
 
-**Versión:** 2.1  
+**Versión:** 3.0  
 **Última actualización:** 14 de noviembre de 2025
 
 ---
@@ -144,6 +144,16 @@
 - [docs/temporales/SISTEMA_VISITAS_VALORACIONES_COMPLETO.md](./docs/temporales/SISTEMA_VISITAS_VALORACIONES_COMPLETO.md) - Tablas y RLS
 - [docs/mejoras/OPTIMIZACION_CACHE_RUTAS.md](./docs/mejoras/OPTIMIZACION_CACHE_RUTAS.md) - Cache de geometría
 - [docs/temporales/INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md](./docs/temporales/INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md) - Nuevo campo
+
+### Analytics Avanzado (v3.0) 📊
+- **Sistema de Analytics por Pestañas** - Panel completamente renovado
+- Página: `/admin/analytics`
+- Componente: `app/admin/analytics/page.tsx` (2900+ líneas)
+- **7 pestañas**: General, Áreas, Usuarios, Rutas, Vehículos, Engagement, Tops
+- **80+ métricas** calculadas en tiempo real
+- **15+ gráficos** interactivos con visualización mejorada
+- **Análisis financiero completo** - Datos de usuarios vs mercado IA
+- Ver [CHANGELOG.md](./CHANGELOG.md) v3.0.0 para detalles completos
 
 ### Gestión de Vehículos (v2.0-2.1)
 - [CHANGELOG_GESTION_VEHICULOS.md](./CHANGELOG_GESTION_VEHICULOS.md) - Changelog completo
@@ -291,4 +301,4 @@
 
 **Última actualización:** 14 de noviembre de 2025  
 **Mantenedor:** Equipo Mapa Furgocasa  
-**Versión del índice:** 2.1
+**Versión del índice:** 3.0

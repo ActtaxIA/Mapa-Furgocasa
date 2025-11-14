@@ -1,6 +1,6 @@
 # 🚐 Mapa Furgocasa - Plataforma de Áreas para Autocaravanas en Europa y LATAM
 
-**Versión: 2.1.0 - PRODUCCIÓN** 🎉✅
+**Versión: 3.0.0 - PRODUCCIÓN** 🎉✅
 
 > 🔴 **ENTORNO DE PRODUCCIÓN ACTIVA EN AWS AMPLIFY**
 > - **URL:** https://www.mapafurgocasa.com
@@ -11,7 +11,7 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 
 **Estado:** 🟢 **100% OPERATIVO** - Chatbot IA funcionando, Editor de prompts activo, Sistema completo en producción, **Subida directa de fotos a Supabase Storage (bypass AWS Amplify)**.
 
-**Última actualización:** 13 de Noviembre 2025 - ✅ Sistema de venta funcionando correctamente. Todos los endpoints de gestión de vehículos verificados y operativos (Mantenimientos, Averías, Mejoras, Gastos, Venta, Compra).
+**Última actualización:** 14 de Noviembre 2025 - 📊 Sistema de Analytics Avanzado v3.0 - Panel completo con análisis por pestañas (General, Áreas, Usuarios, Rutas, Vehículos, Engagement, Tops), métricas temporales, gráficos interactivos y datos financieros en tiempo real.
 
 ---
 
@@ -59,10 +59,10 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 - 📸 **Búsqueda Automática de Imágenes** para cada área
 - 🎨 **Editor de Prompts IA** ✅ - Configuración visual de los 3 agentes de IA desde `/admin/configuracion`
 - 💬 **Configuración del Chatbot** ✅ - Editor completo de prompts múltiples para el Tío Viajero IA
-- 📊 **Analytics en Tiempo Real** ✨ **NUEVO v1.1** - Datos reales desde Supabase Auth + métricas de uso
-- 👥 **Gestión de Usuarios Mejorada** ✨ **NUEVO v1.1** - Tabla optimizada con iconos de proveedor y ordenación inteligente
+- 📊 **Analytics Avanzado** ✨ **NUEVO v3.0** - Sistema completo por pestañas con análisis detallado
+- 👥 **Gestión de Usuarios Mejorada** - Tabla optimizada con iconos de proveedor y ordenación inteligente
 - 🗄️ **Base de Datos Normalizada** - 100% áreas con país y región/CCAA correctos
-- 🚫 **Sin Caché** ✨ **NUEVO v1.1** - Datos siempre actualizados en panel admin
+- 🚫 **Sin Caché** - Datos siempre actualizados en panel admin
 
 ---
 
@@ -683,6 +683,75 @@ Incluye:
 
 ---
 
+## 🎉 Novedades en v3.0 (Noviembre 2025) 📊
+
+### 📊 Sistema de Analytics Avanzado por Pestañas
+
+**Panel de administración completamente renovado** (`/admin/analytics`) con análisis detallado por categorías.
+
+#### 🎯 Navegación por Pestañas
+- **General** - Vista resumen con KPIs principales
+- **Áreas** - Métricas de áreas, distribución, popularidad
+- **Usuarios** - Análisis de usuarios, crecimiento, actividad
+- **Rutas** - Estadísticas de rutas, distancias, patrones de uso
+- **Vehículos** - Análisis financiero, mercado, valoraciones IA
+- **Engagement** - Comportamiento de usuarios, sesiones, dispositivos
+- **Tops** - Rankings de áreas más populares, visitadas, valoradas
+
+#### 📈 Métricas Temporales Completas
+- **Diarias** - Rutas, visitas, IA, actividad hoy
+- **Semanales** - Comparativa últimos 7 días
+- **Mensuales** - Evolución últimos 30 días
+- **Anuales** - Crecimiento últimos 12 meses
+- **Gráficos interactivos** - Barras verticales con altura mínima visible
+
+#### 🚐 Análisis de Vehículos
+- **Datos Históricos de Usuarios** - Precios de compra reales, inversión total
+- **Base de Datos de Mercado (IA)** - Datos scrapeados de anuncios
+- **Valoraciones IA** - Vehículos valorados, precios estimados, en venta
+- **Distribuciones** - Por precio, año, kilometraje
+- **Top 5** - Vehículos más caros/baratos (usuarios vs mercado)
+- **Marcas y Modelos** - Más populares en el mercado
+- **Registros Mensuales** - Evolución de vehículos registrados
+
+#### 🗺️ Análisis de Rutas
+- **Estadísticas básicas** - Total, hoy, semana, mes
+- **Distancias** - Promedio, más larga, más corta
+- **Distribución** - Por número de puntos, por rango de km
+- **Usuarios** - Rutas por usuario, distancia por usuario
+- **Evolución** - Rutas y distancia por mes últimos 12 meses
+
+#### 👥 Análisis de Usuarios
+- **Usuarios activos** - Hoy, semana, mes
+- **Crecimiento** - Nuevos usuarios por mes últimos 12 meses
+- **Conversión** - Tasa de registro
+- **Retención** - Usuarios recurrentes vs nuevos
+
+#### 💬 Engagement
+- **Sesiones** - Total, hoy, semana
+- **Métricas de calidad** - Tiempo promedio, páginas por sesión, tasa de rebote
+- **Búsquedas** - Total, hoy, semana
+- **Vistas de áreas** - Total, hoy, semana
+- **Dispositivos** - Distribución por tipo (móvil, desktop, tablet)
+- **Actividad por hora** - Patrón de uso durante el día
+- **Eventos comunes** - Acciones más frecuentes
+
+#### 🏆 Tops
+- **Áreas más visitadas** - Top 10 con foto, ubicación y contador
+- **Áreas más valoradas** - Top 10 con promedio de estrellas
+- **Áreas en más favoritos** - Top 10 más guardadas
+- **Gráficos de barra** - Visualización horizontal con % y gradientes
+
+#### 🎨 Mejoras UI/UX
+- **Sticky navigation** - Pestañas siempre visibles al hacer scroll
+- **Gráficos mejorados** - Altura mínima 40% para valores, 15% para ceros
+- **Colores diferenciados** - Gradientes distintos por sección
+- **Iconos representativos** - Cada métrica con su icono
+- **Responsive** - Adaptado a móvil y desktop
+- **Loading states** - Estados de carga elegantes
+
+---
+
 ## 🎉 Novedades en v2.0 (Noviembre 2025) ✨
 
 ### 🚐 Sistema Completo de Gestión de Vehículos
@@ -828,6 +897,8 @@ Este proyecto es de uso personal y educativo.
 ## 👨‍💻 Autor
 
 **Narciso Pardo Buendía**
+- Versión 3.0 - Noviembre 2025 (Sistema de Analytics Avanzado por pestañas)
+- Versión 2.1 - Noviembre 2025 (Sistema de valoración con IA - GPT-4 + SerpAPI)
 - Versión 2.0 - Noviembre 2025 (Sistema completo de gestión de vehículos)
 - Versión 1.1 - Noviembre 2025 (Optimizaciones panel admin)
 - Versión BETA 1.0 - Octubre 2025
@@ -882,4 +953,4 @@ Para dudas o problemas:
 
 **¡Feliz viaje! 🚐✨**
 
-*Mapa Furgocasa - v2.0.0 - Sistema Global en Producción*
+*Mapa Furgocasa - v3.0.0 - Sistema Global con Analytics Avanzado en Producción*

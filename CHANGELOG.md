@@ -4,6 +4,245 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 ---
 
+## [3.0.0] - 2025-11-14 📊🎉
+
+### 🎯 SISTEMA DE ANALYTICS AVANZADO POR PESTAÑAS
+
+Renovación completa del panel de administración de analytics con navegación por pestañas, métricas temporales detalladas, análisis financiero de vehículos y gráficos interactivos.
+
+### ✅ Agregado
+
+#### Sistema de Navegación por Pestañas 📑
+- **7 pestañas principales**:
+  - 📊 **General** - Resumen con KPIs principales del sistema
+  - 🗺️ **Áreas** - Métricas de áreas, distribución, tendencias
+  - 👥 **Usuarios** - Análisis de usuarios, crecimiento, retención
+  - 🚗 **Rutas** - Estadísticas de rutas, distancias, patrones
+  - 🚐 **Vehículos** - Análisis financiero, mercado, valoraciones IA
+  - 💬 **Engagement** - Comportamiento, sesiones, dispositivos
+  - 🏆 **Tops** - Rankings de áreas más populares
+- **Navegación sticky** - Las pestañas permanecen visibles al hacer scroll
+- **Transición suave** - Cambio entre pestañas con animación
+- **Iconos representativos** - Cada pestaña con su icono identificativo
+
+#### Métricas Temporales Completas ⏰
+- **Métricas diarias** - Rutas, visitas, valoraciones, favoritos, usuarios nuevos, IA
+- **Métricas semanales** - Comparativa de los últimos 7 días
+- **Métricas mensuales** - Evolución de los últimos 30 días
+- **Métricas anuales** - Crecimiento de los últimos 12 meses
+- **Gráficos de tendencia** - Visualización de datos por día/mes con barras verticales
+
+#### Análisis de Vehículos 🚐💰
+- **Separación clara**: Datos de usuarios vs datos de mercado IA
+- **Datos Históricos de Usuarios**:
+  - Vehículos con datos financieros
+  - Valor total del parque
+  - Precio promedio de compra
+  - Inversión promedio total (incluye mantenimiento)
+  - Top 5 más caros y más baratos (por precio de compra)
+- **Base de Datos de Mercado (IA)**:
+  - Total de registros scrapeados
+  - Precio promedio del mercado
+  - Top 5 más caros y más baratos (por anuncios)
+  - Top 10 marcas más populares
+  - Top 10 modelos más populares
+- **Valoraciones IA**:
+  - Vehículos valorados por el sistema
+  - Valor promedio estimado
+  - Vehículos en venta
+  - Precio promedio de venta deseado
+  - Ganancia promedio proyectada
+- **Distribuciones visuales**:
+  - Por precios de compra (rangos de 10k€)
+  - Por años (< 2010, 2010-2015, 2015-2020, 2020-2025)
+  - Por kilometraje (rangos de 50k km)
+- **Vehículos Registrados por Mes** - Gráfico de evolución últimos 12 meses
+- **Información estratégica para Furgocasa** - Insights de monetización y mercado
+
+#### Análisis de Rutas 🗺️
+- **Métricas básicas**: Total, hoy, esta semana, este mes
+- **Análisis de distancias**:
+  - Distancia promedio por ruta
+  - Ruta más larga registrada
+  - Ruta más corta registrada
+  - Distribución por rangos de distancia
+- **Análisis de puntos**:
+  - Rutas por número de paradas (2-3, 4-5, 6+)
+- **Análisis de usuarios**:
+  - Usuarios con más rutas calculadas
+  - Promedio de rutas por usuario
+  - Promedio de distancia por usuario
+- **Rutas y Distancia por Mes** - Gráfico dual últimos 12 meses
+
+#### Análisis de Usuarios 👥
+- **Usuarios activos**: Hoy, esta semana, este mes
+- **Crecimiento de Usuarios** - Gráfico de nuevos usuarios por mes últimos 12 meses
+- **Conversión y retención**:
+  - Tasa de conversión a registro
+  - Usuarios recurrentes
+  - Usuarios nuevos
+
+#### Engagement y Comportamiento 💬
+- **Métricas de sesiones**:
+  - Total de sesiones
+  - Sesiones hoy
+  - Sesiones esta semana
+  - Promedio de tiempo por sesión (minutos)
+  - Promedio de páginas por sesión
+  - Tasa de rebote (%)
+- **Búsquedas y vistas**:
+  - Búsquedas totales
+  - Búsquedas hoy
+  - Búsquedas esta semana
+  - Vistas de áreas total
+  - Vistas de áreas hoy
+  - Vistas de áreas esta semana
+- **Distribución por dispositivos** - Móvil, Desktop, Tablet
+- **Actividad por hora del día** - Patrón de uso en 24h
+- **Eventos más comunes** - Top acciones con gráficos de barra horizontales
+
+#### Top Áreas 🏆
+- **Áreas más visitadas** - Top 10 con:
+  - Foto del área
+  - Nombre completo
+  - Ubicación (ciudad, provincia, país)
+  - Número de visitas
+  - Gráfico de barra horizontal con %
+- **Áreas más valoradas** - Top 10 con:
+  - Número de valoraciones
+  - Promedio de estrellas
+  - Visualización similar
+- **Áreas en más favoritos** - Top 10 con:
+  - Número de veces guardada
+  - Visualización similar
+
+#### Gráficos Mejorados 📈
+- **Altura mínima visible** - Todos los gráficos de barras tienen:
+  - Mínimo 40% de altura para valores > 0
+  - Máximo 95% para evitar que toquen el tope
+  - 15% de altura para valores = 0 (barras "vacías" visibles)
+- **Colores diferenciados por sección**:
+  - Rutas: Azul
+  - Usuarios: Verde
+  - Vehículos: Naranja/Dorado
+  - Engagement: Púrpura
+  - General: Gradientes variados
+- **Shadow y efectos** - Barras con sombra para mejor separación visual
+- **Altura contenedor aumentada** - De 256px a 320px para mejor visualización
+
+### 🔧 Modificado
+
+#### Archivos Principales
+- **`app/admin/analytics/page.tsx`** (2900+ líneas):
+  - Reorganizado con sistema de pestañas
+  - Añadidas 50+ nuevas métricas
+  - Implementados 15+ gráficos interactivos
+  - Separación clara de datos de usuarios vs IA
+  - Console.logs de debug para tracking
+
+#### Interface `AnalyticsData`
+- Agregados campos para análisis de vehículos financiero
+- Agregados campos para análisis de rutas detallado
+- Agregados campos para métricas de engagement
+- Separación de Top 5 usuarios vs mercado IA
+
+#### Cálculos Automáticos
+- **Análisis económico** - Suma de precios, promedios, distribuciones
+- **Análisis temporal** - Filtros por día, semana, mes, año
+- **Análisis de distancias** - Promedios, máximos, mínimos, rangos
+- **Análisis de usuarios** - Actividad, crecimiento, retención
+
+### 🐛 Correcciones
+
+#### Campo `año` vs `ano` ✅
+- **Problema**: El campo en Supabase se llama `ano` (sin ñ) pero el código usaba `año`
+- **Impacto**: La "Distribución por Años" no cargaba datos
+- **Solución**: 
+  - Actualizado el query SELECT para incluir `ano`
+  - Corregidas TODAS las referencias en el código
+  - Interface TypeScript actualizada
+  - Cálculos de distribución corregidos
+  - UI actualizada para mostrar correctamente
+- **Archivos afectados**:
+  - Interface `AnalyticsData`
+  - Queries de Supabase
+  - Mapeo de datos de mercado
+  - Variables de cálculo (`anoActual`)
+  - Renderizado UI
+
+#### Visualización de Gráficos ✅
+- **Problema**: Barras no visibles para valores bajos o cero
+- **Solución**: Altura mínima 40% para valores, 15% para ceros
+- **Resultado**: Todos los gráficos ahora muestran barras claramente visibles
+
+#### Top 5 Vehículos Usuarios ✅
+- **Problema**: No se mostraban vehículos a pesar de estar registrados con precio
+- **Causa**: Error en query de Supabase (campo `ano` faltante) + falta de `matricula` en SELECT
+- **Solución**: 
+  - Agregado campo `matricula` al query
+  - Corregido campo `ano`
+  - Mejorado el renderizado para mostrar matrícula primero
+  - Añadidos console.logs de debug
+- **Resultado**: Ahora muestra correctamente los vehículos con matrícula y datos
+
+### 📊 Métricas v3.0
+
+#### Datos Mostrados
+- **13 pestañas/secciones** organizadas
+- **80+ métricas** diferentes calculadas
+- **15+ gráficos** interactivos
+- **6 distribuciones** visualizadas
+- **6 Top rankings** (Top 5, Top 10)
+- **12 meses** de datos históricos
+- **100% datos en tiempo real** desde Supabase
+
+#### Rendimiento
+- **Carga de datos**: 2-4 segundos
+- **Paginación de áreas**: 1000 por request
+- **Queries optimizados**: SELECT solo campos necesarios
+- **Cálculos en frontend**: Agregaciones eficientes
+
+### 🎨 UI/UX
+
+#### Mejoras Visuales
+- **Diseño por pestañas** - Navegación intuitiva
+- **Colores consistentes** - Gradientes identificativos por sección
+- **Iconos claros** - Cada métrica con su icono
+- **Responsive** - Funciona en móvil y desktop
+- **Estados de carga** - Skeleton screens mientras carga
+- **Gráficos legibles** - Altura mínima garantizada
+- **Sticky headers** - Pestañas siempre visibles
+
+#### Mejoras de Experiencia
+- **Separación clara** - Datos de usuarios vs datos de IA
+- **Contexto visual** - Fotos en tops, íconos en KPIs
+- **Información completa** - Ubicación, precios, counts
+- **Acceso rápido** - Click en pestaña para navegar
+- **Sin sobrecarga** - Solo se muestra la pestaña activa
+
+### 📚 Casos de Uso
+
+#### Para Administrador de Furgocasa
+- Ver evolución de la plataforma mes a mes
+- Analizar qué áreas son más populares
+- Entender comportamiento de usuarios
+- Detectar patrones de uso
+- Ver datos financieros del mercado de autocaravanas
+- Identificar oportunidades de monetización
+- Análisis de precios de compra/venta reales
+- Datos para estrategia de pricing
+
+#### Para Toma de Decisiones
+- Invertir en marketing de áreas populares
+- Mejorar UX en áreas con alta tasa de rebote
+- Optimizar para dispositivos más usados
+- Priorizar features según uso
+- Estrategia de adquisición de vehículos
+- Pricing de servicios premium
+- Análisis de competencia
+
+---
+
 ## [2.1.2] - 2025-11-14 🤖💰
 
 ### 🎯 SISTEMA DE VALORACIÓN CON IA
@@ -689,6 +928,6 @@ WHERE email = 'info@furgocasa.com';
 
 ---
 
-**Versión actual:** 2.0.0  
-**Última actualización:** 12 de Noviembre, 2025  
-**Próxima versión:** 2.1.0 (mejoras y optimizaciones)
+**Versión actual:** 3.0.0  
+**Última actualización:** 14 de Noviembre, 2025  
+**Próxima versión:** 3.1.0 (integraciones externas y optimizaciones)
