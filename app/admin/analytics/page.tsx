@@ -128,6 +128,10 @@ interface AnalyticsData {
   vehiculosMasCaros: { vehiculo: any; precio: number }[]
   vehiculosMasBaratos: { vehiculo: any; precio: number }[]
   vehiculosConDatosFinancieros: number
+  
+  // Vehículos - Top Mercado IA
+  vehiculosMasCarosMercado: { marca: string; modelo: string; año: number | null; precio: number }[]
+  vehiculosMasBaratosMercado: { marca: string; modelo: string; año: number | null; precio: number }[]
   inversionTotalPromedio: number
 
   // Vehículos - Datos de Mercado
@@ -790,6 +794,28 @@ export default function AdminAnalyticsPage() {
         .sort((a, b) => b.count - a.count)
         .slice(0, 10)
 
+      // Top 5 más caros y baratos del MERCADO IA
+      const vehiculosConPrecio = datosMercado?.filter(d => d.precio && d.precio > 0) || []
+      const vehiculosMasCarosMercado = vehiculosConPrecio
+        .sort((a, b) => (b.precio || 0) - (a.precio || 0))
+        .slice(0, 5)
+        .map(v => ({
+          marca: v.marca || 'N/A',
+          modelo: v.modelo || 'N/A',
+          año: v.ano || null,
+          precio: v.precio || 0
+        }))
+
+      const vehiculosMasBaratosMercado = vehiculosConPrecio
+        .sort((a, b) => (a.precio || 0) - (b.precio || 0))
+        .slice(0, 5)
+        .map(v => ({
+          marca: v.marca || 'N/A',
+          modelo: v.modelo || 'N/A',
+          año: v.ano || null,
+          precio: v.precio || 0
+        }))
+
       // ========== VALORACIONES IA ==========
       const vehiculosValorados = valoracionesEconomicas?.filter(v => v.valor_estimado_actual && v.valor_estimado_actual > 0).length || 0
       const valorPromedioEstimado = vehiculosValorados > 0
@@ -1174,6 +1200,8 @@ export default function AdminAnalyticsPage() {
         vehiculosMasCaros,
         vehiculosMasBaratos,
         vehiculosConDatosFinancieros,
+        vehiculosMasCarosMercado,
+        vehiculosMasBaratosMercado,
         inversionTotalPromedio,
 
         // Vehículos - Datos de Mercado
@@ -2501,12 +2529,16 @@ export default function AdminAnalyticsPage() {
               </div>
             </div>
 
-            {/* SECCIÓN 5: Top Vehículos Más Caros/Baratos */}
+            {/* SECCIÓN 5: Top Vehículos Más Caros/Baratos (USUARIOS) */}
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">👥 Top 5 Vehículos de Usuarios</h3>
+              <p className="text-sm text-gray-600 mb-4">Según precios de compra registrados por los usuarios</p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {/* Top 5 Más Caros */}
               <div className="bg-white rounded-xl shadow">
                 <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-amber-500 to-yellow-500">
-                  <h3 className="text-lg font-semibold text-white">💎 Top 5 Vehículos Más Caros</h3>
+                  <h3 className="text-lg font-semibold text-white">💎 Top 5 Más Caros (Usuarios)</h3>
                 </div>
                 <div className="p-6">
                   {analytics.vehiculosMasCaros.length > 0 ? (
@@ -2533,7 +2565,7 @@ export default function AdminAnalyticsPage() {
               {/* Top 5 Más Baratos */}
               <div className="bg-white rounded-xl shadow">
                 <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-500 to-emerald-500">
-                  <h3 className="text-lg font-semibold text-white">💰 Top 5 Vehículos Más Económicos</h3>
+                  <h3 className="text-lg font-semibold text-white">💰 Top 5 Más Económicos (Usuarios)</h3>
                 </div>
                 <div className="p-6">
                   {analytics.vehiculosMasBaratos.length > 0 ? (
@@ -2553,6 +2585,67 @@ export default function AdminAnalyticsPage() {
                     </div>
                   ) : (
                     <p className="text-gray-500 text-center py-8">No hay datos disponibles</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* SECCIÓN 5B: Top Vehículos Más Caros/Baratos (MERCADO IA) */}
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">🤖 Top 5 Vehículos del Mercado (IA)</h3>
+              <p className="text-sm text-gray-600 mb-4">Según anuncios recopilados automáticamente de internet</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {/* Top 5 Más Caros Mercado */}
+              <div className="bg-white rounded-xl shadow">
+                <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-orange-500 to-red-500">
+                  <h3 className="text-lg font-semibold text-white">🔥 Top 5 Más Caros (Mercado IA)</h3>
+                </div>
+                <div className="p-6">
+                  {analytics.vehiculosMasCarosMercado.length > 0 ? (
+                    <div className="space-y-3">
+                      {analytics.vehiculosMasCarosMercado.map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border border-orange-200">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl font-bold text-orange-600">#{index + 1}</span>
+                            <div>
+                              <p className="font-semibold text-gray-900">{item.marca} {item.modelo}</p>
+                              <p className="text-sm text-gray-600">{item.año || 'Año N/A'}</p>
+                            </div>
+                          </div>
+                          <p className="text-xl font-bold text-orange-600">{item.precio.toLocaleString('es-ES')}€</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">No hay datos de mercado</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Top 5 Más Baratos Mercado */}
+              <div className="bg-white rounded-xl shadow">
+                <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-teal-500 to-cyan-500">
+                  <h3 className="text-lg font-semibold text-white">💎 Top 5 Más Económicos (Mercado IA)</h3>
+                </div>
+                <div className="p-6">
+                  {analytics.vehiculosMasBaratosMercado.length > 0 ? (
+                    <div className="space-y-3">
+                      {analytics.vehiculosMasBaratosMercado.map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg border border-teal-200">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl font-bold text-teal-600">#{index + 1}</span>
+                            <div>
+                              <p className="font-semibold text-gray-900">{item.marca} {item.modelo}</p>
+                              <p className="text-sm text-gray-600">{item.año || 'Año N/A'}</p>
+                            </div>
+                          </div>
+                          <p className="text-xl font-bold text-teal-600">{item.precio.toLocaleString('es-ES')}€</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">No hay datos de mercado</p>
                   )}
                 </div>
               </div>
