@@ -795,8 +795,8 @@ export default function AdminAnalyticsPage() {
         .slice(0, 10)
 
       // Top 5 más caros y baratos del MERCADO IA
-      const vehiculosConPrecio = datosMercado?.filter(d => d.precio && d.precio > 0) || []
-      const vehiculosMasCarosMercado = vehiculosConPrecio
+      const vehiculosConPrecioMercado = datosMercado?.filter(d => d.precio && d.precio > 0) || []
+      const vehiculosMasCarosMercado = vehiculosConPrecioMercado
         .sort((a, b) => (b.precio || 0) - (a.precio || 0))
         .slice(0, 5)
         .map(v => ({
@@ -806,7 +806,7 @@ export default function AdminAnalyticsPage() {
           precio: v.precio || 0
         }))
 
-      const vehiculosMasBaratosMercado = vehiculosConPrecio
+      const vehiculosMasBaratosMercado = vehiculosConPrecioMercado
         .sort((a, b) => (a.precio || 0) - (b.precio || 0))
         .slice(0, 5)
         .map(v => ({
