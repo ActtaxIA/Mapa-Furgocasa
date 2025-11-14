@@ -943,22 +943,7 @@ export default function AdminAnalyticsPage() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="spinner mb-4"></div>
-            <p className="text-gray-600">Cargando analíticas...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (!analytics) return null
-
+  // Helper function para labels de servicios
   const getServicioLabel = (servicio: string) => {
     const labels: Record<string, string> = {
       agua: 'Agua',
@@ -975,6 +960,22 @@ export default function AdminAnalyticsPage() {
     }
     return labels[servicio] || servicio
   }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <div className="spinner mb-4"></div>
+            <p className="text-gray-600">Cargando analíticas...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!analytics) return null
 
   return (
     <div className="min-h-screen bg-gray-50">
