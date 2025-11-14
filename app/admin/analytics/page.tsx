@@ -2920,13 +2920,24 @@ export default function AdminAnalyticsPage() {
                   {analytics.eventosMasComunes.map((evento, index) => {
                     const maxCount = analytics.eventosMasComunes[0]?.count || 1
                     const porcentaje = (evento.count / maxCount) * 100
-                    const colores = ['emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'purple', 'pink']
-                    const color = colores[index % colores.length]
+                    
+                    // Definir colores específicos con mejor contraste
+                    const coloresConfig = [
+                      { from: 'from-amber-500', to: 'to-yellow-500', hover: 'group-hover:from-amber-600 group-hover:to-yellow-600', badge: 'bg-gradient-to-br from-amber-500 to-yellow-600' },
+                      { from: 'from-emerald-500', to: 'to-green-600', hover: 'group-hover:from-emerald-600 group-hover:to-green-700', badge: 'bg-gradient-to-br from-emerald-500 to-green-700' },
+                      { from: 'from-cyan-500', to: 'to-teal-600', hover: 'group-hover:from-cyan-600 group-hover:to-teal-700', badge: 'bg-gradient-to-br from-cyan-500 to-teal-700' },
+                      { from: 'from-sky-500', to: 'to-blue-600', hover: 'group-hover:from-sky-600 group-hover:to-blue-700', badge: 'bg-gradient-to-br from-sky-500 to-blue-700' },
+                      { from: 'from-indigo-500', to: 'to-violet-600', hover: 'group-hover:from-indigo-600 group-hover:to-violet-700', badge: 'bg-gradient-to-br from-indigo-500 to-violet-700' },
+                      { from: 'from-purple-500', to: 'to-fuchsia-600', hover: 'group-hover:from-purple-600 group-hover:to-fuchsia-700', badge: 'bg-gradient-to-br from-purple-500 to-fuchsia-700' },
+                      { from: 'from-pink-500', to: 'to-rose-600', hover: 'group-hover:from-pink-600 group-hover:to-rose-700', badge: 'bg-gradient-to-br from-pink-500 to-rose-700' },
+                      { from: 'from-orange-500', to: 'to-red-600', hover: 'group-hover:from-orange-600 group-hover:to-red-700', badge: 'bg-gradient-to-br from-orange-500 to-red-700' }
+                    ]
+                    const colorConfig = coloresConfig[index % coloresConfig.length]
 
                     return (
                       <div key={evento.evento} className="group">
                         <div className="flex items-center gap-4 mb-2">
-                          <span className={`flex items-center justify-center w-10 h-10 bg-gradient-to-br from-${color}-500 to-${color}-700 text-white rounded-full text-lg font-bold shadow-md flex-shrink-0`}>
+                          <span className={`flex items-center justify-center w-10 h-10 ${colorConfig.badge} text-white rounded-full text-lg font-bold shadow-md flex-shrink-0`}>
                             {index + 1}
                           </span>
                           <div className="flex-1 flex items-center justify-between">
@@ -2936,10 +2947,10 @@ export default function AdminAnalyticsPage() {
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
                           <div
-                            className={`bg-gradient-to-r from-${color}-500 to-${color}-600 h-4 rounded-full transition-all duration-500 group-hover:from-${color}-600 group-hover:to-${color}-700 flex items-center justify-end pr-2`}
+                            className={`bg-gradient-to-r ${colorConfig.from} ${colorConfig.to} h-4 rounded-full transition-all duration-500 ${colorConfig.hover} flex items-center justify-end pr-2`}
                             style={{ width: `${porcentaje}%` }}
                           >
-                            <span className="text-white text-xs font-bold">{porcentaje.toFixed(0)}%</span>
+                            <span className="text-white text-xs font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{porcentaje.toFixed(0)}%</span>
                           </div>
                         </div>
                       </div>
