@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
 import type { Area } from '@/types/database.types'
-import {
+import { 
   MapPinIcon,
   UserGroupIcon,
   EyeIcon,
@@ -34,11 +34,14 @@ interface AnalyticsData {
   promedioRating: number
   distribucionPrecios: { rango: string; count: number }[]
   crecimientoMensual: { mes: string; nuevas: number }[]
-
-  // Métricas de rutas
+  
+  // Métricas de rutas - Básicas
   totalRutas: number
   distanciaTotal: number
   totalInteraccionesIA: number
+  distanciaPromedio: number
+  rutaMasLarga: number
+  rutaMasCorta: number
 
   // Métricas temporales - Rutas
   rutasHoy: number
@@ -46,6 +49,14 @@ interface AnalyticsData {
   rutasEsteMes: number
   rutasPorDia: { fecha: string; count: number }[]
   rutasPorMes: { mes: string; count: number; distancia: number }[]
+  
+  // Análisis de Rutas
+  rutasPorNumeroPuntos: { puntos: string; count: number }[]
+  distanciaPorMes: { mes: string; distancia: number }[]
+  distribucionDistancias: { rango: string; count: number; porcentaje: number }[]
+  usuariosConMasRutas: { userId: string; count: number }[]
+  promedioRutasPorUsuario: number
+  promedioDistanciaPorUsuario: number
 
   // Métricas temporales - Visitas de usuarios
   visitasHoy: number
@@ -173,7 +184,7 @@ export default function AdminAnalyticsPage() {
   const checkAdminAndLoadAnalytics = async () => {
     const supabase = createClient()
     const { data: { session } } = await supabase.auth.getSession()
-
+    
     if (!session?.user || !session.user.user_metadata?.is_admin) {
       router.push('/mapa')
       return
@@ -185,7 +196,7 @@ export default function AdminAnalyticsPage() {
   const loadAnalytics = async () => {
     try {
       const supabase = createClient()
-
+      
       // Obtener todas las áreas (con paginación)
       const allAreas: Area[] = []
       const pageSize = 1000
@@ -237,7 +248,7 @@ export default function AdminAnalyticsPage() {
       const { data: rutas, error: rutasError } = await supabase
         .from('rutas')
         .select('*')
-
+      
       const totalRutas = rutas?.length || 0
       const distanciaTotal = rutas?.reduce((sum, r) => sum + (r.distancia_km || 0), 0) || 0
       console.log(`✅ ${totalRutas} rutas, ${distanciaTotal.toFixed(0)} km totales`)
@@ -247,7 +258,7 @@ export default function AdminAnalyticsPage() {
       const { data: mensajes, error: mensajesError } = await supabase
         .from('chatbot_mensajes')
         .select('id, created_at')
-
+      
       const totalInteraccionesIA = mensajes?.length || 0
       console.log(`✅ ${totalInteraccionesIA} interacciones con IA`)
 
@@ -313,7 +324,66 @@ export default function AdminAnalyticsPage() {
         })
       }
 
+      // Análisis adicional de rutas
+      const distanciaPromedio = totalRutas > 0 ? distanciaTotal / totalRutas : 0
+      const distancias = rutas?.map(r => r.distancia_km || 0).filter(d => d > 0) || []
+      const rutaMasLarga = distancias.length > 0 ? Math.max(...distancias) : 0
+      const rutaMasCorta = distancias.length > 0 ? Math.min(...distancias) : 0
+
+      // Distribución de distancias
+      const rangosDistancia = [
+        { min: 0, max: 50, label: '0-50 km' },
+        { min: 50, max: 100, label: '50-100 km' },
+        { min: 100, max: 200, label: '100-200 km' },
+        { min: 200, max: 500, label: '200-500 km' },
+        { min: 500, max: 1000, label: '500-1000 km' },
+        { min: 1000, max: Infinity, label: '> 1000 km' }
+      ]
+
+      const distribucionDistancias = rangosDistancia.map(rango => {
+        const count = rutas?.filter(r => 
+          (r.distancia_km || 0) >= rango.min && (r.distancia_km || 0) < rango.max
+        ).length || 0
+        
+        return {
+          rango: rango.label,
+          count,
+          porcentaje: totalRutas > 0 ? (count / totalRutas) * 100 : 0
+        }
+      })
+
+      // Rutas por número de puntos (origen + waypoints + destino)
+      const rutasPorNumeroPuntos = [
+        { puntos: '2 puntos (A→B)', count: rutas?.filter(r => !r.waypoints || (r.waypoints as any[])?.length === 0).length || 0 },
+        { puntos: '3 puntos', count: rutas?.filter(r => (r.waypoints as any[])?.length === 1).length || 0 },
+        { puntos: '4 puntos', count: rutas?.filter(r => (r.waypoints as any[])?.length === 2).length || 0 },
+        { puntos: '5+ puntos', count: rutas?.filter(r => (r.waypoints as any[])?.length >= 3).length || 0 }
+      ]
+
+      // Usuarios con más rutas
+      const rutasPorUsuario = rutas?.reduce((acc: any, r) => {
+        if (r.user_id) acc[r.user_id] = (acc[r.user_id] || 0) + 1
+        return acc
+      }, {}) || {}
+
+      const usuariosConMasRutas = Object.entries(rutasPorUsuario)
+        .map(([userId, count]) => ({ userId, count: count as number }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10)
+
+      const usuariosUnicos = Object.keys(rutasPorUsuario).length
+      const promedioRutasPorUsuario = usuariosUnicos > 0 ? totalRutas / usuariosUnicos : 0
+      
+      const distanciaPorUsuario = rutas?.reduce((acc: any, r) => {
+        if (r.user_id) acc[r.user_id] = (acc[r.user_id] || 0) + (r.distancia_km || 0)
+        return acc
+      }, {}) || {}
+      
+      const distanciaTotalPorUsuarios = Object.values(distanciaPorUsuario).reduce((sum: number, d: any) => sum + d, 0)
+      const promedioDistanciaPorUsuario = usuariosUnicos > 0 ? distanciaTotalPorUsuarios / usuariosUnicos : 0
+
       console.log(`✅ Rutas: ${rutasHoy} hoy, ${rutasEstaSemana} esta semana, ${rutasEsteMes} este mes`)
+      console.log(`📏 Distancia promedio: ${distanciaPromedio.toFixed(1)} km, Más larga: ${rutaMasLarga.toFixed(1)} km`)
 
       // ========== MÉTRICAS DE VISITAS TEMPORALES ==========
       const { data: visitas } = await supabase
@@ -876,8 +946,8 @@ export default function AdminAnalyticsPage() {
 
       const totalPaises = Object.keys(areasPorPais).length
       const areasPorPaisArray = Object.entries(areasPorPais || {})
-        .map(([pais, count]) => ({
-          pais,
+        .map(([pais, count]) => ({ 
+          pais, 
           count: count as number,
           porcentaje: ((count as number) / areas.length) * 100
         }))
@@ -953,32 +1023,32 @@ export default function AdminAnalyticsPage() {
       // ========== ÁREAS CON DESCRIPCIÓN E IMÁGENES ==========
       const DESCRIPCION_MIN_LENGTH = 200
       const PLACEHOLDER_TEXT = 'Área encontrada mediante búsqueda en Google Maps'
-
-      const areasConDescripcion = areas?.filter(a =>
-        a.descripcion &&
-        a.descripcion.length >= DESCRIPCION_MIN_LENGTH &&
+      
+      const areasConDescripcion = areas?.filter(a => 
+        a.descripcion && 
+        a.descripcion.length >= DESCRIPCION_MIN_LENGTH && 
         !a.descripcion.includes(PLACEHOLDER_TEXT)
       ).length || 0
 
-      const areasConImagenes = areas?.filter(a =>
+      const areasConImagenes = areas?.filter(a => 
         a.foto_principal || (a.fotos_urls && Array.isArray(a.fotos_urls) && a.fotos_urls.length > 0)
       ).length || 0
 
       // ========== CRECIMIENTO MENSUAL (últimos 6 meses) ==========
       const mesesAtras = 6
       const crecimientoMensual = []
-
+      
       for (let i = mesesAtras - 1; i >= 0; i--) {
         const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
         const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
-
+        
         const nuevasAreasMes = areas?.filter(a => {
           if (!a.created_at) return false
           const fechaCreacion = new Date(a.created_at)
           return fechaCreacion.getFullYear() === fechaMes.getFullYear() &&
                  fechaCreacion.getMonth() === fechaMes.getMonth()
         }).length || 0
-
+        
         crecimientoMensual.push({ mes: mesNombre, nuevas: nuevasAreasMes })
       }
 
@@ -1177,7 +1247,7 @@ export default function AdminAnalyticsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-
+      
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-3">
@@ -1652,7 +1722,7 @@ export default function AdminAnalyticsPage() {
                       </div>
                       <div
                         className="w-full bg-gradient-to-t from-violet-500 to-violet-400 rounded-t hover:from-violet-600 hover:to-violet-500 transition-all cursor-pointer shadow-md"
-                        style={{ height: `${mes.nuevos === 0 ? '8' : Math.max(altura, 25)}%` }}
+                        style={{ height: `${mes.nuevos === 0 ? '15' : Math.min(Math.max(altura, 40), 95)}%` }}
                         title={`${mes.mes}: ${mes.nuevos} nuevos usuarios`}
                       />
                       <p className="text-sm font-medium text-gray-700 mt-2">{mes.mes}</p>
@@ -1810,7 +1880,7 @@ export default function AdminAnalyticsPage() {
                   </div>
                 ))}
               </div>
-
+              
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-700">Áreas Gratis</span>
@@ -1839,8 +1909,8 @@ export default function AdminAnalyticsPage() {
                     {index + 1}
                   </span>
                   {area.foto_principal && (
-                    <img
-                      src={area.foto_principal}
+                    <img 
+                      src={area.foto_principal} 
                       alt={area.nombre}
                       className="w-16 h-16 rounded-lg object-cover"
                     />
@@ -1870,7 +1940,7 @@ export default function AdminAnalyticsPage() {
               {analytics.crecimientoMensual.map((mes, index) => {
                 const maxNuevas = Math.max(...analytics.crecimientoMensual.map(m => m.nuevas))
                 const alturaPorcentaje = maxNuevas > 0 ? (mes.nuevas / maxNuevas) * 100 : 0
-
+                
                 return (
                   <div key={index} className="flex-1 flex flex-col items-center gap-2">
                     <div className="text-center mb-2">
@@ -1878,7 +1948,7 @@ export default function AdminAnalyticsPage() {
                     </div>
                     <div
                       className="w-full bg-gradient-to-t from-sky-500 to-sky-400 rounded-t-lg transition-all hover:from-sky-600 hover:to-sky-500"
-                      style={{ height: `${Math.max(alturaPorcentaje, 5)}%` }}
+                      style={{ height: `${Math.min(Math.max(alturaPorcentaje, 40), 95)}%` }}
                     />
                     <p className="text-xs font-medium text-gray-600 mt-2">{mes.mes}</p>
                   </div>
@@ -1931,7 +2001,7 @@ export default function AdminAnalyticsPage() {
                       </div>
                         <div
                           className="w-full bg-gradient-to-t from-indigo-500 to-indigo-400 rounded-t hover:from-indigo-600 hover:to-indigo-500 transition-all cursor-pointer shadow-sm"
-                          style={{ height: `${dia.count === 0 ? '2' : Math.max(altura, 15)}%` }}
+                          style={{ height: `${dia.count === 0 ? '10' : Math.min(Math.max(altura, 40), 95)}%` }}
                           title={`${dia.fecha}: ${dia.count} rutas`}
                         />
                       {index % 5 === 0 && (
@@ -1974,7 +2044,7 @@ export default function AdminAnalyticsPage() {
                       </div>
                         <div
                           className="w-full bg-gradient-to-t from-green-500 to-green-400 rounded-t hover:from-green-600 hover:to-green-500 transition-all cursor-pointer shadow-sm"
-                          style={{ height: `${dia.count === 0 ? '2' : Math.max(altura, 15)}%` }}
+                          style={{ height: `${dia.count === 0 ? '10' : Math.min(Math.max(altura, 40), 95)}%` }}
                           title={`${dia.fecha}: ${dia.count} visitas`}
                         />
                       {index % 5 === 0 && (
@@ -2017,7 +2087,7 @@ export default function AdminAnalyticsPage() {
                       </div>
                         <div
                           className="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t hover:from-purple-600 hover:to-purple-500 transition-all cursor-pointer shadow-sm"
-                          style={{ height: `${dia.count === 0 ? '2' : Math.max(altura, 15)}%` }}
+                          style={{ height: `${dia.count === 0 ? '10' : Math.min(Math.max(altura, 40), 95)}%` }}
                           title={`${dia.fecha}: ${dia.count} mensajes`}
                         />
                       {index % 5 === 0 && (
@@ -2059,7 +2129,7 @@ export default function AdminAnalyticsPage() {
                       </div>
                       <div
                         className="w-full bg-gradient-to-t from-indigo-500 to-indigo-400 rounded-t hover:from-indigo-600 hover:to-indigo-500 transition-all cursor-pointer"
-                        style={{ height: `${Math.max(altura, 5)}%` }}
+                        style={{ height: `${Math.min(Math.max(altura, 40), 95)}%` }}
                         title={`${mes.mes}: ${mes.count} rutas, ${mes.distancia.toFixed(0)} km`}
                       />
                       <p className="text-xs font-medium text-gray-600">{mes.mes}</p>
@@ -2623,7 +2693,7 @@ export default function AdminAnalyticsPage() {
                         </div>
                         <div
                           className="w-full bg-gradient-to-t from-red-500 to-orange-400 rounded-t hover:from-red-600 hover:to-orange-500 transition-all cursor-pointer shadow-md"
-                          style={{ height: `${mes.count === 0 ? '8' : Math.max(altura, 25)}%` }}
+                          style={{ height: `${mes.count === 0 ? '15' : Math.min(Math.max(altura, 40), 95)}%` }}
                           title={`${mes.mes}: ${mes.count} vehículos`}
                         />
                         <p className="text-sm font-medium text-gray-700 mt-2">{mes.mes}</p>
