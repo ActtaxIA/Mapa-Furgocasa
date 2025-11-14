@@ -38,11 +38,11 @@ interface Props {
   onPonerEnVenta?: (precio: number) => void
 }
 
-export default function InformeValoracionIA({ 
-  informe, 
+export default function InformeValoracionIA({
+  informe,
   vehiculoMarca = 'Vehículo',
   vehiculoModelo = '',
-  onPonerEnVenta 
+  onPonerEnVenta
 }: Props) {
   const [mostrarComparables, setMostrarComparables] = useState(false)
   const [seccionActiva, setSeccionActiva] = useState<'informe' | 'comparables' | 'datos'>('informe')
@@ -240,7 +240,7 @@ export default function InformeValoracionIA({
                 </div>
 
                 {informe.comparables_json.map((comp, index) => (
-                  <div 
+                  <div
                     key={index}
                     className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
                   >
@@ -409,4 +409,3 @@ export default function InformeValoracionIA({
     </div>
   )
 }
-

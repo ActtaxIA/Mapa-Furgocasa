@@ -4,6 +4,147 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 ---
 
+## [2.1.2] - 2025-11-14 🤖💰
+
+### 🎯 SISTEMA DE VALORACIÓN CON IA
+
+Implementación completa de valoración profesional de vehículos utilizando GPT-4 y búsqueda automática de comparables reales en internet.
+
+### ✅ Agregado
+
+#### Sistema de Valoración IA 🤖
+- **Generación automática de informes** - GPT-4 analiza el vehículo y crea un informe profesional de 400-700 palabras
+- **3 precios estratégicos** - Precio de salida (negociación), precio objetivo (realista), precio mínimo (límite)
+- **Búsqueda de comparables** - SerpAPI busca anuncios similares en Milanuncios, Wallapop, etc.
+- **Informe estructurado en 7 secciones**:
+  1. Introducción al vehículo
+  2. Precio nuevo para particular (con impuestos)
+  3. Depreciación por tiempo y uso
+  4. Valor de extras instalados
+  5. Comparación con mercado actual
+  6. Precios recomendados (salida/objetivo/mínimo)
+  7. Conclusión y justificación
+- **Historial completo** - Guarda todas las valoraciones con fecha para ver evolución temporal
+- **Análisis de datos** - Considera precio compra, km, antigüedad, mejoras, averías, datos mercado
+
+#### Nueva Tabla BD: `valoracion_ia_informes` 📊
+```sql
+- id (UUID)
+- vehiculo_id (FK a vehiculos_registrados)
+- user_id (FK a auth.users)
+- fecha_valoracion (TIMESTAMPTZ)
+- precio_salida, precio_objetivo, precio_minimo (NUMERIC)
+- informe_texto (TEXT Markdown)
+- comparables_json (JSONB - array de anuncios)
+- num_comparables (INT)
+- nivel_confianza (TEXT: Alta/Media/Baja)
+- precio_base_mercado (NUMERIC)
+- depreciacion_aplicada (NUMERIC %)
+```
+
+#### Trigger Automático 🔄
+- **`trigger_actualizar_valor_desde_ia`** - Actualiza automáticamente `vehiculo_valoracion_economica` cuando se genera nueva valoración IA
+- Mantiene `valor_estimado_actual`, `fecha_ultima_valoracion`, `ultima_valoracion_ia_id`
+
+#### API Endpoint: `/api/vehiculos/[id]/ia-valoracion` 🚀
+- **POST** - Genera nueva valoración (1-2 minutos):
+  1. Recopila datos del vehículo (económicos, técnicos, averías, mejoras)
+  2. Busca comparables con SerpAPI
+  3. Construye prompt detallado
+  4. Llama a GPT-4
+  5. Extrae 3 precios del informe
+  6. Guarda en BD con historial
+- **GET** - Obtiene historial de valoraciones del vehículo
+
+#### Biblioteca: `lib/valoracion/buscar-comparables.ts` 🔍
+- Construye queries de búsqueda optimizadas
+- Llama a SerpAPI
+- Parsea resultados (título, precio, km, año, URL)
+- Calcula relevancia de cada comparable
+- Ordena y filtra duplicados
+- Devuelve array de anuncios reales
+
+#### Componente: `InformeValoracionIA.tsx` 📄
+- **3 pestañas**:
+  - 📄 Informe Completo (Markdown renderizado)
+  - 🔍 Comparables (lista con enlaces externos)
+  - 📊 Datos Técnicos (métricas y estadísticas)
+- **Cards destacadas** para los 3 precios (verde, azul, naranja)
+- **Botón "Poner en Venta"** - Redirige a tab venta con precio sugerido
+- **Diseño profesional** con gradientes y animaciones
+
+#### UI del Vehículo: Nueva Tab "Valoración IA" ✨
+- **Icono dorado** (SparklesIconSolid)
+- **Sección introductoria** explicando el servicio
+- **Botón "Generar Valoración"** con confirmación y loading state
+- **Estado vacío** elegante cuando no hay valoraciones
+- **Historial** de todas las valoraciones generadas
+- **Carga automática** al activar la tab
+
+#### Analytics Admin 📊
+- Corrección campo `año` → `ano` (sin ñ) en distribución por años
+- Ahora funciona correctamente la visualización de antigüedad de vehículos
+
+### 🔧 Modificado
+
+#### Archivos Creados
+- `lib/valoracion/buscar-comparables.ts` - Lógica de búsqueda SerpAPI
+- `app/api/vehiculos/[id]/ia-valoracion/route.ts` - API endpoint
+- `components/vehiculo/InformeValoracionIA.tsx` - Componente visualización
+
+#### Archivos Modificados
+- `app/(public)/vehiculo/[id]/page.tsx` - Nueva tab + funciones de valoración
+- `app/admin/analytics/page.tsx` - Corrección campo `ano` en distribución por años
+- `package.json` - Agregada dependencia `react-markdown`
+
+### 📚 Técnico
+
+#### Flujo Completo de Valoración
+```
+1. Usuario → Tab "Valoración IA" → Click "Generar"
+2. API recopila datos del vehículo desde múltiples tablas
+3. SerpAPI busca 10-20 anuncios similares en internet
+4. GPT-4 recibe prompt de 2000+ tokens con toda la info
+5. GPT-4 genera informe profesional narrativo
+6. API extrae 3 precios con regex del informe
+7. Se guarda en valoracion_ia_informes con fecha
+8. Trigger actualiza vehiculo_valoracion_economica
+9. Frontend muestra informe completo + comparables
+```
+
+#### Row Level Security (RLS)
+- Usuarios ven solo sus valoraciones: `user_id = auth.uid()`
+- Admins ven todas: `role = 'admin'`
+- Cada valoración vinculada por UUID del vehículo (no matrícula)
+
+#### Variables de Entorno Requeridas
+```bash
+OPENAI_API_KEY=sk-proj-...     # GPT-4
+SERPAPI_KEY=...                 # Búsqueda comparables
+```
+
+### 🎯 Casos de Uso
+
+#### Para Usuarios
+- Saber el valor real de su vehículo antes de vender
+- Obtener 3 precios estratégicos respaldados por datos
+- Ver exactamente qué comparables se usaron
+- Argumentos sólidos para negociaciones
+- Seguir evolución del valor con el tiempo
+
+#### Para Furgocasa (Admin)
+- Ver todas las valoraciones de todos los usuarios
+- Analizar precios del mercado secundario
+- Detectar oportunidades de compra/venta
+- Base de datos de precios reales acumulada
+- Insights para estrategia de precios
+
+### 🐛 Correcciones
+- **Campo año** en analytics ahora consulta `ano` (sin ñ) correctamente
+- **Distribución por años** funciona en `/admin/analytics` → tab Vehículos
+
+---
+
 ## [2.1.1] - 2025-11-13 ✅💰
 
 ### 🐛 Correcciones Críticas - Sistema de Venta

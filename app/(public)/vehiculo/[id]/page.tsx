@@ -526,8 +526,8 @@ export default function VehiculoPage() {
                       Valoración con Inteligencia Artificial
                     </h3>
                     <p className="text-gray-700 mb-4">
-                      Genera un informe profesional de valoración de tu vehículo utilizando IA. 
-                      Analizamos datos reales del mercado, el estado de tu vehículo, inversiones realizadas 
+                      Genera un informe profesional de valoración de tu vehículo utilizando IA.
+                      Analizamos datos reales del mercado, el estado de tu vehículo, inversiones realizadas
                       y te proporcionamos 3 precios estratégicos: de salida, objetivo y mínimo.
                     </p>
                     <ul className="text-sm text-gray-600 space-y-1">
