@@ -214,16 +214,53 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
       pdf.setFont("helvetica", "bold");
       pdf.text("REPORTE DE ACCIDENTE", pageWidth / 2, 20, { align: "center" });
 
+      // Añadir logo blanco debajo del título
+      let logoCargado = false;
+      try {
+        const logoUrl = "https://www.mapafurgocasa.com/logo-blanco-500.png";
+        const logoResponse = await fetch(logoUrl);
+        const logoBlob = await logoResponse.blob();
+        const logoBase64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(logoBlob);
+        });
+        
+        // Crear imagen para obtener dimensiones reales
+        const img = new Image();
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = reject;
+          img.src = logoBase64;
+        });
+        
+        // Tamaño del logo: 35mm de ancho, altura proporcional
+        const logoWidth = 35;
+        const logoHeight = (logoWidth * img.height) / img.width;
+        const logoX = (pageWidth - logoWidth) / 2; // Centrado
+        const logoY = 24; // Justo debajo del título
+        
+        pdf.addImage(logoBase64, "PNG", logoX, logoY, logoWidth, logoHeight);
+        logoCargado = true;
+      } catch (logoError) {
+        console.warn("No se pudo cargar el logo:", logoError);
+        // Continuar sin logo si hay error
+      }
+
+      // Ajustar posición del texto según si se cargó el logo
+      const textoY = logoCargado ? 36 : 32; // Si hay logo, bajar el texto
+      
       pdf.setFontSize(11);
       pdf.setFont("helvetica", "normal");
-      pdf.text("Mapa Furgocasa - Documento Oficial", pageWidth / 2, 32, {
+      pdf.text("Mapa Furgocasa - Documento Oficial", pageWidth / 2, textoY + 8, {
         align: "center",
       });
 
       // Subtítulo
       pdf.setFontSize(9);
       pdf.setFont("helvetica", "italic");
-      pdf.text("www.mapafurgocasa.com", pageWidth / 2, 40, { align: "center" });
+      pdf.text("www.mapafurgocasa.com", pageWidth / 2, textoY + 14, { align: "center" });
 
       yPos = 58;
 
