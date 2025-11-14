@@ -708,28 +708,51 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
               reader.readAsDataURL(fotoBlob);
             });
 
-            // Obtener dimensiones reales de la imagen
+            // Obtener dimensiones reales de la imagen y corregir orientación
             const img = new Image();
             await new Promise<void>((resolve) => {
               img.onload = () => resolve();
               img.src = fotoBase64;
             });
 
+            // Crear un canvas para corregir la orientación si es necesario
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d')!;
+            
+            // Usar las dimensiones de la imagen cargada
+            // Si la imagen es más alta que ancha, es vertical
             const originalWidth = img.width;
             const originalHeight = img.height;
+            const esVertical = originalHeight > originalWidth;
+            
+            // Configurar canvas con las dimensiones correctas
+            canvas.width = originalWidth;
+            canvas.height = originalHeight;
+            
+            // Dibujar la imagen en el canvas
+            ctx.drawImage(img, 0, 0, originalWidth, originalHeight);
+            
+            // Obtener base64 corregido del canvas
+            const fotoCorregidaBase64 = canvas.toDataURL('image/jpeg', 0.9);
+            
             const aspectRatio = originalWidth / originalHeight;
 
             // Calcular dimensiones para el PDF manteniendo aspect ratio
             const maxWidth = pageWidth - 2 * margin;
-            const maxHeight = 80; // Altura máxima por foto
+            let maxHeight = 80; // Altura máxima por foto horizontal
+            
+            // Si la foto es vertical, permitir más altura para mejor visualización
+            if (esVertical) {
+              maxHeight = 120; // Más espacio para fotos verticales
+            }
 
             let imgWidth, imgHeight;
             if (aspectRatio > maxWidth / maxHeight) {
-              // La imagen es más ancha
+              // La imagen es más ancha que alta (horizontal o cuadrada)
               imgWidth = maxWidth;
               imgHeight = maxWidth / aspectRatio;
             } else {
-              // La imagen es más alta
+              // La imagen es más alta que ancha (vertical)
               imgHeight = maxHeight;
               imgWidth = maxHeight * aspectRatio;
             }
@@ -750,8 +773,9 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
             const xOffset = margin + (maxWidth - imgWidth) / 2;
 
             // Insertar imagen SIN deformar (manteniendo aspect ratio)
+            // Usar la versión corregida del canvas
             pdf.addImage(
-              fotoBase64,
+              fotoCorregidaBase64,
               "JPEG",
               xOffset,
               yPos,
