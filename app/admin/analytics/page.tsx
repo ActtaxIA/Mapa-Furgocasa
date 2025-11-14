@@ -128,10 +128,10 @@ interface AnalyticsData {
   vehiculosMasCaros: { vehiculo: any; precio: number }[]
   vehiculosMasBaratos: { vehiculo: any; precio: number }[]
   vehiculosConDatosFinancieros: number
-  
+
   // Vehículos - Top Mercado IA
-  vehiculosMasCarosMercado: { marca: string; modelo: string; año: number | null; precio: number }[]
-  vehiculosMasBaratosMercado: { marca: string; modelo: string; año: number | null; precio: number }[]
+  vehiculosMasCarosMercado: { marca: string; modelo: string; ano: number | null; precio: number }[]
+  vehiculosMasBaratosMercado: { marca: string; modelo: string; ano: number | null; precio: number }[]
   inversionTotalPromedio: number
 
   // Vehículos - Datos de Mercado
@@ -696,9 +696,13 @@ export default function AdminAnalyticsPage() {
       console.log('🚐 Calculando métricas financieras de vehículos...')
 
       // Obtener vehículos con datos completos
-      const { data: vehiculos } = await supabase
+      const { data: vehiculos, error: errorVehiculos } = await supabase
         .from('vehiculos_registrados')
-        .select('id, created_at, user_id, marca, modelo, ano')
+        .select('id, created_at, user_id, marca, modelo, matricula, ano')
+      
+      if (errorVehiculos) {
+        console.error('❌ Error cargando vehículos:', errorVehiculos)
+      }
 
       const totalVehiculosRegistrados = vehiculos?.length || 0
       const vehiculosRegistradosHoy = vehiculos?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
@@ -735,6 +739,10 @@ export default function AdminAnalyticsPage() {
         : 0
 
       // Top 5 vehículos más caros
+      console.log(`📊 Total vehículos registrados: ${vehiculos?.length || 0}`)
+      console.log(`💰 Valoraciones económicas: ${valoracionesEconomicas?.length || 0}`)
+      console.log(`💵 Con precio de compra: ${valoracionesEconomicas?.filter(v => v.precio_compra && v.precio_compra > 0).length || 0}`)
+      
       const vehiculosConPrecio = valoracionesEconomicas
         ?.filter(v => v.precio_compra && v.precio_compra > 0)
         .map(v => {
@@ -743,6 +751,7 @@ export default function AdminAnalyticsPage() {
             vehiculo_id: v.vehiculo_id,
             precio: v.precio_compra,
             encontrado: !!vehiculo,
+            total_vehiculos: vehiculos?.length,
             vehiculoData: vehiculo
           })
           return { vehiculo, precio: v.precio_compra }
@@ -754,7 +763,7 @@ export default function AdminAnalyticsPage() {
           return item.vehiculo
         }) || []
 
-      console.log(`✅ Vehículos con precio: ${vehiculosConPrecio.length}`)
+      console.log(`✅ Vehículos con precio y datos: ${vehiculosConPrecio.length}`)
 
       const vehiculosMasCaros = vehiculosConPrecio
         .sort((a, b) => (b.precio || 0) - (a.precio || 0))
@@ -815,7 +824,7 @@ export default function AdminAnalyticsPage() {
         .map(v => ({
           marca: v.marca || 'N/A',
           modelo: v.modelo || 'N/A',
-          año: v.ano || null,
+          ano: v.ano || null,
           precio: v.precio || 0
         }))
 
@@ -825,7 +834,7 @@ export default function AdminAnalyticsPage() {
         .map(v => ({
           marca: v.marca || 'N/A',
           modelo: v.modelo || 'N/A',
-          año: v.ano || null,
+          ano: v.ano || null,
           precio: v.precio || 0
         }))
 
@@ -873,12 +882,12 @@ export default function AdminAnalyticsPage() {
       })
 
       // Distribución por años (usando campo 'ano' sin ñ)
-      const añoActual = new Date().getFullYear()
+      const anoActual = new Date().getFullYear()
       const distribucionAños = [
         { rango: '< 2010', count: vehiculos?.filter((v: any) => v.ano && v.ano < 2010).length || 0 },
         { rango: '2010-2015', count: vehiculos?.filter((v: any) => v.ano && v.ano >= 2010 && v.ano < 2015).length || 0 },
         { rango: '2015-2020', count: vehiculos?.filter((v: any) => v.ano && v.ano >= 2015 && v.ano < 2020).length || 0 },
-        { rango: '2020-2025', count: vehiculos?.filter((v: any) => v.ano && v.ano >= 2020 && v.ano <= añoActual).length || 0 }
+        { rango: '2020-2025', count: vehiculos?.filter((v: any) => v.ano && v.ano >= 2020 && v.ano <= anoActual).length || 0 }
       ]
 
       // Distribución por kilometraje (de ficha técnica)
@@ -2561,8 +2570,13 @@ export default function AdminAnalyticsPage() {
                           <div className="flex items-center gap-3">
                             <span className="text-2xl font-bold text-amber-600">#{index + 1}</span>
                             <div>
-                              <p className="font-semibold text-gray-900">{item.vehiculo?.marca || 'N/A'} {item.vehiculo?.modelo || ''}</p>
-                              <p className="text-sm text-gray-600">{item.vehiculo?.año || 'N/A'}</p>
+                              <p className="font-semibold text-gray-900">
+                                {item.vehiculo?.matricula || 'Sin matrícula'}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {item.vehiculo?.marca || 'N/A'} {item.vehiculo?.modelo || ''} 
+                                {item.vehiculo?.ano ? ` (${item.vehiculo.ano})` : ''}
+                              </p>
                             </div>
                           </div>
                           <p className="text-xl font-bold text-amber-600">{(item.precio || 0).toLocaleString('es-ES')}€</p>
@@ -2588,8 +2602,13 @@ export default function AdminAnalyticsPage() {
                           <div className="flex items-center gap-3">
                             <span className="text-2xl font-bold text-green-600">#{index + 1}</span>
                             <div>
-                              <p className="font-semibold text-gray-900">{item.vehiculo?.marca || 'N/A'} {item.vehiculo?.modelo || ''}</p>
-                              <p className="text-sm text-gray-600">{item.vehiculo?.año || 'N/A'}</p>
+                              <p className="font-semibold text-gray-900">
+                                {item.vehiculo?.matricula || 'Sin matrícula'}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {item.vehiculo?.marca || 'N/A'} {item.vehiculo?.modelo || ''} 
+                                {item.vehiculo?.ano ? ` (${item.vehiculo.ano})` : ''}
+                              </p>
                             </div>
                           </div>
                           <p className="text-xl font-bold text-green-600">{(item.precio || 0).toLocaleString('es-ES')}€</p>
@@ -2623,7 +2642,7 @@ export default function AdminAnalyticsPage() {
                             <span className="text-2xl font-bold text-orange-600">#{index + 1}</span>
                             <div>
                               <p className="font-semibold text-gray-900">{item.marca} {item.modelo}</p>
-                              <p className="text-sm text-gray-600">{item.año || 'Año N/A'}</p>
+                              <p className="text-sm text-gray-600">{item.ano || 'Año N/A'}</p>
                             </div>
                           </div>
                           <p className="text-xl font-bold text-orange-600">{item.precio.toLocaleString('es-ES')}€</p>
@@ -2650,7 +2669,7 @@ export default function AdminAnalyticsPage() {
                             <span className="text-2xl font-bold text-teal-600">#{index + 1}</span>
                             <div>
                               <p className="font-semibold text-gray-900">{item.marca} {item.modelo}</p>
-                              <p className="text-sm text-gray-600">{item.año || 'Año N/A'}</p>
+                              <p className="text-sm text-gray-600">{item.ano || 'Año N/A'}</p>
                             </div>
                           </div>
                           <p className="text-xl font-bold text-teal-600">{item.precio.toLocaleString('es-ES')}€</p>
