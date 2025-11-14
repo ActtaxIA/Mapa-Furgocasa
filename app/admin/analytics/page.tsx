@@ -289,7 +289,7 @@ export default function AdminAnalyticsPage() {
       // ========== MÉTRICAS DE VISITAS TEMPORALES ==========
       const { data: visitas } = await supabase
         .from('visitas')
-        .select('id, created_at, area_id')
+        .select('id, created_at, area_id, user_id')
 
       const visitasHoy = visitas?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
       const visitasEstaSemana = visitas?.filter(v => estaEnRango(v.created_at, inicioSemana)).length || 0
@@ -335,7 +335,7 @@ export default function AdminAnalyticsPage() {
       // ========== MÉTRICAS DE VALORACIONES TEMPORALES ==========
       const { data: valoraciones } = await supabase
         .from('valoraciones')
-        .select('id, created_at, rating')
+        .select('id, created_at, rating, area_id, user_id')
 
       const valoracionesTotales = valoraciones?.length || 0
       const valoracionesHoy = valoraciones?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
@@ -372,7 +372,7 @@ export default function AdminAnalyticsPage() {
       // ========== MÉTRICAS DE FAVORITOS TEMPORALES ==========
       const { data: favoritos } = await supabase
         .from('favoritos')
-        .select('id, created_at, area_id')
+        .select('id, created_at, area_id, user_id')
 
       const favoritosTotales = favoritos?.length || 0
       const favoritosHoy = favoritos?.filter(f => estaEnRango(f.created_at, inicioDia)).length || 0
