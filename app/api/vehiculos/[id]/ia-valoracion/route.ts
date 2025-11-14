@@ -90,38 +90,18 @@ export async function POST(
       model: 'gpt-4',
       temperature: 0.7,
       max_tokens: 2500,
-      system_prompt: 'Eres un experto tasador de vehículos de segunda mano especializado en campers de gran volumen (FIAT Ducato, Peugeot Boxer, Citroën Jumper, etc.).',
-      user_prompt: `OBJETIVO:
-Tu tarea es redactar un INFORME EXPLICATIVO de valoración para una camper usada.
-
-DATOS DEL VEHÍCULO:
-{{datos_vehiculo}}
-
-FICHA TÉCNICA:
-{{ficha_tecnica}}
-
-DATOS ECONÓMICOS:
-{{datos_economicos}}
-
-AVERÍAS GRAVES:
-{{averias}}
-
-MEJORAS INSTALADAS:
-{{mejoras}}
-
-COMPARABLES ENCONTRADOS:
-{{comparables}}
-
-Genera un informe profesional con estas secciones:
-1. INTRODUCCIÓN
-2. PRECIO DE NUEVA PARA PARTICULAR
-3. DEPRECIACIÓN POR TIEMPO Y USO
-4. VALOR DE LOS EXTRAS
-5. COMPARACIÓN CON EL MERCADO
-6. PRECIO (presenta 3 cifras: salida, objetivo, mínimo)
-7. CONCLUSIÓN
-
-Devuelve el informe en formato Markdown con encabezados ##`
+      prompts: [
+        {
+          role: 'system',
+          content: 'Eres un experto tasador de vehículos de segunda mano especializado en campers de gran volumen.',
+          order: 1
+        },
+        {
+          role: 'user',
+          content: 'Genera un informe de valoración profesional con los datos proporcionados.',
+          order: 2
+        }
+      ]
     }
 
     console.log(`📝 [IA-VALORACION] Configuración cargada:`)
@@ -179,31 +159,33 @@ Devuelve el informe en formato Markdown con encabezados ##`
    - URL: ${c.url}`).join('\n\n')
       : 'No se encontraron comparables en esta búsqueda.'
 
-    // Reemplazar variables en el user_prompt
-    const userPrompt = config.user_prompt
-      .replace(/\{\{fecha_hoy\}\}/g, fechaHoy)
-      .replace(/\{\{datos_vehiculo\}\}/g, datosVehiculo)
-      .replace(/\{\{ficha_tecnica\}\}/g, fichaTecnica)
-      .replace(/\{\{datos_economicos\}\}/g, datosEconomicos)
-      .replace(/\{\{averias\}\}/g, averiasTexto)
-      .replace(/\{\{mejoras\}\}/g, mejorasTexto)
-      .replace(/\{\{comparables\}\}/g, comparablesTexto)
+    // 5. CONSTRUIR MENSAJES PARA OPENAI DESDE LOS PROMPTS
+    const messages = config.prompts
+      .sort((a: any, b: any) => a.order - b.order)
+      .map((prompt: any) => {
+        // Reemplazar variables en el contenido del prompt
+        let content = prompt.content
+          .replace(/\{\{fecha_hoy\}\}/g, fechaHoy)
+          .replace(/\{\{datos_vehiculo\}\}/g, datosVehiculo)
+          .replace(/\{\{ficha_tecnica\}\}/g, fichaTecnica)
+          .replace(/\{\{datos_economicos\}\}/g, datosEconomicos)
+          .replace(/\{\{averias\}\}/g, averiasTexto)
+          .replace(/\{\{mejoras\}\}/g, mejorasTexto)
+          .replace(/\{\{comparables\}\}/g, comparablesTexto)
+        
+        return {
+          role: prompt.role as 'system' | 'user' | 'assistant',
+          content: content
+        }
+      })
 
-    // 5. LLAMAR A OPENAI GPT-4
+    // 6. LLAMAR A OPENAI GPT-4
     console.log(`🤖 Generando informe con IA...`)
+    console.log(`  - ${messages.length} mensajes preparados`)
 
     const completion = await openai.chat.completions.create({
       model: config.model,
-      messages: [
-        {
-          role: "system",
-          content: config.system_prompt
-        },
-        {
-          role: "user",
-          content: userPrompt
-        }
-      ],
+      messages: messages,
       temperature: config.temperature,
       max_tokens: config.max_tokens
     })
