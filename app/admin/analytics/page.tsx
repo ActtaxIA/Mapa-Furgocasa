@@ -2078,7 +2078,7 @@ export default function AdminAnalyticsPage() {
                 <p className="text-4xl font-black text-gray-900">{analytics.totalVehiculosRegistrados}</p>
                 <p className="text-xs text-gray-600 mt-2">vehículos en sistema</p>
               </div>
-              
+
               <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 border-2 border-red-200">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-sm font-semibold text-red-700">📅 Hoy</p>
@@ -2087,13 +2087,13 @@ export default function AdminAnalyticsPage() {
                 <p className="text-4xl font-black text-red-900">{analytics.vehiculosRegistradosHoy}</p>
                 <p className="text-xs text-red-600 mt-2">nuevos hoy</p>
               </div>
-              
+
               <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border-2 border-orange-200">
                 <p className="text-sm font-semibold text-orange-700 mb-2">📆 Esta Semana</p>
                 <p className="text-4xl font-black text-orange-900">{analytics.vehiculosRegistradosEstaSemana}</p>
                 <p className="text-xs text-orange-600 mt-2">en 7 días</p>
               </div>
-              
+
               <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border-2 border-amber-200">
                 <p className="text-sm font-semibold text-amber-700 mb-2">📅 Este Mes</p>
                 <p className="text-4xl font-black text-amber-900">{analytics.vehiculosRegistradosEsteMes}</p>
@@ -2156,19 +2156,19 @@ export default function AdminAnalyticsPage() {
                 <p className="text-4xl font-bold text-green-900">{analytics.promedioTiempoSesion} min</p>
                 <p className="text-xs text-green-600 mt-1">por sesión</p>
               </div>
-              
+
               <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 border border-teal-200">
                 <p className="text-sm font-medium text-teal-700 mb-2">📄 Páginas/Sesión</p>
                 <p className="text-4xl font-bold text-teal-900">{analytics.promedioPaginasPorSesion}</p>
                 <p className="text-xs text-teal-600 mt-1">páginas vistas</p>
               </div>
-              
+
               <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl p-6 border border-cyan-200">
                 <p className="text-sm font-medium text-cyan-700 mb-2">↩️ Tasa de Rebote</p>
                 <p className="text-4xl font-bold text-cyan-900">{analytics.tasaRebote}%</p>
                 <p className="text-xs text-cyan-600 mt-1">sesiones de 1 página</p>
               </div>
-              
+
               <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl p-6 border border-sky-200">
                 <p className="text-sm font-medium text-sky-700 mb-2">🔄 Sesiones Totales</p>
                 <p className="text-4xl font-bold text-sky-900">{analytics.sesionesTotales.toLocaleString()}</p>
@@ -2191,7 +2191,7 @@ export default function AdminAnalyticsPage() {
                     <p className="text-4xl font-black text-orange-900">{analytics.tasaConversionRegistro.toFixed(1)}%</p>
                     <p className="text-xs text-orange-600 mt-2">usuarios realizan acciones</p>
                   </div>
-                  
+
                   <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border-2 border-amber-200">
                     <p className="text-sm font-semibold text-amber-700 mb-2">🔄 Usuarios Recurrentes</p>
                     <p className="text-4xl font-black text-amber-900">{analytics.usuariosRecurrentes.toLocaleString()}</p>
@@ -2199,7 +2199,7 @@ export default function AdminAnalyticsPage() {
                       {analytics.totalUsers > 0 ? `${((analytics.usuariosRecurrentes / analytics.totalUsers) * 100).toFixed(1)}% vuelven` : '0%'}
                     </p>
                   </div>
-                  
+
                   <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6 border-2 border-yellow-200">
                     <p className="text-sm font-semibold text-yellow-700 mb-2">✨ Usuarios Nuevos</p>
                     <p className="text-4xl font-black text-yellow-900">{analytics.usuariosNuevos.toLocaleString()}</p>
@@ -2240,7 +2240,7 @@ export default function AdminAnalyticsPage() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h4 className="text-sm font-semibold text-gray-700 mb-4">Vistas de Áreas</h4>
                     <div className="space-y-4">
@@ -2283,7 +2283,7 @@ export default function AdminAnalyticsPage() {
                       { bg: 'purple', border: 'purple', text: 'purple' }
                     ]
                     const color = colores[index]
-                    
+
                     return (
                       <div key={dispositivo.tipo} className={`bg-gradient-to-br from-${color.bg}-50 to-${color.bg}-100 rounded-xl p-6 border-2 border-${color.border}-200`}>
                         <p className={`text-sm font-semibold text-${color.text}-700 mb-2`}>
@@ -2319,7 +2319,7 @@ export default function AdminAnalyticsPage() {
                     const porcentaje = (evento.count / maxCount) * 100
                     const colores = ['emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'purple', 'pink']
                     const color = colores[index % colores.length]
-                    
+
                     return (
                       <div key={evento.evento} className="group">
                         <div className="flex items-center gap-4 mb-2">
