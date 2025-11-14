@@ -694,7 +694,7 @@ export default function AdminAnalyticsPage() {
       // Obtener vehículos con datos completos
       const { data: vehiculos } = await supabase
         .from('vehiculos_registrados')
-        .select('id, created_at, user_id, marca, modelo')
+        .select('id, created_at, user_id, marca, modelo, ano')
 
       const totalVehiculosRegistrados = vehiculos?.length || 0
       const vehiculosRegistradosHoy = vehiculos?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
@@ -724,7 +724,7 @@ export default function AdminAnalyticsPage() {
       const valorTotalParqueVehiculos = valoracionesEconomicas?.reduce((sum, v) => sum + (v.precio_compra || 0), 0) || 0
       const vehiculosConDatosFinancieros = valoracionesEconomicas?.filter(v => v.precio_compra && v.precio_compra > 0).length || 0
       const promedioValorVehiculo = vehiculosConDatosFinancieros > 0 ? valorTotalParqueVehiculos / vehiculosConDatosFinancieros : 0
-      
+
       // Inversión total promedio (incluye mantenimientos, averías, mejoras, etc)
       const inversionTotalPromedio = vehiculosConDatosFinancieros > 0
         ? (valoracionesEconomicas?.reduce((sum, v) => sum + (v.inversion_total || 0), 0) || 0) / vehiculosConDatosFinancieros
@@ -820,9 +820,9 @@ export default function AdminAnalyticsPage() {
       ]
 
       const distribucionPreciosCompra = rangosPrecios.map(rango => {
-        const count = valoracionesEconomicas?.filter(v => 
-          v.precio_compra && 
-          v.precio_compra >= rango.min && 
+        const count = valoracionesEconomicas?.filter(v =>
+          v.precio_compra &&
+          v.precio_compra >= rango.min &&
           v.precio_compra < rango.max
         ).length || 0
 
@@ -833,12 +833,13 @@ export default function AdminAnalyticsPage() {
         }
       })
 
-      // Distribución por años - DESHABILITADO (campo año tiene problema con la ñ en Supabase)
+      // Distribución por años (usando campo 'ano' sin ñ)
+      const añoActual = new Date().getFullYear()
       const distribucionAños = [
-        { rango: '< 2010', count: 0 },
-        { rango: '2010-2015', count: 0 },
-        { rango: '2015-2020', count: 0 },
-        { rango: '2020-2025', count: 0 }
+        { rango: '< 2010', count: vehiculos?.filter((v: any) => v.ano && v.ano < 2010).length || 0 },
+        { rango: '2010-2015', count: vehiculos?.filter((v: any) => v.ano && v.ano >= 2010 && v.ano < 2015).length || 0 },
+        { rango: '2015-2020', count: vehiculos?.filter((v: any) => v.ano && v.ano >= 2015 && v.ano < 2020).length || 0 },
+        { rango: '2020-2025', count: vehiculos?.filter((v: any) => v.ano && v.ano >= 2020 && v.ano <= añoActual).length || 0 }
       ]
 
       // Distribución por kilometraje (de ficha técnica)
@@ -1091,7 +1092,7 @@ export default function AdminAnalyticsPage() {
         rutasEsteMes,
         rutasPorDia,
         rutasPorMes,
-        
+
         // Análisis de Rutas
         distanciaPromedio,
         rutaMasLarga,

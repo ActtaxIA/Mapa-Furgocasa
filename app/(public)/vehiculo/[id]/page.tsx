@@ -29,8 +29,10 @@ import MejorasTab from '@/components/vehiculo/MejorasTab'
 import VentaTab from '@/components/vehiculo/VentaTab'
 import { GaleriaFotosTab } from '@/components/vehiculo/GaleriaFotosTab'
 import { Toast } from '@/components/ui/Toast'
+import InformeValoracionIA from '@/components/vehiculo/InformeValoracionIA'
+import { SparklesIcon as SparklesIconSolid } from '@heroicons/react/24/solid'
 
-type TabType = 'resumen' | 'compra' | 'fotos' | 'mantenimientos' | 'averias' | 'mejoras' | 'venta'
+type TabType = 'resumen' | 'compra' | 'fotos' | 'mantenimientos' | 'averias' | 'mejoras' | 'venta' | 'valoracion-ia'
 
 export default function VehiculoPage() {
   const params = useParams()
@@ -51,13 +53,16 @@ export default function VehiculoPage() {
   })
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null)
+  const [valoracionesIA, setValoracionesIA] = useState<any[]>([])
+  const [loadingValoracion, setLoadingValoracion] = useState(false)
+  const [generandoValoracion, setGenerandoValoracion] = useState(false)
 
   // Detectar parámetro tab en la URL
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search)
       const tabParam = searchParams.get('tab') as TabType
-      if (tabParam && ['resumen', 'compra', 'fotos', 'mantenimientos', 'averias', 'mejoras', 'venta'].includes(tabParam)) {
+      if (tabParam && ['resumen', 'compra', 'fotos', 'mantenimientos', 'averias', 'mejoras', 'venta', 'valoracion-ia'].includes(tabParam)) {
         setActiveTab(tabParam)
       }
     }
@@ -66,6 +71,13 @@ export default function VehiculoPage() {
   useEffect(() => {
     loadData()
   }, [vehiculoId])
+
+  // Cargar valoraciones IA cuando se active esa tab
+  useEffect(() => {
+    if (activeTab === 'valoracion-ia' && vehiculoId) {
+      loadValoracionesIA()
+    }
+  }, [activeTab, vehiculoId])
 
   const loadData = async () => {
     try {
@@ -177,6 +189,61 @@ export default function VehiculoPage() {
     }
   }
 
+  const loadValoracionesIA = async () => {
+    setLoadingValoracion(true)
+    try {
+      const response = await fetch(`/api/vehiculos/${vehiculoId}/ia-valoracion`)
+      const data = await response.json()
+
+      if (response.ok) {
+        setValoracionesIA(data.informes || [])
+      } else {
+        console.error('Error cargando valoraciones IA:', data.error)
+      }
+    } catch (error) {
+      console.error('Error:', error)
+    } finally {
+      setLoadingValoracion(false)
+    }
+  }
+
+  const generarValoracionIA = async () => {
+    if (!confirm('¿Deseas generar una nueva valoración con IA? Este proceso puede tardar 1-2 minutos y consumirá créditos de OpenAI.')) {
+      return
+    }
+
+    setGenerandoValoracion(true)
+    setToast({ message: '🤖 Generando valoración con IA... Por favor espera.', type: 'info' })
+
+    try {
+      const response = await fetch(`/api/vehiculos/${vehiculoId}/ia-valoracion`, {
+        method: 'POST'
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setToast({ message: '✅ ¡Valoración generada con éxito!', type: 'success' })
+        // Recargar las valoraciones
+        await loadValoracionesIA()
+      } else {
+        setToast({ message: `❌ Error: ${data.error}`, type: 'error' })
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      setToast({ message: '❌ Error al generar la valoración', type: 'error' })
+    } finally {
+      setGenerandoValoracion(false)
+    }
+  }
+
+  const handlePonerEnVenta = (precio: number) => {
+    // Cambiar a la tab de venta y rellenar el precio
+    setActiveTab('venta')
+    // Aquí podrías también pasar el precio recomendado al componente VentaTab si es necesario
+    setToast({ message: `💰 Precio sugerido: ${precio.toLocaleString('es-ES')}€`, type: 'info' })
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -203,6 +270,7 @@ export default function VehiculoPage() {
     { id: 'mantenimientos', label: 'Mantenimientos', icon: WrenchScrewdriverIcon },
     { id: 'averias', label: 'Averías', icon: ExclamationTriangleIcon },
     { id: 'mejoras', label: 'Mejoras', icon: SparklesIcon },
+    { id: 'valoracion-ia', label: 'Valoración IA', icon: SparklesIconSolid },
     { id: 'venta', label: 'Venta', icon: TagIcon },
   ]
 
@@ -445,6 +513,91 @@ export default function VehiculoPage() {
 
           {activeTab === 'mejoras' && (
             <MejorasTab vehiculoId={vehiculoId} />
+          )}
+
+          {activeTab === 'valoracion-ia' && (
+            <div className="space-y-6">
+              {/* Botón para generar nueva valoración */}
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border border-purple-200">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                      <SparklesIconSolid className="w-6 h-6 text-purple-600" />
+                      Valoración con Inteligencia Artificial
+                    </h3>
+                    <p className="text-gray-700 mb-4">
+                      Genera un informe profesional de valoración de tu vehículo utilizando IA. 
+                      Analizamos datos reales del mercado, el estado de tu vehículo, inversiones realizadas 
+                      y te proporcionamos 3 precios estratégicos: de salida, objetivo y mínimo.
+                    </p>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>✓ Búsqueda automática de comparables en internet</li>
+                      <li>✓ Análisis de depreciación por tiempo y uso</li>
+                      <li>✓ Valoración de extras y mejoras instaladas</li>
+                      <li>✓ Informe profesional detallado</li>
+                    </ul>
+                  </div>
+                  <button
+                    onClick={generarValoracionIA}
+                    disabled={generandoValoracion}
+                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {generandoValoracion ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Generando...
+                      </>
+                    ) : (
+                      <>
+                        <SparklesIconSolid className="w-5 h-5" />
+                        Generar Valoración
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Mostrar valoraciones existentes */}
+              {loadingValoracion ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+                  <p className="mt-4 text-gray-600">Cargando valoraciones...</p>
+                </div>
+              ) : valoracionesIA.length > 0 ? (
+                <div className="space-y-6">
+                  {valoracionesIA.map((informe) => (
+                    <InformeValoracionIA
+                      key={informe.id}
+                      informe={informe}
+                      vehiculoMarca={vehiculo.marca}
+                      vehiculoModelo={vehiculo.modelo}
+                      onPonerEnVenta={handlePonerEnVenta}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-white rounded-xl shadow p-12 text-center">
+                  <SparklesIconSolid className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    Aún no tienes valoraciones
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Genera tu primera valoración con IA para conocer el valor real de tu vehículo
+                  </p>
+                  <button
+                    onClick={generarValoracionIA}
+                    disabled={generandoValoracion}
+                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                  >
+                    <SparklesIconSolid className="w-5 h-5" />
+                    Generar Primera Valoración
+                  </button>
+                </div>
+              )}
+            </div>
           )}
 
           {activeTab === 'venta' && (
