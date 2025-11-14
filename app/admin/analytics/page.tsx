@@ -35,10 +35,55 @@ interface AnalyticsData {
   distribucionPrecios: { rango: string; count: number }[]
   crecimientoMensual: { mes: string; nuevas: number }[]
   
-  // Nuevas métricas
+  // Métricas de rutas
   totalRutas: number
   distanciaTotal: number
   totalInteraccionesIA: number
+  
+  // Métricas temporales - Rutas
+  rutasHoy: number
+  rutasEstaSemana: number
+  rutasEsteMes: number
+  rutasPorDia: { fecha: string; count: number }[]
+  rutasPorMes: { mes: string; count: number; distancia: number }[]
+  
+  // Métricas temporales - Visitas de usuarios
+  visitasHoy: number
+  visitasEstaSemana: number
+  visitasEsteMes: number
+  visitasPorDia: { fecha: string; count: number }[]
+  visitasPorMes: { mes: string; count: number }[]
+  
+  // Métricas temporales - Valoraciones
+  valoracionesHoy: number
+  valoracionesEstaSemana: number
+  valoracionesEsteMes: number
+  valoracionesTotales: number
+  valoracionesPorDia: { fecha: string; count: number; promedio: number }[]
+  
+  // Métricas temporales - Favoritos
+  favoritosHoy: number
+  favoritosEstaSemana: number
+  favoritosEsteMes: number
+  favoritosTotales: number
+  favoritosPorDia: { fecha: string; count: number }[]
+  
+  // Métricas temporales - Usuarios
+  usuariosNuevosHoy: number
+  usuariosNuevosEstaSemana: number
+  usuariosNuevosEsteMes: number
+  crecimientoUsuariosMensual: { mes: string; nuevos: number }[]
+  
+  // Métricas temporales - Chatbot IA
+  interaccionesIAHoy: number
+  interaccionesIAEstaSemana: number
+  interaccionesIAEsteMes: number
+  interaccionesIAPorDia: { fecha: string; count: number }[]
+  
+  // Top áreas más visitadas
+  areasMasVisitadas: { area: any; visitas: number }[]
+  areasMasValoradas: { area: any; valoraciones: number; promedio: number }[]
+  areasEnMasFavoritos: { area: any; favoritos: number }[]
 }
 
 export default function AdminAnalyticsPage() {
@@ -130,6 +175,319 @@ export default function AdminAnalyticsPage() {
       
       const totalInteraccionesIA = mensajes?.length || 0
       console.log(`✅ ${totalInteraccionesIA} interacciones con IA`)
+
+      // ========== MÉTRICAS TEMPORALES ==========
+      console.log('📊 Calculando métricas temporales...')
+      
+      const ahora = new Date()
+      const inicioDia = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate())
+      const inicioSemana = new Date(ahora)
+      inicioSemana.setDate(ahora.getDate() - ahora.getDay())
+      inicioSemana.setHours(0, 0, 0, 0)
+      const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1)
+      
+      // Función auxiliar para verificar si una fecha está en un rango
+      const estaEnRango = (fecha: string | Date, inicio: Date) => {
+        const f = new Date(fecha)
+        return f >= inicio
+      }
+      
+      // ========== MÉTRICAS DE RUTAS TEMPORALES ==========
+      const rutasHoy = rutas?.filter(r => estaEnRango(r.created_at, inicioDia)).length || 0
+      const rutasEstaSemana = rutas?.filter(r => estaEnRango(r.created_at, inicioSemana)).length || 0
+      const rutasEsteMes = rutas?.filter(r => estaEnRango(r.created_at, inicioMes)).length || 0
+      
+      // Rutas por día (últimos 30 días)
+      const rutasPorDia: { fecha: string; count: number }[] = []
+      for (let i = 29; i >= 0; i--) {
+        const fecha = new Date(ahora)
+        fecha.setDate(ahora.getDate() - i)
+        fecha.setHours(0, 0, 0, 0)
+        const fechaSiguiente = new Date(fecha)
+        fechaSiguiente.setDate(fecha.getDate() + 1)
+        
+        const count = rutas?.filter(r => {
+          const f = new Date(r.created_at)
+          return f >= fecha && f < fechaSiguiente
+        }).length || 0
+        
+        rutasPorDia.push({
+          fecha: fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
+          count
+        })
+      }
+      
+      // Rutas por mes (últimos 12 meses)
+      const rutasPorMes: { mes: string; count: number; distancia: number }[] = []
+      for (let i = 11; i >= 0; i--) {
+        const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
+        const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
+        
+        const rutasDelMes = rutas?.filter(r => {
+          const f = new Date(r.created_at)
+          return f.getFullYear() === fechaMes.getFullYear() &&
+                 f.getMonth() === fechaMes.getMonth()
+        }) || []
+        
+        const distanciaMes = rutasDelMes.reduce((sum, r) => sum + (r.distancia_km || 0), 0)
+        
+        rutasPorMes.push({
+          mes: mesNombre,
+          count: rutasDelMes.length,
+          distancia: distanciaMes
+        })
+      }
+      
+      console.log(`✅ Rutas: ${rutasHoy} hoy, ${rutasEstaSemana} esta semana, ${rutasEsteMes} este mes`)
+      
+      // ========== MÉTRICAS DE VISITAS TEMPORALES ==========
+      const { data: visitas } = await supabase
+        .from('visitas')
+        .select('id, created_at, area_id')
+      
+      const visitasHoy = visitas?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
+      const visitasEstaSemana = visitas?.filter(v => estaEnRango(v.created_at, inicioSemana)).length || 0
+      const visitasEsteMes = visitas?.filter(v => estaEnRango(v.created_at, inicioMes)).length || 0
+      
+      // Visitas por día (últimos 30 días)
+      const visitasPorDia: { fecha: string; count: number }[] = []
+      for (let i = 29; i >= 0; i--) {
+        const fecha = new Date(ahora)
+        fecha.setDate(ahora.getDate() - i)
+        fecha.setHours(0, 0, 0, 0)
+        const fechaSiguiente = new Date(fecha)
+        fechaSiguiente.setDate(fecha.getDate() + 1)
+        
+        const count = visitas?.filter(v => {
+          const f = new Date(v.created_at)
+          return f >= fecha && f < fechaSiguiente
+        }).length || 0
+        
+        visitasPorDia.push({
+          fecha: fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
+          count
+        })
+      }
+      
+      // Visitas por mes (últimos 12 meses)
+      const visitasPorMes: { mes: string; count: number }[] = []
+      for (let i = 11; i >= 0; i--) {
+        const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
+        const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
+        
+        const count = visitas?.filter(v => {
+          const f = new Date(v.created_at)
+          return f.getFullYear() === fechaMes.getFullYear() &&
+                 f.getMonth() === fechaMes.getMonth()
+        }).length || 0
+        
+        visitasPorMes.push({ mes: mesNombre, count })
+      }
+      
+      console.log(`✅ Visitas: ${visitasHoy} hoy, ${visitasEstaSemana} esta semana, ${visitasEsteMes} este mes`)
+      
+      // ========== MÉTRICAS DE VALORACIONES TEMPORALES ==========
+      const { data: valoraciones } = await supabase
+        .from('valoraciones')
+        .select('id, created_at, rating')
+      
+      const valoracionesTotales = valoraciones?.length || 0
+      const valoracionesHoy = valoraciones?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
+      const valoracionesEstaSemana = valoraciones?.filter(v => estaEnRango(v.created_at, inicioSemana)).length || 0
+      const valoracionesEsteMes = valoraciones?.filter(v => estaEnRango(v.created_at, inicioMes)).length || 0
+      
+      // Valoraciones por día (últimos 30 días)
+      const valoracionesPorDia: { fecha: string; count: number; promedio: number }[] = []
+      for (let i = 29; i >= 0; i--) {
+        const fecha = new Date(ahora)
+        fecha.setDate(ahora.getDate() - i)
+        fecha.setHours(0, 0, 0, 0)
+        const fechaSiguiente = new Date(fecha)
+        fechaSiguiente.setDate(fecha.getDate() + 1)
+        
+        const valoracionesDia = valoraciones?.filter(v => {
+          const f = new Date(v.created_at)
+          return f >= fecha && f < fechaSiguiente
+        }) || []
+        
+        const promedio = valoracionesDia.length > 0
+          ? valoracionesDia.reduce((sum, v) => sum + v.rating, 0) / valoracionesDia.length
+          : 0
+        
+        valoracionesPorDia.push({
+          fecha: fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
+          count: valoracionesDia.length,
+          promedio: parseFloat(promedio.toFixed(1))
+        })
+      }
+      
+      console.log(`✅ Valoraciones: ${valoracionesHoy} hoy, ${valoracionesEstaSemana} esta semana, ${valoracionesEsteMes} este mes`)
+      
+      // ========== MÉTRICAS DE FAVORITOS TEMPORALES ==========
+      const { data: favoritos } = await supabase
+        .from('favoritos')
+        .select('id, created_at, area_id')
+      
+      const favoritosTotales = favoritos?.length || 0
+      const favoritosHoy = favoritos?.filter(f => estaEnRango(f.created_at, inicioDia)).length || 0
+      const favoritosEstaSemana = favoritos?.filter(f => estaEnRango(f.created_at, inicioSemana)).length || 0
+      const favoritosEsteMes = favoritos?.filter(f => estaEnRango(f.created_at, inicioMes)).length || 0
+      
+      // Favoritos por día (últimos 30 días)
+      const favoritosPorDia: { fecha: string; count: number }[] = []
+      for (let i = 29; i >= 0; i--) {
+        const fecha = new Date(ahora)
+        fecha.setDate(ahora.getDate() - i)
+        fecha.setHours(0, 0, 0, 0)
+        const fechaSiguiente = new Date(fecha)
+        fechaSiguiente.setDate(fecha.getDate() + 1)
+        
+        const count = favoritos?.filter(f => {
+          const fec = new Date(f.created_at)
+          return fec >= fecha && fec < fechaSiguiente
+        }).length || 0
+        
+        favoritosPorDia.push({
+          fecha: fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
+          count
+        })
+      }
+      
+      console.log(`✅ Favoritos: ${favoritosHoy} hoy, ${favoritosEstaSemana} esta semana, ${favoritosEsteMes} este mes`)
+      
+      // ========== MÉTRICAS DE USUARIOS NUEVOS ==========
+      // Nota: Esto requerirá obtener los usuarios desde la API con metadata
+      let usuariosNuevosHoy = 0
+      let usuariosNuevosEstaSemana = 0
+      let usuariosNuevosEsteMes = 0
+      let crecimientoUsuariosMensual: { mes: string; nuevos: number }[] = []
+      
+      try {
+        const usersDetailResponse = await fetch(`/api/admin/users?t=${Date.now()}`, {
+          cache: 'no-store'
+        })
+        const usersDetailData = await usersDetailResponse.json()
+        
+        if (usersDetailData.users && Array.isArray(usersDetailData.users)) {
+          const usuarios = usersDetailData.users
+          
+          usuariosNuevosHoy = usuarios.filter((u: any) => 
+            u.created_at && estaEnRango(u.created_at, inicioDia)
+          ).length
+          
+          usuariosNuevosEstaSemana = usuarios.filter((u: any) => 
+            u.created_at && estaEnRango(u.created_at, inicioSemana)
+          ).length
+          
+          usuariosNuevosEsteMes = usuarios.filter((u: any) => 
+            u.created_at && estaEnRango(u.created_at, inicioMes)
+          ).length
+          
+          // Crecimiento mensual de usuarios (últimos 12 meses)
+          for (let i = 11; i >= 0; i--) {
+            const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
+            const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
+            
+            const nuevos = usuarios.filter((u: any) => {
+              if (!u.created_at) return false
+              const f = new Date(u.created_at)
+              return f.getFullYear() === fechaMes.getFullYear() &&
+                     f.getMonth() === fechaMes.getMonth()
+            }).length
+            
+            crecimientoUsuariosMensual.push({ mes: mesNombre, nuevos })
+          }
+        }
+        
+        console.log(`✅ Usuarios nuevos: ${usuariosNuevosHoy} hoy, ${usuariosNuevosEstaSemana} esta semana, ${usuariosNuevosEsteMes} este mes`)
+      } catch (error) {
+        console.error('⚠️ Error calculando usuarios nuevos:', error)
+      }
+      
+      // ========== MÉTRICAS DE CHATBOT IA TEMPORALES ==========
+      const interaccionesIAHoy = mensajes?.filter(m => estaEnRango(m.created_at, inicioDia)).length || 0
+      const interaccionesIAEstaSemana = mensajes?.filter(m => estaEnRango(m.created_at, inicioSemana)).length || 0
+      const interaccionesIAEsteMes = mensajes?.filter(m => estaEnRango(m.created_at, inicioMes)).length || 0
+      
+      // Interacciones IA por día (últimos 30 días)
+      const interaccionesIAPorDia: { fecha: string; count: number }[] = []
+      for (let i = 29; i >= 0; i--) {
+        const fecha = new Date(ahora)
+        fecha.setDate(ahora.getDate() - i)
+        fecha.setHours(0, 0, 0, 0)
+        const fechaSiguiente = new Date(fecha)
+        fechaSiguiente.setDate(fecha.getDate() + 1)
+        
+        const count = mensajes?.filter(m => {
+          const f = new Date(m.created_at)
+          return f >= fecha && f < fechaSiguiente
+        }).length || 0
+        
+        interaccionesIAPorDia.push({
+          fecha: fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
+          count
+        })
+      }
+      
+      console.log(`✅ IA: ${interaccionesIAHoy} interacciones hoy, ${interaccionesIAEstaSemana} esta semana`)
+      
+      // ========== TOP ÁREAS MÁS VISITADAS ==========
+      const areasPorVisitas = visitas?.reduce((acc: any, visita) => {
+        const areaId = visita.area_id
+        acc[areaId] = (acc[areaId] || 0) + 1
+        return acc
+      }, {}) || {}
+      
+      const areasMasVisitadas = Object.entries(areasPorVisitas)
+        .map(([areaId, count]) => {
+          const area = areas?.find(a => a.id === areaId)
+          return { area, visitas: count as number }
+        })
+        .filter(item => item.area)
+        .sort((a, b) => b.visitas - a.visitas)
+        .slice(0, 10)
+      
+      // ========== TOP ÁREAS MÁS VALORADAS ==========
+      const areasPorValoraciones = valoraciones?.reduce((acc: any, valoracion) => {
+        const areaId = valoracion.area_id
+        if (!acc[areaId]) {
+          acc[areaId] = { count: 0, sumRating: 0 }
+        }
+        acc[areaId].count++
+        acc[areaId].sumRating += valoracion.rating
+        return acc
+      }, {}) || {}
+      
+      const areasMasValoradas = Object.entries(areasPorValoraciones)
+        .map(([areaId, data]: [string, any]) => {
+          const area = areas?.find(a => a.id === areaId)
+          return {
+            area,
+            valoraciones: data.count,
+            promedio: parseFloat((data.sumRating / data.count).toFixed(1))
+          }
+        })
+        .filter(item => item.area)
+        .sort((a, b) => b.valoraciones - a.valoraciones)
+        .slice(0, 10)
+      
+      // ========== TOP ÁREAS EN MÁS FAVORITOS ==========
+      const areasPorFavoritos = favoritos?.reduce((acc: any, favorito) => {
+        const areaId = favorito.area_id
+        acc[areaId] = (acc[areaId] || 0) + 1
+        return acc
+      }, {}) || {}
+      
+      const areasEnMasFavoritos = Object.entries(areasPorFavoritos)
+        .map(([areaId, count]) => {
+          const area = areas?.find(a => a.id === areaId)
+          return { area, favoritos: count as number }
+        })
+        .filter(item => item.area)
+        .sort((a, b) => b.favoritos - a.favoritos)
+        .slice(0, 10)
+      
+      console.log('✅ Tops calculados: áreas más visitadas, valoradas y favoritas')
 
       // ========== ESTADÍSTICAS POR PAÍS ==========
       const areasPorPais = areas?.reduce((acc: any, area) => {
@@ -267,7 +625,7 @@ export default function AdminAnalyticsPage() {
           .map(([servicio, count]) => ({ servicio, count: count as number }))
           .sort((a, b) => b.count - a.count)
           .slice(0, 7),
-        // Nuevas métricas
+        // Métricas de rutas
         totalRutas,
         distanciaTotal,
         totalInteraccionesIA,
@@ -279,7 +637,52 @@ export default function AdminAnalyticsPage() {
           { rango: '11-20€', count: distribucionPrecios.medio },
           { rango: '21€+', count: distribucionPrecios.alto },
         ],
-        crecimientoMensual
+        crecimientoMensual,
+        
+        // Métricas temporales - Rutas
+        rutasHoy,
+        rutasEstaSemana,
+        rutasEsteMes,
+        rutasPorDia,
+        rutasPorMes,
+        
+        // Métricas temporales - Visitas
+        visitasHoy,
+        visitasEstaSemana,
+        visitasEsteMes,
+        visitasPorDia,
+        visitasPorMes,
+        
+        // Métricas temporales - Valoraciones
+        valoracionesHoy,
+        valoracionesEstaSemana,
+        valoracionesEsteMes,
+        valoracionesTotales,
+        valoracionesPorDia,
+        
+        // Métricas temporales - Favoritos
+        favoritosHoy,
+        favoritosEstaSemana,
+        favoritosEsteMes,
+        favoritosTotales,
+        favoritosPorDia,
+        
+        // Métricas temporales - Usuarios
+        usuariosNuevosHoy,
+        usuariosNuevosEstaSemana,
+        usuariosNuevosEsteMes,
+        crecimientoUsuariosMensual,
+        
+        // Métricas temporales - Chatbot IA
+        interaccionesIAHoy,
+        interaccionesIAEstaSemana,
+        interaccionesIAEsteMes,
+        interaccionesIAPorDia,
+        
+        // Top áreas
+        areasMasVisitadas,
+        areasMasValoradas,
+        areasEnMasFavoritos
       })
 
     } catch (error) {
@@ -464,6 +867,231 @@ export default function AdminAnalyticsPage() {
             <p className="text-xs text-purple-600 mt-1">
               Mensajes con el chatbot
             </p>
+          </div>
+        </div>
+
+        {/* ========== SECCIÓN: MÉTRICAS TEMPORALES - ACTIVIDAD DIARIA/SEMANAL/MENSUAL ========== */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-sky-600 to-blue-600 rounded-xl shadow-lg p-6 mb-6">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              📊 Métricas de Actividad Temporal
+              <span className="text-sm font-normal opacity-90">Hoy · Esta Semana · Este Mes</span>
+            </h2>
+            <p className="text-sky-100 mt-2">
+              Análisis detallado de la actividad de usuarios en diferentes períodos de tiempo
+            </p>
+          </div>
+
+          {/* Grid de Rutas Temporales */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-blue-50">
+              <h3 className="text-lg font-bold text-gray-900">🗺️ Rutas Calculadas por Período</h3>
+              <p className="text-sm text-gray-600">Actividad de planificación de rutas</p>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 border-2 border-indigo-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-indigo-700">📅 Hoy</p>
+                    <span className="px-2 py-1 bg-indigo-200 text-indigo-800 rounded-full text-xs font-bold">LIVE</span>
+                  </div>
+                  <p className="text-4xl font-black text-indigo-900">{analytics.rutasHoy}</p>
+                  <p className="text-xs text-indigo-600 mt-2">rutas planificadas</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-blue-700">📆 Esta Semana</p>
+                  </div>
+                  <p className="text-4xl font-black text-blue-900">{analytics.rutasEstaSemana}</p>
+                  <p className="text-xs text-blue-600 mt-2">
+                    {analytics.rutasEstaSemana > 0 ? `+${((analytics.rutasEstaSemana / analytics.totalRutas) * 100).toFixed(1)}% del total` : 'Sin rutas'}
+                  </p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl p-6 border-2 border-sky-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-sky-700">📅 Este Mes</p>
+                  </div>
+                  <p className="text-4xl font-black text-sky-900">{analytics.rutasEsteMes}</p>
+                  <p className="text-xs text-sky-600 mt-2">
+                    {analytics.rutasEsteMes > 0 ? `${((analytics.rutasEsteMes / analytics.totalRutas) * 100).toFixed(1)}% del total` : 'Sin rutas'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Grid de Visitas Temporales */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
+              <h3 className="text-lg font-bold text-gray-900">📍 Visitas Registradas por Período</h3>
+              <p className="text-sm text-gray-600">Usuarios que han visitado áreas</p>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border-2 border-green-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-green-700">📅 Hoy</p>
+                    <span className="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs font-bold">LIVE</span>
+                  </div>
+                  <p className="text-4xl font-black text-green-900">{analytics.visitasHoy}</p>
+                  <p className="text-xs text-green-600 mt-2">visitas registradas</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border-2 border-emerald-200">
+                  <p className="text-sm font-semibold text-emerald-700 mb-2">📆 Esta Semana</p>
+                  <p className="text-4xl font-black text-emerald-900">{analytics.visitasEstaSemana}</p>
+                  <p className="text-xs text-emerald-600 mt-2">visitas en 7 días</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 border-2 border-teal-200">
+                  <p className="text-sm font-semibold text-teal-700 mb-2">📅 Este Mes</p>
+                  <p className="text-4xl font-black text-teal-900">{analytics.visitasEsteMes}</p>
+                  <p className="text-xs text-teal-600 mt-2">visitas en 30 días</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Grid de Valoraciones Temporales */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-amber-50">
+              <h3 className="text-lg font-bold text-gray-900">⭐ Valoraciones por Período</h3>
+              <p className="text-sm text-gray-600">Usuarios dejando reseñas</p>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border-2 border-gray-200">
+                  <p className="text-sm font-semibold text-gray-700 mb-2">📊 Total</p>
+                  <p className="text-4xl font-black text-gray-900">{analytics.valoracionesTotales}</p>
+                  <p className="text-xs text-gray-600 mt-2">todas las valoraciones</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6 border-2 border-yellow-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-yellow-700">📅 Hoy</p>
+                    <span className="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs font-bold">LIVE</span>
+                  </div>
+                  <p className="text-4xl font-black text-yellow-900">{analytics.valoracionesHoy}</p>
+                  <p className="text-xs text-yellow-600 mt-2">nuevas valoraciones</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border-2 border-amber-200">
+                  <p className="text-sm font-semibold text-amber-700 mb-2">📆 Esta Semana</p>
+                  <p className="text-4xl font-black text-amber-900">{analytics.valoracionesEstaSemana}</p>
+                  <p className="text-xs text-amber-600 mt-2">valoraciones en 7 días</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border-2 border-orange-200">
+                  <p className="text-sm font-semibold text-orange-700 mb-2">📅 Este Mes</p>
+                  <p className="text-4xl font-black text-orange-900">{analytics.valoracionesEsteMes}</p>
+                  <p className="text-xs text-orange-600 mt-2">valoraciones en 30 días</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Grid de Favoritos Temporales */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-pink-50 to-rose-50">
+              <h3 className="text-lg font-bold text-gray-900">❤️ Favoritos por Período</h3>
+              <p className="text-sm text-gray-600">Áreas agregadas a favoritos</p>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border-2 border-gray-200">
+                  <p className="text-sm font-semibold text-gray-700 mb-2">📊 Total</p>
+                  <p className="text-4xl font-black text-gray-900">{analytics.favoritosTotales}</p>
+                  <p className="text-xs text-gray-600 mt-2">todos los favoritos</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-6 border-2 border-pink-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-pink-700">📅 Hoy</p>
+                    <span className="px-2 py-1 bg-pink-200 text-pink-800 rounded-full text-xs font-bold">LIVE</span>
+                  </div>
+                  <p className="text-4xl font-black text-pink-900">{analytics.favoritosHoy}</p>
+                  <p className="text-xs text-pink-600 mt-2">nuevos favoritos</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-xl p-6 border-2 border-rose-200">
+                  <p className="text-sm font-semibold text-rose-700 mb-2">📆 Esta Semana</p>
+                  <p className="text-4xl font-black text-rose-900">{analytics.favoritosEstaSemana}</p>
+                  <p className="text-xs text-rose-600 mt-2">favoritos en 7 días</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 border-2 border-red-200">
+                  <p className="text-sm font-semibold text-red-700 mb-2">📅 Este Mes</p>
+                  <p className="text-4xl font-black text-red-900">{analytics.favoritosEsteMes}</p>
+                  <p className="text-xs text-red-600 mt-2">favoritos en 30 días</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Grid de Usuarios Nuevos Temporales */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-violet-50 to-purple-50">
+              <h3 className="text-lg font-bold text-gray-900">👥 Usuarios Nuevos por Período</h3>
+              <p className="text-sm text-gray-600">Crecimiento de la comunidad</p>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-br from-violet-50 to-violet-100 rounded-xl p-6 border-2 border-violet-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-violet-700">📅 Hoy</p>
+                    <span className="px-2 py-1 bg-violet-200 text-violet-800 rounded-full text-xs font-bold">LIVE</span>
+                  </div>
+                  <p className="text-4xl font-black text-violet-900">{analytics.usuariosNuevosHoy}</p>
+                  <p className="text-xs text-violet-600 mt-2">registros hoy</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border-2 border-purple-200">
+                  <p className="text-sm font-semibold text-purple-700 mb-2">📆 Esta Semana</p>
+                  <p className="text-4xl font-black text-purple-900">{analytics.usuariosNuevosEstaSemana}</p>
+                  <p className="text-xs text-purple-600 mt-2">nuevos en 7 días</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-fuchsia-50 to-fuchsia-100 rounded-xl p-6 border-2 border-fuchsia-200">
+                  <p className="text-sm font-semibold text-fuchsia-700 mb-2">📅 Este Mes</p>
+                  <p className="text-4xl font-black text-fuchsia-900">{analytics.usuariosNuevosEsteMes}</p>
+                  <p className="text-xs text-fuchsia-600 mt-2">nuevos en 30 días</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Grid de Interacciones IA Temporales */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-indigo-50">
+              <h3 className="text-lg font-bold text-gray-900">🤖 Interacciones con IA por Período</h3>
+              <p className="text-sm text-gray-600">Uso del chatbot asistente</p>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border-2 border-purple-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-purple-700">📅 Hoy</p>
+                    <span className="px-2 py-1 bg-purple-200 text-purple-800 rounded-full text-xs font-bold">LIVE</span>
+                  </div>
+                  <p className="text-4xl font-black text-purple-900">{analytics.interaccionesIAHoy}</p>
+                  <p className="text-xs text-purple-600 mt-2">mensajes hoy</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 border-2 border-indigo-200">
+                  <p className="text-sm font-semibold text-indigo-700 mb-2">📆 Esta Semana</p>
+                  <p className="text-4xl font-black text-indigo-900">{analytics.interaccionesIAEstaSemana}</p>
+                  <p className="text-xs text-indigo-600 mt-2">mensajes en 7 días</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-200">
+                  <p className="text-sm font-semibold text-blue-700 mb-2">📅 Este Mes</p>
+                  <p className="text-4xl font-black text-blue-900">{analytics.interaccionesIAEsteMes}</p>
+                  <p className="text-xs text-blue-600 mt-2">mensajes en 30 días</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -683,6 +1311,347 @@ export default function AdminAnalyticsPage() {
                   {analytics.crecimientoMensual.reduce((sum, m) => sum + m.nuevas, 0).toLocaleString()}
                 </span> nuevas áreas
               </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ========== GRÁFICOS TEMPORALES - ÚLTIMOS 30 DÍAS ========== */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl shadow-lg p-6 mb-6">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              📈 Tendencias Diarias (Últimos 30 Días)
+            </h2>
+            <p className="text-emerald-100 mt-2">
+              Evolución día a día de la actividad en la plataforma
+            </p>
+          </div>
+
+          {/* Gráfico: Rutas por Día */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">🗺️ Rutas Calculadas - Últimos 30 Días</h3>
+              <p className="text-sm text-gray-500">Actividad diaria de planificación de rutas</p>
+            </div>
+            <div className="p-6">
+              <div className="flex items-end justify-between gap-1 h-48">
+                {analytics.rutasPorDia.map((dia, index) => {
+                  const maxCount = Math.max(...analytics.rutasPorDia.map(d => d.count), 1)
+                  const altura = (dia.count / maxCount) * 100
+                  return (
+                    <div key={index} className="flex-1 flex flex-col items-center gap-1">
+                      <div className="text-center">
+                        {dia.count > 0 && (
+                          <p className="text-xs font-bold text-indigo-600">{dia.count}</p>
+                        )}
+                      </div>
+                      <div 
+                        className="w-full bg-gradient-to-t from-indigo-500 to-indigo-400 rounded-t hover:from-indigo-600 hover:to-indigo-500 transition-all cursor-pointer"
+                        style={{ height: `${Math.max(altura, 3)}%` }}
+                        title={`${dia.fecha}: ${dia.count} rutas`}
+                      />
+                      {index % 5 === 0 && (
+                        <p className="text-[9px] text-gray-500 mt-1 rotate-45 origin-top-left">{dia.fecha}</p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
+                <p className="text-sm text-gray-600">
+                  Total últimos 30 días: <span className="font-bold text-indigo-600">
+                    {analytics.rutasPorDia.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
+                  </span> rutas
+                </p>
+                <p className="text-xs text-gray-500">
+                  Promedio diario: {(analytics.rutasPorDia.reduce((sum, d) => sum + d.count, 0) / 30).toFixed(1)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Gráfico: Visitas por Día */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">📍 Visitas Registradas - Últimos 30 Días</h3>
+              <p className="text-sm text-gray-500">Usuarios registrando visitas a áreas</p>
+            </div>
+            <div className="p-6">
+              <div className="flex items-end justify-between gap-1 h-48">
+                {analytics.visitasPorDia.map((dia, index) => {
+                  const maxCount = Math.max(...analytics.visitasPorDia.map(d => d.count), 1)
+                  const altura = (dia.count / maxCount) * 100
+                  return (
+                    <div key={index} className="flex-1 flex flex-col items-center gap-1">
+                      <div className="text-center">
+                        {dia.count > 0 && (
+                          <p className="text-xs font-bold text-green-600">{dia.count}</p>
+                        )}
+                      </div>
+                      <div 
+                        className="w-full bg-gradient-to-t from-green-500 to-green-400 rounded-t hover:from-green-600 hover:to-green-500 transition-all cursor-pointer"
+                        style={{ height: `${Math.max(altura, 3)}%` }}
+                        title={`${dia.fecha}: ${dia.count} visitas`}
+                      />
+                      {index % 5 === 0 && (
+                        <p className="text-[9px] text-gray-500 mt-1 rotate-45 origin-top-left">{dia.fecha}</p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
+                <p className="text-sm text-gray-600">
+                  Total últimos 30 días: <span className="font-bold text-green-600">
+                    {analytics.visitasPorDia.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
+                  </span> visitas
+                </p>
+                <p className="text-xs text-gray-500">
+                  Promedio diario: {(analytics.visitasPorDia.reduce((sum, d) => sum + d.count, 0) / 30).toFixed(1)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Gráfico: Interacciones IA por Día */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">🤖 Interacciones con IA - Últimos 30 Días</h3>
+              <p className="text-sm text-gray-500">Actividad del chatbot asistente</p>
+            </div>
+            <div className="p-6">
+              <div className="flex items-end justify-between gap-1 h-48">
+                {analytics.interaccionesIAPorDia.map((dia, index) => {
+                  const maxCount = Math.max(...analytics.interaccionesIAPorDia.map(d => d.count), 1)
+                  const altura = (dia.count / maxCount) * 100
+                  return (
+                    <div key={index} className="flex-1 flex flex-col items-center gap-1">
+                      <div className="text-center">
+                        {dia.count > 0 && (
+                          <p className="text-xs font-bold text-purple-600">{dia.count}</p>
+                        )}
+                      </div>
+                      <div 
+                        className="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t hover:from-purple-600 hover:to-purple-500 transition-all cursor-pointer"
+                        style={{ height: `${Math.max(altura, 3)}%` }}
+                        title={`${dia.fecha}: ${dia.count} mensajes`}
+                      />
+                      {index % 5 === 0 && (
+                        <p className="text-[9px] text-gray-500 mt-1 rotate-45 origin-top-left">{dia.fecha}</p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
+                <p className="text-sm text-gray-600">
+                  Total últimos 30 días: <span className="font-bold text-purple-600">
+                    {analytics.interaccionesIAPorDia.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
+                  </span> mensajes
+                </p>
+                <p className="text-xs text-gray-500">
+                  Promedio diario: {(analytics.interaccionesIAPorDia.reduce((sum, d) => sum + d.count, 0) / 30).toFixed(1)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Gráfico: Rutas por Mes (últimos 12 meses) */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">🗺️ Rutas y Distancia por Mes - Últimos 12 Meses</h3>
+              <p className="text-sm text-gray-500">Evolución mensual de rutas y kilómetros recorridos</p>
+            </div>
+            <div className="p-6">
+              <div className="flex items-end justify-between gap-2 h-64">
+                {analytics.rutasPorMes.map((mes, index) => {
+                  const maxCount = Math.max(...analytics.rutasPorMes.map(m => m.count), 1)
+                  const altura = (mes.count / maxCount) * 100
+                  return (
+                    <div key={index} className="flex-1 flex flex-col items-center gap-2">
+                      <div className="text-center">
+                        <p className="text-xs font-bold text-indigo-600">{mes.count}</p>
+                        <p className="text-[9px] text-teal-600">{(mes.distancia / 1000).toFixed(0)}k km</p>
+                      </div>
+                      <div 
+                        className="w-full bg-gradient-to-t from-indigo-500 to-indigo-400 rounded-t hover:from-indigo-600 hover:to-indigo-500 transition-all cursor-pointer"
+                        style={{ height: `${Math.max(altura, 5)}%` }}
+                        title={`${mes.mes}: ${mes.count} rutas, ${mes.distancia.toFixed(0)} km`}
+                      />
+                      <p className="text-xs font-medium text-gray-600">{mes.mes}</p>
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="mt-6 pt-6 border-t border-gray-200 grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-600">
+                    Total rutas (12 meses): <span className="font-bold text-indigo-600">
+                      {analytics.rutasPorMes.reduce((sum, m) => sum + m.count, 0).toLocaleString()}
+                    </span>
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">
+                    Total distancia: <span className="font-bold text-teal-600">
+                      {analytics.rutasPorMes.reduce((sum, m) => sum + m.distancia, 0).toLocaleString()} km
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Gráfico: Crecimiento de Usuarios por Mes */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">👥 Crecimiento de Usuarios - Últimos 12 Meses</h3>
+              <p className="text-sm text-gray-500">Nuevos usuarios registrados cada mes</p>
+            </div>
+            <div className="p-6">
+              <div className="flex items-end justify-between gap-2 h-64">
+                {analytics.crecimientoUsuariosMensual.map((mes, index) => {
+                  const maxNuevos = Math.max(...analytics.crecimientoUsuariosMensual.map(m => m.nuevos), 1)
+                  const altura = (mes.nuevos / maxNuevos) * 100
+                  return (
+                    <div key={index} className="flex-1 flex flex-col items-center gap-2">
+                      <div className="text-center">
+                        <p className="text-xs font-bold text-violet-600">{mes.nuevos}</p>
+                      </div>
+                      <div 
+                        className="w-full bg-gradient-to-t from-violet-500 to-violet-400 rounded-t hover:from-violet-600 hover:to-violet-500 transition-all cursor-pointer"
+                        style={{ height: `${Math.max(altura, 5)}%` }}
+                        title={`${mes.mes}: ${mes.nuevos} nuevos usuarios`}
+                      />
+                      <p className="text-xs font-medium text-gray-600">{mes.mes}</p>
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+                <p className="text-sm text-gray-600">
+                  Total nuevos (12 meses): <span className="font-bold text-violet-600">
+                    {analytics.crecimientoUsuariosMensual.reduce((sum, m) => sum + m.nuevos, 0).toLocaleString()}
+                  </span> usuarios
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ========== TOP ÁREAS MÁS POPULARES ========== */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-rose-600 to-pink-600 rounded-xl shadow-lg p-6 mb-6">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              🏆 Áreas Más Populares
+            </h2>
+            <p className="text-rose-100 mt-2">
+              Rankings de las áreas más visitadas, valoradas y agregadas a favoritos
+            </p>
+          </div>
+
+          {/* Top 10 Áreas Más Visitadas */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
+              <h3 className="text-lg font-bold text-gray-900">📍 Top 10 Áreas Más Visitadas</h3>
+              <p className="text-sm text-gray-600">Áreas con más visitas registradas por usuarios</p>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {analytics.areasMasVisitadas.map((item, index) => (
+                  <div key={item.area.id} className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                    <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-full text-lg font-bold shadow-md">
+                      {index + 1}
+                    </span>
+                    {item.area.foto_principal && (
+                      <img 
+                        src={item.area.foto_principal} 
+                        alt={item.area.nombre}
+                        className="w-16 h-16 rounded-lg object-cover"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-900 truncate">{item.area.nombre}</h4>
+                      <p className="text-sm text-gray-500 truncate">{item.area.ciudad || item.area.provincia}, {item.area.pais}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-green-600">{item.visitas}</p>
+                      <p className="text-xs text-gray-500">visitas</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Top 10 Áreas Más Valoradas */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-amber-50">
+              <h3 className="text-lg font-bold text-gray-900">⭐ Top 10 Áreas Más Valoradas</h3>
+              <p className="text-sm text-gray-600">Áreas con más valoraciones de usuarios</p>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {analytics.areasMasValoradas.map((item, index) => (
+                  <div key={item.area.id} className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                    <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-yellow-500 to-amber-700 text-white rounded-full text-lg font-bold shadow-md">
+                      {index + 1}
+                    </span>
+                    {item.area.foto_principal && (
+                      <img 
+                        src={item.area.foto_principal} 
+                        alt={item.area.nombre}
+                        className="w-16 h-16 rounded-lg object-cover"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-900 truncate">{item.area.nombre}</h4>
+                      <p className="text-sm text-gray-500 truncate">{item.area.ciudad || item.area.provincia}, {item.area.pais}</p>
+                      <div className="flex items-center gap-1 mt-1">
+                        <StarIcon className="w-4 h-4 text-yellow-500 fill-current" />
+                        <span className="text-sm font-bold text-yellow-600">{item.promedio}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-amber-600">{item.valoraciones}</p>
+                      <p className="text-xs text-gray-500">valoraciones</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Top 10 Áreas en Más Favoritos */}
+          <div className="bg-white rounded-xl shadow">
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-pink-50 to-rose-50">
+              <h3 className="text-lg font-bold text-gray-900">❤️ Top 10 Áreas en Más Favoritos</h3>
+              <p className="text-sm text-gray-600">Áreas más agregadas a listas de favoritos</p>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {analytics.areasEnMasFavoritos.map((item, index) => (
+                  <div key={item.area.id} className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                    <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-700 text-white rounded-full text-lg font-bold shadow-md">
+                      {index + 1}
+                    </span>
+                    {item.area.foto_principal && (
+                      <img 
+                        src={item.area.foto_principal} 
+                        alt={item.area.nombre}
+                        className="w-16 h-16 rounded-lg object-cover"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-900 truncate">{item.area.nombre}</h4>
+                      <p className="text-sm text-gray-500 truncate">{item.area.ciudad || item.area.provincia}, {item.area.pais}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-pink-600">{item.favoritos}</p>
+                      <p className="text-xs text-gray-500">favoritos</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
