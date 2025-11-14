@@ -1,7 +1,7 @@
 # 📚 Índice de Documentación - Mapa Furgocasa
 
-**Versión:** 2.0  
-**Última actualización:** 13 de noviembre de 2025
+**Versión:** 2.1  
+**Última actualización:** 14 de noviembre de 2025
 
 ---
 
@@ -145,10 +145,19 @@
 - [docs/mejoras/OPTIMIZACION_CACHE_RUTAS.md](./docs/mejoras/OPTIMIZACION_CACHE_RUTAS.md) - Cache de geometría
 - [docs/temporales/INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md](./docs/temporales/INSTRUCCIONES_ARREGLAR_FILTRO_DESCUENTO.md) - Nuevo campo
 
-### Gestión de Vehículos (v2.0)
+### Gestión de Vehículos (v2.0-2.1)
 - [CHANGELOG_GESTION_VEHICULOS.md](./CHANGELOG_GESTION_VEHICULOS.md) - Changelog completo
 - [reportes/README_GESTION_VEHICULOS.md](./reportes/README_GESTION_VEHICULOS.md) - Documentación técnica
+- [docs/SISTEMA_VALORACION_VENTA.md](./docs/SISTEMA_VALORACION_VENTA.md) - Sistema de valoración y venta
 - Ver carpeta `reportes/` para scripts SQL de gestión de vehículos
+
+### Valoración IA (v2.1.2) 🤖
+- **Sistema de Valoración con IA** - GPT-4 + SerpAPI para valoraciones profesionales
+- Endpoint: `/api/vehiculos/[id]/ia-valoracion` (POST/GET)
+- Componente: `InformeValoracionIA.tsx`
+- Biblioteca: `lib/valoracion/buscar-comparables.ts`
+- Tabla BD: `valoracion_ia_informes` (con trigger automático)
+- Ver [CHANGELOG.md](./CHANGELOG.md) v2.1.2 para detalles completos
 
 ---
 
@@ -280,6 +289,6 @@
 
 ---
 
-**Última actualización:** 13 de noviembre de 2025  
+**Última actualización:** 14 de noviembre de 2025  
 **Mantenedor:** Equipo Mapa Furgocasa  
-**Versión del índice:** 2.0
+**Versión del índice:** 2.1
