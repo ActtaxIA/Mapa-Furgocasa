@@ -59,15 +59,25 @@ export async function POST(
       .select('*')
       .eq('vehiculo_id', params.id)
 
-    // 2. BUSCAR COMPARABLES EN INTERNET
+    // 2. BUSCAR COMPARABLES EN INTERNET (OPCIONAL)
     console.log(`🔍 Buscando comparables...`)
-    const comparables = await buscarComparables(
-      vehiculo.marca || 'Autocaravana',
-      vehiculo.modelo || '',
-      2020 // Año por defecto si no está disponible
-    )
-
-    console.log(`✅ Encontrados ${comparables.length} comparables`)
+    let comparables: any[] = []
+    
+    try {
+      if (process.env.SERPAPI_KEY) {
+        comparables = await buscarComparables(
+          vehiculo.marca || 'Autocaravana',
+          vehiculo.modelo || '',
+          vehiculo.ano || 2020
+        )
+        console.log(`✅ Encontrados ${comparables.length} comparables`)
+      } else {
+        console.log(`⚠️ SearchAPI no configurado, continuando sin comparables externos`)
+      }
+    } catch (error) {
+      console.warn(`⚠️ Error buscando comparables (continuando sin ellos):`, error)
+      comparables = []
+    }
 
     // 3. CONSTRUIR PROMPT PARA OPENAI
     const fechaHoy = new Date().toLocaleDateString('es-ES', { 
@@ -141,10 +151,14 @@ Genera un INFORME PROFESIONAL de valoración siguiendo ESTRICTAMENTE esta estruc
    - Contribuyen a diferenciar la unidad
 
 5. **COMPARACIÓN CON EL MERCADO** (100-150 palabras)
-   - Comenta los ${comparables.length} anuncios comparables encontrados
+   ${comparables.length > 0 
+     ? `- Comenta los ${comparables.length} anuncios comparables encontrados
    - Indica modelo, año, km, precio y fuente con URL
    - Resume rango de precios observados
-   - Sitúa la camper de Furgocasa dentro del rango
+   - Sitúa la camper de Furgocasa dentro del rango`
+     : `- NO hay comparables externos disponibles en esta valoración
+   - Basa la valoración en el precio de compra original, depreciación estándar y datos del vehículo
+   - Justifica el precio basándote en: antigüedad, kilometraje, estado general, mejoras y mercado general`}
 
 6. **PRECIO RECOMENDADO** (80-120 palabras)
    - Usa como referencia el precio particular nuevo (con IM)
@@ -216,7 +230,7 @@ Devuelve el informe en formato Markdown con encabezados ## para cada sección.`
         informe_html: null, // Se puede renderizar en frontend
         comparables_json: comparables,
         num_comparables: comparables.length,
-        nivel_confianza: comparables.length >= 5 ? 'Alta' : comparables.length >= 3 ? 'Media' : 'Baja',
+        nivel_confianza: comparables.length >= 5 ? 'Alta' : comparables.length >= 3 ? 'Media' : comparables.length >= 1 ? 'Baja' : 'Estimativa',
         precio_base_mercado: comparables.length > 0 ? comparables.reduce((sum, c) => sum + (c.precio || 0), 0) / comparables.filter(c => c.precio).length : null,
         depreciacion_aplicada: valoracion?.precio_compra && precioObjetivo ? ((valoracion.precio_compra - precioObjetivo) / valoracion.precio_compra) * 100 : null
       })
