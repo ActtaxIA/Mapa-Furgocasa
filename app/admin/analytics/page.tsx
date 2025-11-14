@@ -739,9 +739,22 @@ export default function AdminAnalyticsPage() {
         ?.filter(v => v.precio_compra && v.precio_compra > 0)
         .map(v => {
           const vehiculo = vehiculos?.find(vh => vh.id === v.vehiculo_id)
+          console.log('🔍 Buscando vehículo:', {
+            vehiculo_id: v.vehiculo_id,
+            precio: v.precio_compra,
+            encontrado: !!vehiculo,
+            vehiculoData: vehiculo
+          })
           return { vehiculo, precio: v.precio_compra }
         })
-        .filter(item => item.vehiculo) || []
+        .filter(item => {
+          if (!item.vehiculo) {
+            console.warn('⚠️ Vehículo no encontrado para precio:', item.precio)
+          }
+          return item.vehiculo
+        }) || []
+
+      console.log(`✅ Vehículos con precio: ${vehiculosConPrecio.length}`)
 
       const vehiculosMasCaros = vehiculosConPrecio
         .sort((a, b) => (b.precio || 0) - (a.precio || 0))
