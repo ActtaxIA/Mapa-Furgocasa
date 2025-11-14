@@ -793,7 +793,6 @@ export default function AdminAnalyticsPage() {
       ).length || 0
 
       // ========== CRECIMIENTO MENSUAL (últimos 6 meses) ==========
-      const ahora = new Date()
       const mesesAtras = 6
       const crecimientoMensual = []
 
