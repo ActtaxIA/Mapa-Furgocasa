@@ -2457,19 +2457,46 @@ export default function AdminAnalyticsPage() {
             </div>
 
             {/* SECCIÓN 4: Datos de Mercado */}
+            {/* SECCIÓN 4A: Datos Históricos de Usuarios */}
             <div className="mb-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">🌐 Base de Datos de Mercado</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">👥 Datos Históricos de Usuarios</h3>
+              <p className="text-sm text-gray-600 mb-4">Precios de compra registrados por los usuarios en sus vehículos</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-300">
+                  <p className="text-sm font-semibold text-blue-700 mb-2">🚐 Vehículos con Datos</p>
+                  <p className="text-4xl font-black text-blue-900">{analytics.vehiculosConDatosFinancieros.toLocaleString()}</p>
+                  <p className="text-xs text-blue-600 mt-2">usuarios registrados</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border-2 border-green-300">
+                  <p className="text-sm font-semibold text-green-700 mb-2">💎 Valor Total Parque</p>
+                  <p className="text-3xl font-black text-green-900">{analytics.valorTotalParqueVehiculos.toLocaleString('es-ES')}€</p>
+                  <p className="text-xs text-green-600 mt-2">suma de precios de compra</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border-2 border-purple-300">
+                  <p className="text-sm font-semibold text-purple-700 mb-2">📊 Precio Promedio Compra</p>
+                  <p className="text-3xl font-black text-purple-900">{analytics.promedioValorVehiculo.toLocaleString('es-ES')}€</p>
+                  <p className="text-xs text-purple-600 mt-2">según datos de usuarios</p>
+                </div>
+              </div>
+            </div>
+
+            {/* SECCIÓN 4B: Base de Datos de Mercado (IA) */}
+            <div className="mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">🤖 Base de Datos de Mercado (IA)</h3>
+              <p className="text-sm text-gray-600 mb-4">Datos recopilados automáticamente de internet por valoraciones IA</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 border-2 border-teal-300">
                   <p className="text-sm font-semibold text-teal-700 mb-2">📊 Total Registros Mercado</p>
                   <p className="text-4xl font-black text-teal-900">{analytics.totalDatosMercado.toLocaleString()}</p>
-                  <p className="text-xs text-teal-600 mt-2">datos verificados de ventas</p>
+                  <p className="text-xs text-teal-600 mt-2">anuncios recopilados por IA</p>
                 </div>
 
                 <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl p-6 border-2 border-sky-300">
                   <p className="text-sm font-semibold text-sky-700 mb-2">💵 Precio Promedio Mercado</p>
                   <p className="text-4xl font-black text-sky-900">{analytics.precioPromedioMercado.toLocaleString('es-ES')}€</p>
-                  <p className="text-xs text-sky-600 mt-2">basado en datos reales</p>
+                  <p className="text-xs text-sky-600 mt-2">según anuncios de internet</p>
                 </div>
               </div>
             </div>
@@ -2531,13 +2558,13 @@ export default function AdminAnalyticsPage() {
               </div>
             </div>
 
-            {/* SECCIÓN 6: Marcas y Modelos Más Populares en Mercado */}
+            {/* SECCIÓN 6: Marcas y Modelos Más Populares en Mercado (IA) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {/* Marcas Más Populares */}
               <div className="bg-white rounded-xl shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900">🏭 Top 10 Marcas en Mercado</h3>
-                  <p className="text-sm text-gray-500">Según datos de mercado verificados</p>
+                  <p className="text-sm text-gray-500">🤖 Según anuncios recopilados por IA</p>
                 </div>
                 <div className="p-6">
                   {analytics.marcasMasPopulares.length > 0 ? (
@@ -2570,7 +2597,7 @@ export default function AdminAnalyticsPage() {
               <div className="bg-white rounded-xl shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900">🚐 Top 10 Modelos en Mercado</h3>
-                  <p className="text-sm text-gray-500">Combinación marca + modelo</p>
+                  <p className="text-sm text-gray-500">🤖 Combinación marca + modelo (IA)</p>
                 </div>
                 <div className="p-6">
                   {analytics.modelosMasPopulares.length > 0 ? (
