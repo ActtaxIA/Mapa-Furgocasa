@@ -104,12 +104,38 @@ interface AnalyticsData {
   // Dispositivos
   usuariosPorDispositivo: { tipo: string; count: number; porcentaje: number }[]
 
-  // Vehículos
+  // Vehículos - Básicos
   totalVehiculosRegistrados: number
   vehiculosRegistradosHoy: number
   vehiculosRegistradosEstaSemana: number
   vehiculosRegistradosEsteMes: number
   vehiculosPorMes: { mes: string; count: number }[]
+  
+  // Vehículos - Métricas Financieras
+  valorTotalParqueVehiculos: number
+  promedioValorVehiculo: number
+  vehiculosMasCaros: { vehiculo: any; precio: number }[]
+  vehiculosMasBaratos: { vehiculo: any; precio: number }[]
+  vehiculosConDatosFinancieros: number
+  inversionTotalPromedio: number
+  
+  // Vehículos - Datos de Mercado
+  totalDatosMercado: number
+  precioPromedioMercado: number
+  marcasMasPopulares: { marca: string; count: number; porcentaje: number }[]
+  modelosMasPopulares: { marca: string; modelo: string; count: number }[]
+  
+  // Vehículos - Valoraciones IA
+  vehiculosValorados: number
+  valorPromedioEstimado: number
+  vehiculosEnVenta: number
+  precioPromedioVenta: number
+  gananciaPromedioProyectada: number
+  
+  // Vehículos - Distribución
+  distribucionPreciosCompra: { rango: string; count: number; porcentaje: number }[]
+  distribucionAños: { rango: string; count: number }[]
+  distribucionKilometraje: { rango: string; count: number }[]
 
   // Conversión y Retención
   tasaConversionRegistro: number // % de visitantes que se registran
@@ -593,9 +619,12 @@ export default function AdminAnalyticsPage() {
       console.log(`✅ Usuarios activos: ${usuariosActivosHoy} hoy, ${usuariosActivosEstaSemana} esta semana`)
 
       // ========== MÉTRICAS DE VEHÍCULOS ==========
+      console.log('🚐 Calculando métricas financieras de vehículos...')
+      
+      // Obtener vehículos con datos completos
       const { data: vehiculos } = await supabase
         .from('vehiculos_registrados')
-        .select('id, created_at, user_id')
+        .select('id, created_at, user_id, marca, modelo, año')
 
       const totalVehiculosRegistrados = vehiculos?.length || 0
       const vehiculosRegistradosHoy = vehiculos?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
@@ -617,7 +646,147 @@ export default function AdminAnalyticsPage() {
         vehiculosPorMes.push({ mes: mesNombre, count })
       }
 
-      console.log(`✅ Vehículos: ${totalVehiculosRegistrados} total, ${vehiculosRegistradosHoy} hoy`)
+      // ========== MÉTRICAS FINANCIERAS DE VEHÍCULOS ==========
+      const { data: valoraciones } = await supabase
+        .from('vehiculo_valoracion_economica')
+        .select('*')
+
+      const valorTotalParqueVehiculos = valoraciones?.reduce((sum, v) => sum + (v.precio_compra || 0), 0) || 0
+      const vehiculosConDatosFinancieros = valoraciones?.filter(v => v.precio_compra && v.precio_compra > 0).length || 0
+      const promedioValorVehiculo = vehiculosConDatosFinancieros > 0 ? valorTotalParqueVehiculos / vehiculosConDatosFinancieros : 0
+      
+      // Inversión total promedio (incluye mantenimientos, averías, mejoras, etc)
+      const inversionTotalPromedio = vehiculosConDatosFinancieros > 0
+        ? (valoraciones?.reduce((sum, v) => sum + (v.inversion_total || 0), 0) || 0) / vehiculosConDatosFinancieros
+        : 0
+
+      // Top 5 vehículos más caros
+      const vehiculosConPrecio = valoraciones
+        ?.filter(v => v.precio_compra && v.precio_compra > 0)
+        .map(v => {
+          const vehiculo = vehiculos?.find(vh => vh.id === v.vehiculo_id)
+          return { vehiculo, precio: v.precio_compra }
+        })
+        .filter(item => item.vehiculo) || []
+      
+      const vehiculosMasCaros = vehiculosConPrecio
+        .sort((a, b) => (b.precio || 0) - (a.precio || 0))
+        .slice(0, 5)
+      
+      const vehiculosMasBaratos = vehiculosConPrecio
+        .sort((a, b) => (a.precio || 0) - (b.precio || 0))
+        .slice(0, 5)
+
+      // ========== DATOS DE MERCADO ==========
+      const { data: datosMercado } = await supabase
+        .from('datos_mercado_autocaravanas')
+        .select('*')
+        .eq('verificado', true)
+
+      const totalDatosMercado = datosMercado?.length || 0
+      const precioPromedioMercado = totalDatosMercado > 0
+        ? (datosMercado?.reduce((sum, d) => sum + (d.precio || 0), 0) || 0) / totalDatosMercado
+        : 0
+
+      // Marcas más populares en el mercado
+      const marcasPorCount = datosMercado?.reduce((acc: any, d) => {
+        if (d.marca) acc[d.marca] = (acc[d.marca] || 0) + 1
+        return acc
+      }, {}) || {}
+      
+      const marcasMasPopulares = Object.entries(marcasPorCount)
+        .map(([marca, count]) => ({
+          marca,
+          count: count as number,
+          porcentaje: totalDatosMercado > 0 ? ((count as number) / totalDatosMercado) * 100 : 0
+        }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10)
+
+      // Modelos más populares (marca + modelo)
+      const modelosPorCount = datosMercado?.reduce((acc: any, d) => {
+        if (d.marca && d.modelo) {
+          const key = `${d.marca}|${d.modelo}`
+          acc[key] = (acc[key] || 0) + 1
+        }
+        return acc
+      }, {}) || {}
+      
+      const modelosMasPopulares = Object.entries(modelosPorCount)
+        .map(([key, count]) => {
+          const [marca, modelo] = (key as string).split('|')
+          return { marca, modelo, count: count as number }
+        })
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10)
+
+      // ========== VALORACIONES IA ==========
+      const vehiculosValorados = valoraciones?.filter(v => v.valor_estimado_actual && v.valor_estimado_actual > 0).length || 0
+      const valorPromedioEstimado = vehiculosValorados > 0
+        ? (valoraciones?.reduce((sum, v) => sum + (v.valor_estimado_actual || 0), 0) || 0) / vehiculosValorados
+        : 0
+
+      const vehiculosEnVenta = valoraciones?.filter(v => v.en_venta).length || 0
+      const precioPromedioVenta = vehiculosEnVenta > 0
+        ? (valoraciones?.filter(v => v.en_venta).reduce((sum, v) => sum + (v.precio_venta_deseado || 0), 0) || 0) / vehiculosEnVenta
+        : 0
+
+      // Ganancia proyectada (diferencia entre valor estimado y precio compra)
+      const gananciaPromedioProyectada = vehiculosValorados > 0
+        ? (valoraciones
+            ?.filter(v => v.valor_estimado_actual && v.precio_compra)
+            .reduce((sum, v) => sum + ((v.valor_estimado_actual || 0) - (v.precio_compra || 0)), 0) || 0) / vehiculosValorados
+        : 0
+
+      // ========== DISTRIBUCIONES ==========
+      // Distribución de precios de compra
+      const rangosPrecios = [
+        { min: 0, max: 20000, label: '< 20k' },
+        { min: 20000, max: 40000, label: '20k-40k' },
+        { min: 40000, max: 60000, label: '40k-60k' },
+        { min: 60000, max: 80000, label: '60k-80k' },
+        { min: 80000, max: 100000, label: '80k-100k' },
+        { min: 100000, max: Infinity, label: '> 100k' }
+      ]
+
+      const distribucionPreciosCompra = rangosPrecios.map(rango => {
+        const count = valoraciones?.filter(v => 
+          v.precio_compra && 
+          v.precio_compra >= rango.min && 
+          v.precio_compra < rango.max
+        ).length || 0
+        
+        return {
+          rango: rango.label,
+          count,
+          porcentaje: vehiculosConDatosFinancieros > 0 ? (count / vehiculosConDatosFinancieros) * 100 : 0
+        }
+      })
+
+      // Distribución por años
+      const añoActual = new Date().getFullYear()
+      const distribucionAños = [
+        { rango: '< 2010', count: vehiculos?.filter(v => v.año < 2010).length || 0 },
+        { rango: '2010-2015', count: vehiculos?.filter(v => v.año >= 2010 && v.año < 2015).length || 0 },
+        { rango: '2015-2020', count: vehiculos?.filter(v => v.año >= 2015 && v.año < 2020).length || 0 },
+        { rango: '2020-2025', count: vehiculos?.filter(v => v.año >= 2020 && v.año <= añoActual).length || 0 }
+      ]
+
+      // Distribución por kilometraje (de ficha técnica)
+      const { data: fichasTecnicas } = await supabase
+        .from('vehiculo_ficha_tecnica')
+        .select('kilometros_actuales')
+
+      const distribucionKilometraje = [
+        { rango: '< 50k km', count: fichasTecnicas?.filter(f => (f.kilometros_actuales || 0) < 50000).length || 0 },
+        { rango: '50k-100k km', count: fichasTecnicas?.filter(f => (f.kilometros_actuales || 0) >= 50000 && (f.kilometros_actuales || 0) < 100000).length || 0 },
+        { rango: '100k-150k km', count: fichasTecnicas?.filter(f => (f.kilometros_actuales || 0) >= 100000 && (f.kilometros_actuales || 0) < 150000).length || 0 },
+        { rango: '> 150k km', count: fichasTecnicas?.filter(f => (f.kilometros_actuales || 0) >= 150000).length || 0 }
+      ]
+
+      console.log(`✅ Vehículos: ${totalVehiculosRegistrados} total, ${vehiculosConDatosFinancieros} con datos financieros`)
+      console.log(`💰 Valor total parque: ${valorTotalParqueVehiculos.toLocaleString()}€`)
+      console.log(`📊 Datos mercado: ${totalDatosMercado} registros, precio promedio: ${precioPromedioMercado.toLocaleString()}€`)
 
       // ========== MÉTRICAS DE ENGAGEMENT ==========
       // Como aún no tenemos la tabla user_sessions implementada, calculamos métricas estimadas
@@ -911,12 +1080,38 @@ export default function AdminAnalyticsPage() {
         // Dispositivos
         usuariosPorDispositivo,
 
-        // Vehículos
+        // Vehículos - Básicos
         totalVehiculosRegistrados,
         vehiculosRegistradosHoy,
         vehiculosRegistradosEstaSemana,
         vehiculosRegistradosEsteMes,
         vehiculosPorMes,
+        
+        // Vehículos - Métricas Financieras
+        valorTotalParqueVehiculos,
+        promedioValorVehiculo,
+        vehiculosMasCaros,
+        vehiculosMasBaratos,
+        vehiculosConDatosFinancieros,
+        inversionTotalPromedio,
+        
+        // Vehículos - Datos de Mercado
+        totalDatosMercado,
+        precioPromedioMercado,
+        marcasMasPopulares,
+        modelosMasPopulares,
+        
+        // Vehículos - Valoraciones IA
+        vehiculosValorados,
+        valorPromedioEstimado,
+        vehiculosEnVenta,
+        precioPromedioVenta,
+        gananciaPromedioProyectada,
+        
+        // Vehículos - Distribución
+        distribucionPreciosCompra,
+        distribucionAños,
+        distribucionKilometraje,
 
         // Conversión y Retención
         tasaConversionRegistro,
@@ -2067,44 +2262,351 @@ export default function AdminAnalyticsPage() {
         {activeTab === 'vehiculos' && (
           <div>
             <div className="bg-gradient-to-r from-red-600 to-orange-600 rounded-xl shadow-lg p-6 mb-6">
-              <h2 className="text-3xl font-bold text-white">🚐 Métricas de Vehículos</h2>
-              <p className="text-red-100 mt-2 text-lg">Sistema de gestión de autocaravanas</p>
+              <h2 className="text-3xl font-bold text-white">🚐 Métricas de Vehículos & Mercado</h2>
+              <p className="text-red-100 mt-2 text-lg">Sistema completo de gestión, valoración y datos de mercado</p>
             </div>
 
-            {/* KPIs de Vehículos */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border-2 border-gray-200">
-                <p className="text-sm font-semibold text-gray-700 mb-2">📊 Total Registrados</p>
-                <p className="text-4xl font-black text-gray-900">{analytics.totalVehiculosRegistrados}</p>
-                <p className="text-xs text-gray-600 mt-2">vehículos en sistema</p>
-              </div>
-
-              <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 border-2 border-red-200">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm font-semibold text-red-700">📅 Hoy</p>
-                  <span className="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs font-bold">LIVE</span>
+            {/* SECCIÓN 1: KPIs Básicos de Registro */}
+            <div className="mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">📊 Registro de Vehículos</h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border-2 border-gray-200">
+                  <p className="text-sm font-semibold text-gray-700 mb-2">🚐 Total Registrados</p>
+                  <p className="text-4xl font-black text-gray-900">{analytics.totalVehiculosRegistrados}</p>
+                  <p className="text-xs text-gray-600 mt-2">vehículos en sistema</p>
                 </div>
-                <p className="text-4xl font-black text-red-900">{analytics.vehiculosRegistradosHoy}</p>
-                <p className="text-xs text-red-600 mt-2">nuevos hoy</p>
-              </div>
 
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border-2 border-orange-200">
-                <p className="text-sm font-semibold text-orange-700 mb-2">📆 Esta Semana</p>
-                <p className="text-4xl font-black text-orange-900">{analytics.vehiculosRegistradosEstaSemana}</p>
-                <p className="text-xs text-orange-600 mt-2">en 7 días</p>
-              </div>
+                <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 border-2 border-red-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-red-700">📅 Hoy</p>
+                    <span className="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs font-bold">LIVE</span>
+                  </div>
+                  <p className="text-4xl font-black text-red-900">{analytics.vehiculosRegistradosHoy}</p>
+                  <p className="text-xs text-red-600 mt-2">nuevos hoy</p>
+                </div>
 
-              <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border-2 border-amber-200">
-                <p className="text-sm font-semibold text-amber-700 mb-2">📅 Este Mes</p>
-                <p className="text-4xl font-black text-amber-900">{analytics.vehiculosRegistradosEsteMes}</p>
-                <p className="text-xs text-amber-600 mt-2">en 30 días</p>
+                <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border-2 border-orange-200">
+                  <p className="text-sm font-semibold text-orange-700 mb-2">📆 Esta Semana</p>
+                  <p className="text-4xl font-black text-orange-900">{analytics.vehiculosRegistradosEstaSemana}</p>
+                  <p className="text-xs text-orange-600 mt-2">en 7 días</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border-2 border-amber-200">
+                  <p className="text-sm font-semibold text-amber-700 mb-2">📅 Este Mes</p>
+                  <p className="text-4xl font-black text-amber-900">{analytics.vehiculosRegistradosEsteMes}</p>
+                  <p className="text-xs text-amber-600 mt-2">en 30 días</p>
+                </div>
               </div>
             </div>
 
-            {/* Gráfico de Vehículos por Mes */}
+            {/* SECCIÓN 2: KPIs Financieros */}
+            <div className="mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">💰 Métricas Financieras del Parque</h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border-2 border-emerald-300">
+                  <p className="text-sm font-semibold text-emerald-700 mb-2">💵 Valor Total Parque</p>
+                  <p className="text-3xl font-black text-emerald-900">{analytics.valorTotalParqueVehiculos.toLocaleString('es-ES')}€</p>
+                  <p className="text-xs text-emerald-600 mt-2">suma precios de compra</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-300">
+                  <p className="text-sm font-semibold text-blue-700 mb-2">📊 Precio Promedio</p>
+                  <p className="text-3xl font-black text-blue-900">{analytics.promedioValorVehiculo.toLocaleString('es-ES')}€</p>
+                  <p className="text-xs text-blue-600 mt-2">de {analytics.vehiculosConDatosFinancieros} vehículos</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border-2 border-purple-300">
+                  <p className="text-sm font-semibold text-purple-700 mb-2">🔧 Inversión Promedio</p>
+                  <p className="text-3xl font-black text-purple-900">{analytics.inversionTotalPromedio.toLocaleString('es-ES')}€</p>
+                  <p className="text-xs text-purple-600 mt-2">incluye mantenimiento</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl p-6 border-2 border-cyan-300">
+                  <p className="text-sm font-semibold text-cyan-700 mb-2">📈 Con Datos Financieros</p>
+                  <p className="text-3xl font-black text-cyan-900">{analytics.vehiculosConDatosFinancieros}</p>
+                  <p className="text-xs text-cyan-600 mt-2">{((analytics.vehiculosConDatosFinancieros / (analytics.totalVehiculosRegistrados || 1)) * 100).toFixed(1)}% del total</p>
+                </div>
+              </div>
+            </div>
+
+            {/* SECCIÓN 3: Valoraciones IA & Venta */}
+            <div className="mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">🤖 Valoraciones IA & Mercado de Venta</h3>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 border-2 border-indigo-300">
+                  <p className="text-sm font-semibold text-indigo-700 mb-2">🤖 Valorados con IA</p>
+                  <p className="text-4xl font-black text-indigo-900">{analytics.vehiculosValorados}</p>
+                  <p className="text-xs text-indigo-600 mt-2">valoraciones automáticas</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-violet-50 to-violet-100 rounded-xl p-6 border-2 border-violet-300">
+                  <p className="text-sm font-semibold text-violet-700 mb-2">💎 Valor Estimado Promedio</p>
+                  <p className="text-3xl font-black text-violet-900">{analytics.valorPromedioEstimado.toLocaleString('es-ES')}€</p>
+                  <p className="text-xs text-violet-600 mt-2">según algoritmo IA</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-6 border-2 border-pink-300">
+                  <p className="text-sm font-semibold text-pink-700 mb-2">🏷️ En Venta</p>
+                  <p className="text-4xl font-black text-pink-900">{analytics.vehiculosEnVenta}</p>
+                  <p className="text-xs text-pink-600 mt-2">vehículos publicados</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-xl p-6 border-2 border-rose-300">
+                  <p className="text-sm font-semibold text-rose-700 mb-2">💸 Precio Venta Promedio</p>
+                  <p className="text-3xl font-black text-rose-900">{analytics.precioPromedioVenta.toLocaleString('es-ES')}€</p>
+                  <p className="text-xs text-rose-600 mt-2">precio deseado</p>
+                </div>
+
+                <div className={`bg-gradient-to-br rounded-xl p-6 border-2 ${
+                  analytics.gananciaPromedioProyectada >= 0 
+                    ? 'from-green-50 to-green-100 border-green-300' 
+                    : 'from-red-50 to-red-100 border-red-300'
+                }`}>
+                  <p className="text-sm font-semibold mb-2" style={{ color: analytics.gananciaPromedioProyectada >= 0 ? '#15803d' : '#b91c1c' }}>
+                    {analytics.gananciaPromedioProyectada >= 0 ? '📈' : '📉'} Ganancia Proyectada
+                  </p>
+                  <p className="text-3xl font-black" style={{ color: analytics.gananciaPromedioProyectada >= 0 ? '#14532d' : '#7f1d1d' }}>
+                    {analytics.gananciaPromedioProyectada >= 0 ? '+' : ''}{analytics.gananciaPromedioProyectada.toLocaleString('es-ES')}€
+                  </p>
+                  <p className="text-xs mt-2" style={{ color: analytics.gananciaPromedioProyectada >= 0 ? '#166534' : '#991b1b' }}>
+                    vs precio compra
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* SECCIÓN 4: Datos de Mercado */}
+            <div className="mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">🌐 Base de Datos de Mercado</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 border-2 border-teal-300">
+                  <p className="text-sm font-semibold text-teal-700 mb-2">📊 Total Registros Mercado</p>
+                  <p className="text-4xl font-black text-teal-900">{analytics.totalDatosMercado.toLocaleString()}</p>
+                  <p className="text-xs text-teal-600 mt-2">datos verificados de ventas</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl p-6 border-2 border-sky-300">
+                  <p className="text-sm font-semibold text-sky-700 mb-2">💵 Precio Promedio Mercado</p>
+                  <p className="text-4xl font-black text-sky-900">{analytics.precioPromedioMercado.toLocaleString('es-ES')}€</p>
+                  <p className="text-xs text-sky-600 mt-2">basado en datos reales</p>
+                </div>
+              </div>
+            </div>
+
+            {/* SECCIÓN 5: Top Vehículos Más Caros/Baratos */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {/* Top 5 Más Caros */}
+              <div className="bg-white rounded-xl shadow">
+                <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-amber-500 to-yellow-500">
+                  <h3 className="text-lg font-semibold text-white">💎 Top 5 Vehículos Más Caros</h3>
+                </div>
+                <div className="p-6">
+                  {analytics.vehiculosMasCaros.length > 0 ? (
+                    <div className="space-y-3">
+                      {analytics.vehiculosMasCaros.map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl font-bold text-amber-600">#{index + 1}</span>
+                            <div>
+                              <p className="font-semibold text-gray-900">{item.vehiculo?.marca || 'N/A'} {item.vehiculo?.modelo || ''}</p>
+                              <p className="text-sm text-gray-600">{item.vehiculo?.año || 'N/A'}</p>
+                            </div>
+                          </div>
+                          <p className="text-xl font-bold text-amber-600">{(item.precio || 0).toLocaleString('es-ES')}€</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">No hay datos disponibles</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Top 5 Más Baratos */}
+              <div className="bg-white rounded-xl shadow">
+                <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-500 to-emerald-500">
+                  <h3 className="text-lg font-semibold text-white">💰 Top 5 Vehículos Más Económicos</h3>
+                </div>
+                <div className="p-6">
+                  {analytics.vehiculosMasBaratos.length > 0 ? (
+                    <div className="space-y-3">
+                      {analytics.vehiculosMasBaratos.map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl font-bold text-green-600">#{index + 1}</span>
+                            <div>
+                              <p className="font-semibold text-gray-900">{item.vehiculo?.marca || 'N/A'} {item.vehiculo?.modelo || ''}</p>
+                              <p className="text-sm text-gray-600">{item.vehiculo?.año || 'N/A'}</p>
+                            </div>
+                          </div>
+                          <p className="text-xl font-bold text-green-600">{(item.precio || 0).toLocaleString('es-ES')}€</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">No hay datos disponibles</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* SECCIÓN 6: Marcas y Modelos Más Populares en Mercado */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {/* Marcas Más Populares */}
+              <div className="bg-white rounded-xl shadow">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900">🏭 Top 10 Marcas en Mercado</h3>
+                  <p className="text-sm text-gray-500">Según datos de mercado verificados</p>
+                </div>
+                <div className="p-6">
+                  {analytics.marcasMasPopulares.length > 0 ? (
+                    <div className="space-y-2">
+                      {analytics.marcasMasPopulares.map((marca, index) => (
+                        <div key={index} className="group">
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-bold text-gray-400">#{index + 1}</span>
+                              <span className="font-semibold text-gray-900">{marca.marca}</span>
+                            </div>
+                            <span className="text-sm font-bold text-blue-600">{marca.count} ({marca.porcentaje.toFixed(1)}%)</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                            <div
+                              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-500 group-hover:from-blue-600 group-hover:to-indigo-700"
+                              style={{ width: `${marca.porcentaje}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">No hay datos de mercado</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Modelos Más Populares */}
+              <div className="bg-white rounded-xl shadow">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900">🚐 Top 10 Modelos en Mercado</h3>
+                  <p className="text-sm text-gray-500">Combinación marca + modelo</p>
+                </div>
+                <div className="p-6">
+                  {analytics.modelosMasPopulares.length > 0 ? (
+                    <div className="space-y-3">
+                      {analytics.modelosMasPopulares.map((modelo, index) => (
+                        <div key={index} className="flex items-center justify-between p-2 hover:bg-purple-50 rounded-lg transition-colors">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg font-bold text-purple-600">#{index + 1}</span>
+                            <div>
+                              <p className="font-semibold text-gray-900">{modelo.marca}</p>
+                              <p className="text-sm text-gray-600">{modelo.modelo}</p>
+                            </div>
+                          </div>
+                          <span className="text-lg font-bold text-purple-600">{modelo.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">No hay datos de mercado</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* SECCIÓN 7: Distribuciones (Precios, Años, Kilometraje) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              {/* Distribución de Precios */}
+              <div className="bg-white rounded-xl shadow">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900">💵 Distribución de Precios</h3>
+                  <p className="text-sm text-gray-500">Rangos de precios de compra</p>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-3">
+                    {analytics.distribucionPreciosCompra.map((rango, index) => (
+                      <div key={index} className="group">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm font-semibold text-gray-700">{rango.rango}</span>
+                          <span className="text-sm font-bold text-emerald-600">{rango.count} ({rango.porcentaje.toFixed(1)}%)</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                          <div
+                            className="bg-gradient-to-r from-emerald-500 to-green-600 h-2.5 rounded-full transition-all duration-500 group-hover:from-emerald-600 group-hover:to-green-700"
+                            style={{ width: `${rango.porcentaje}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Distribución por Años */}
+              <div className="bg-white rounded-xl shadow">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900">📅 Distribución por Años</h3>
+                  <p className="text-sm text-gray-500">Antigüedad de vehículos</p>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-3">
+                    {analytics.distribucionAños.map((rango, index) => {
+                      const total = analytics.totalVehiculosRegistrados || 1
+                      const porcentaje = (rango.count / total) * 100
+                      return (
+                        <div key={index} className="group">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-semibold text-gray-700">{rango.rango}</span>
+                            <span className="text-sm font-bold text-blue-600">{rango.count} ({porcentaje.toFixed(1)}%)</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                            <div
+                              className="bg-gradient-to-r from-blue-500 to-cyan-600 h-2.5 rounded-full transition-all duration-500 group-hover:from-blue-600 group-hover:to-cyan-700"
+                              style={{ width: `${porcentaje}%` }}
+                            />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Distribución por Kilometraje */}
+              <div className="bg-white rounded-xl shadow">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900">🛣️ Distribución por Kilometraje</h3>
+                  <p className="text-sm text-gray-500">Uso de vehículos</p>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-3">
+                    {analytics.distribucionKilometraje.map((rango, index) => {
+                      const total = analytics.distribucionKilometraje.reduce((sum, r) => sum + r.count, 0) || 1
+                      const porcentaje = (rango.count / total) * 100
+                      return (
+                        <div key={index} className="group">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-semibold text-gray-700">{rango.rango}</span>
+                            <span className="text-sm font-bold text-orange-600">{rango.count} ({porcentaje.toFixed(1)}%)</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                            <div
+                              className="bg-gradient-to-r from-orange-500 to-red-600 h-2.5 rounded-full transition-all duration-500 group-hover:from-orange-600 group-hover:to-red-700"
+                              style={{ width: `${porcentaje}%` }}
+                            />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECCIÓN 8: Gráfico Temporal - Vehículos por Mes */}
             <div className="bg-white rounded-xl shadow mb-6">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">🚐 Vehículos Registrados por Mes - Últimos 12 Meses</h3>
+                <h3 className="text-lg font-semibold text-gray-900">📈 Vehículos Registrados por Mes - Últimos 12 Meses</h3>
                 <p className="text-sm text-gray-500">Evolución mensual de registros de vehículos</p>
               </div>
               <div className="p-6">
@@ -2135,6 +2637,37 @@ export default function AdminAnalyticsPage() {
                       {analytics.vehiculosPorMes.reduce((sum, m) => sum + m.count, 0).toLocaleString()}
                     </span> vehículos
                   </p>
+                </div>
+              </div>
+            </div>
+
+            {/* SECCIÓN 9: Información Estratégica */}
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg p-6">
+              <h3 className="text-2xl font-bold text-white mb-4">🎯 Estrategia de Negocio</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2">📊 Para Furgocasa</h4>
+                  <ul className="text-sm text-indigo-100 space-y-1">
+                    <li>• Base de datos: <strong>{analytics.totalDatosMercado}</strong> registros</li>
+                    <li>• Precio mercado promedio: <strong>{analytics.precioPromedioMercado.toLocaleString()}€</strong></li>
+                    <li>• Usuarios con datos: <strong>{analytics.vehiculosConDatosFinancieros}</strong></li>
+                  </ul>
+                </div>
+                <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2">🤖 Valoración IA</h4>
+                  <ul className="text-sm text-indigo-100 space-y-1">
+                    <li>• Vehículos valorados: <strong>{analytics.vehiculosValorados}</strong></li>
+                    <li>• Valor promedio IA: <strong>{analytics.valorPromedioEstimado.toLocaleString()}€</strong></li>
+                    <li>• Ganancia proyectada: <strong>{analytics.gananciaPromedioProyectada.toLocaleString()}€</strong></li>
+                  </ul>
+                </div>
+                <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2">💼 Oportunidades</h4>
+                  <ul className="text-sm text-indigo-100 space-y-1">
+                    <li>• En venta: <strong>{analytics.vehiculosEnVenta}</strong> vehículos</li>
+                    <li>• Precio venta promedio: <strong>{analytics.precioPromedioVenta.toLocaleString()}€</strong></li>
+                    <li>• Potencial mercado secundario</li>
+                  </ul>
                 </div>
               </div>
             </div>
