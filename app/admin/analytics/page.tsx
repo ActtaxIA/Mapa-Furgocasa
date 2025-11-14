@@ -132,9 +132,12 @@ interface AnalyticsData {
   eventosMasComunes: { evento: string; count: number }[]
 }
 
+type TabType = 'general' | 'areas' | 'usuarios' | 'rutas' | 'vehiculos' | 'engagement' | 'tops'
+
 export default function AdminAnalyticsPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<TabType>('general')
   const router = useRouter()
 
   useEffect(() => {
@@ -994,7 +997,90 @@ export default function AdminAnalyticsPage() {
         </div>
       </header>
 
+      {/* Sistema de Tabs - Similar al perfil de usuario */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden sticky top-0 z-20">
+          <div className="overflow-x-auto">
+            <div className="flex border-b border-gray-200">
+              <button
+                onClick={() => setActiveTab('general')}
+                className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors whitespace-nowrap border-b-4 ${
+                  activeTab === 'general'
+                    ? 'border-sky-600 text-sky-700 bg-sky-50'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                📊 General
+              </button>
+              <button
+                onClick={() => setActiveTab('areas')}
+                className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors whitespace-nowrap border-b-4 ${
+                  activeTab === 'areas'
+                    ? 'border-green-600 text-green-700 bg-green-50'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                🗺️ Áreas
+              </button>
+              <button
+                onClick={() => setActiveTab('usuarios')}
+                className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors whitespace-nowrap border-b-4 ${
+                  activeTab === 'usuarios'
+                    ? 'border-purple-600 text-purple-700 bg-purple-50'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                👥 Usuarios
+              </button>
+              <button
+                onClick={() => setActiveTab('rutas')}
+                className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors whitespace-nowrap border-b-4 ${
+                  activeTab === 'rutas'
+                    ? 'border-indigo-600 text-indigo-700 bg-indigo-50'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                🗺️ Rutas
+              </button>
+              <button
+                onClick={() => setActiveTab('vehiculos')}
+                className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors whitespace-nowrap border-b-4 ${
+                  activeTab === 'vehiculos'
+                    ? 'border-red-600 text-red-700 bg-red-50'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                🚐 Vehículos
+              </button>
+              <button
+                onClick={() => setActiveTab('engagement')}
+                className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors whitespace-nowrap border-b-4 ${
+                  activeTab === 'engagement'
+                    ? 'border-teal-600 text-teal-700 bg-teal-50'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                📈 Engagement
+              </button>
+              <button
+                onClick={() => setActiveTab('tops')}
+                className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors whitespace-nowrap border-b-4 ${
+                  activeTab === 'tops'
+                    ? 'border-pink-600 text-pink-700 bg-pink-50'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                🏆 Top Áreas
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Tab: GENERAL */}
+        {activeTab === 'general' && (
+          <div>
         {/* KPIs Principales */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow p-6">
@@ -1120,7 +1206,12 @@ export default function AdminAnalyticsPage() {
             </p>
           </div>
         </div>
+          </div>
+        )}
 
+        {/* Tab: USUARIOS */}
+        {activeTab === 'usuarios' && (
+          <div>
         {/* ========== SECCIÓN: MÉTRICAS TEMPORALES - ACTIVIDAD DIARIA/SEMANAL/MENSUAL ========== */}
         <div className="mb-8">
           <div className="bg-gradient-to-r from-sky-600 to-blue-600 rounded-xl shadow-lg p-6 mb-6">
@@ -1345,7 +1436,12 @@ export default function AdminAnalyticsPage() {
             </div>
           </div>
         </div>
+          </div>
+        )}
 
+        {/* Tab: ÁREAS */}
+        {activeTab === 'areas' && (
+          <div>
         {/* Distribución por País */}
         <div className="bg-white rounded-xl shadow mb-8">
           <div className="px-6 py-4 border-b border-gray-200">
@@ -1565,7 +1661,12 @@ export default function AdminAnalyticsPage() {
             </div>
           </div>
         </div>
+          </div>
+        )}
 
+        {/* Tab: RUTAS */}
+        {activeTab === 'rutas' && (
+          <div>
         {/* ========== GRÁFICOS TEMPORALES - ÚLTIMOS 30 DÍAS ========== */}
         <div className="mb-8">
           <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl shadow-lg p-6 mb-6">
@@ -1788,7 +1889,12 @@ export default function AdminAnalyticsPage() {
             </div>
           </div>
         </div>
+          </div>
+        )}
 
+        {/* Tab: TOPS */}
+        {activeTab === 'tops' && (
+          <div>
         {/* ========== TOP ÁREAS MÁS POPULARES ========== */}
         <div className="mb-8">
           <div className="bg-gradient-to-r from-rose-600 to-pink-600 rounded-xl shadow-lg p-6 mb-6">
@@ -1951,6 +2057,15 @@ export default function AdminAnalyticsPage() {
             </div>
           </div>
         </div>
+          </div>
+        )}
+
+        {/* Mensaje cuando no hay tabs seleccionadas (no debería pasar) */}
+        {!activeTab && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">Selecciona una pestaña para ver las métricas</p>
+          </div>
+        )}
       </main>
     </div>
   )
