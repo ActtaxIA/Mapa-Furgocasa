@@ -619,6 +619,18 @@ export default function VehiculoPage() {
           onClose={() => setToast(null)}
         />
       )}
+
+      {/* Confirm Modal para Valoración IA */}
+      {showConfirmModal && (
+        <ConfirmModal
+          title="¿Generar Valoración con IA?"
+          message="Esta acción generará un informe profesional de valoración utilizando IA. El proceso puede tardar unos segundos."
+          confirmText="Generar"
+          cancelText="Cancelar"
+          onConfirm={confirmarGenerarValoracion}
+          onCancel={() => setShowConfirmModal(false)}
+        />
+      )}
     </div>
   )
 }
