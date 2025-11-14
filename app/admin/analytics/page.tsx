@@ -1436,6 +1436,44 @@ export default function AdminAnalyticsPage() {
             </div>
           </div>
         </div>
+
+          {/* Gráfico: Crecimiento de Usuarios por Mes */}
+          <div className="bg-white rounded-xl shadow mb-6">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">👥 Crecimiento de Usuarios - Últimos 12 Meses</h3>
+              <p className="text-sm text-gray-500">Nuevos usuarios registrados cada mes</p>
+            </div>
+            <div className="p-6">
+              <div className="flex items-end justify-between gap-2 h-80">
+                {analytics.crecimientoUsuariosMensual.map((mes, index) => {
+                  const maxNuevos = Math.max(...analytics.crecimientoUsuariosMensual.map(m => m.nuevos), 1)
+                  const altura = (mes.nuevos / maxNuevos) * 100
+                  return (
+                    <div key={index} className="flex-1 flex flex-col items-center gap-2">
+                      <div className="text-center mb-2">
+                        {mes.nuevos > 0 && (
+                          <p className="text-sm font-bold text-violet-600">{mes.nuevos}</p>
+                        )}
+                      </div>
+                      <div
+                        className="w-full bg-gradient-to-t from-violet-500 to-violet-400 rounded-t hover:from-violet-600 hover:to-violet-500 transition-all cursor-pointer shadow-md"
+                        style={{ height: `${mes.nuevos === 0 ? '8' : Math.max(altura, 25)}%` }}
+                        title={`${mes.mes}: ${mes.nuevos} nuevos usuarios`}
+                      />
+                      <p className="text-sm font-medium text-gray-700 mt-2">{mes.mes}</p>
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+                <p className="text-sm text-gray-600">
+                  Total nuevos (12 meses): <span className="font-bold text-violet-600">
+                    {analytics.crecimientoUsuariosMensual.reduce((sum, m) => sum + m.nuevos, 0).toLocaleString()}
+                  </span> usuarios
+                </p>
+              </div>
+            </div>
+          </div>
           </div>
         )}
 
@@ -1853,41 +1891,6 @@ export default function AdminAnalyticsPage() {
             </div>
           </div>
 
-          {/* Gráfico: Crecimiento de Usuarios por Mes */}
-          <div className="bg-white rounded-xl shadow mb-6">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">👥 Crecimiento de Usuarios - Últimos 12 Meses</h3>
-              <p className="text-sm text-gray-500">Nuevos usuarios registrados cada mes</p>
-            </div>
-            <div className="p-6">
-              <div className="flex items-end justify-between gap-2 h-64">
-                {analytics.crecimientoUsuariosMensual.map((mes, index) => {
-                  const maxNuevos = Math.max(...analytics.crecimientoUsuariosMensual.map(m => m.nuevos), 1)
-                  const altura = (mes.nuevos / maxNuevos) * 100
-                  return (
-                    <div key={index} className="flex-1 flex flex-col items-center gap-2">
-                      <div className="text-center">
-                        <p className="text-xs font-bold text-violet-600">{mes.nuevos}</p>
-                      </div>
-                      <div
-                        className="w-full bg-gradient-to-t from-violet-500 to-violet-400 rounded-t hover:from-violet-600 hover:to-violet-500 transition-all cursor-pointer"
-                        style={{ height: `${Math.max(altura, 5)}%` }}
-                        title={`${mes.mes}: ${mes.nuevos} nuevos usuarios`}
-                      />
-                      <p className="text-xs font-medium text-gray-600">{mes.mes}</p>
-                    </div>
-                  )
-                })}
-              </div>
-              <div className="mt-6 pt-6 border-t border-gray-200 text-center">
-                <p className="text-sm text-gray-600">
-                  Total nuevos (12 meses): <span className="font-bold text-violet-600">
-                    {analytics.crecimientoUsuariosMensual.reduce((sum, m) => sum + m.nuevos, 0).toLocaleString()}
-                  </span> usuarios
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
           </div>
         )}
@@ -2057,6 +2060,291 @@ export default function AdminAnalyticsPage() {
             </div>
           </div>
         </div>
+          </div>
+        )}
+
+        {/* Tab: VEHÍCULOS */}
+        {activeTab === 'vehiculos' && (
+          <div>
+            <div className="bg-gradient-to-r from-red-600 to-orange-600 rounded-xl shadow-lg p-6 mb-6">
+              <h2 className="text-3xl font-bold text-white">🚐 Métricas de Vehículos</h2>
+              <p className="text-red-100 mt-2 text-lg">Sistema de gestión de autocaravanas</p>
+            </div>
+
+            {/* KPIs de Vehículos */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border-2 border-gray-200">
+                <p className="text-sm font-semibold text-gray-700 mb-2">📊 Total Registrados</p>
+                <p className="text-4xl font-black text-gray-900">{analytics.totalVehiculosRegistrados}</p>
+                <p className="text-xs text-gray-600 mt-2">vehículos en sistema</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 border-2 border-red-200">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm font-semibold text-red-700">📅 Hoy</p>
+                  <span className="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs font-bold">LIVE</span>
+                </div>
+                <p className="text-4xl font-black text-red-900">{analytics.vehiculosRegistradosHoy}</p>
+                <p className="text-xs text-red-600 mt-2">nuevos hoy</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border-2 border-orange-200">
+                <p className="text-sm font-semibold text-orange-700 mb-2">📆 Esta Semana</p>
+                <p className="text-4xl font-black text-orange-900">{analytics.vehiculosRegistradosEstaSemana}</p>
+                <p className="text-xs text-orange-600 mt-2">en 7 días</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border-2 border-amber-200">
+                <p className="text-sm font-semibold text-amber-700 mb-2">📅 Este Mes</p>
+                <p className="text-4xl font-black text-amber-900">{analytics.vehiculosRegistradosEsteMes}</p>
+                <p className="text-xs text-amber-600 mt-2">en 30 días</p>
+              </div>
+            </div>
+
+            {/* Gráfico de Vehículos por Mes */}
+            <div className="bg-white rounded-xl shadow mb-6">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">🚐 Vehículos Registrados por Mes - Últimos 12 Meses</h3>
+                <p className="text-sm text-gray-500">Evolución mensual de registros de vehículos</p>
+              </div>
+              <div className="p-6">
+                <div className="flex items-end justify-between gap-2 h-80">
+                  {analytics.vehiculosPorMes.map((mes, index) => {
+                    const maxCount = Math.max(...analytics.vehiculosPorMes.map(m => m.count), 1)
+                    const altura = (mes.count / maxCount) * 100
+                    return (
+                      <div key={index} className="flex-1 flex flex-col items-center gap-2">
+                        <div className="text-center mb-2">
+                          {mes.count > 0 && (
+                            <p className="text-sm font-bold text-red-600">{mes.count}</p>
+                          )}
+                        </div>
+                        <div
+                          className="w-full bg-gradient-to-t from-red-500 to-orange-400 rounded-t hover:from-red-600 hover:to-orange-500 transition-all cursor-pointer shadow-md"
+                          style={{ height: `${mes.count === 0 ? '8' : Math.max(altura, 25)}%` }}
+                          title={`${mes.mes}: ${mes.count} vehículos`}
+                        />
+                        <p className="text-sm font-medium text-gray-700 mt-2">{mes.mes}</p>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+                  <p className="text-sm text-gray-600">
+                    Total registrados (12 meses): <span className="font-bold text-red-600">
+                      {analytics.vehiculosPorMes.reduce((sum, m) => sum + m.count, 0).toLocaleString()}
+                    </span> vehículos
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: ENGAGEMENT */}
+        {activeTab === 'engagement' && (
+          <div>
+            <div className="bg-gradient-to-r from-teal-600 to-cyan-600 rounded-xl shadow-lg p-6 mb-6">
+              <h2 className="text-3xl font-bold text-white">📈 Engagement de Usuarios</h2>
+              <p className="text-teal-100 mt-2 text-lg">Calidad de la experiencia y retención</p>
+            </div>
+
+            {/* Métricas de Engagement */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+                <p className="text-sm font-medium text-green-700 mb-2">⏱️ Tiempo Promedio</p>
+                <p className="text-4xl font-bold text-green-900">{analytics.promedioTiempoSesion} min</p>
+                <p className="text-xs text-green-600 mt-1">por sesión</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 border border-teal-200">
+                <p className="text-sm font-medium text-teal-700 mb-2">📄 Páginas/Sesión</p>
+                <p className="text-4xl font-bold text-teal-900">{analytics.promedioPaginasPorSesion}</p>
+                <p className="text-xs text-teal-600 mt-1">páginas vistas</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl p-6 border border-cyan-200">
+                <p className="text-sm font-medium text-cyan-700 mb-2">↩️ Tasa de Rebote</p>
+                <p className="text-4xl font-bold text-cyan-900">{analytics.tasaRebote}%</p>
+                <p className="text-xs text-cyan-600 mt-1">sesiones de 1 página</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl p-6 border border-sky-200">
+                <p className="text-sm font-medium text-sky-700 mb-2">🔄 Sesiones Totales</p>
+                <p className="text-4xl font-bold text-sky-900">{analytics.sesionesTotales.toLocaleString()}</p>
+                <p className="text-xs text-sky-600 mt-1">
+                  {analytics.sesionesHoy} hoy · {analytics.sesionesEstaSemana} semana
+                </p>
+              </div>
+            </div>
+
+            {/* Conversión y Retención */}
+            <div className="bg-white rounded-xl shadow mb-6">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-amber-50">
+                <h3 className="text-lg font-bold text-gray-900">🎯 Conversión y Retención</h3>
+                <p className="text-sm text-gray-600">Análisis de comportamiento de usuarios</p>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border-2 border-orange-200">
+                    <p className="text-sm font-semibold text-orange-700 mb-2">📈 Tasa de Conversión</p>
+                    <p className="text-4xl font-black text-orange-900">{analytics.tasaConversionRegistro.toFixed(1)}%</p>
+                    <p className="text-xs text-orange-600 mt-2">usuarios realizan acciones</p>
+                  </div>
+                  
+                  <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border-2 border-amber-200">
+                    <p className="text-sm font-semibold text-amber-700 mb-2">🔄 Usuarios Recurrentes</p>
+                    <p className="text-4xl font-black text-amber-900">{analytics.usuariosRecurrentes.toLocaleString()}</p>
+                    <p className="text-xs text-amber-600 mt-2">
+                      {analytics.totalUsers > 0 ? `${((analytics.usuariosRecurrentes / analytics.totalUsers) * 100).toFixed(1)}% vuelven` : '0%'}
+                    </p>
+                  </div>
+                  
+                  <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6 border-2 border-yellow-200">
+                    <p className="text-sm font-semibold text-yellow-700 mb-2">✨ Usuarios Nuevos</p>
+                    <p className="text-4xl font-black text-yellow-900">{analytics.usuariosNuevos.toLocaleString()}</p>
+                    <p className="text-xs text-yellow-600 mt-2">sin actividad previa</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Búsquedas y Vistas */}
+            <div className="bg-white rounded-xl shadow mb-6">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
+                <h3 className="text-lg font-bold text-gray-900">🔍 Búsquedas y Vistas de Áreas</h3>
+                <p className="text-sm text-gray-600">Actividad de exploración</p>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-4">Búsquedas Realizadas</h4>
+                    <div className="space-y-4">
+                      <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-700">📊 Total</span>
+                          <span className="text-3xl font-bold text-purple-600">{analytics.busquedasTotales.toLocaleString()}</span>
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-r from-pink-50 to-pink-100 rounded-xl p-4 border border-pink-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-700">📅 Hoy</span>
+                          <span className="text-2xl font-bold text-pink-600">{analytics.busquedasHoy.toLocaleString()}</span>
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-r from-rose-50 to-rose-100 rounded-xl p-4 border border-rose-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-700">📆 Esta Semana</span>
+                          <span className="text-2xl font-bold text-rose-600">{analytics.busquedasEstaSemana.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-4">Vistas de Áreas</h4>
+                    <div className="space-y-4">
+                      <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-700">📊 Total</span>
+                          <span className="text-3xl font-bold text-blue-600">{analytics.vistasAreasTotal.toLocaleString()}</span>
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl p-4 border border-indigo-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-700">📅 Hoy</span>
+                          <span className="text-2xl font-bold text-indigo-600">{analytics.vistasAreasHoy.toLocaleString()}</span>
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-r from-violet-50 to-violet-100 rounded-xl p-4 border border-violet-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-700">📆 Esta Semana</span>
+                          <span className="text-2xl font-bold text-violet-600">{analytics.vistasAreasEstaSemana.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Dispositivos */}
+            <div className="bg-white rounded-xl shadow mb-6">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-slate-50 to-gray-50">
+                <h3 className="text-lg font-bold text-gray-900">📱 Distribución por Dispositivo</h3>
+                <p className="text-sm text-gray-600">Desde dónde acceden los usuarios</p>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {analytics.usuariosPorDispositivo.map((dispositivo, index) => {
+                    const colores = [
+                      { bg: 'slate', border: 'slate', text: 'slate' },
+                      { bg: 'blue', border: 'blue', text: 'blue' },
+                      { bg: 'purple', border: 'purple', text: 'purple' }
+                    ]
+                    const color = colores[index]
+                    
+                    return (
+                      <div key={dispositivo.tipo} className={`bg-gradient-to-br from-${color.bg}-50 to-${color.bg}-100 rounded-xl p-6 border-2 border-${color.border}-200`}>
+                        <p className={`text-sm font-semibold text-${color.text}-700 mb-2`}>
+                          {dispositivo.tipo === 'Desktop' ? '💻' : dispositivo.tipo === 'Mobile' ? '📱' : '📲'} {dispositivo.tipo}
+                        </p>
+                        <p className={`text-4xl font-black text-${color.text}-900 mb-3`}>{dispositivo.count.toLocaleString()}</p>
+                        <p className={`text-lg font-bold text-${color.text}-700 mb-2`}>{dispositivo.porcentaje}%</p>
+                        <div className="w-full bg-gray-200 rounded-full h-4">
+                          <div
+                            className={`bg-gradient-to-r from-${color.bg}-500 to-${color.bg}-600 h-4 rounded-full transition-all flex items-center justify-center`}
+                            style={{ width: `${dispositivo.porcentaje}%` }}
+                          >
+                            <span className="text-white text-xs font-bold">{dispositivo.porcentaje}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Eventos Más Comunes */}
+            <div className="bg-white rounded-xl shadow">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-teal-50">
+                <h3 className="text-lg font-bold text-gray-900">🎯 Eventos Más Comunes</h3>
+                <p className="text-sm text-gray-600">Acciones más realizadas por usuarios</p>
+              </div>
+              <div className="p-6">
+                <div className="space-y-3">
+                  {analytics.eventosMasComunes.map((evento, index) => {
+                    const maxCount = analytics.eventosMasComunes[0]?.count || 1
+                    const porcentaje = (evento.count / maxCount) * 100
+                    const colores = ['emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'purple', 'pink']
+                    const color = colores[index % colores.length]
+                    
+                    return (
+                      <div key={evento.evento} className="group">
+                        <div className="flex items-center gap-4 mb-2">
+                          <span className={`flex items-center justify-center w-10 h-10 bg-gradient-to-br from-${color}-500 to-${color}-700 text-white rounded-full text-lg font-bold shadow-md flex-shrink-0`}>
+                            {index + 1}
+                          </span>
+                          <div className="flex-1 flex items-center justify-between">
+                            <span className="text-base font-semibold text-gray-900">{evento.evento}</span>
+                            <span className="text-xl font-bold text-gray-900 ml-4">{evento.count.toLocaleString()}</span>
+                          </div>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                          <div
+                            className={`bg-gradient-to-r from-${color}-500 to-${color}-600 h-4 rounded-full transition-all duration-500 group-hover:from-${color}-600 group-hover:to-${color}-700 flex items-center justify-end pr-2`}
+                            style={{ width: `${porcentaje}%` }}
+                          >
+                            <span className="text-white text-xs font-bold">{porcentaje.toFixed(0)}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
