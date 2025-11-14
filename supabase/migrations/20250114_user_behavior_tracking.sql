@@ -14,34 +14,34 @@ CREATE TABLE IF NOT EXISTS public.user_sessions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   session_id TEXT NOT NULL, -- ID de sesión del navegador
-  
+
   -- Datos de inicio de sesión
   started_at TIMESTAMPTZ DEFAULT NOW(),
   ended_at TIMESTAMPTZ,
   duration_seconds INT, -- Duración calculada
-  
+
   -- Datos del dispositivo y navegador
   device_type TEXT CHECK (device_type IN ('desktop', 'mobile', 'tablet')),
   browser TEXT,
   os TEXT,
   screen_resolution TEXT,
-  
+
   -- Datos de ubicación (si está disponible)
   ip_address INET,
   country TEXT,
   city TEXT,
-  
+
   -- Métricas de actividad en la sesión
   pages_viewed INT DEFAULT 0,
   areas_viewed INT DEFAULT 0,
   searches_performed INT DEFAULT 0,
   routes_calculated INT DEFAULT 0,
   interactions_count INT DEFAULT 0,
-  
+
   -- Estado
   is_active BOOLEAN DEFAULT true,
   last_activity_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS public.user_interactions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   session_id UUID REFERENCES public.user_sessions(id) ON DELETE CASCADE,
-  
+
   -- Tipo de evento
   event_type TEXT NOT NULL CHECK (event_type IN (
     'page_view',           -- Vista de página
@@ -94,16 +94,16 @@ CREATE TABLE IF NOT EXISTS public.user_interactions (
     'error',               -- Error ocurrido
     'other'                -- Otro evento
   )),
-  
+
   -- Detalles del evento
   event_data JSONB DEFAULT '{}', -- Datos adicionales del evento
   page_url TEXT,                 -- URL donde ocurrió
   page_title TEXT,               -- Título de la página
-  
+
   -- Referencias a entidades relacionadas
   area_id UUID REFERENCES public.areas(id) ON DELETE SET NULL,
   ruta_id UUID REFERENCES public.rutas(id) ON DELETE SET NULL,
-  
+
   -- Metadata
   timestamp TIMESTAMPTZ DEFAULT NOW(),
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS public.daily_user_stats (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   stat_date DATE NOT NULL,
-  
+
   -- Métricas de actividad
   sessions_count INT DEFAULT 0,
   total_duration_seconds INT DEFAULT 0,
@@ -140,14 +140,14 @@ CREATE TABLE IF NOT EXISTS public.daily_user_stats (
   visits_registered INT DEFAULT 0,
   ratings_given INT DEFAULT 0,
   chatbot_messages INT DEFAULT 0,
-  
+
   -- Primera y última actividad del día
   first_activity_at TIMESTAMPTZ,
   last_activity_at TIMESTAMPTZ,
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   UNIQUE(user_id, stat_date)
 );
 
@@ -164,17 +164,17 @@ CREATE INDEX IF NOT EXISTS idx_daily_user_stats_date ON public.daily_user_stats 
 CREATE TABLE IF NOT EXISTS public.platform_daily_stats (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   stat_date DATE NOT NULL UNIQUE,
-  
+
   -- Usuarios
   total_users INT DEFAULT 0,
   new_users INT DEFAULT 0,
   active_users INT DEFAULT 0,          -- Usuarios con al menos 1 interacción
   returning_users INT DEFAULT 0,        -- Usuarios que ya habían visitado antes
-  
+
   -- Sesiones
   total_sessions INT DEFAULT 0,
   avg_session_duration_seconds INT DEFAULT 0,
-  
+
   -- Actividad
   total_page_views INT DEFAULT 0,
   total_area_views INT DEFAULT 0,
@@ -185,16 +185,16 @@ CREATE TABLE IF NOT EXISTS public.platform_daily_stats (
   total_visits_registered INT DEFAULT 0,
   total_ratings_given INT DEFAULT 0,
   total_chatbot_messages INT DEFAULT 0,
-  
+
   -- Engagement
   avg_pages_per_session DECIMAL(10,2) DEFAULT 0,
   bounce_rate DECIMAL(5,2) DEFAULT 0,  -- % sesiones con 1 sola página
-  
+
   -- Dispositivos
   desktop_users INT DEFAULT 0,
   mobile_users INT DEFAULT 0,
   tablet_users INT DEFAULT 0,
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -343,4 +343,3 @@ COMMENT ON TABLE public.user_sessions IS 'Registra cada sesión de usuario con m
 COMMENT ON TABLE public.user_interactions IS 'Registra cada evento/interacción del usuario en la plataforma';
 COMMENT ON TABLE public.daily_user_stats IS 'Estadísticas agregadas por usuario por día para queries rápidas';
 COMMENT ON TABLE public.platform_daily_stats IS 'Estadísticas globales de la plataforma agregadas por día';
-

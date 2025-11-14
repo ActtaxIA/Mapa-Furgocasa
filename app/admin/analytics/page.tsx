@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
 import type { Area } from '@/types/database.types'
-import { 
+import {
   MapPinIcon,
   UserGroupIcon,
   EyeIcon,
@@ -34,65 +34,65 @@ interface AnalyticsData {
   promedioRating: number
   distribucionPrecios: { rango: string; count: number }[]
   crecimientoMensual: { mes: string; nuevas: number }[]
-  
+
   // Métricas de rutas
   totalRutas: number
   distanciaTotal: number
   totalInteraccionesIA: number
-  
+
   // Métricas temporales - Rutas
   rutasHoy: number
   rutasEstaSemana: number
   rutasEsteMes: number
   rutasPorDia: { fecha: string; count: number }[]
   rutasPorMes: { mes: string; count: number; distancia: number }[]
-  
+
   // Métricas temporales - Visitas de usuarios
   visitasHoy: number
   visitasEstaSemana: number
   visitasEsteMes: number
   visitasPorDia: { fecha: string; count: number }[]
   visitasPorMes: { mes: string; count: number }[]
-  
+
   // Métricas temporales - Valoraciones
   valoracionesHoy: number
   valoracionesEstaSemana: number
   valoracionesEsteMes: number
   valoracionesTotales: number
   valoracionesPorDia: { fecha: string; count: number; promedio: number }[]
-  
+
   // Métricas temporales - Favoritos
   favoritosHoy: number
   favoritosEstaSemana: number
   favoritosEsteMes: number
   favoritosTotales: number
   favoritosPorDia: { fecha: string; count: number }[]
-  
+
   // Métricas temporales - Usuarios
   usuariosNuevosHoy: number
   usuariosNuevosEstaSemana: number
   usuariosNuevosEsteMes: number
   crecimientoUsuariosMensual: { mes: string; nuevos: number }[]
-  
+
   // Métricas temporales - Chatbot IA
   interaccionesIAHoy: number
   interaccionesIAEstaSemana: number
   interaccionesIAEsteMes: number
   interaccionesIAPorDia: { fecha: string; count: number }[]
-  
+
   // Top áreas más visitadas
   areasMasVisitadas: { area: any; visitas: number }[]
   areasMasValoradas: { area: any; valoraciones: number; promedio: number }[]
   areasEnMasFavoritos: { area: any; favoritos: number }[]
-  
+
   // ========== NUEVAS MÉTRICAS DE COMPORTAMIENTO DE USUARIO ==========
-  
+
   // Usuarios Activos
   usuariosActivosHoy: number
   usuariosActivosEstaSemana: number
   usuariosActivosEsteMes: number
   usuariosActivosPorDia: { fecha: string; count: number }[]
-  
+
   // Engagement
   promedioTiempoSesion: number // en minutos
   promedioPaginasPorSesion: number
@@ -100,34 +100,34 @@ interface AnalyticsData {
   sesionesTotales: number
   sesionesHoy: number
   sesionesEstaSemana: number
-  
+
   // Dispositivos
   usuariosPorDispositivo: { tipo: string; count: number; porcentaje: number }[]
-  
+
   // Vehículos
   totalVehiculosRegistrados: number
   vehiculosRegistradosHoy: number
   vehiculosRegistradosEstaSemana: number
   vehiculosRegistradosEsteMes: number
   vehiculosPorMes: { mes: string; count: number }[]
-  
+
   // Conversión y Retención
   tasaConversionRegistro: number // % de visitantes que se registran
   usuariosRecurrentes: number    // usuarios que vuelven
   usuariosNuevos: number         // usuarios que visitan por primera vez
-  
+
   // Acciones por tipo
   busquedasTotales: number
   busquedasHoy: number
   busquedasEstaSemana: number
-  
+
   vistasAreasTotal: number
   vistasAreasHoy: number
   vistasAreasEstaSemana: number
-  
+
   // Actividad más popular por hora del día
   actividadPorHora: { hora: number; interacciones: number }[]
-  
+
   // Eventos más comunes
   eventosMasComunes: { evento: string; count: number }[]
 }
@@ -144,7 +144,7 @@ export default function AdminAnalyticsPage() {
   const checkAdminAndLoadAnalytics = async () => {
     const supabase = createClient()
     const { data: { session } } = await supabase.auth.getSession()
-    
+
     if (!session?.user || !session.user.user_metadata?.is_admin) {
       router.push('/mapa')
       return
@@ -156,7 +156,7 @@ export default function AdminAnalyticsPage() {
   const loadAnalytics = async () => {
     try {
       const supabase = createClient()
-      
+
       // Obtener todas las áreas (con paginación)
       const allAreas: Area[] = []
       const pageSize = 1000
@@ -208,7 +208,7 @@ export default function AdminAnalyticsPage() {
       const { data: rutas, error: rutasError } = await supabase
         .from('rutas')
         .select('*')
-      
+
       const totalRutas = rutas?.length || 0
       const distanciaTotal = rutas?.reduce((sum, r) => sum + (r.distancia_km || 0), 0) || 0
       console.log(`✅ ${totalRutas} rutas, ${distanciaTotal.toFixed(0)} km totales`)
@@ -218,31 +218,31 @@ export default function AdminAnalyticsPage() {
       const { data: mensajes, error: mensajesError } = await supabase
         .from('chatbot_mensajes')
         .select('id, created_at')
-      
+
       const totalInteraccionesIA = mensajes?.length || 0
       console.log(`✅ ${totalInteraccionesIA} interacciones con IA`)
 
       // ========== MÉTRICAS TEMPORALES ==========
       console.log('📊 Calculando métricas temporales...')
-      
+
       const ahora = new Date()
       const inicioDia = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate())
       const inicioSemana = new Date(ahora)
       inicioSemana.setDate(ahora.getDate() - ahora.getDay())
       inicioSemana.setHours(0, 0, 0, 0)
       const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1)
-      
+
       // Función auxiliar para verificar si una fecha está en un rango
       const estaEnRango = (fecha: string | Date, inicio: Date) => {
         const f = new Date(fecha)
         return f >= inicio
       }
-      
+
       // ========== MÉTRICAS DE RUTAS TEMPORALES ==========
       const rutasHoy = rutas?.filter(r => estaEnRango(r.created_at, inicioDia)).length || 0
       const rutasEstaSemana = rutas?.filter(r => estaEnRango(r.created_at, inicioSemana)).length || 0
       const rutasEsteMes = rutas?.filter(r => estaEnRango(r.created_at, inicioMes)).length || 0
-      
+
       // Rutas por día (últimos 30 días)
       const rutasPorDia: { fecha: string; count: number }[] = []
       for (let i = 29; i >= 0; i--) {
@@ -251,50 +251,50 @@ export default function AdminAnalyticsPage() {
         fecha.setHours(0, 0, 0, 0)
         const fechaSiguiente = new Date(fecha)
         fechaSiguiente.setDate(fecha.getDate() + 1)
-        
+
         const count = rutas?.filter(r => {
           const f = new Date(r.created_at)
           return f >= fecha && f < fechaSiguiente
         }).length || 0
-        
+
         rutasPorDia.push({
           fecha: fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
           count
         })
       }
-      
+
       // Rutas por mes (últimos 12 meses)
       const rutasPorMes: { mes: string; count: number; distancia: number }[] = []
       for (let i = 11; i >= 0; i--) {
         const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
         const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
-        
+
         const rutasDelMes = rutas?.filter(r => {
           const f = new Date(r.created_at)
           return f.getFullYear() === fechaMes.getFullYear() &&
                  f.getMonth() === fechaMes.getMonth()
         }) || []
-        
+
         const distanciaMes = rutasDelMes.reduce((sum, r) => sum + (r.distancia_km || 0), 0)
-        
+
         rutasPorMes.push({
           mes: mesNombre,
           count: rutasDelMes.length,
           distancia: distanciaMes
         })
       }
-      
+
       console.log(`✅ Rutas: ${rutasHoy} hoy, ${rutasEstaSemana} esta semana, ${rutasEsteMes} este mes`)
-      
+
       // ========== MÉTRICAS DE VISITAS TEMPORALES ==========
       const { data: visitas } = await supabase
         .from('visitas')
         .select('id, created_at, area_id')
-      
+
       const visitasHoy = visitas?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
       const visitasEstaSemana = visitas?.filter(v => estaEnRango(v.created_at, inicioSemana)).length || 0
       const visitasEsteMes = visitas?.filter(v => estaEnRango(v.created_at, inicioMes)).length || 0
-      
+
       // Visitas por día (últimos 30 días)
       const visitasPorDia: { fecha: string; count: number }[] = []
       for (let i = 29; i >= 0; i--) {
@@ -303,45 +303,45 @@ export default function AdminAnalyticsPage() {
         fecha.setHours(0, 0, 0, 0)
         const fechaSiguiente = new Date(fecha)
         fechaSiguiente.setDate(fecha.getDate() + 1)
-        
+
         const count = visitas?.filter(v => {
           const f = new Date(v.created_at)
           return f >= fecha && f < fechaSiguiente
         }).length || 0
-        
+
         visitasPorDia.push({
           fecha: fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
           count
         })
       }
-      
+
       // Visitas por mes (últimos 12 meses)
       const visitasPorMes: { mes: string; count: number }[] = []
       for (let i = 11; i >= 0; i--) {
         const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
         const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
-        
+
         const count = visitas?.filter(v => {
           const f = new Date(v.created_at)
           return f.getFullYear() === fechaMes.getFullYear() &&
                  f.getMonth() === fechaMes.getMonth()
         }).length || 0
-        
+
         visitasPorMes.push({ mes: mesNombre, count })
       }
-      
+
       console.log(`✅ Visitas: ${visitasHoy} hoy, ${visitasEstaSemana} esta semana, ${visitasEsteMes} este mes`)
-      
+
       // ========== MÉTRICAS DE VALORACIONES TEMPORALES ==========
       const { data: valoraciones } = await supabase
         .from('valoraciones')
         .select('id, created_at, rating')
-      
+
       const valoracionesTotales = valoraciones?.length || 0
       const valoracionesHoy = valoraciones?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
       const valoracionesEstaSemana = valoraciones?.filter(v => estaEnRango(v.created_at, inicioSemana)).length || 0
       const valoracionesEsteMes = valoraciones?.filter(v => estaEnRango(v.created_at, inicioMes)).length || 0
-      
+
       // Valoraciones por día (últimos 30 días)
       const valoracionesPorDia: { fecha: string; count: number; promedio: number }[] = []
       for (let i = 29; i >= 0; i--) {
@@ -350,35 +350,35 @@ export default function AdminAnalyticsPage() {
         fecha.setHours(0, 0, 0, 0)
         const fechaSiguiente = new Date(fecha)
         fechaSiguiente.setDate(fecha.getDate() + 1)
-        
+
         const valoracionesDia = valoraciones?.filter(v => {
           const f = new Date(v.created_at)
           return f >= fecha && f < fechaSiguiente
         }) || []
-        
+
         const promedio = valoracionesDia.length > 0
           ? valoracionesDia.reduce((sum, v) => sum + v.rating, 0) / valoracionesDia.length
           : 0
-        
+
         valoracionesPorDia.push({
           fecha: fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
           count: valoracionesDia.length,
           promedio: parseFloat(promedio.toFixed(1))
         })
       }
-      
+
       console.log(`✅ Valoraciones: ${valoracionesHoy} hoy, ${valoracionesEstaSemana} esta semana, ${valoracionesEsteMes} este mes`)
-      
+
       // ========== MÉTRICAS DE FAVORITOS TEMPORALES ==========
       const { data: favoritos } = await supabase
         .from('favoritos')
         .select('id, created_at, area_id')
-      
+
       const favoritosTotales = favoritos?.length || 0
       const favoritosHoy = favoritos?.filter(f => estaEnRango(f.created_at, inicioDia)).length || 0
       const favoritosEstaSemana = favoritos?.filter(f => estaEnRango(f.created_at, inicioSemana)).length || 0
       const favoritosEsteMes = favoritos?.filter(f => estaEnRango(f.created_at, inicioMes)).length || 0
-      
+
       // Favoritos por día (últimos 30 días)
       const favoritosPorDia: { fecha: string; count: number }[] = []
       for (let i = 29; i >= 0; i--) {
@@ -387,74 +387,74 @@ export default function AdminAnalyticsPage() {
         fecha.setHours(0, 0, 0, 0)
         const fechaSiguiente = new Date(fecha)
         fechaSiguiente.setDate(fecha.getDate() + 1)
-        
+
         const count = favoritos?.filter(f => {
           const fec = new Date(f.created_at)
           return fec >= fecha && fec < fechaSiguiente
         }).length || 0
-        
+
         favoritosPorDia.push({
           fecha: fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
           count
         })
       }
-      
+
       console.log(`✅ Favoritos: ${favoritosHoy} hoy, ${favoritosEstaSemana} esta semana, ${favoritosEsteMes} este mes`)
-      
+
       // ========== MÉTRICAS DE USUARIOS NUEVOS ==========
       // Nota: Esto requerirá obtener los usuarios desde la API con metadata
       let usuariosNuevosHoy = 0
       let usuariosNuevosEstaSemana = 0
       let usuariosNuevosEsteMes = 0
       let crecimientoUsuariosMensual: { mes: string; nuevos: number }[] = []
-      
+
       try {
         const usersDetailResponse = await fetch(`/api/admin/users?t=${Date.now()}`, {
           cache: 'no-store'
         })
         const usersDetailData = await usersDetailResponse.json()
-        
+
         if (usersDetailData.users && Array.isArray(usersDetailData.users)) {
           const usuarios = usersDetailData.users
-          
-          usuariosNuevosHoy = usuarios.filter((u: any) => 
+
+          usuariosNuevosHoy = usuarios.filter((u: any) =>
             u.created_at && estaEnRango(u.created_at, inicioDia)
           ).length
-          
-          usuariosNuevosEstaSemana = usuarios.filter((u: any) => 
+
+          usuariosNuevosEstaSemana = usuarios.filter((u: any) =>
             u.created_at && estaEnRango(u.created_at, inicioSemana)
           ).length
-          
-          usuariosNuevosEsteMes = usuarios.filter((u: any) => 
+
+          usuariosNuevosEsteMes = usuarios.filter((u: any) =>
             u.created_at && estaEnRango(u.created_at, inicioMes)
           ).length
-          
+
           // Crecimiento mensual de usuarios (últimos 12 meses)
           for (let i = 11; i >= 0; i--) {
             const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
             const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
-            
+
             const nuevos = usuarios.filter((u: any) => {
               if (!u.created_at) return false
               const f = new Date(u.created_at)
               return f.getFullYear() === fechaMes.getFullYear() &&
                      f.getMonth() === fechaMes.getMonth()
             }).length
-            
+
             crecimientoUsuariosMensual.push({ mes: mesNombre, nuevos })
           }
         }
-        
+
         console.log(`✅ Usuarios nuevos: ${usuariosNuevosHoy} hoy, ${usuariosNuevosEstaSemana} esta semana, ${usuariosNuevosEsteMes} este mes`)
       } catch (error) {
         console.error('⚠️ Error calculando usuarios nuevos:', error)
       }
-      
+
       // ========== MÉTRICAS DE CHATBOT IA TEMPORALES ==========
       const interaccionesIAHoy = mensajes?.filter(m => estaEnRango(m.created_at, inicioDia)).length || 0
       const interaccionesIAEstaSemana = mensajes?.filter(m => estaEnRango(m.created_at, inicioSemana)).length || 0
       const interaccionesIAEsteMes = mensajes?.filter(m => estaEnRango(m.created_at, inicioMes)).length || 0
-      
+
       // Interacciones IA por día (últimos 30 días)
       const interaccionesIAPorDia: { fecha: string; count: number }[] = []
       for (let i = 29; i >= 0; i--) {
@@ -463,27 +463,27 @@ export default function AdminAnalyticsPage() {
         fecha.setHours(0, 0, 0, 0)
         const fechaSiguiente = new Date(fecha)
         fechaSiguiente.setDate(fecha.getDate() + 1)
-        
+
         const count = mensajes?.filter(m => {
           const f = new Date(m.created_at)
           return f >= fecha && f < fechaSiguiente
         }).length || 0
-        
+
         interaccionesIAPorDia.push({
           fecha: fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
           count
         })
       }
-      
+
       console.log(`✅ IA: ${interaccionesIAHoy} interacciones hoy, ${interaccionesIAEstaSemana} esta semana`)
-      
+
       // ========== TOP ÁREAS MÁS VISITADAS ==========
       const areasPorVisitas = visitas?.reduce((acc: any, visita) => {
         const areaId = visita.area_id
         acc[areaId] = (acc[areaId] || 0) + 1
         return acc
       }, {}) || {}
-      
+
       const areasMasVisitadas = Object.entries(areasPorVisitas)
         .map(([areaId, count]) => {
           const area = areas?.find(a => a.id === areaId)
@@ -492,7 +492,7 @@ export default function AdminAnalyticsPage() {
         .filter(item => item.area)
         .sort((a, b) => b.visitas - a.visitas)
         .slice(0, 10)
-      
+
       // ========== TOP ÁREAS MÁS VALORADAS ==========
       const areasPorValoraciones = valoraciones?.reduce((acc: any, valoracion) => {
         const areaId = valoracion.area_id
@@ -503,7 +503,7 @@ export default function AdminAnalyticsPage() {
         acc[areaId].sumRating += valoracion.rating
         return acc
       }, {}) || {}
-      
+
       const areasMasValoradas = Object.entries(areasPorValoraciones)
         .map(([areaId, data]: [string, any]) => {
           const area = areas?.find(a => a.id === areaId)
@@ -516,14 +516,14 @@ export default function AdminAnalyticsPage() {
         .filter(item => item.area)
         .sort((a, b) => b.valoraciones - a.valoraciones)
         .slice(0, 10)
-      
+
       // ========== TOP ÁREAS EN MÁS FAVORITOS ==========
       const areasPorFavoritos = favoritos?.reduce((acc: any, favorito) => {
         const areaId = favorito.area_id
         acc[areaId] = (acc[areaId] || 0) + 1
         return acc
       }, {}) || {}
-      
+
       const areasEnMasFavoritos = Object.entries(areasPorFavoritos)
         .map(([areaId, count]) => {
           const area = areas?.find(a => a.id === areaId)
@@ -532,37 +532,37 @@ export default function AdminAnalyticsPage() {
         .filter(item => item.area)
         .sort((a, b) => b.favoritos - a.favoritos)
         .slice(0, 10)
-      
+
       console.log('✅ Tops calculados: áreas más visitadas, valoradas y favoritas')
 
       // ========== MÉTRICAS DE COMPORTAMIENTO DE USUARIO ==========
       console.log('👤 Calculando métricas de comportamiento de usuario...')
-      
+
       // ========== USUARIOS ACTIVOS ==========
       // Un usuario activo es aquel que tiene al menos una interacción (visita, valoración, favorito, ruta)
       const usuariosConActividad = new Set<string>()
-      
+
       visitas?.forEach(v => {if (v.user_id) usuariosConActividad.add(v.user_id)})
       valoraciones?.forEach(v => {if (v.user_id) usuariosConActividad.add(v.user_id)})
       favoritos?.forEach(f => {if (f.user_id) usuariosConActividad.add(f.user_id)})
       rutas?.forEach(r => {if (r.user_id) usuariosConActividad.add(r.user_id)})
-      
+
       // Usuarios activos por período
       const usuariosActivosHoySet = new Set<string>()
       const usuariosActivosSemanaSet = new Set<string>()
       const usuariosActivosMesSet = new Set<string>()
-      
+
       ;[...visitas || [], ...valoraciones || [], ...favoritos || [], ...rutas || []].forEach((item: any) => {
         if (!item.user_id || !item.created_at) return
         if (estaEnRango(item.created_at, inicioDia)) usuariosActivosHoySet.add(item.user_id)
         if (estaEnRango(item.created_at, inicioSemana)) usuariosActivosSemanaSet.add(item.user_id)
         if (estaEnRango(item.created_at, inicioMes)) usuariosActivosMesSet.add(item.user_id)
       })
-      
+
       const usuariosActivosHoy = usuariosActivosHoySet.size
       const usuariosActivosEstaSemana = usuariosActivosSemanaSet.size
       const usuariosActivosEsteMes = usuariosActivosMesSet.size
-      
+
       // Usuarios activos por día (últimos 30 días)
       const usuariosActivosPorDia: { fecha: string; count: number }[] = []
       for (let i = 29; i >= 0; i--) {
@@ -571,7 +571,7 @@ export default function AdminAnalyticsPage() {
         fecha.setHours(0, 0, 0, 0)
         const fechaSiguiente = new Date(fecha)
         fechaSiguiente.setDate(fecha.getDate() + 1)
-        
+
         const usuariosDia = new Set<string>()
         ;[...visitas || [], ...valoraciones || [], ...favoritos || [], ...rutas || []].forEach((item: any) => {
           if (!item.user_id || !item.created_at) return
@@ -580,72 +580,72 @@ export default function AdminAnalyticsPage() {
             usuariosDia.add(item.user_id)
           }
         })
-        
+
         usuariosActivosPorDia.push({
           fecha: fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
           count: usuariosDia.size
         })
       }
-      
+
       console.log(`✅ Usuarios activos: ${usuariosActivosHoy} hoy, ${usuariosActivosEstaSemana} esta semana`)
-      
+
       // ========== MÉTRICAS DE VEHÍCULOS ==========
       const { data: vehiculos } = await supabase
         .from('vehiculos_registrados')
         .select('id, created_at, user_id')
-      
+
       const totalVehiculosRegistrados = vehiculos?.length || 0
       const vehiculosRegistradosHoy = vehiculos?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
       const vehiculosRegistradosEstaSemana = vehiculos?.filter(v => estaEnRango(v.created_at, inicioSemana)).length || 0
       const vehiculosRegistradosEsteMes = vehiculos?.filter(v => estaEnRango(v.created_at, inicioMes)).length || 0
-      
+
       // Vehículos por mes (últimos 12 meses)
       const vehiculosPorMes: { mes: string; count: number }[] = []
       for (let i = 11; i >= 0; i--) {
         const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
         const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
-        
+
         const count = vehiculos?.filter(v => {
           const f = new Date(v.created_at)
           return f.getFullYear() === fechaMes.getFullYear() &&
                  f.getMonth() === fechaMes.getMonth()
         }).length || 0
-        
+
         vehiculosPorMes.push({ mes: mesNombre, count })
       }
-      
+
       console.log(`✅ Vehículos: ${totalVehiculosRegistrados} total, ${vehiculosRegistradosHoy} hoy`)
-      
+
       // ========== MÉTRICAS DE ENGAGEMENT ==========
       // Como aún no tenemos la tabla user_sessions implementada, calculamos métricas estimadas
-      
+
       // Estimación de sesiones basada en actividad
       // Asumimos que cada conjunto de acciones en un período corto es una sesión
       const sesionesTotales = totalRutas + visitasEsteMes + valoracionesTotales + favoritosTotales
       const sesionesHoy = rutasHoy + visitasHoy + valoracionesHoy + favoritosHoy
       const sesionesEstaSemana = rutasEstaSemana + visitasEstaSemana + valoracionesEstaSemana + favoritosEstaSemana
-      
+
       // Promedio de tiempo de sesión (estimado en minutos)
       const promedioTiempoSesion = 8.5 // Valor estimado, se calculará real cuando tengamos tracking
-      
+
       // Promedio de páginas por sesión (estimado)
       const promedioPaginasPorSesion = 4.2 // Valor estimado
-      
+
       // Tasa de rebote (estimado en %)
       const tasaRebote = 32 // Valor estimado
-      
+
       // ========== BÚSQUEDAS Y VISTAS DE ÁREAS ==========
       // Estas métricas se calcularán cuando implementemos el tracking de user_interactions
       // Por ahora usamos valores de proxy basados en otras métricas
-      
+
       const busquedasTotales = totalRutas * 2 // Estimamos 2 búsquedas por ruta
       const busquedasHoy = rutasHoy * 2
       const busquedasEstaSemana = rutasEstaSemana * 2
-      
+
       const vistasAreasTotal = favoritos ? favoritosTotales * 5 : 0 // Estimamos 5 vistas por favorito
       const vistasAreasHoy = favoritosHoy * 5
       const vistasAreasEstaSemana = favoritosEstaSemana * 5
-      
+
       // ========== CONVERSIÓN Y RETENCIÓN ==========
       // Usuarios recurrentes: usuarios que tienen más de 1 actividad
       const actividadesPorUsuario = new Map<string, number>()
@@ -653,15 +653,15 @@ export default function AdminAnalyticsPage() {
         if (!item.user_id) return
         actividadesPorUsuario.set(item.user_id, (actividadesPorUsuario.get(item.user_id) || 0) + 1)
       })
-      
+
       const usuariosRecurrentes = Array.from(actividadesPorUsuario.values()).filter(count => count > 1).length
       const usuariosNuevos = totalUsers - usuariosRecurrentes
-      
+
       // Tasa de conversión (% de usuarios que realizan al menos 1 acción)
-      const tasaConversionRegistro = totalUsers > 0 
-        ? ((usuariosConActividad.size / totalUsers) * 100) 
+      const tasaConversionRegistro = totalUsers > 0
+        ? ((usuariosConActividad.size / totalUsers) * 100)
         : 0
-      
+
       // ========== DISPOSITIVOS ==========
       // Distribución de dispositivos (estimada, se calculará real con tracking)
       const usuariosPorDispositivo = [
@@ -669,7 +669,7 @@ export default function AdminAnalyticsPage() {
         { tipo: 'Mobile', count: Math.floor(totalUsers * 0.50), porcentaje: 50 },
         { tipo: 'Tablet', count: Math.floor(totalUsers * 0.05), porcentaje: 5 }
       ]
-      
+
       // ========== ACTIVIDAD POR HORA ==========
       // Distribución de actividad por hora del día (estimada)
       const actividadPorHora: { hora: number; interacciones: number }[] = []
@@ -680,7 +680,7 @@ export default function AdminAnalyticsPage() {
           interacciones: Math.floor((sesionesTotales / 24) * (distribucionHoraria[h] / 5))
         })
       }
-      
+
       // ========== EVENTOS MÁS COMUNES ==========
       const eventosMasComunes = [
         { evento: 'Búsqueda de áreas', count: busquedasTotales },
@@ -692,7 +692,7 @@ export default function AdminAnalyticsPage() {
         { evento: 'Mensaje chatbot', count: totalInteraccionesIA },
         { evento: 'Registrar vehículo', count: totalVehiculosRegistrados }
       ].sort((a, b) => b.count - a.count)
-      
+
       console.log('✅ Métricas de comportamiento calculadas')
 
       // ========== ESTADÍSTICAS POR PAÍS ==========
@@ -704,8 +704,8 @@ export default function AdminAnalyticsPage() {
 
       const totalPaises = Object.keys(areasPorPais).length
       const areasPorPaisArray = Object.entries(areasPorPais || {})
-        .map(([pais, count]) => ({ 
-          pais, 
+        .map(([pais, count]) => ({
+          pais,
           count: count as number,
           porcentaje: ((count as number) / areas.length) * 100
         }))
@@ -781,14 +781,14 @@ export default function AdminAnalyticsPage() {
       // ========== ÁREAS CON DESCRIPCIÓN E IMÁGENES ==========
       const DESCRIPCION_MIN_LENGTH = 200
       const PLACEHOLDER_TEXT = 'Área encontrada mediante búsqueda en Google Maps'
-      
-      const areasConDescripcion = areas?.filter(a => 
-        a.descripcion && 
-        a.descripcion.length >= DESCRIPCION_MIN_LENGTH && 
+
+      const areasConDescripcion = areas?.filter(a =>
+        a.descripcion &&
+        a.descripcion.length >= DESCRIPCION_MIN_LENGTH &&
         !a.descripcion.includes(PLACEHOLDER_TEXT)
       ).length || 0
 
-      const areasConImagenes = areas?.filter(a => 
+      const areasConImagenes = areas?.filter(a =>
         a.foto_principal || (a.fotos_urls && Array.isArray(a.fotos_urls) && a.fotos_urls.length > 0)
       ).length || 0
 
@@ -796,18 +796,18 @@ export default function AdminAnalyticsPage() {
       const ahora = new Date()
       const mesesAtras = 6
       const crecimientoMensual = []
-      
+
       for (let i = mesesAtras - 1; i >= 0; i--) {
         const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
         const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
-        
+
         const nuevasAreasMes = areas?.filter(a => {
           if (!a.created_at) return false
           const fechaCreacion = new Date(a.created_at)
           return fechaCreacion.getFullYear() === fechaMes.getFullYear() &&
                  fechaCreacion.getMonth() === fechaMes.getMonth()
         }).length || 0
-        
+
         crecimientoMensual.push({ mes: mesNombre, nuevas: nuevasAreasMes })
       }
 
@@ -844,60 +844,60 @@ export default function AdminAnalyticsPage() {
           { rango: '21€+', count: distribucionPrecios.alto },
         ],
         crecimientoMensual,
-        
+
         // Métricas temporales - Rutas
         rutasHoy,
         rutasEstaSemana,
         rutasEsteMes,
         rutasPorDia,
         rutasPorMes,
-        
+
         // Métricas temporales - Visitas
         visitasHoy,
         visitasEstaSemana,
         visitasEsteMes,
         visitasPorDia,
         visitasPorMes,
-        
+
         // Métricas temporales - Valoraciones
         valoracionesHoy,
         valoracionesEstaSemana,
         valoracionesEsteMes,
         valoracionesTotales,
         valoracionesPorDia,
-        
+
         // Métricas temporales - Favoritos
         favoritosHoy,
         favoritosEstaSemana,
         favoritosEsteMes,
         favoritosTotales,
         favoritosPorDia,
-        
+
         // Métricas temporales - Usuarios
         usuariosNuevosHoy,
         usuariosNuevosEstaSemana,
         usuariosNuevosEsteMes,
         crecimientoUsuariosMensual,
-        
+
         // Métricas temporales - Chatbot IA
         interaccionesIAHoy,
         interaccionesIAEstaSemana,
         interaccionesIAEsteMes,
         interaccionesIAPorDia,
-        
+
         // Top áreas
         areasMasVisitadas,
         areasMasValoradas,
         areasEnMasFavoritos,
-        
+
         // ========== NUEVAS MÉTRICAS DE COMPORTAMIENTO ==========
-        
+
         // Usuarios Activos
         usuariosActivosHoy,
         usuariosActivosEstaSemana,
         usuariosActivosEsteMes,
         usuariosActivosPorDia,
-        
+
         // Engagement
         promedioTiempoSesion,
         promedioPaginasPorSesion,
@@ -905,22 +905,22 @@ export default function AdminAnalyticsPage() {
         sesionesTotales,
         sesionesHoy,
         sesionesEstaSemana,
-        
+
         // Dispositivos
         usuariosPorDispositivo,
-        
+
         // Vehículos
         totalVehiculosRegistrados,
         vehiculosRegistradosHoy,
         vehiculosRegistradosEstaSemana,
         vehiculosRegistradosEsteMes,
         vehiculosPorMes,
-        
+
         // Conversión y Retención
         tasaConversionRegistro,
         usuariosRecurrentes,
         usuariosNuevos,
-        
+
         // Acciones
         busquedasTotales,
         busquedasHoy,
@@ -928,10 +928,10 @@ export default function AdminAnalyticsPage() {
         vistasAreasTotal,
         vistasAreasHoy,
         vistasAreasEstaSemana,
-        
+
         // Actividad por hora
         actividadPorHora,
-        
+
         // Eventos comunes
         eventosMasComunes
       })
@@ -979,7 +979,7 @@ export default function AdminAnalyticsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-3">
@@ -1149,7 +1149,7 @@ export default function AdminAnalyticsPage() {
                   <p className="text-4xl font-black text-indigo-900">{analytics.rutasHoy}</p>
                   <p className="text-xs text-indigo-600 mt-2">rutas planificadas</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-200">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-semibold text-blue-700">📆 Esta Semana</p>
@@ -1159,7 +1159,7 @@ export default function AdminAnalyticsPage() {
                     {analytics.rutasEstaSemana > 0 ? `+${((analytics.rutasEstaSemana / analytics.totalRutas) * 100).toFixed(1)}% del total` : 'Sin rutas'}
                   </p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl p-6 border-2 border-sky-200">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-semibold text-sky-700">📅 Este Mes</p>
@@ -1189,13 +1189,13 @@ export default function AdminAnalyticsPage() {
                   <p className="text-4xl font-black text-green-900">{analytics.visitasHoy}</p>
                   <p className="text-xs text-green-600 mt-2">visitas registradas</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border-2 border-emerald-200">
                   <p className="text-sm font-semibold text-emerald-700 mb-2">📆 Esta Semana</p>
                   <p className="text-4xl font-black text-emerald-900">{analytics.visitasEstaSemana}</p>
                   <p className="text-xs text-emerald-600 mt-2">visitas en 7 días</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 border-2 border-teal-200">
                   <p className="text-sm font-semibold text-teal-700 mb-2">📅 Este Mes</p>
                   <p className="text-4xl font-black text-teal-900">{analytics.visitasEsteMes}</p>
@@ -1218,7 +1218,7 @@ export default function AdminAnalyticsPage() {
                   <p className="text-4xl font-black text-gray-900">{analytics.valoracionesTotales}</p>
                   <p className="text-xs text-gray-600 mt-2">todas las valoraciones</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6 border-2 border-yellow-200">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-semibold text-yellow-700">📅 Hoy</p>
@@ -1227,13 +1227,13 @@ export default function AdminAnalyticsPage() {
                   <p className="text-4xl font-black text-yellow-900">{analytics.valoracionesHoy}</p>
                   <p className="text-xs text-yellow-600 mt-2">nuevas valoraciones</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border-2 border-amber-200">
                   <p className="text-sm font-semibold text-amber-700 mb-2">📆 Esta Semana</p>
                   <p className="text-4xl font-black text-amber-900">{analytics.valoracionesEstaSemana}</p>
                   <p className="text-xs text-amber-600 mt-2">valoraciones en 7 días</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border-2 border-orange-200">
                   <p className="text-sm font-semibold text-orange-700 mb-2">📅 Este Mes</p>
                   <p className="text-4xl font-black text-orange-900">{analytics.valoracionesEsteMes}</p>
@@ -1256,7 +1256,7 @@ export default function AdminAnalyticsPage() {
                   <p className="text-4xl font-black text-gray-900">{analytics.favoritosTotales}</p>
                   <p className="text-xs text-gray-600 mt-2">todos los favoritos</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-6 border-2 border-pink-200">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-semibold text-pink-700">📅 Hoy</p>
@@ -1265,13 +1265,13 @@ export default function AdminAnalyticsPage() {
                   <p className="text-4xl font-black text-pink-900">{analytics.favoritosHoy}</p>
                   <p className="text-xs text-pink-600 mt-2">nuevos favoritos</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-xl p-6 border-2 border-rose-200">
                   <p className="text-sm font-semibold text-rose-700 mb-2">📆 Esta Semana</p>
                   <p className="text-4xl font-black text-rose-900">{analytics.favoritosEstaSemana}</p>
                   <p className="text-xs text-rose-600 mt-2">favoritos en 7 días</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 border-2 border-red-200">
                   <p className="text-sm font-semibold text-red-700 mb-2">📅 Este Mes</p>
                   <p className="text-4xl font-black text-red-900">{analytics.favoritosEsteMes}</p>
@@ -1297,13 +1297,13 @@ export default function AdminAnalyticsPage() {
                   <p className="text-4xl font-black text-violet-900">{analytics.usuariosNuevosHoy}</p>
                   <p className="text-xs text-violet-600 mt-2">registros hoy</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border-2 border-purple-200">
                   <p className="text-sm font-semibold text-purple-700 mb-2">📆 Esta Semana</p>
                   <p className="text-4xl font-black text-purple-900">{analytics.usuariosNuevosEstaSemana}</p>
                   <p className="text-xs text-purple-600 mt-2">nuevos en 7 días</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-fuchsia-50 to-fuchsia-100 rounded-xl p-6 border-2 border-fuchsia-200">
                   <p className="text-sm font-semibold text-fuchsia-700 mb-2">📅 Este Mes</p>
                   <p className="text-4xl font-black text-fuchsia-900">{analytics.usuariosNuevosEsteMes}</p>
@@ -1329,13 +1329,13 @@ export default function AdminAnalyticsPage() {
                   <p className="text-4xl font-black text-purple-900">{analytics.interaccionesIAHoy}</p>
                   <p className="text-xs text-purple-600 mt-2">mensajes hoy</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 border-2 border-indigo-200">
                   <p className="text-sm font-semibold text-indigo-700 mb-2">📆 Esta Semana</p>
                   <p className="text-4xl font-black text-indigo-900">{analytics.interaccionesIAEstaSemana}</p>
                   <p className="text-xs text-indigo-600 mt-2">mensajes en 7 días</p>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-200">
                   <p className="text-sm font-semibold text-blue-700 mb-2">📅 Este Mes</p>
                   <p className="text-4xl font-black text-blue-900">{analytics.interaccionesIAEsteMes}</p>
@@ -1481,7 +1481,7 @@ export default function AdminAnalyticsPage() {
                   </div>
                 ))}
               </div>
-              
+
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-700">Áreas Gratis</span>
@@ -1510,8 +1510,8 @@ export default function AdminAnalyticsPage() {
                     {index + 1}
                   </span>
                   {area.foto_principal && (
-                    <img 
-                      src={area.foto_principal} 
+                    <img
+                      src={area.foto_principal}
                       alt={area.nombre}
                       className="w-16 h-16 rounded-lg object-cover"
                     />
@@ -1541,13 +1541,13 @@ export default function AdminAnalyticsPage() {
               {analytics.crecimientoMensual.map((mes, index) => {
                 const maxNuevas = Math.max(...analytics.crecimientoMensual.map(m => m.nuevas))
                 const alturaPorcentaje = maxNuevas > 0 ? (mes.nuevas / maxNuevas) * 100 : 0
-                
+
                 return (
                   <div key={index} className="flex-1 flex flex-col items-center gap-2">
                     <div className="text-center mb-2">
                       <p className="text-lg font-bold text-sky-600">{mes.nuevas}</p>
                     </div>
-                    <div 
+                    <div
                       className="w-full bg-gradient-to-t from-sky-500 to-sky-400 rounded-t-lg transition-all hover:from-sky-600 hover:to-sky-500"
                       style={{ height: `${Math.max(alturaPorcentaje, 5)}%` }}
                     />
@@ -1595,7 +1595,7 @@ export default function AdminAnalyticsPage() {
                           <p className="text-xs font-bold text-indigo-600">{dia.count}</p>
                         )}
                       </div>
-                      <div 
+                      <div
                         className="w-full bg-gradient-to-t from-indigo-500 to-indigo-400 rounded-t hover:from-indigo-600 hover:to-indigo-500 transition-all cursor-pointer"
                         style={{ height: `${Math.max(altura, 3)}%` }}
                         title={`${dia.fecha}: ${dia.count} rutas`}
@@ -1638,7 +1638,7 @@ export default function AdminAnalyticsPage() {
                           <p className="text-xs font-bold text-green-600">{dia.count}</p>
                         )}
                       </div>
-                      <div 
+                      <div
                         className="w-full bg-gradient-to-t from-green-500 to-green-400 rounded-t hover:from-green-600 hover:to-green-500 transition-all cursor-pointer"
                         style={{ height: `${Math.max(altura, 3)}%` }}
                         title={`${dia.fecha}: ${dia.count} visitas`}
@@ -1681,7 +1681,7 @@ export default function AdminAnalyticsPage() {
                           <p className="text-xs font-bold text-purple-600">{dia.count}</p>
                         )}
                       </div>
-                      <div 
+                      <div
                         className="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t hover:from-purple-600 hover:to-purple-500 transition-all cursor-pointer"
                         style={{ height: `${Math.max(altura, 3)}%` }}
                         title={`${dia.fecha}: ${dia.count} mensajes`}
@@ -1723,7 +1723,7 @@ export default function AdminAnalyticsPage() {
                         <p className="text-xs font-bold text-indigo-600">{mes.count}</p>
                         <p className="text-[9px] text-teal-600">{(mes.distancia / 1000).toFixed(0)}k km</p>
                       </div>
-                      <div 
+                      <div
                         className="w-full bg-gradient-to-t from-indigo-500 to-indigo-400 rounded-t hover:from-indigo-600 hover:to-indigo-500 transition-all cursor-pointer"
                         style={{ height: `${Math.max(altura, 5)}%` }}
                         title={`${mes.mes}: ${mes.count} rutas, ${mes.distancia.toFixed(0)} km`}
@@ -1768,7 +1768,7 @@ export default function AdminAnalyticsPage() {
                       <div className="text-center">
                         <p className="text-xs font-bold text-violet-600">{mes.nuevos}</p>
                       </div>
-                      <div 
+                      <div
                         className="w-full bg-gradient-to-t from-violet-500 to-violet-400 rounded-t hover:from-violet-600 hover:to-violet-500 transition-all cursor-pointer"
                         style={{ height: `${Math.max(altura, 5)}%` }}
                         title={`${mes.mes}: ${mes.nuevos} nuevos usuarios`}
@@ -1814,8 +1814,8 @@ export default function AdminAnalyticsPage() {
                       {index + 1}
                     </span>
                     {item.area.foto_principal && (
-                      <img 
-                        src={item.area.foto_principal} 
+                      <img
+                        src={item.area.foto_principal}
                         alt={item.area.nombre}
                         className="w-16 h-16 rounded-lg object-cover"
                       />
@@ -1848,8 +1848,8 @@ export default function AdminAnalyticsPage() {
                       {index + 1}
                     </span>
                     {item.area.foto_principal && (
-                      <img 
-                        src={item.area.foto_principal} 
+                      <img
+                        src={item.area.foto_principal}
                         alt={item.area.nombre}
                         className="w-16 h-16 rounded-lg object-cover"
                       />
@@ -1886,8 +1886,8 @@ export default function AdminAnalyticsPage() {
                       {index + 1}
                     </span>
                     {item.area.foto_principal && (
-                      <img 
-                        src={item.area.foto_principal} 
+                      <img
+                        src={item.area.foto_principal}
                         alt={item.area.nombre}
                         className="w-16 h-16 rounded-lg object-cover"
                       />
@@ -1921,4 +1921,3 @@ export default function AdminAnalyticsPage() {
     </div>
   )
 }
-
