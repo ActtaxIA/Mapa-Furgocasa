@@ -73,9 +73,10 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 - **Base de Datos:** Supabase (PostgreSQL)
 - **Autenticación:** Supabase Auth
 - **Mapas:** Google Maps API (con Directions API para rutas)
-- **IA:** OpenAI GPT-4o-mini (Chatbot + Function Calling)
-- **Búsqueda Web:** SerpAPI
+- **IA:** OpenAI GPT-4o-mini (Chatbot + Function Calling), GPT-4 (Valoraciones IA)
+- **Búsqueda Web:** SerpAPI (Enriquecimiento de áreas + Búsqueda de comparables para valoraciones)
 - **Lugares:** Google Places API
+- **Almacenamiento:** Supabase Storage (fotos directas)
 
 ---
 
@@ -444,14 +445,16 @@ NEW MAPA FURGOCASA/
 - **Gestión de Estado** - Marca como leído o cierra reportes
 - **Página Pública** - Cualquiera puede reportar accediendo al QR de tu vehículo
 
-### 💰 Valoración Automática ✨ **NUEVO v2.0**
-- **¿Por cuánto puedo vender?** - Respuesta instantánea con IA
-- **Algoritmo Propio** - Valoración basada en datos reales de mercado
-- **3 Rangos de Precio** - Venta rápida, precio justo, precio óptimo
-- **Comparativa con Mercado** - Analiza vehículos similares vendidos
-- **Nivel de Confianza** - Alta/Media/Baja según datos disponibles
-- **Desglose Detallado** - Ajustes por kilometraje, estado, averías
-- **Poner en Venta** - Activa tu vehículo con un clic
+### 🤖 Valoración con IA ✨ **NUEVO v2.1**
+- **Informe Profesional Generado por IA** - GPT-4 analiza tu vehículo y genera un informe detallado de 400-700 palabras
+- **3 Precios Estratégicos** - Precio de salida (negociación), precio objetivo (realista), precio mínimo (límite)
+- **Búsqueda Automática de Comparables** - SerpAPI busca anuncios similares reales en internet (Milanuncios, Wallapop, etc.)
+- **Análisis de Mercado Completo** - Compara con vehículos similares en venta actualmente
+- **Historial de Valoraciones** - Guarda todas las valoraciones con su fecha para ver evolución temporal
+- **Informe Estructurado** - Incluye: introducción, precio nuevo, depreciación, valor extras, comparación mercado, precios recomendados
+- **Nivel de Confianza** - Alta/Media/Baja según cantidad de comparables encontrados
+- **Enlaces a Comparables** - Acceso directo a los anuncios usados para la valoración
+- **Poner en Venta** - Usa el precio recomendado por IA con un clic
 
 ### 📊 Histórico de Valoraciones ✨ **NUEVO v2.0**
 - **Evolución Temporal** - Gráfico interactivo del valor en el tiempo
@@ -530,6 +533,15 @@ Todas las funciones de IA son configurables desde `/admin/configuracion` con pro
 - **datos_mercado_autocaravanas** - Base de datos pública de precios (anónima)
 - **historico_precios_usuario** - Evolución del valor en el tiempo
 - **gastos_adicionales** - Seguros, impuestos, parking, etc.
+
+### 🤖 Sistema de Valoración IA ✨ **NUEVO v2.1**
+
+- **valoracion_ia_informes** - Historial completo de valoraciones IA con fecha
+  - Cada valoración incluye: 3 precios, informe completo (Markdown), comparables usados (JSON)
+  - Métricas: nivel de confianza, precio base mercado, depreciación aplicada
+  - Se vincula al vehículo por UUID (no por matrícula, para mantener historial)
+  - Trigger automático actualiza `vehiculo_valoracion_economica` con última valoración
+  - RLS: usuarios ven solo sus valoraciones, admins ven todas
 
 **Row Level Security (RLS):**
 - ✅ Habilitado en todas las tablas
