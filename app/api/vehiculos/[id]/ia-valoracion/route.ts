@@ -13,11 +13,11 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   const startTime = Date.now()
-  
+
   try {
     const supabase = createRouteHandlerClient({ cookies })
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     if (!user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
@@ -62,7 +62,7 @@ export async function POST(
     // 2. BUSCAR COMPARABLES EN INTERNET (OPCIONAL)
     console.log(`🔍 Buscando comparables...`)
     let comparables: any[] = []
-    
+
     try {
       if (process.env.SERPAPI_KEY) {
         comparables = await buscarComparables(
@@ -79,126 +79,133 @@ export async function POST(
       comparables = []
     }
 
-    // 3. CONSTRUIR PROMPT PARA OPENAI
-    const fechaHoy = new Date().toLocaleDateString('es-ES', { 
-      day: '2-digit', 
-      month: 'long', 
-      year: 'numeric' 
+    // 3. OBTENER CONFIGURACIÓN DEL AGENTE DESDE LA BD
+    const { data: configData } = await supabase
+      .from('ia_config')
+      .select('config_value')
+      .eq('config_key', 'valoracion_vehiculos')
+      .single()
+
+    const config = configData?.config_value || {
+      model: 'gpt-4',
+      temperature: 0.7,
+      max_tokens: 2500,
+      system_prompt: 'Eres un experto tasador de vehículos de segunda mano especializado en campers de gran volumen (FIAT Ducato, Peugeot Boxer, Citroën Jumper, etc.).',
+      user_prompt: `OBJETIVO:
+Tu tarea es redactar un INFORME EXPLICATIVO de valoración para una camper usada.
+
+DATOS DEL VEHÍCULO:
+{{datos_vehiculo}}
+
+FICHA TÉCNICA:
+{{ficha_tecnica}}
+
+DATOS ECONÓMICOS:
+{{datos_economicos}}
+
+AVERÍAS GRAVES:
+{{averias}}
+
+MEJORAS INSTALADAS:
+{{mejoras}}
+
+COMPARABLES ENCONTRADOS:
+{{comparables}}
+
+Genera un informe profesional con estas secciones:
+1. INTRODUCCIÓN
+2. PRECIO DE NUEVA PARA PARTICULAR
+3. DEPRECIACIÓN POR TIEMPO Y USO
+4. VALOR DE LOS EXTRAS
+5. COMPARACIÓN CON EL MERCADO
+6. PRECIO (presenta 3 cifras: salida, objetivo, mínimo)
+7. CONCLUSIÓN
+
+Devuelve el informe en formato Markdown con encabezados ##`
+    }
+
+    console.log(`📝 [IA-VALORACION] Configuración cargada:`)
+    console.log(`  - Modelo: ${config.model}`)
+    console.log(`  - Temperature: ${config.temperature}`)
+    console.log(`  - Max tokens: ${config.max_tokens}`)
+
+    // 4. CONSTRUIR VARIABLES PARA EL PROMPT
+    const fechaHoy = new Date().toLocaleDateString('es-ES', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
     })
 
-    const prompt = `Eres un experto tasador de vehículos de segunda mano especializado en campers de gran volumen (FIAT Ducato, Peugeot Boxer, Citroën Jumper, etc.), camperizadas de fábrica por fabricantes como Weinsberg, Knaus, Pilote, Dethleffs, Adria, Dreamer y otros.
-
-**FECHA DE VALORACIÓN:** ${fechaHoy}
-
-**DATOS DEL VEHÍCULO:**
-- Marca/Chasis: ${vehiculo.marca || 'No especificado'}
+    const datosVehiculo = `- Marca/Chasis: ${vehiculo.marca || 'No especificado'}
 - Modelo: ${vehiculo.modelo || 'No especificado'}
 - Tipo: ${vehiculo.tipo_vehiculo || 'Autocaravana'}
 - Matrícula: ${vehiculo.matricula || 'No especificado'}
 - Motor: ${ficha?.motor || 'No especificado'}
 - Cambio: ${ficha?.cambio || 'No especificado'}
 - Potencia: ${ficha?.potencia ? ficha.potencia + ' CV' : 'No especificado'}
-- Kilometraje actual: ${ficha?.kilometros_actuales?.toLocaleString() || 'No especificado'} km
+- Kilometraje actual: ${ficha?.kilometros_actuales?.toLocaleString() || 'No especificado'} km`
 
-**DATOS ECONÓMICOS:**
-- Precio de compra Furgocasa (SIN Impuesto de Matriculación): ${valoracion?.precio_compra?.toLocaleString() || 'No especificado'}€
+    const fichaTecnica = ficha ? `
+- Potencia: ${ficha.potencia || 'N/A'} CV
+- Longitud: ${ficha.longitud || 'N/A'} m
+- Altura: ${ficha.altura || 'N/A'} m
+- MMA: ${ficha.mma || 'N/A'} kg
+- Plazas día: ${ficha.plazas_dia || 'N/A'}
+- Plazas noche: ${ficha.plazas_noche || 'N/A'}
+- Depósito agua limpia: ${ficha.deposito_agua_limpia || 'N/A'} L
+- Depósito aguas grises: ${ficha.deposito_aguas_grises || 'N/A'} L
+` : 'No disponible'
+
+    const datosEconomicos = `- Precio de compra Furgocasa (SIN Impuesto de Matriculación): ${valoracion?.precio_compra?.toLocaleString() || 'No especificado'}€
 - Fecha de compra/matriculación: ${valoracion?.fecha_compra || vehiculo.created_at?.split('T')[0] || 'No especificado'}
 - Kilometraje en compra: ${valoracion?.kilometros_compra?.toLocaleString() || 'No especificado'} km
-- Inversión total (mantenimientos + averías + mejoras): ${valoracion?.inversion_total?.toLocaleString() || '0'}€
+- Inversión total (mantenimientos + averías + mejoras): ${valoracion?.inversion_total?.toLocaleString() || '0'}€`
 
-**AVERÍAS GRAVES:** ${averias?.length || 0} averías críticas/graves registradas
+    const averiasTexto = averias && averias.length > 0 
+      ? `${averias.length} averías críticas/graves registradas:\n` + averias.map((a: any) => `- ${a.descripcion} (${a.fecha}, severidad: ${a.severidad})`).join('\n')
+      : 'No hay averías graves registradas'
 
-**MEJORAS INSTALADAS:**
-${mejoras && mejoras.length > 0 
-  ? mejoras.map(m => `- ${m.nombre}: ${m.coste ? m.coste.toLocaleString() + '€' : 'coste no especificado'} (${m.fecha_instalacion || 'fecha no especificada'})`).join('\n')
-  : '- No hay mejoras registradas'}
+    const mejorasTexto = mejoras && mejoras.length > 0 
+      ? mejoras.map((m: any) => `- ${m.nombre}: ${m.coste ? m.coste.toLocaleString() + '€' : 'coste no especificado'} (${m.fecha_instalacion || 'fecha no especificada'})`).join('\n')
+      : 'No hay mejoras registradas'
 
-**COMPARABLES ENCONTRADOS EN INTERNET:**
-${comparables.length > 0 
-  ? comparables.map((c, i) => `${i + 1}. ${c.titulo}
+    const comparablesTexto = comparables.length > 0
+      ? comparables.map((c, i) => `${i + 1}. ${c.titulo}
    - Precio: ${c.precio ? c.precio.toLocaleString() + '€' : 'No especificado'}
    - Kilometraje: ${c.kilometros ? c.kilometros.toLocaleString() + ' km' : 'No especificado'}
    - Año: ${c.año || 'No especificado'}
    - Fuente: ${c.fuente}
    - URL: ${c.url}`).join('\n\n')
-  : 'No se encontraron comparables en esta búsqueda.'}
+      : 'No se encontraron comparables en esta búsqueda.'
 
-**TU TAREA:**
+    // Reemplazar variables en el user_prompt
+    const userPrompt = config.user_prompt
+      .replace(/\{\{fecha_hoy\}\}/g, fechaHoy)
+      .replace(/\{\{datos_vehiculo\}\}/g, datosVehiculo)
+      .replace(/\{\{ficha_tecnica\}\}/g, fichaTecnica)
+      .replace(/\{\{datos_economicos\}\}/g, datosEconomicos)
+      .replace(/\{\{averias\}\}/g, averiasTexto)
+      .replace(/\{\{mejoras\}\}/g, mejorasTexto)
+      .replace(/\{\{comparables\}\}/g, comparablesTexto)
 
-Genera un INFORME PROFESIONAL de valoración siguiendo ESTRICTAMENTE esta estructura:
-
-1. **INTRODUCCIÓN** (50-80 palabras)
-   - Presenta el vehículo: chasis, modelo, motor, cambio, extras instalados
-   - Indica fecha de compra/matriculación, kilometraje actual y uso
-
-2. **PRECIO DE NUEVA PARA PARTICULAR** (60-100 palabras)
-   - Explica cuánto costaría hoy comprar una unidad nueva igual o equivalente
-   - IMPORTANTE: Incluye IVA (21%) e Impuesto de Matriculación (4.65%)
-   - Un particular PAGA el Impuesto de Matriculación
-   - Furgocasa NO pagó el Impuesto de Matriculación
-
-3. **DEPRECIACIÓN POR TIEMPO Y USO** (100-150 palabras)
-   - Analiza la edad del vehículo desde matriculación
-   - Primer año (0-12 meses): pérdida mínima 0-5% (puede venderse por más)
-   - 12-24 meses: bajada moderada 5-10%
-   - 24-36 meses + >100k km: ajuste 15-20% por debajo de precio particular nuevo
-   - Compara km recorridos vs media 25,000 km/año
-   - Explica efecto de estar por encima o debajo
-
-4. **VALOR DE LOS EXTRAS** (40-60 palabras)
-   - Describe extras relevantes
-   - Solo conservan 20-30% de coste inicial
-   - Contribuyen a diferenciar la unidad
-
-5. **COMPARACIÓN CON EL MERCADO** (100-150 palabras)
-   ${comparables.length > 0 
-     ? `- Comenta los ${comparables.length} anuncios comparables encontrados
-   - Indica modelo, año, km, precio y fuente con URL
-   - Resume rango de precios observados
-   - Sitúa la camper de Furgocasa dentro del rango`
-     : `- NO hay comparables externos disponibles en esta valoración
-   - Basa la valoración en el precio de compra original, depreciación estándar y datos del vehículo
-   - Justifica el precio basándote en: antigüedad, kilometraje, estado general, mejoras y mercado general`}
-
-6. **PRECIO RECOMENDADO** (80-120 palabras)
-   - Usa como referencia el precio particular nuevo (con IM)
-   - Aplica descuento según antigüedad y km
-   - Valida contra comparables reales
-   - Presenta 3 cifras:
-     * Precio de salida recomendado (negociación)
-     * Precio objetivo de venta (realista)
-     * Precio mínimo aceptable (límite)
-
-7. **CONCLUSIÓN** (40-60 palabras)
-   - Resumen y justificación de los 3 precios
-
-**IMPORTANTE:**
-- Extensión total: 400-700 palabras
-- Estilo profesional, objetivo, claro
-- NO inventes datos
-- NO uses JSON ni tablas, solo texto narrativo
-- Revisa coherencia: no vendas más caro que compra sin justificación
-- Usa euros (€) y formato español
-
-Devuelve el informe en formato Markdown con encabezados ## para cada sección.`
-
-    // 4. LLAMAR A OPENAI GPT-4
+    // 5. LLAMAR A OPENAI GPT-4
     console.log(`🤖 Generando informe con IA...`)
-    
+
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: config.model,
       messages: [
         {
           role: "system",
-          content: "Eres un experto tasador de autocaravanas y campers con 20 años de experiencia en el mercado español de segunda mano."
+          content: config.system_prompt
         },
         {
           role: "user",
-          content: prompt
+          content: userPrompt
         }
       ],
-      temperature: 0.7,
-      max_tokens: 2500
+      temperature: config.temperature,
+      max_tokens: config.max_tokens
     })
 
     const informeTexto = completion.choices[0].message.content || 'No se pudo generar el informe'
@@ -206,8 +213,7 @@ Devuelve el informe en formato Markdown con encabezados ## para cada sección.`
 
     console.log(`✅ Informe generado (${tokensUsados} tokens)`)
 
-    // 5. EXTRAER PRECIOS DEL INFORME
-    // Buscar los 3 precios en el texto
+    // 6. EXTRAER PRECIOS DEL INFORME
     const precioSalidaMatch = informeTexto.match(/precio\s+de\s+salida\s+recomendado[:\s]+(\d{1,3}(?:\.\d{3})*)/i)
     const precioObjetivoMatch = informeTexto.match(/precio\s+objetivo\s+de\s+venta[:\s]+(\d{1,3}(?:\.\d{3})*)/i)
     const precioMinimoMatch = informeTexto.match(/precio\s+mínimo\s+aceptable[:\s]+(\d{1,3}(?:\.\d{3})*)/i)
@@ -216,7 +222,7 @@ Devuelve el informe en formato Markdown con encabezados ## para cada sección.`
     const precioObjetivo = precioObjetivoMatch ? parseFloat(precioObjetivoMatch[1].replace(/\./g, '')) : valoracion?.precio_compra || null
     const precioMinimo = precioMinimoMatch ? parseFloat(precioMinimoMatch[1].replace(/\./g, '')) : valoracion?.precio_compra ? valoracion.precio_compra * 0.9 : null
 
-    // 6. GUARDAR EN BASE DE DATOS
+    // 7. GUARDAR EN BASE DE DATOS
     const { data: informeGuardado, error: errorGuardar } = await supabase
       .from('valoracion_ia_informes')
       .insert({
@@ -227,7 +233,7 @@ Devuelve el informe en formato Markdown con encabezados ## para cada sección.`
         precio_objetivo: precioObjetivo,
         precio_minimo: precioMinimo,
         informe_texto: informeTexto,
-        informe_html: null, // Se puede renderizar en frontend
+        informe_html: null,
         comparables_json: comparables,
         num_comparables: comparables.length,
         nivel_confianza: comparables.length >= 5 ? 'Alta' : comparables.length >= 3 ? 'Media' : comparables.length >= 1 ? 'Baja' : 'Estimativa',
@@ -237,29 +243,25 @@ Devuelve el informe en formato Markdown con encabezados ## para cada sección.`
       .select()
       .single()
 
-    if (errorGuardar) {
-      console.error('❌ Error guardando informe:', errorGuardar)
-      throw errorGuardar
-    }
+    if (errorGuardar) throw errorGuardar
 
-    const tiempoProcesamiento = Date.now() - startTime
+    const tiempoTotal = Date.now() - startTime
 
-    console.log(`✅ Valoración completada en ${tiempoProcesamiento}ms`)
+    console.log(`✅ Valoración completada en ${(tiempoTotal / 1000).toFixed(2)}s`)
 
     return NextResponse.json({
       success: true,
       informe: informeGuardado,
-      comparables,
-      tiempo_procesamiento_ms: tiempoProcesamiento,
       tokens_usados: tokensUsados
     })
 
   } catch (error: any) {
     console.error('❌ Error al generar valoración:', error)
+
     return NextResponse.json(
-      { 
-        error: 'Error al generar valoración', 
-        detalle: error.message 
+      {
+        error: 'Error al generar valoración',
+        detalle: error.message
       },
       { status: 500 }
     )
@@ -274,7 +276,7 @@ export async function GET(
   try {
     const supabase = createRouteHandlerClient({ cookies })
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     if (!user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
@@ -298,4 +300,3 @@ export async function GET(
     )
   }
 }
-

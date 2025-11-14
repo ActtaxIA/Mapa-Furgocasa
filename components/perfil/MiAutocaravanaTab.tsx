@@ -587,7 +587,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
                     {/* Tipo de vehículo - 2º en importancia */}
                     {vehiculo.tipo_vehiculo && (
                       <p className="flex items-center gap-1">
-                        <strong>Tipo:</strong> 
+                        <strong>Tipo:</strong>
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 border border-primary-200">
                           {vehiculo.tipo_vehiculo}
                         </span>

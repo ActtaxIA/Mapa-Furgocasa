@@ -31,6 +31,7 @@ import { GaleriaFotosTab } from '@/components/vehiculo/GaleriaFotosTab'
 import { Toast } from '@/components/ui/Toast'
 import InformeValoracionIA from '@/components/vehiculo/InformeValoracionIA'
 import { SparklesIcon as SparklesIconSolid } from '@heroicons/react/24/solid'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 type TabType = 'resumen' | 'compra' | 'fotos' | 'mantenimientos' | 'averias' | 'mejoras' | 'venta' | 'valoracion-ia'
 
@@ -56,6 +57,7 @@ export default function VehiculoPage() {
   const [valoracionesIA, setValoracionesIA] = useState<any[]>([])
   const [loadingValoracion, setLoadingValoracion] = useState(false)
   const [generandoValoracion, setGenerandoValoracion] = useState(false)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
 
   // Detectar parámetro tab en la URL
   useEffect(() => {
@@ -207,11 +209,12 @@ export default function VehiculoPage() {
     }
   }
 
-  const generarValoracionIA = async () => {
-    if (!confirm('¿Deseas generar una nueva valoración con IA? Este proceso puede tardar 1-2 minutos y consumirá créditos de OpenAI.')) {
-      return
-    }
+  const handleGenerarValoracion = () => {
+    setShowConfirmModal(true)
+  }
 
+  const confirmarGenerarValoracion = async () => {
+    setShowConfirmModal(false)
     setGenerandoValoracion(true)
     setToast({ message: '🤖 Generando valoración con IA... Por favor espera.', type: 'info' })
 

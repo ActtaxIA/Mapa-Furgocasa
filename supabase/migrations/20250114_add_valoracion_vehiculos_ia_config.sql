@@ -5,27 +5,16 @@ INSERT INTO ia_config (config_key, config_value, descripcion)
 VALUES (
   'valoracion_vehiculos',
   '{
-    "modelo": "gpt-4",
+    "model": "gpt-4",
     "temperature": 0.7,
     "max_tokens": 2500,
-    "prompts": [
-      {
-        "role": "system",
-        "content": "Eres un experto tasador de autocaravanas y campers con 20 años de experiencia en el mercado español de segunda mano.",
-        "order": 1
-      },
-      {
-        "role": "user",
-        "content": "Tu tarea es generar un INFORME PROFESIONAL de valoración siguiendo ESTRICTAMENTE esta estructura:\n\n1. INTRODUCCIÓN (50-80 palabras)\n2. PRECIO DE NUEVA PARA PARTICULAR (60-100 palabras)\n3. DEPRECIACIÓN POR TIEMPO Y USO (100-150 palabras)\n4. VALOR DE LOS EXTRAS (40-60 palabras)\n5. COMPARACIÓN CON EL MERCADO (100-150 palabras)\n6. PRECIO RECOMENDADO (80-120 palabras) - Presenta 3 cifras: Precio de salida, Precio objetivo, Precio mínimo\n7. CONCLUSIÓN (40-60 palabras)\n\nExtensión total: 400-700 palabras\nEstilo: Profesional, objetivo, claro\nFormato: Markdown con encabezados ##\nNO inventes datos, NO uses JSON ni tablas",
-        "order": 2
-      }
-    ]
+    "system_prompt": "Eres un experto tasador de vehículos de segunda mano especializado en campers de gran volumen (FIAT Ducato, Peugeot Boxer, Citroën Jumper, etc.), camperizadas de fábrica por fabricantes como Weinsberg, Knaus, Pilote, Dethleffs, Adria, Dreamer y otros.",
+    "user_prompt": "OBJETIVO:\nTu tarea es redactar un INFORME EXPLICATIVO de valoración para una camper usada de la flota de Furgocasa.\nEl informe debe ayudar a determinar de manera fundamentada el precio de venta en el mercado de segunda mano en la fecha {{fecha_hoy}}.\n\nDATOS DEL VEHÍCULO:\n{{datos_vehiculo}}\n\nFICHA TÉCNICA:\n{{ficha_tecnica}}\n\nDATOS ECONÓMICOS:\n{{datos_economicos}}\n\nAVERÍAS GRAVES:\n{{averias}}\n\nMEJORAS INSTALADAS:\n{{mejoras}}\n\nCOMPARABLES ENCONTRADOS EN INTERNET:\n{{comparables}}\n\nESTRUCTURA OBLIGATORIA DEL INFORME:\n\n1. INTRODUCCIÓN\n   - Presenta brevemente la camper: chasis base, modelo, motor, cambio, extras instalados.\n   - Indica fecha de compra/matriculación, kilometraje actual y uso en alquiler.\n\n2. PRECIO DE NUEVA PARA PARTICULAR\n   - Explica cuánto costaría hoy comprar una unidad nueva igual o equivalente en un concesionario como particular.\n   - Incluye IVA e Impuesto de Matriculación. Un particular tiene que pagar el impuesto de matriculación.\n   - Destaca que Furgocasa no paga dicho impuesto, lo que genera una diferencia.\n\n3. DEPRECIACIÓN POR TIEMPO Y USO\n   - Analiza la edad del vehículo desde la matriculación.\n   - Primer año: pérdida mínima (0-5%), puede venderse por más de lo que pagó Furgocasa.\n   - 12-24 meses: bajada moderada (5-10%).\n   - 2-3 años + >100.000 km: ajuste 15-20% por debajo del precio de nueva para particular.\n   - Compara km recorridos con media de 25.000 km/año.\n\n4. VALOR DE LOS EXTRAS\n   - Describe los extras relevantes instalados.\n   - Solo conservan un valor residual (20-30% de su coste inicial).\n   - Contribuyen a diferenciar la unidad frente a otras del mercado.\n\n5. COMPARACIÓN CON EL MERCADO\n   - Comenta los anuncios comparables encontrados en portales especializados.\n   - Indica modelo, año, kilometraje, precio y fuente (con enlace si es posible).\n   - Resume el rango de precios observados.\n   - Sitúa la camper de Furgocasa dentro de ese rango.\n   - NUNCA uses anuncios de Furgocasa como comparables.\n\n6. PRECIO\n   Determinación basada en precio actual de nueva para particular (con IVA + IM):\n   - Primer año (0-12 meses, <25.000 km): depreciación 0-5%\n   - Segundo año (12-24 meses, 70.000-80.000 km): depreciación 5-10%\n   - 2-3 años + >100.000 km: ajuste 15-20% por debajo de nueva\n   - Contrasta con precios reales de mercado (comparables)\n   - Presenta TRES CIFRAS CONCRETAS:\n     * Precio de salida recomendado (para anunciar, con margen)\n     * Precio objetivo de venta (valor realista de cierre)\n     * Precio mínimo aceptable (límite inferior)\n\n7. CONCLUSIÓN\n   - Resume en un párrafo final.\n   - Justifica brevemente cada una de las tres cifras.\n\nREVISION FINAL:\nAntes de responder, revisa la coherencia de las cifras. NO cometas errores como dar un precio muy superior al pagado por Furgocasa (no tendría sentido vender más caro que se compró; salvo que el mercado haya evolucionado muy al alza). Léete a ti mismo y revisa errores.\n\nNORMAS DE REDACCIÓN:\n- Extensión: 400-700 palabras\n- Estilo: Profesional, objetivo y claro\n- NUNCA inventes datos\n- Si no hay comparables exactos, usa equivalentes razonables\n- Si la información de un comparable es incompleta, indícalo\n- Menciona SIEMPRE la diferencia entre precio particular (con IM) vs Furgocasa (sin IM)\n- NO devuelvas JSON, tablas técnicas ni listas de campos: solo TEXTO narrativo\n- El informe debe ser autoexplicativo\n- Devuelve el informe en formato Markdown con encabezados ## para cada sección"
   }'::jsonb,
   'Configuración del agente de valoración de vehículos con IA (GPT-4 + SearchAPI opcional)'
 )
-ON CONFLICT (config_key) 
+ON CONFLICT (config_key)
 DO UPDATE SET
   config_value = EXCLUDED.config_value,
   descripcion = EXCLUDED.descripcion,
   updated_at = NOW();
-

@@ -40,7 +40,7 @@ interface ChatbotConfig {
 
 export default function ConfiguracionPage() {
   const supabase = createClient()
-  
+
   const [configs, setConfigs] = useState<IAConfig[]>([])
   const [chatbotConfig, setChatbotConfig] = useState<ChatbotConfig | null>(null)
   const [loading, setLoading] = useState(true)
@@ -65,7 +65,7 @@ export default function ConfiguracionPage() {
     try {
       const openaiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
       const serpApiKey = process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
-      
+
       // Check Supabase
       const { data, error } = await supabase.from('areas').select('id').limit(1)
       const supabaseOk = !error && !!data
@@ -103,13 +103,13 @@ export default function ConfiguracionPage() {
     if (activeTab === 'chatbot') {
       if (chatbotConfig) {
         const config = JSON.parse(JSON.stringify(chatbotConfig))
-        
+
         // Debug: ver estructura de prompts
         console.log('🔍 Chatbot Config:', config)
         console.log('🔍 Prompts:', config.prompts)
         console.log('🔍 Prompts.prompts:', config.prompts?.prompts)
         console.log('🔍 Es array?:', Array.isArray(config.prompts?.prompts))
-        
+
         setEditedChatbotConfig(config)
       }
       setEditedConfig(null)
@@ -125,7 +125,7 @@ export default function ConfiguracionPage() {
   const loadConfigs = async () => {
     try {
       setLoading(true)
-      
+
       // Cargar configs de IA normales
       const { data, error } = await supabase
         .from('ia_config')
@@ -135,7 +135,7 @@ export default function ConfiguracionPage() {
       if (error) throw error
 
       setConfigs(data || [])
-      
+
       // Cargar config del chatbot
       const { data: chatbotData, error: chatbotError } = await supabase
         .from('chatbot_config')
@@ -143,11 +143,11 @@ export default function ConfiguracionPage() {
         .eq('nombre', 'asistente_principal')
         .eq('activo', true)
         .single()
-      
+
       if (!chatbotError && chatbotData) {
         setChatbotConfig(chatbotData)
       }
-      
+
       if (data && data.length > 0 && !activeTab) {
         setActiveTab(data[0].config_key)
       }
@@ -186,12 +186,12 @@ export default function ConfiguracionPage() {
           radio_busqueda_default_km: editedChatbotConfig.radio_busqueda_default_km,
           updated_at: new Date().toISOString()
         }
-        
+
         // Si tiene prompts múltiples, incluirlos
         if (editedChatbotConfig.prompts) {
           updateData.prompts = editedChatbotConfig.prompts
         }
-        
+
         const { error } = await supabase
           .from('chatbot_config')
           .update(updateData)
@@ -223,7 +223,7 @@ export default function ConfiguracionPage() {
 
   const handleReset = async () => {
     if (!editedConfig) return
-    
+
     if (!confirm('¿Restablecer esta configuración a los valores por defecto?')) {
       return
     }
@@ -233,7 +233,7 @@ export default function ConfiguracionPage() {
 
   const updateConfigValue = (field: keyof IAConfigValue, value: any) => {
     if (!editedConfig) return
-    
+
     setEditedConfig({
       ...editedConfig,
       config_value: {
@@ -245,7 +245,7 @@ export default function ConfiguracionPage() {
 
   const updateChatbotConfigValue = (field: keyof ChatbotConfig, value: any) => {
     if (!editedChatbotConfig) return
-    
+
     setEditedChatbotConfig({
       ...editedChatbotConfig,
       [field]: value
@@ -255,7 +255,7 @@ export default function ConfiguracionPage() {
   // Funciones para gestionar prompts del chatbot
   const addChatbotPrompt = (role: 'user' | 'assistant' | 'agent') => {
     if (!editedChatbotConfig || !editedChatbotConfig.prompts) return
-    
+
     const newPrompt: PromptMessage = {
       id: `${role}-${Date.now()}`,
       role,
@@ -263,7 +263,7 @@ export default function ConfiguracionPage() {
       order: editedChatbotConfig.prompts.prompts.length + 1,
       required: false
     }
-    
+
     setEditedChatbotConfig({
       ...editedChatbotConfig,
       prompts: {
@@ -275,7 +275,7 @@ export default function ConfiguracionPage() {
 
   const updateChatbotPrompt = (promptId: string, field: keyof PromptMessage, value: any) => {
     if (!editedChatbotConfig || !editedChatbotConfig.prompts) return
-    
+
     setEditedChatbotConfig({
       ...editedChatbotConfig,
       prompts: {
@@ -289,11 +289,11 @@ export default function ConfiguracionPage() {
 
   const removeChatbotPrompt = (promptId: string) => {
     if (!editedChatbotConfig || !editedChatbotConfig.prompts) return
-    
+
     const updatedPrompts = editedChatbotConfig.prompts.prompts
       .filter(p => p.id !== promptId)
       .map((p, index) => ({ ...p, order: index + 1 }))
-    
+
     setEditedChatbotConfig({
       ...editedChatbotConfig,
       prompts: {
@@ -305,16 +305,16 @@ export default function ConfiguracionPage() {
 
   const moveChatbotPrompt = (index: number, direction: 'up' | 'down') => {
     if (!editedChatbotConfig || !editedChatbotConfig.prompts) return
-    
+
     const prompts = [...editedChatbotConfig.prompts.prompts]
     const newIndex = direction === 'up' ? index - 1 : index + 1
-    
+
     if (newIndex < 0 || newIndex >= prompts.length) return
-    
+
     [prompts[index], prompts[newIndex]] = [prompts[newIndex], prompts[index]]
-    
+
     const reorderedPrompts = prompts.map((p, i) => ({ ...p, order: i + 1 }))
-    
+
     setEditedChatbotConfig({
       ...editedChatbotConfig,
       prompts: {
@@ -327,7 +327,7 @@ export default function ConfiguracionPage() {
   // Funciones para manejo de prompts (configs normales)
   const addPrompt = (role: 'user' | 'assistant' | 'agent' = 'user') => {
     if (!editedConfig) return
-    
+
     const newPrompt: PromptMessage = {
       id: `${role}-${Date.now()}`,
       role: role,
@@ -335,25 +335,25 @@ export default function ConfiguracionPage() {
       order: editedConfig.config_value.prompts.length + 1,
       required: false
     }
-    
+
     updateConfigValue('prompts', [...editedConfig.config_value.prompts, newPrompt])
   }
-  
+
   const removePrompt = (promptId: string) => {
     if (!editedConfig) return
-    
+
     updateConfigValue(
       'prompts',
       editedConfig.config_value.prompts.filter(p => p.id !== promptId)
     )
   }
-  
+
   const updatePrompt = (promptId: string, field: keyof PromptMessage, value: any) => {
     if (!editedConfig) return
-    
+
     updateConfigValue(
       'prompts',
-      editedConfig.config_value.prompts.map(p => 
+      editedConfig.config_value.prompts.map(p =>
         p.id === promptId ? { ...p, [field]: value } : p
       )
     )
@@ -361,17 +361,17 @@ export default function ConfiguracionPage() {
 
   const movePrompt = (index: number, direction: 'up' | 'down') => {
     if (!editedConfig) return
-    
+
     const prompts = [...editedConfig.config_value.prompts].sort((a, b) => a.order - b.order)
     const targetIndex = direction === 'up' ? index - 1 : index + 1
-    
+
     if (targetIndex < 0 || targetIndex >= prompts.length) return
-    
+
     // Intercambiar órdenes
     const temp = prompts[index].order
     prompts[index].order = prompts[targetIndex].order
     prompts[targetIndex].order = temp
-    
+
     updateConfigValue('prompts', prompts)
   }
 
@@ -396,7 +396,7 @@ export default function ConfiguracionPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
@@ -421,8 +421,8 @@ export default function ConfiguracionPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* OpenAI */}
               <div className={`flex items-center gap-3 p-4 rounded-lg border-2 ${
-                apiStatus.openai 
-                  ? 'bg-green-50 border-green-200' 
+                apiStatus.openai
+                  ? 'bg-green-50 border-green-200'
                   : 'bg-red-50 border-red-200'
               }`}>
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -446,8 +446,8 @@ export default function ConfiguracionPage() {
 
               {/* SerpAPI */}
               <div className={`flex items-center gap-3 p-4 rounded-lg border-2 ${
-                apiStatus.serpapi 
-                  ? 'bg-green-50 border-green-200' 
+                apiStatus.serpapi
+                  ? 'bg-green-50 border-green-200'
                   : 'bg-red-50 border-red-200'
               }`}>
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -471,8 +471,8 @@ export default function ConfiguracionPage() {
 
               {/* Supabase */}
               <div className={`flex items-center gap-3 p-4 rounded-lg border-2 ${
-                apiStatus.supabase 
-                  ? 'bg-green-50 border-green-200' 
+                apiStatus.supabase
+                  ? 'bg-green-50 border-green-200'
                   : 'bg-red-50 border-red-200'
               }`}>
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -496,8 +496,8 @@ export default function ConfiguracionPage() {
 
               {/* Chatbot OpenAI (Servidor) */}
               <div className={`flex items-center gap-3 p-4 rounded-lg border-2 ${
-                apiStatus.chatbotOpenAI 
-                  ? 'bg-green-50 border-green-200' 
+                apiStatus.chatbotOpenAI
+                  ? 'bg-green-50 border-green-200'
                   : 'bg-red-50 border-red-200'
               }`}>
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -525,7 +525,7 @@ export default function ConfiguracionPage() {
         {/* Message */}
         {message && (
           <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
-            message.type === 'success' 
+            message.type === 'success'
               ? 'bg-green-50 border border-green-200 text-green-800'
               : 'bg-red-50 border border-red-200 text-red-800'
           }`}>
@@ -661,7 +661,7 @@ export default function ConfiguracionPage() {
                     </button>
                   </div>
                 </div>
-                
+
                 {/* Lista de Prompts */}
                 <div className="space-y-4">
                   {editedConfig.config_value.prompts
@@ -669,7 +669,7 @@ export default function ConfiguracionPage() {
                     .map((prompt, index) => {
                       const colors = PROMPT_COLORS[prompt.role]
                       const label = PROMPT_LABELS[prompt.role]
-                      
+
                       return (
                         <div
                           key={prompt.id}
@@ -688,7 +688,7 @@ export default function ConfiguracionPage() {
                                 </span>
                               )}
                             </div>
-                            
+
                             {/* Botones de Control */}
                             <div className="flex items-center gap-2">
                               {/* Mover arriba */}
@@ -704,7 +704,7 @@ export default function ConfiguracionPage() {
                                   </svg>
                                 </button>
                               )}
-                              
+
                               {/* Mover abajo */}
                               {index < editedConfig.config_value.prompts.length - 1 && (
                                 <button
@@ -718,7 +718,7 @@ export default function ConfiguracionPage() {
                                   </svg>
                                 </button>
                               )}
-                              
+
                               {/* Eliminar (solo si no es obligatorio) */}
                               {!prompt.required && (
                                 <button
@@ -734,7 +734,7 @@ export default function ConfiguracionPage() {
                               )}
                             </div>
                           </div>
-                          
+
                           {/* Textarea del Prompt */}
                           <textarea
                             value={prompt.content}
@@ -749,7 +749,7 @@ export default function ConfiguracionPage() {
                               'Instrucciones específicas del agente...'
                             }
                           />
-                          
+
                           {/* Info sobre variables */}
                           {prompt.role !== 'system' && (
                             <div className="mt-2 text-xs text-gray-600">
@@ -765,7 +765,7 @@ export default function ConfiguracionPage() {
                       )
                     })}
                 </div>
-                
+
                 {/* Mensaje si solo hay system prompt */}
                 {editedConfig.config_value.prompts.length === 1 && (
                   <div className="mt-4 p-4 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg text-center">
@@ -789,7 +789,7 @@ export default function ConfiguracionPage() {
                   <CheckIcon className="w-5 h-5" />
                   {saving ? 'Guardando...' : 'Guardar Cambios'}
                 </button>
-                
+
                 <button
                   onClick={handleReset}
                   disabled={saving}
@@ -882,7 +882,7 @@ export default function ConfiguracionPage() {
               {editedChatbotConfig.prompts && editedChatbotConfig.prompts.prompts && Array.isArray(editedChatbotConfig.prompts.prompts) ? (
                 <div className="border-t pt-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">🎨 Configuración de Prompts</h3>
-                  
+
                   {/* Botones para añadir prompts */}
                   <div className="flex gap-2 mb-4">
                     <button
@@ -910,7 +910,7 @@ export default function ConfiguracionPage() {
                       Agent Prompt
                     </button>
                   </div>
-                  
+
                   {/* Lista de Prompts */}
                   <div className="space-y-4">
                     {editedChatbotConfig.prompts.prompts
@@ -918,7 +918,7 @@ export default function ConfiguracionPage() {
                       .map((prompt, index) => {
                         const colors = PROMPT_COLORS[prompt.role]
                         const label = PROMPT_LABELS[prompt.role]
-                        
+
                         return (
                           <div
                             key={prompt.id}
@@ -937,7 +937,7 @@ export default function ConfiguracionPage() {
                                   </span>
                                 )}
                               </div>
-                              
+
                               {/* Botones de Control */}
                               <div className="flex items-center gap-2">
                                 {index > 0 && (
@@ -952,7 +952,7 @@ export default function ConfiguracionPage() {
                                     </svg>
                                   </button>
                                 )}
-                                
+
                                 {index < editedChatbotConfig.prompts!.prompts.length - 1 && (
                                   <button
                                     onClick={() => moveChatbotPrompt(index, 'down')}
@@ -965,7 +965,7 @@ export default function ConfiguracionPage() {
                                     </svg>
                                   </button>
                                 )}
-                                
+
                                 {!prompt.required && (
                                   <button
                                     onClick={() => removeChatbotPrompt(prompt.id)}
@@ -980,7 +980,7 @@ export default function ConfiguracionPage() {
                                 )}
                               </div>
                             </div>
-                            
+
                             {/* Textarea del Prompt */}
                             <textarea
                               value={prompt.content}
@@ -1144,7 +1144,7 @@ export default function ConfiguracionPage() {
         {/* Info sobre agentes y tipos de prompts */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
           <h3 className="font-semibold text-blue-900 mb-3">🤖 Agentes de IA Disponibles</h3>
-          
+
           <div className="mb-4 text-sm text-blue-800">
             <p className="font-semibold mb-2">Agentes con Prompts Configurables (aparecen en pestañas):</p>
             <ul className="list-disc list-inside space-y-1 ml-2">
