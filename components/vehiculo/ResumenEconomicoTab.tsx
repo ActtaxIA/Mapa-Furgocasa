@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import {
   CurrencyEuroIcon,
   ArrowTrendingUpIcon,
@@ -37,28 +36,16 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
 
   const loadResumen = async () => {
     try {
-      const supabase = createClient()
-      const { data, error } = await supabase
-        .from('vehiculo_valoracion_economica')
-        .select('*')
-        .eq('vehiculo_id', vehiculoId)
-        .maybeSingle()
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error cargando resumen:', error)
+      // Usar API que normaliza los campos numéricos (DECIMAL → number)
+      const response = await fetch(`/api/vehiculos/${vehiculoId}/resumen-economico`)
+      
+      if (!response.ok) {
+        console.error('Error cargando resumen:', response.statusText)
         return
       }
 
-      setResumen(data || {
-        precio_compra: null,
-        inversion_total: null,
-        valor_estimado_actual: null,
-        total_mantenimientos: null,
-        total_averias: null,
-        total_mejoras: null,
-        ganancia_perdida: null,
-        depreciacion_anual_porcentaje: null
-      })
+      const data = await response.json()
+      setResumen(data)
     } catch (error) {
       console.error('Error:', error)
     } finally {
