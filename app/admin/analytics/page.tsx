@@ -1907,17 +1907,6 @@ export default function AdminAnalyticsPage() {
             </div>
           </div>
         </div>
-
-        {/* ========== COMPORTAMIENTO Y ENGAGEMENT DE USUARIOS ========== */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg p-6 mb-6">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-              👤 Comportamiento y Engagement de Usuarios
-            </h2>
-            <p className="text-indigo-100 mt-2">
-              Métricas detalladas de cómo los usuarios interact
-
-
       </main>
     </div>
   )
