@@ -378,7 +378,8 @@ export default function ConfiguracionPage() {
   const configTabs = [
     { key: 'scrape_services', label: '🔍 Actualizar Servicios', icon: '🤖' },
     { key: 'enrich_description', label: '✨ Enriquecer Textos', icon: '📝' },
-    { key: 'chatbot', label: '🧳 Tío Viajero IA (Chatbot)', icon: '💬' }
+    { key: 'chatbot', label: '🧳 Tío Viajero IA (Chatbot)', icon: '💬' },
+    { key: 'valoracion_vehiculos', label: '🚐 Valoración de Vehículos IA', icon: '💰' }
   ]
 
   if (loading) {
@@ -404,7 +405,7 @@ export default function ConfiguracionPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Configuración de IA</h1>
               <p className="text-gray-600 mt-1">
-                Ajusta los prompts y parámetros de los 2 agentes que usan OpenAI
+                Ajusta los prompts y parámetros de los 4 agentes que usan OpenAI
               </p>
               <p className="text-sm text-gray-500 mt-1">
                 💡 <strong>Nota:</strong> "Enriquecer Imágenes" no aparece aquí porque solo usa SerpAPI (sin prompts de IA)
@@ -1150,6 +1151,7 @@ export default function ConfiguracionPage() {
               <li><strong>🔍 Actualizar Servicios:</strong> Usa OpenAI para analizar texto web y detectar servicios (agua, electricidad, etc.)</li>
               <li><strong>✨ Enriquecer Textos:</strong> Usa OpenAI para generar descripciones detalladas de áreas</li>
               <li><strong>🧳 Tío Viajero IA (Chatbot):</strong> Asistente conversacional con IA que ayuda a usuarios a encontrar áreas usando Function Calling</li>
+              <li><strong>🚐 Valoración de Vehículos IA:</strong> Usa GPT-4 + SearchAPI (opcional) para generar informes profesionales de valoración con 3 precios estratégicos</li>
             </ul>
           </div>
 
