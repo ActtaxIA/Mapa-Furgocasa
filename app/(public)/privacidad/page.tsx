@@ -1,223 +1,211 @@
-import Link from 'next/link'
-import Image from 'next/image'
+'use client'
 
-export const metadata = {
-  title: 'Política de Privacidad | Mapa Furgocasa',
-  description: 'Política de privacidad y protección de datos de Mapa Furgocasa',
-}
+import { Navbar } from '@/components/layout/Navbar'
+import { Footer } from '@/components/layout/Footer'
 
 export default function PrivacidadPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100">
-      {/* Header Hero */}
-      <div className="bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] text-white shadow-xl">
-        <div className="max-w-4xl mx-auto px-4 py-12">
-          <Link href="/" className="inline-block mb-6 hover:opacity-80 transition-opacity">
-            <Image 
-              src="/logo-furgocasa.png" 
-              alt="Furgocasa" 
-              width={150} 
-              height={60}
-              className="h-12 w-auto"
-            />
-          </Link>
-          <h1 className="text-4xl md:text-5xl font-bold mb-3">Política de Privacidad</h1>
-          <p className="text-white/90 text-lg">Última actualización: {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+    <div className="min-h-screen bg-white">
+      <Navbar />
+
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] text-white py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              Política de Privacidad
+            </h1>
+            <p className="text-xl md:text-2xl text-white/90 leading-relaxed">
+              Última actualización: Enero 2025
+            </p>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Contenido */}
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
-          
-          {/* Introducción */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">1. Introducción</h2>
-            <p className="text-gray-700 leading-relaxed">
-              En <strong>Mapa Furgocasa</strong>, nos tomamos muy en serio la privacidad de nuestros usuarios. 
-              Esta Política de Privacidad describe cómo recopilamos, usamos, almacenamos y protegemos tu información personal 
-              cuando utilizas nuestra plataforma web y servicios relacionados.
-            </p>
-          </section>
-
-          {/* Información que recopilamos */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">2. Información que Recopilamos</h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">2.1. Información proporcionada por el usuario</h3>
-                <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-                  <li><strong>Datos de registro:</strong> nombre, apellidos, correo electrónico, nombre de usuario y contraseña.</li>
-                  <li><strong>Información de perfil:</strong> foto de perfil, biografía y preferencias de usuario.</li>
-                  <li><strong>Contenido generado:</strong> valoraciones, comentarios, fotos y rutas creadas.</li>
-                  <li><strong>Datos de contacto:</strong> información de contacto si nos escribes directamente.</li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">2.2. Información recopilada automáticamente</h3>
-                <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-                  <li><strong>Datos de uso:</strong> páginas visitadas, tiempo de permanencia, clics e interacciones.</li>
-                  <li><strong>Información del dispositivo:</strong> tipo de navegador, sistema operativo, dirección IP y dispositivo utilizado.</li>
-                  <li><strong>Ubicación geográfica:</strong> coordenadas GPS (solo si otorgas permiso) para funciones de mapa.</li>
-                  <li><strong>Cookies y tecnologías similares:</strong> para mejorar la experiencia del usuario y analizar el uso del sitio.</li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">2.3. Información de terceros</h3>
-                <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-                  <li><strong>Autenticación con Google:</strong> si eliges iniciar sesión con Google, recibiremos tu nombre, correo electrónico y foto de perfil.</li>
-                  <li><strong>Google Maps API:</strong> utilizamos Google Maps para mostrar ubicaciones de áreas.</li>
-                </ul>
-              </div>
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto prose prose-lg">
+            
+            <div className="bg-blue-50 border-l-4 border-[#0b3c74] p-6 rounded-r-xl mb-12">
+              <p className="text-gray-700 leading-relaxed m-0">
+                En Mapa Furgocasa, respetamos tu privacidad y estamos comprometidos con la protección de tus datos personales. Esta política explica qué información recopilamos, cómo la usamos y cuáles son tus derechos.
+              </p>
             </div>
-          </section>
 
-          {/* Cómo usamos tu información */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">3. Cómo Usamos tu Información</h2>
-            <p className="text-gray-700 mb-3">Utilizamos la información recopilada para los siguientes propósitos:</p>
-            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-              <li><strong>Proveer y mejorar nuestros servicios:</strong> gestionar tu cuenta, personalizar tu experiencia y desarrollar nuevas funcionalidades.</li>
-              <li><strong>Comunicación:</strong> enviarte notificaciones, actualizaciones y responder a tus consultas.</li>
-              <li><strong>Seguridad:</strong> proteger la plataforma contra fraudes, abusos y actividades ilegales.</li>
-              <li><strong>Análisis y estadísticas:</strong> comprender cómo los usuarios interactúan con la plataforma para mejorarla.</li>
-              <li><strong>Cumplimiento legal:</strong> cumplir con obligaciones legales y regulatorias aplicables.</li>
-              <li><strong>Marketing:</strong> con tu consentimiento, enviarte información promocional sobre nuevas funciones y servicios.</li>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">1. Información que Recopilamos</h2>
+            
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">1.1. Información que Proporcionas</h3>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li><strong>Registro:</strong> Email, nombre, contraseña</li>
+              <li><strong>Perfil:</strong> Foto de perfil, información biográfica (opcional)</li>
+              <li><strong>Vehículos:</strong> Marca, modelo, año, kilometraje, fotos, número de bastidor</li>
+              <li><strong>Contenido:</strong> Comentarios, valoraciones, reportes de áreas</li>
+              <li><strong>Comunicaciones:</strong> Mensajes enviados a través del formulario de contacto</li>
             </ul>
-          </section>
 
-          {/* Compartir información */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">4. Compartir tu Información</h2>
-            <p className="text-gray-700 mb-3">No vendemos ni alquilamos tu información personal a terceros. Podemos compartir tu información en los siguientes casos:</p>
-            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-              <li><strong>Proveedores de servicios:</strong> empresas que nos ayudan a operar la plataforma (hosting, análisis, almacenamiento).</li>
-              <li><strong>Cumplimiento legal:</strong> si es requerido por ley, orden judicial o autoridad gubernamental.</li>
-              <li><strong>Protección de derechos:</strong> para proteger nuestros derechos, propiedad o seguridad, o los de nuestros usuarios.</li>
-              <li><strong>Con tu consentimiento:</strong> en cualquier otro caso, solo compartiremos tu información si nos das tu permiso explícito.</li>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-6">1.2. Información Recopilada Automáticamente</h3>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li><strong>Datos de uso:</strong> Páginas visitadas, tiempo en el sitio, funciones utilizadas</li>
+              <li><strong>Información del dispositivo:</strong> Tipo de dispositivo, sistema operativo, navegador</li>
+              <li><strong>Datos de ubicación:</strong> Ubicación aproximada (con tu consentimiento)</li>
+              <li><strong>Cookies:</strong> Datos almacenados en tu navegador para mejorar la experiencia</li>
             </ul>
-          </section>
 
-          {/* Cookies */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">5. Cookies y Tecnologías Similares</h2>
-            <p className="text-gray-700 mb-3">
-              Utilizamos cookies y tecnologías similares para mejorar tu experiencia en nuestra plataforma. Las cookies son pequeños 
-              archivos de texto almacenados en tu dispositivo que nos ayudan a:
+            <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-6">1.3. Información de Terceros</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Podemos recibir información de servicios de terceros como Google Maps (para mapas) y OpenAI (para valoraciones con IA).
             </p>
-            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-              <li>Mantener tu sesión iniciada</li>
-              <li>Recordar tus preferencias</li>
-              <li>Analizar el tráfico y uso del sitio</li>
-              <li>Personalizar contenido y anuncios</li>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">2. Cómo Usamos tu Información</h2>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              Utilizamos tu información para:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li>Proporcionar y mantener nuestro servicio</li>
+              <li>Procesar valoraciones de vehículos con IA (GPT-4)</li>
+              <li>Gestionar el sistema QR de protección</li>
+              <li>Enviar notificaciones sobre reportes y actualizaciones</li>
+              <li>Mejorar la experiencia del usuario</li>
+              <li>Analizar el uso del servicio para optimizarlo</li>
+              <li>Detectar y prevenir fraudes o abusos</li>
+              <li>Cumplir con obligaciones legales</li>
+              <li>Comunicarnos contigo sobre el servicio</li>
             </ul>
-            <p className="text-gray-700 mt-3">
-              Puedes configurar tu navegador para rechazar cookies, pero esto puede afectar la funcionalidad de la plataforma.
-            </p>
-          </section>
 
-          {/* Seguridad */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">6. Seguridad de tu Información</h2>
-            <p className="text-gray-700">
-              Implementamos medidas de seguridad técnicas, administrativas y físicas para proteger tu información personal contra 
-              acceso no autorizado, alteración, divulgación o destrucción. Utilizamos cifrado SSL/TLS para proteger la transmisión 
-              de datos sensibles y almacenamos la información en servidores seguros. Sin embargo, ningún método de transmisión por 
-              internet o almacenamiento electrónico es 100% seguro.
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">3. Compartir Información</h2>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">3.1. Información Pública</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Algunos datos son públicos por naturaleza:
             </p>
-          </section>
-
-          {/* Retención de datos */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">7. Retención de Datos</h2>
-            <p className="text-gray-700">
-              Conservamos tu información personal durante el tiempo necesario para cumplir con los propósitos descritos en esta política, 
-              a menos que la ley requiera o permita un período de retención más largo. Si eliminas tu cuenta, eliminaremos o anonimizaremos 
-              tu información personal, excepto cuando sea necesario conservarla por motivos legales o legítimos.
-            </p>
-          </section>
-
-          {/* Tus derechos */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">8. Tus Derechos</h2>
-            <p className="text-gray-700 mb-3">
-              De acuerdo con el Reglamento General de Protección de Datos (RGPD) y la legislación española aplicable, tienes los siguientes derechos:
-            </p>
-            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-              <li><strong>Acceso:</strong> solicitar una copia de la información personal que tenemos sobre ti.</li>
-              <li><strong>Rectificación:</strong> corregir información personal inexacta o incompleta.</li>
-              <li><strong>Eliminación:</strong> solicitar la eliminación de tu información personal (derecho al olvido).</li>
-              <li><strong>Limitación:</strong> solicitar que limitemos el procesamiento de tu información.</li>
-              <li><strong>Portabilidad:</strong> recibir tu información en un formato estructurado y legible por máquina.</li>
-              <li><strong>Oposición:</strong> oponerte al procesamiento de tu información para ciertos fines.</li>
-              <li><strong>Revocar consentimiento:</strong> retirar tu consentimiento en cualquier momento.</li>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li>Comentarios y valoraciones de áreas</li>
+              <li>Nombre de usuario visible en la comunidad</li>
+              <li>Información de perfil si eliges hacerla pública</li>
             </ul>
-            <p className="text-gray-700 mt-4">
-              Para ejercer cualquiera de estos derechos, contacta con nosotros en <strong className="text-sky-600">info@mapafurgocasa.com</strong>
-            </p>
-          </section>
 
-          {/* Menores de edad */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">9. Menores de Edad</h2>
-            <p className="text-gray-700">
-              Nuestra plataforma no está dirigida a menores de 16 años. No recopilamos intencionalmente información personal de menores. 
-              Si descubrimos que hemos recopilado información de un menor sin el consentimiento parental, eliminaremos esa información 
-              de inmediato.
+            <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-6">3.2. Proveedores de Servicios</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Compartimos información con proveedores que nos ayudan a operar el servicio:
             </p>
-          </section>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li><strong>Supabase:</strong> Almacenamiento y gestión de base de datos</li>
+              <li><strong>OpenAI (GPT-4):</strong> Procesamiento de valoraciones con IA</li>
+              <li><strong>Google Maps:</strong> Servicios de mapas y geolocalización</li>
+              <li><strong>Vercel/AWS:</strong> Hosting y entrega de contenido</li>
+            </ul>
 
-          {/* Transferencias internacionales */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">10. Transferencias Internacionales</h2>
-            <p className="text-gray-700">
-              Tu información puede ser transferida y almacenada en servidores ubicados fuera del Espacio Económico Europeo (EEE). 
-              En tal caso, nos aseguramos de que se implementen salvaguardas adecuadas para proteger tu información de acuerdo con 
-              el RGPD, como cláusulas contractuales estándar aprobadas por la Comisión Europea.
+            <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-6">3.3. Requisitos Legales</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Podemos divulgar tu información si es requerido por ley o para proteger nuestros derechos legales.
             </p>
-          </section>
 
-          {/* Cambios en la política */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">11. Cambios en esta Política</h2>
-            <p className="text-gray-700">
-              Podemos actualizar esta Política de Privacidad periódicamente para reflejar cambios en nuestras prácticas o por razones 
-              legales, operativas o regulatorias. Te notificaremos sobre cambios significativos publicando la nueva política en nuestra 
-              plataforma y actualizando la fecha de "Última actualización". Te recomendamos revisar esta política regularmente.
+            <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-6">3.4. Sistema QR</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Los testigos que escaneen tu código QR podrán enviar reportes con fotos y ubicación. Esta información te será notificada a ti.
             </p>
-          </section>
 
-          {/* Contacto */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">12. Contacto</h2>
-            <p className="text-gray-700 mb-4">
-              Si tienes preguntas, inquietudes o deseas ejercer tus derechos sobre tu información personal, puedes contactarnos a través de:
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">4. Seguridad de los Datos</h2>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              Implementamos medidas de seguridad para proteger tu información:
             </p>
-            <div className="bg-sky-50 border border-sky-200 rounded-lg p-4">
-              <p className="text-gray-700"><strong>Email:</strong> <span className="text-sky-600">info@mapafurgocasa.com</span></p>
-              <p className="text-gray-700 mt-2"><strong>Responsable:</strong> Mapa Furgocasa</p>
-              <p className="text-gray-700 mt-2"><strong>Sitio web:</strong> <a href="https://www.mapafurgocasa.com" className="text-sky-600 hover:underline">www.mapafurgocasa.com</a></p>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li>Cifrado SSL/TLS para todas las comunicaciones</li>
+              <li>Contraseñas hasheadas con algoritmos seguros</li>
+              <li>Acceso restringido a datos personales</li>
+              <li>Auditorías de seguridad periódicas</li>
+              <li>Backups encriptados</li>
+            </ul>
+            <p className="text-gray-600 leading-relaxed mt-4">
+              Sin embargo, ningún sistema es 100% seguro. No podemos garantizar la seguridad absoluta de tus datos.
+            </p>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">5. Retención de Datos</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Conservamos tu información mientras tu cuenta esté activa o mientras sea necesario para proporcionar el servicio. Puedes solicitar la eliminación de tu cuenta en cualquier momento.
+            </p>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">6. Tus Derechos</h2>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              Según el RGPD (Reglamento General de Protección de Datos), tienes derecho a:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li><strong>Acceso:</strong> Solicitar una copia de tus datos personales</li>
+              <li><strong>Rectificación:</strong> Corregir datos inexactos o incompletos</li>
+              <li><strong>Eliminación:</strong> Solicitar la eliminación de tus datos ("derecho al olvido")</li>
+              <li><strong>Portabilidad:</strong> Recibir tus datos en formato estructurado</li>
+              <li><strong>Oposición:</strong> Oponerte al procesamiento de tus datos</li>
+              <li><strong>Limitación:</strong> Solicitar la limitación del procesamiento</li>
+              <li><strong>Retirar consentimiento:</strong> En cualquier momento</li>
+            </ul>
+            <p className="text-gray-600 leading-relaxed mt-4">
+              Para ejercer estos derechos, contáctanos en: <strong>info@mapafurgocasa.com</strong>
+            </p>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">7. Cookies</h2>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              Utilizamos cookies para:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li><strong>Esenciales:</strong> Necesarias para el funcionamiento del servicio (autenticación, sesión)</li>
+              <li><strong>Funcionales:</strong> Recordar preferencias (idioma, filtros)</li>
+              <li><strong>Analíticas:</strong> Entender cómo se usa el servicio (Google Analytics)</li>
+            </ul>
+            <p className="text-gray-600 leading-relaxed mt-4">
+              Puedes gestionar las cookies desde la configuración de tu navegador.
+            </p>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">8. Menores de Edad</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Nuestro servicio no está dirigido a menores de 16 años. Si descubrimos que hemos recopilado datos de un menor sin consentimiento parental, eliminaremos esa información inmediatamente.
+            </p>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">9. Transferencias Internacionales</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Algunos de nuestros proveedores de servicios (como OpenAI) están ubicados fuera del Espacio Económico Europeo. Nos aseguramos de que estas transferencias cumplan con el RGPD y proporcionen un nivel adecuado de protección.
+            </p>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">10. Cambios en esta Política</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Podemos actualizar esta política de privacidad periódicamente. Te notificaremos de cambios significativos publicando la nueva política en esta página y actualizando la fecha de "última actualización".
+            </p>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">11. Contacto</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Si tienes preguntas sobre esta política de privacidad o sobre cómo manejamos tus datos, puedes contactarnos:
+            </p>
+            <div className="bg-gray-50 rounded-xl p-6 border-2 border-gray-200 mt-4">
+              <p className="text-gray-900 font-semibold mb-2">Responsable del Tratamiento:</p>
+              <p className="text-gray-900 font-semibold mb-2">Mapa Furgocasa / Furgocasa</p>
+              <p className="text-gray-600">Email: info@mapafurgocasa.com</p>
+              <p className="text-gray-600">Web: www.mapafurgocasa.com</p>
             </div>
-          </section>
 
-        </div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">12. Autoridad de Control</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Si consideras que tus derechos de protección de datos han sido vulnerados, puedes presentar una reclamación ante la Agencia Española de Protección de Datos (AEPD):
+            </p>
+            <div className="bg-gray-50 rounded-xl p-6 border-2 border-gray-200 mt-4">
+              <p className="text-gray-900 font-semibold mb-2">AEPD</p>
+              <p className="text-gray-600">C/ Jorge Juan, 6</p>
+              <p className="text-gray-600">28001 Madrid</p>
+              <p className="text-gray-600">www.aepd.es</p>
+            </div>
 
-        {/* Botón volver */}
-        <div className="mt-8 text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sky-600 hover:text-sky-700 font-medium transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Volver al inicio
-          </Link>
+            <div className="bg-blue-50 border-l-4 border-[#0b3c74] p-6 rounded-r-xl mt-12">
+              <p className="text-gray-700 font-semibold mb-2">
+                Última actualización: 15 de enero de 2025
+              </p>
+              <p className="text-gray-600 m-0">
+                Esta política es efectiva a partir de la fecha indicada y se aplica a todos los usuarios de Mapa Furgocasa.
+              </p>
+            </div>
+
+          </div>
         </div>
-      </div>
+      </section>
+
+      <Footer />
     </div>
   )
 }
-

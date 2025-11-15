@@ -1,296 +1,173 @@
-import Link from 'next/link'
-import Image from 'next/image'
+'use client'
 
-export const metadata = {
-  title: 'Condiciones del Servicio | Mapa Furgocasa',
-  description: 'Términos y condiciones de uso de Mapa Furgocasa',
-}
+import { Navbar } from '@/components/layout/Navbar'
+import { Footer } from '@/components/layout/Footer'
 
 export default function CondicionesPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100">
-      {/* Header Hero */}
-      <div className="bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] text-white shadow-xl">
-        <div className="max-w-4xl mx-auto px-4 py-12">
-          <Link href="/" className="inline-block mb-6 hover:opacity-80 transition-opacity">
-            <Image 
-              src="/logo-furgocasa.png" 
-              alt="Furgocasa" 
-              width={150} 
-              height={60}
-              className="h-12 w-auto"
-            />
-          </Link>
-          <h1 className="text-4xl md:text-5xl font-bold mb-3">Condiciones del Servicio</h1>
-          <p className="text-white/90 text-lg">Última actualización: {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+    <div className="min-h-screen bg-white">
+      <Navbar />
+
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] text-white py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              Condiciones del Servicio
+            </h1>
+            <p className="text-xl md:text-2xl text-white/90 leading-relaxed">
+              Última actualización: Enero 2025
+            </p>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Contenido */}
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
-          
-          {/* Introducción */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">1. Aceptación de los Términos</h2>
-            <p className="text-gray-700 leading-relaxed">
-              Bienvenido a <strong>Mapa Furgocasa</strong>. Al acceder y utilizar nuestra plataforma web, aplicación móvil y servicios 
-              relacionados (en adelante, "el Servicio"), aceptas estar sujeto a estos Términos y Condiciones de Uso (en adelante, "Términos"). 
-              Si no estás de acuerdo con alguna parte de estos Términos, no debes utilizar nuestro Servicio.
-            </p>
-          </section>
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto prose prose-lg">
+            
+            <div className="bg-blue-50 border-l-4 border-[#0b3c74] p-6 rounded-r-xl mb-12">
+              <p className="text-gray-700 leading-relaxed m-0">
+                Al acceder y utilizar Mapa Furgocasa, aceptas estar sujeto a estos términos y condiciones. Si no estás de acuerdo con alguna parte de estos términos, no debes utilizar nuestro servicio.
+              </p>
+            </div>
 
-          {/* Descripción del servicio */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">2. Descripción del Servicio</h2>
-            <p className="text-gray-700 leading-relaxed mb-3">
-              Mapa Furgocasa es una plataforma digital que permite a los usuarios:
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">1. Aceptación de los Términos</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Al registrarte y utilizar Mapa Furgocasa, confirmas que has leído, entendido y aceptado estos términos y condiciones, así como nuestra Política de Privacidad.
             </p>
-            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-              <li>Descubrir y localizar áreas de estacionamiento para autocaravanas, campers y furgonetas camperizadas en España.</li>
-              <li>Consultar información detallada sobre servicios, precios, ubicación y características de cada área.</li>
-              <li>Crear y compartir valoraciones, comentarios y fotografías de las áreas visitadas.</li>
-              <li>Planificar rutas personalizadas y guardar áreas favoritas.</li>
-              <li>Acceder a estadísticas y mapas interactivos de visitas.</li>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">2. Descripción del Servicio</h2>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              Mapa Furgocasa es una plataforma digital que ofrece:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li>Mapa interactivo con áreas de estacionamiento para autocaravanas</li>
+              <li>Planificador de rutas</li>
+              <li>Sistema de gestión de vehículos</li>
+              <li>Valoraciones automáticas con Inteligencia Artificial (GPT-4)</li>
+              <li>Sistema QR de protección para vehículos</li>
+              <li>Comunidad de autocaravanistas</li>
             </ul>
-          </section>
 
-          {/* Registro y cuenta */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">3. Registro y Cuenta de Usuario</h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">3.1. Creación de cuenta</h3>
-                <p className="text-gray-700">
-                  Para acceder a ciertas funcionalidades del Servicio, debes crear una cuenta proporcionando información precisa, 
-                  completa y actualizada. Puedes registrarte mediante correo electrónico y contraseña, o utilizando servicios de 
-                  terceros como Google.
-                </p>
-              </div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">3. Registro y Cuenta de Usuario</h2>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">3.1. Requisitos</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Para acceder a ciertas funcionalidades, debes registrarte y crear una cuenta. Debes proporcionar información precisa y actualizada durante el registro.
+            </p>
 
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">3.2. Seguridad de la cuenta</h3>
-                <p className="text-gray-700">
-                  Eres responsable de mantener la confidencialidad de tu contraseña y de todas las actividades que ocurran bajo tu 
-                  cuenta. Debes notificarnos inmediatamente si sospechas de algún uso no autorizado de tu cuenta.
-                </p>
-              </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-6">3.2. Seguridad de la Cuenta</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Eres responsable de mantener la confidencialidad de tu contraseña y de todas las actividades que ocurran bajo tu cuenta. Debes notificarnos inmediatamente cualquier uso no autorizado.
+            </p>
 
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">3.3. Edad mínima</h3>
-                <p className="text-gray-700">
-                  Debes tener al menos 16 años de edad para crear una cuenta y utilizar el Servicio. Si eres menor de edad, necesitas 
-                  el consentimiento de tus padres o tutores legales.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Uso aceptable */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">4. Uso Aceptable del Servicio</h2>
-            <p className="text-gray-700 mb-3">Te comprometes a utilizar el Servicio de manera responsable y a NO:</p>
-            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-              <li>Publicar contenido ilegal, difamatorio, obsceno, ofensivo, amenazante o que viole los derechos de terceros.</li>
-              <li>Hacerte pasar por otra persona o entidad, o falsificar tu afiliación con alguna persona u organización.</li>
-              <li>Recopilar información de otros usuarios sin su consentimiento.</li>
-              <li>Interferir o interrumpir el funcionamiento del Servicio, servidores o redes conectadas.</li>
-              <li>Utilizar el Servicio para enviar spam, virus, malware o cualquier código dañino.</li>
-              <li>Intentar acceder sin autorización a cuentas, sistemas o redes relacionados con el Servicio.</li>
-              <li>Utilizar técnicas de scraping, crawling o automatización para extraer datos del Servicio sin permiso.</li>
-              <li>Reproducir, duplicar, copiar, vender o revender el Servicio con fines comerciales sin autorización.</li>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">4. Uso del Servicio</h2>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">4.1. Uso Permitido</h3>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              Te comprometes a utilizar el servicio únicamente para fines legales y de acuerdo con estas condiciones. Está prohibido:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li>Utilizar el servicio de manera que pueda dañar, deshabilitar o sobrecargar nuestros servidores</li>
+              <li>Acceder sin autorización a sistemas o datos no destinados a ti</li>
+              <li>Publicar contenido ofensivo, ilegal o que viole derechos de terceros</li>
+              <li>Utilizar robots, scrapers o cualquier medio automatizado sin autorización</li>
+              <li>Suplantar la identidad de otra persona o entidad</li>
             </ul>
-          </section>
 
-          {/* Contenido del usuario */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">5. Contenido del Usuario</h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">5.1. Propiedad del contenido</h3>
-                <p className="text-gray-700">
-                  Conservas todos los derechos de propiedad sobre el contenido que publiques en el Servicio (valoraciones, comentarios, 
-                  fotos, rutas, etc.). Sin embargo, al publicar contenido, nos otorgas una licencia mundial, no exclusiva, libre de 
-                  regalías, sublicenciable y transferible para usar, reproducir, modificar, adaptar, publicar, traducir, distribuir 
-                  y mostrar dicho contenido en relación con el Servicio.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">5.2. Responsabilidad del contenido</h3>
-                <p className="text-gray-700">
-                  Eres el único responsable del contenido que publiques. Nos reservamos el derecho de eliminar cualquier contenido que 
-                  consideremos inapropiado, ilegal o que viole estos Términos, sin previo aviso.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">5.3. Moderación</h3>
-                <p className="text-gray-700">
-                  Nos reservamos el derecho, pero no la obligación, de monitorear, revisar y moderar el contenido publicado por los 
-                  usuarios. No somos responsables del contenido generado por usuarios ni de las opiniones expresadas en valoraciones 
-                  y comentarios.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Propiedad intelectual */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">6. Propiedad Intelectual</h2>
-            <p className="text-gray-700">
-              Todo el contenido del Servicio, incluyendo pero no limitado a textos, gráficos, logos, iconos, imágenes, clips de audio, 
-              descargas digitales, compilaciones de datos y software, es propiedad de Mapa Furgocasa o de sus proveedores de contenido 
-              y está protegido por las leyes de propiedad intelectual españolas e internacionales. No puedes reproducir, distribuir, 
-              modificar, crear obras derivadas, mostrar públicamente o explotar de ninguna manera el contenido sin nuestro permiso 
-              previo por escrito.
+            <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-6">4.2. Contenido del Usuario</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Al publicar contenido (comentarios, valoraciones, fotos, etc.), nos otorgas una licencia no exclusiva, mundial y libre de regalías para usar, reproducir y distribuir dicho contenido en relación con el servicio.
             </p>
-          </section>
 
-          {/* Servicios de terceros */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">7. Servicios de Terceros</h2>
-            <p className="text-gray-700 mb-3">
-              El Servicio puede contener enlaces a sitios web o servicios de terceros (como Google Maps, Google Sign-In, etc.) que no 
-              son propiedad ni están controlados por Mapa Furgocasa. No tenemos control sobre el contenido, políticas de privacidad o 
-              prácticas de sitios web o servicios de terceros, y no asumimos ninguna responsabilidad por ellos.
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">5. Valoraciones con Inteligencia Artificial</h2>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              Nuestro servicio de valoración de vehículos mediante IA es una estimación basada en:
             </p>
-            <p className="text-gray-700">
-              Te recomendamos leer los términos y condiciones y políticas de privacidad de cualquier sitio web o servicio de terceros 
-              que visites.
-            </p>
-          </section>
-
-          {/* Descargo de responsabilidad */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">8. Descargo de Responsabilidad</h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">8.1. Uso bajo tu propio riesgo</h3>
-                <p className="text-gray-700">
-                  El Servicio se proporciona "tal cual" y "según disponibilidad", sin garantías de ningún tipo, ya sean expresas o 
-                  implícitas. No garantizamos que el Servicio sea ininterrumpido, seguro o libre de errores.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">8.2. Precisión de la información</h3>
-                <p className="text-gray-700">
-                  Hacemos todo lo posible para proporcionar información precisa y actualizada sobre las áreas de estacionamiento, pero 
-                  no garantizamos la exactitud, integridad o actualidad de dicha información. Las condiciones, precios, servicios y 
-                  disponibilidad de las áreas pueden cambiar sin previo aviso.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">8.3. No somos responsables de</h3>
-                <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-                  <li>Daños, pérdidas o lesiones derivadas del uso de las áreas de estacionamiento.</li>
-                  <li>Problemas con vehículos, robos, accidentes o cualquier incidente ocurrido en las áreas.</li>
-                  <li>Interacciones entre usuarios o con terceros.</li>
-                  <li>Contenido generado por usuarios (valoraciones, comentarios, fotos).</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          {/* Limitación de responsabilidad */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">9. Limitación de Responsabilidad</h2>
-            <p className="text-gray-700">
-              En ningún caso Mapa Furgocasa, sus directores, empleados, socios, agentes, proveedores o afiliados serán responsables 
-              por daños indirectos, incidentales, especiales, consecuentes o punitivos, incluyendo sin limitación, pérdida de 
-              beneficios, datos, uso, fondo de comercio u otras pérdidas intangibles, resultantes de:
-            </p>
-            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4 mt-3">
-              <li>Tu acceso o uso (o incapacidad de acceso o uso) del Servicio.</li>
-              <li>Cualquier conducta o contenido de terceros en el Servicio.</li>
-              <li>Cualquier contenido obtenido del Servicio.</li>
-              <li>Acceso no autorizado, uso o alteración de tus transmisiones o contenido.</li>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li>Datos proporcionados por el usuario</li>
+              <li>Información de mercado disponible públicamente</li>
+              <li>Algoritmos de Inteligencia Artificial (GPT-4)</li>
             </ul>
-          </section>
+            <p className="text-gray-600 leading-relaxed mt-4">
+              <strong>Importante:</strong> Las valoraciones son estimaciones orientativas y no constituyen una oferta de compra o venta. El valor real puede variar según múltiples factores.
+            </p>
 
-          {/* Modificaciones del servicio */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">10. Modificaciones del Servicio</h2>
-            <p className="text-gray-700">
-              Nos reservamos el derecho de modificar, suspender o discontinuar el Servicio (o cualquier parte del mismo) en cualquier 
-              momento, con o sin previo aviso. No seremos responsables ante ti ni ante terceros por cualquier modificación, suspensión 
-              o discontinuación del Servicio.
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">6. Sistema QR de Protección</h2>
+            <p className="text-gray-600 leading-relaxed">
+              El sistema QR permite a terceros reportar incidentes relacionados con tu vehículo. No nos hacemos responsables de la veracidad de los reportes realizados por terceros ni de los daños derivados de su uso.
             </p>
-          </section>
 
-          {/* Terminación */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">11. Terminación</h2>
-            <p className="text-gray-700 mb-3">
-              Podemos terminar o suspender tu acceso al Servicio de inmediato, sin previo aviso ni responsabilidad, por cualquier 
-              motivo, incluyendo pero no limitado a una violación de estos Términos.
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">7. Información de Áreas</h2>
+            <p className="text-gray-600 leading-relaxed">
+              La información sobre áreas de estacionamiento se proporciona "tal cual". Aunque nos esforzamos por mantener la información actualizada y precisa, no garantizamos su exactitud completa. Los usuarios deben verificar la información localmente antes de utilizarla.
             </p>
-            <p className="text-gray-700">
-              Si deseas terminar tu cuenta, puedes hacerlo desde la configuración de tu perfil o contactando con nosotros. Tras la 
-              terminación, tu derecho a utilizar el Servicio cesará inmediatamente.
-            </p>
-          </section>
 
-          {/* Ley aplicable */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">12. Ley Aplicable y Jurisdicción</h2>
-            <p className="text-gray-700">
-              Estos Términos se regirán e interpretarán de acuerdo con las leyes de España, sin tener en cuenta sus disposiciones 
-              sobre conflictos de leyes. Cualquier disputa relacionada con estos Términos estará sujeta a la jurisdicción exclusiva 
-              de los tribunales de España.
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">8. Limitación de Responsabilidad</h2>
+            <p className="text-gray-600 leading-relaxed">
+              En la medida permitida por la ley, Mapa Furgocasa no será responsable de:
             </p>
-          </section>
+            <ul className="list-disc pl-6 space-y-2 text-gray-600">
+              <li>Daños directos, indirectos, incidentales o consecuentes</li>
+              <li>Pérdida de datos, beneficios o uso del servicio</li>
+              <li>Errores u omisiones en el contenido</li>
+              <li>Acciones de terceros basadas en información del servicio</li>
+            </ul>
 
-          {/* Cambios en los términos */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">13. Cambios en los Términos</h2>
-            <p className="text-gray-700">
-              Nos reservamos el derecho de modificar o reemplazar estos Términos en cualquier momento. Si una revisión es significativa, 
-              te notificaremos con al menos 30 días de antelación antes de que los nuevos términos entren en vigor. Tu uso continuado 
-              del Servicio después de que los cambios entren en vigor constituye tu aceptación de los nuevos Términos.
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">9. Modificaciones del Servicio</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Nos reservamos el derecho de modificar, suspender o discontinuar cualquier aspecto del servicio en cualquier momento, con o sin previo aviso.
             </p>
-          </section>
 
-          {/* Contacto */}
-          <section>
-            <h2 className="text-2xl font-bold text-[#0b3c74] mb-4">14. Contacto</h2>
-            <p className="text-gray-700 mb-4">
-              Si tienes preguntas sobre estos Términos y Condiciones, puedes contactarnos a través de:
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">10. Propiedad Intelectual</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Todo el contenido, diseño, logotipos, código y demás elementos del servicio son propiedad de Mapa Furgocasa o de sus licenciantes y están protegidos por leyes de propiedad intelectual.
             </p>
-            <div className="bg-sky-50 border border-sky-200 rounded-lg p-4">
-              <p className="text-gray-700"><strong>Email:</strong> <span className="text-sky-600">info@mapafurgocasa.com</span></p>
-              <p className="text-gray-700 mt-2"><strong>Responsable:</strong> Mapa Furgocasa</p>
-              <p className="text-gray-700 mt-2"><strong>Sitio web:</strong> <a href="https://www.mapafurgocasa.com" className="text-sky-600 hover:underline">www.mapafurgocasa.com</a></p>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">11. Enlaces a Terceros</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Nuestro servicio puede contener enlaces a sitios web de terceros. No somos responsables del contenido o prácticas de privacidad de estos sitios.
+            </p>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">12. Terminación</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Podemos suspender o terminar tu acceso al servicio en cualquier momento si incumples estos términos, sin previo aviso ni responsabilidad.
+            </p>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">13. Ley Aplicable</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Estos términos se rigen por las leyes españolas. Cualquier disputa se resolverá en los tribunales de España.
+            </p>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">14. Modificaciones de los Términos</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios entrarán en vigor al ser publicados en esta página. El uso continuado del servicio después de los cambios constituye tu aceptación de los nuevos términos.
+            </p>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">15. Contacto</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Si tienes preguntas sobre estos términos, puedes contactarnos en:
+            </p>
+            <div className="bg-gray-50 rounded-xl p-6 border-2 border-gray-200 mt-4">
+              <p className="text-gray-900 font-semibold mb-2">Mapa Furgocasa</p>
+              <p className="text-gray-600">Email: info@mapafurgocasa.com</p>
+              <p className="text-gray-600">Web: www.mapafurgocasa.com</p>
             </div>
-          </section>
 
-          {/* Aceptación */}
-          <section className="bg-sky-50 border border-sky-200 rounded-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-3">Aceptación de los Términos</h2>
-            <p className="text-gray-700">
-              Al utilizar Mapa Furgocasa, reconoces que has leído, comprendido y aceptado estar sujeto a estos Términos y Condiciones 
-              de Uso, así como a nuestra <Link href="/privacidad" className="text-sky-600 hover:underline font-medium">Política de Privacidad</Link>.
-            </p>
-          </section>
+            <div className="bg-blue-50 border-l-4 border-[#0b3c74] p-6 rounded-r-xl mt-12">
+              <p className="text-gray-700 font-semibold mb-2">
+                Última actualización: 15 de enero de 2025
+              </p>
+              <p className="text-gray-600 m-0">
+                Al continuar usando nuestro servicio, aceptas estos términos y condiciones en su versión más reciente.
+              </p>
+            </div>
 
+          </div>
         </div>
+      </section>
 
-        {/* Botón volver */}
-        <div className="mt-8 text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sky-600 hover:text-sky-700 font-medium transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Volver al inicio
-          </Link>
-        </div>
-      </div>
+      <Footer />
     </div>
   )
 }
-
