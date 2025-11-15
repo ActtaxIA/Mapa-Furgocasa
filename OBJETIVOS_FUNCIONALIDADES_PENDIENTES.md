@@ -191,9 +191,9 @@ Si no la sigues, podríamos:
 | **Mapa Interactivo**   | 3      | 3 (100%) ✅     | 0                   | 0 (0%)       |
 | **Planificador Rutas** | 6      | 4 (67%) 🎉      | 0                   | 2 (33%)      |
 | Chatbot IA             | 3      | 1 (33%)         | 0                   | 2 (67%)      |
-| **Gestión Vehículos**  | 10     | 9 (90%) 🔥      | 0 (0%)              | 1 (10%)      |
+| **Gestión Vehículos**  | 10     | 9 (90%) 🔥      | 0 (0%)              | 0 (0%)✅ 1 cancelado |
 | **Alertas Seguridad**  | 1      | 1 (100%) ✅     | 0                   | 0 (0%)       |
-| **TOTAL**              | **23** | **19 (83%)** 🎉 | **0 (0%)**          | **4 (17%)**  |
+| **TOTAL**              | **23** | **19 (83%)** 🎉 | **0 (0%)**          | **3 (13%)** + 1 cancelado |
 
 **Última actualización:** 15 Nov 2025 - ✅ ¡83% completado! Paradas múltiples también funcionan 🎉
 
@@ -310,6 +310,7 @@ Si no la sigues, podríamos:
 #### 2.2 Paradas Múltiples con Drag-and-Drop ✅ COMPLETO
 
 **Descripción:**
+
 - Añade tantas paradas intermedias como quieras ✅
 - Reordena paradas arrastrando y soltando ✅
 - Actualización dinámica de la ruta ✅
@@ -317,6 +318,7 @@ Si no la sigues, podríamos:
 **Estado actual:** ✅ COMPLETAMENTE IMPLEMENTADO (15 Nov 2025)
 
 **IMPLEMENTADO:**
+
 - ✅ Añadir paradas ilimitadas (botón "+ Añadir")
 - ✅ Eliminar paradas (botón X en cada una)
 - ✅ **Drag-and-drop para reordenar** (dnd-kit)
@@ -330,12 +332,14 @@ Si no la sigues, podríamos:
 - ✅ Toast informativo al cambiar orden
 
 **Tecnología:**
+
 - Librería: @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities
 - Sensores: PointerSensor (8px activación) + KeyboardSensor
 - Estrategia: verticalListSortingStrategy
 - Componente: SortableWaypoint (custom)
 
 **Verificado en código:**
+
 - Archivo: `components/ruta/PlanificadorRuta.tsx`
 - Componente SortableWaypoint: líneas 72-141
 - Sensores: líneas 187-197
@@ -757,32 +761,15 @@ Si no la sigues, podríamos:
 
 ---
 
-#### 4.7 Biblioteca de Documentos ⚠️
+#### 4.7 Biblioteca de Documentos ⛔ CANCELADO
 
-**Estado:**
+**Estado:** ⛔ NO SE IMPLEMENTARÁ
 
-- ✅ Tabla `vehiculo_documentos` creada en BD
-- ✅ Columnas: tipo_documento, nombre, url_archivo, fecha_emision, fecha_caducidad
-- ✅ Supabase Storage configurado
-- ❌ **NO existe interfaz de gestión**
+**Decisión del usuario:** No se desea procesar documentos de ITV, seguros, ni ningún tipo de documentación en la app.
 
-**Impacto:** Medio - Centraliza documentación importante  
-**Complejidad:** Media
+**Tabla SQL creada:** `vehiculo_documentos` - Puede eliminarse o dejarse por si cambia la decisión en el futuro.
 
-**Necesita UI:**
-
-- Gestor de documentos tipo biblioteca
-- Subida de archivos (PDF, imágenes)
-- Tipos: Ficha técnica, ITV, Seguro, Impuestos, Garantías, Manuales, Facturas
-- Vista previa de documentos
-- Alertas de caducidad (seguro, ITV)
-- Descarga individual o ZIP completo
-
-**Scripts SQL:** `reportes/05_gestion_vehiculos_tablas.sql`
-
-**Estimación UI:** 3 días desarrollo
-
-**Prioridad:** 🟠 MEDIA
+**Fecha decisión:** 15/11/2025
 
 ---
 
@@ -1152,7 +1139,7 @@ Si no la sigues, podríamos:
 7. **Recomendaciones de rutas con IA** - ⏱️ 4-5 días
    - Feature de chatbot avanzado
 
-**Total Prioridad Media:** ~17-19 días desarrollo 🎉 (1 feature ya existía!)
+**Total Prioridad Media:** ~12-14 días desarrollo 🎉 (2 features ya existían, 1 cancelada!)
 
 ---
 
@@ -1342,10 +1329,12 @@ Todas las fases
 - ❌ **4 funcionalidades (17%)** pendientes de implementar
 
 **¡2 CATEGORÍAS 100% COMPLETAS!**
+
 - 🗺️ Mapa Interactivo: 3/3 (100%) ✅
 - 🚨 Alertas Seguridad: 1/1 (100%) ✅
 
 **CASI COMPLETAS:**
+
 - 🛣️ Planificador Rutas: 4/6 (67%)
 - 🚐 Gestión Vehículos: 9/10 (90%)
 

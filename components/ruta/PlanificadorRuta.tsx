@@ -1028,10 +1028,10 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       setWaypoints((items) => {
         const oldIndex = items.findIndex(item => (item.id || `waypoint-${items.indexOf(item)}`) === active.id)
         const newIndex = items.findIndex(item => (item.id || `waypoint-${items.indexOf(item)}`) === over.id)
-        
+
         return arrayMove(items, oldIndex, newIndex)
       })
-      
+
       // Mostrar mensaje
       showToast('📍 Orden de paradas actualizado. Recalcula la ruta para ver cambios.', 'info')
     }
