@@ -141,7 +141,7 @@ export async function POST(
         .select('*')
         .eq('verificado', true)
         .not('precio', 'is', null)
-        .order('fecha_scraping', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(20)
 
       let comparablesInternos = []
@@ -171,13 +171,13 @@ export async function POST(
       // Agregar datos de mercado scrapeados
       if (datosMercado && datosMercado.length > 0) {
         comparablesInternos.push(...datosMercado.map(d => ({
-          titulo: `${d.marca || ''} ${d.modelo || ''} - ${d.ubicacion || 'España'}`.trim(),
+          titulo: `${d.marca || ''} ${d.modelo || ''} - ${d.pais || 'España'}`.trim(),
           precio: d.precio,
           kilometros: d.kilometros,
-          ubicacion: d.ubicacion,
-          link: d.url_anuncio,
-          fuente: d.fuente || 'BD Interna - Mercado',
-          fecha: d.fecha_scraping
+          ubicacion: d.pais || 'España',
+          link: null,
+          fuente: d.origen || 'BD Interna - Mercado',
+          fecha: d.fecha_transaccion || d.created_at
         })))
       }
 
@@ -391,13 +391,20 @@ export async function POST(
         año: vehiculo.año || null,
         precio: c.precio || null,
         kilometros: c.kilometros || null,
-        ubicacion: c.ubicacion || null,
-        url_anuncio: c.link || null,
-        fuente: c.fuente || 'SerpAPI',
-        descripcion: c.titulo || null,
-        fecha_scraping: new Date().toISOString(),
-        verificado: true, // Viene de SerpAPI, consideramos confiable
-        tipo_vehiculo: vehiculo.tipo_vehiculo || null
+        // ubicacion no existe en la tabla
+        // url_anuncio no existe en la tabla
+        // fuente no existe en la tabla
+        // descripcion no existe en la tabla
+        fecha_transaccion: new Date().toISOString().split('T')[0], // Solo fecha, no timestamp
+        verificado: true, // Viene de SerpAPI o BD interna
+        tipo_calefaccion: null,
+        homologacion: null,
+        estado: 'Usado',
+        origen: c.fuente || 'SerpAPI',
+        tipo_combustible: null,
+        tipo_dato: 'Valoración IA',
+        pais: 'España',
+        region: null
       }))
 
       const { data: mercadoGuardado, error: errorMercado } = await supabase
