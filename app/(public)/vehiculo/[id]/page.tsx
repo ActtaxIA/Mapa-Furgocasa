@@ -240,11 +240,231 @@ export default function VehiculoPage() {
     }
   }
 
-  const handlePonerEnVenta = (precio: number) => {
-    // Cambiar a la tab de venta y rellenar el precio
-    setActiveTab('venta')
-    // Aquí podrías también pasar el precio recomendado al componente VentaTab si es necesario
-    setToast({ message: `💰 Precio sugerido: ${precio.toLocaleString('es-ES')}€`, type: 'info' })
+  const descargarValoracionPDF = async (valoracion: any) => {
+    try {
+      setToast({ message: "Generando PDF completo...", type: "info" })
+      
+      // Importar jsPDF dinámicamente
+      const { default: jsPDF } = await import('jspdf')
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      })
+
+      const pageWidth = pdf.internal.pageSize.getWidth()
+      const pageHeight = pdf.internal.pageSize.getHeight()
+      const margin = 15
+      let yPos = 20
+
+      // Función para agregar nueva página si es necesario
+      const checkPageBreak = (requiredHeight: number) => {
+        if (yPos + requiredHeight > pageHeight - 20) {
+          pdf.addPage()
+          yPos = 20
+        }
+      }
+
+      // 1. HEADER CON LOGO Y TÍTULO
+      pdf.setFillColor(37, 99, 235) // Azul
+      pdf.rect(0, 0, pageWidth, 40, 'F')
+      
+      pdf.setTextColor(255, 255, 255)
+      pdf.setFontSize(20)
+      pdf.setFont("helvetica", "bold")
+      pdf.text("Informe de Valoración IA", margin, 25)
+      
+      pdf.setFontSize(12)
+      pdf.setFont("helvetica", "normal")
+      pdf.text(`${vehiculo?.marca || ''} ${vehiculo?.modelo || ''}`, margin, 32)
+      
+      pdf.setTextColor(0, 0, 0)
+      yPos = 50
+
+      // 2. INFORMACIÓN DEL VEHÍCULO
+      pdf.setFontSize(14)
+      pdf.setFont("helvetica", "bold")
+      pdf.text("Datos del Vehículo", margin, yPos)
+      yPos += 8
+
+      pdf.setFontSize(10)
+      pdf.setFont("helvetica", "normal")
+      const datosVehiculo = [
+        `Matrícula: ${vehiculo?.matricula || 'No especificada'}`,
+        `Marca: ${vehiculo?.marca || 'No especificada'}`,
+        `Modelo: ${vehiculo?.modelo || 'No especificado'}`,
+        `Año: ${vehiculo?.ano || 'No especificado'}`,
+        `Tipo: ${vehiculo?.tipo_vehiculo || 'Autocaravana'}`,
+        `Color: ${vehiculo?.color || 'No especificado'}`
+      ]
+
+      datosVehiculo.forEach((dato) => {
+        pdf.text(dato, margin, yPos)
+        yPos += 6
+      })
+
+      yPos += 5
+
+      // 3. PRECIOS DESTACADOS
+      checkPageBreak(30)
+      pdf.setFontSize(14)
+      pdf.setFont("helvetica", "bold")
+      pdf.text("Precios de Valoración", margin, yPos)
+      yPos += 8
+
+      pdf.setFontSize(10)
+      pdf.setFont("helvetica", "normal")
+      
+      if (valoracion.precio_salida) {
+        pdf.setFillColor(34, 197, 94) // Verde
+        pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, 'F')
+        pdf.setTextColor(255, 255, 255)
+        pdf.setFont("helvetica", "bold")
+        pdf.text(`Precio de Salida: ${valoracion.precio_salida.toLocaleString('es-ES')}€`, margin + 2, yPos)
+        pdf.setTextColor(0, 0, 0)
+        yPos += 10
+      }
+
+      if (valoracion.precio_objetivo) {
+        pdf.setFillColor(59, 130, 246) // Azul
+        pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, 'F')
+        pdf.setTextColor(255, 255, 255)
+        pdf.setFont("helvetica", "bold")
+        pdf.text(`Precio Objetivo: ${valoracion.precio_objetivo.toLocaleString('es-ES')}€`, margin + 2, yPos)
+        pdf.setTextColor(0, 0, 0)
+        yPos += 10
+      }
+
+      if (valoracion.precio_minimo) {
+        pdf.setFillColor(249, 115, 22) // Naranja
+        pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, 'F')
+        pdf.setTextColor(255, 255, 255)
+        pdf.setFont("helvetica", "bold")
+        pdf.text(`Precio Mínimo: ${valoracion.precio_minimo.toLocaleString('es-ES')}€`, margin + 2, yPos)
+        pdf.setTextColor(0, 0, 0)
+        yPos += 10
+      }
+
+      yPos += 5
+
+      // 4. FOTOS DEL VEHÍCULO
+      const supabase = createClient()
+      const todasLasFotos: string[] = []
+      if (vehiculo?.foto_url) todasLasFotos.push(vehiculo.foto_url)
+      if (vehiculo?.fotos_adicionales && Array.isArray(vehiculo.fotos_adicionales)) {
+        todasLasFotos.push(...vehiculo.fotos_adicionales)
+      }
+
+      if (todasLasFotos.length > 0) {
+        checkPageBreak(50)
+        pdf.setFontSize(14)
+        pdf.setFont("helvetica", "bold")
+        pdf.text("Fotografías del Vehículo", margin, yPos)
+        yPos += 8
+
+        for (let i = 0; i < Math.min(todasLasFotos.length, 5); i++) { // Máximo 5 fotos
+          try {
+            const fotoUrl = todasLasFotos[i]
+            const { data: fotoData } = await supabase.storage
+              .from('vehiculos')
+              .download(fotoUrl.replace(/^.*\/vehiculos\//, ''))
+
+            if (fotoData) {
+              const fotoBlob = await fotoData.arrayBuffer()
+              const fotoBase64 = btoa(String.fromCharCode(...new Uint8Array(fotoBlob)))
+              
+              // Procesar imagen para corregir orientación
+              const img = new Image()
+              const fotoCorregidaBase64 = await new Promise<string>((resolve) => {
+                img.onload = () => {
+                  const canvas = document.createElement('canvas')
+                  const ctx = canvas.getContext('2d')
+                  if (ctx) {
+                    canvas.width = img.width
+                    canvas.height = img.height
+                    ctx.drawImage(img, 0, 0)
+                    resolve(canvas.toDataURL('image/jpeg', 0.8))
+                  } else {
+                    resolve(`data:image/jpeg;base64,${fotoBase64}`)
+                  }
+                }
+                img.src = `data:image/jpeg;base64,${fotoBase64}`
+              })
+
+              checkPageBreak(60)
+              pdf.setFontSize(9)
+              pdf.setFont("helvetica", "normal")
+              pdf.text(`Fotografía ${i + 1}:`, margin, yPos)
+              yPos += 5
+
+              const maxWidth = pageWidth - 2 * margin
+              const maxHeight = 60
+              const imgWidth = maxWidth
+              const imgHeight = maxHeight
+
+              pdf.addImage(fotoCorregidaBase64, 'JPEG', margin, yPos, imgWidth, imgHeight)
+              yPos += imgHeight + 8
+            }
+          } catch (error) {
+            console.warn(`Error cargando foto ${i + 1}:`, error)
+          }
+        }
+      }
+
+      // 5. INFORME COMPLETO
+      checkPageBreak(30)
+      pdf.setFontSize(14)
+      pdf.setFont("helvetica", "bold")
+      pdf.text("Informe de Valoración Completo", margin, yPos)
+      yPos += 8
+
+      // Convertir markdown a texto plano para PDF
+      const textoPlano = valoracion.informe_texto
+        .replace(/##\s+/g, '\n\n')
+        .replace(/###\s+/g, '\n')
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/\*(.*?)\*/g, '$1')
+        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+
+      pdf.setFontSize(9)
+      pdf.setFont("helvetica", "normal")
+      const lines = pdf.splitTextToSize(textoPlano, pageWidth - 2 * margin)
+      
+      lines.forEach((line: string) => {
+        checkPageBreak(6)
+        pdf.text(line, margin, yPos)
+        yPos += 6
+      })
+
+      // 6. FOOTER
+      const totalPages = pdf.getNumberOfPages()
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i)
+        pdf.setFontSize(8)
+        pdf.setTextColor(128, 128, 128)
+        pdf.text(
+          `Página ${i} de ${totalPages} - Generado el ${new Date().toLocaleDateString('es-ES')}`,
+          pageWidth / 2,
+          pageHeight - 10,
+          { align: 'center' }
+        )
+        pdf.text(
+          'Mapa Furgocasa - www.mapafurgocasa.com',
+          pageWidth / 2,
+          pageHeight - 5,
+          { align: 'center' }
+        )
+      }
+
+      // Descargar PDF
+      const nombreArchivo = `Valoracion_${vehiculo?.matricula || 'vehiculo'}_${new Date().toISOString().split('T')[0]}.pdf`
+      pdf.save(nombreArchivo)
+      
+      setToast({ message: "✅ PDF descargado correctamente", type: "success" })
+    } catch (error) {
+      console.error('Error generando PDF:', error)
+      setToast({ message: "Error al generar el PDF", type: "error" })
+    }
   }
 
   if (loading) {
@@ -577,7 +797,8 @@ export default function VehiculoPage() {
                       informe={informe}
                       vehiculoMarca={vehiculo.marca}
                       vehiculoModelo={vehiculo.modelo}
-                      onPonerEnVenta={handlePonerEnVenta}
+                      onDescargarPDF={() => descargarValoracionPDF(informe)}
+                      todasLasValoraciones={valoracionesIA}
                     />
                   ))}
                 </div>

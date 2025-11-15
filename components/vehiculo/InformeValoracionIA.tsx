@@ -35,17 +35,19 @@ interface Props {
   informe: InformeValoracion
   vehiculoMarca?: string
   vehiculoModelo?: string
-  onPonerEnVenta?: (precio: number) => void
+  onDescargarPDF?: () => void
+  todasLasValoraciones?: InformeValoracion[] // Histórico completo
 }
 
 export default function InformeValoracionIA({
   informe,
   vehiculoMarca = 'Vehículo',
   vehiculoModelo = '',
-  onPonerEnVenta
+  onDescargarPDF,
+  todasLasValoraciones = []
 }: Props) {
   const [mostrarComparables, setMostrarComparables] = useState(false)
-  const [seccionActiva, setSeccionActiva] = useState<'informe' | 'comparables' | 'datos'>('informe')
+  const [seccionActiva, setSeccionActiva] = useState<'informe' | 'comparables' | 'datos' | 'historico'>('informe')
 
   const formatearFecha = (fecha: string) => {
     return new Date(fecha).toLocaleDateString('es-ES', {
@@ -173,6 +175,16 @@ export default function InformeValoracionIA({
             }`}
           >
             📊 Datos Técnicos
+          </button>
+          <button
+            onClick={() => setSeccionActiva('historico')}
+            className={`px-4 py-3 font-semibold text-sm transition-all ${
+              seccionActiva === 'historico'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            📅 Histórico ({todasLasValoraciones.length})
           </button>
         </div>
       </div>
@@ -305,10 +317,29 @@ export default function InformeValoracionIA({
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-500">
-                  No se encontraron comparables en esta valoración
-                </p>
+              <div className="text-center py-12 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border-2 border-dashed border-blue-200">
+                <div className="max-w-md mx-auto">
+                  <svg className="w-20 h-20 text-blue-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    No hay comparables disponibles
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Esta valoración se generó sin acceso a datos del mercado en tiempo real.
+                  </p>
+                  <div className="bg-white rounded-lg p-4 border border-blue-200 text-left">
+                    <p className="text-xs font-semibold text-blue-900 mb-2">ℹ️ ¿Por qué no hay comparables?</p>
+                    <ul className="text-xs text-gray-700 space-y-1">
+                      <li>• El servicio de búsqueda de mercado puede estar temporalmente no disponible</li>
+                      <li>• La valoración se basó únicamente en datos internos del vehículo</li>
+                      <li>• Los precios son estimados usando modelos de IA sin comparación directa</li>
+                    </ul>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-4">
+                    💡 La valoración es válida pero tiene un nivel de confianza "{informe.nivel_confianza}"
+                  </p>
+                </div>
               </div>
             )}
           </div>
@@ -319,16 +350,28 @@ export default function InformeValoracionIA({
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Métrica: Depreciación */}
-              {informe.depreciacion_aplicada !== null && (
+              {informe.depreciacion_aplicada !== null ? (
                 <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-4 border border-red-200">
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                    📉 Depreciación Aplicada
+                    📉 Depreciación Total
                   </h4>
                   <p className="text-3xl font-bold text-red-600">
                     {informe.depreciacion_aplicada.toFixed(1)}%
                   </p>
                   <p className="text-xs text-gray-600 mt-1">
-                    Pérdida de valor desde compra
+                    Desde precio de compra hasta valor actual
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-gradient-to-br from-gray-50 to-slate-50 rounded-lg p-4 border border-gray-200">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                    📉 Depreciación
+                  </h4>
+                  <p className="text-lg font-semibold text-gray-400">
+                    No disponible
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Añade el precio de compra en "Datos de Compra"
                   </p>
                 </div>
               )}
@@ -390,22 +433,132 @@ export default function InformeValoracionIA({
             </div>
           </div>
         )}
+
+        {/* Tab: Histórico */}
+        {seccionActiva === 'historico' && (
+          <div>
+            {todasLasValoraciones.length > 0 ? (
+              <div className="space-y-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                  <h3 className="font-semibold text-blue-900 mb-2">
+                    📅 Evolución de Valoraciones
+                  </h3>
+                  <p className="text-sm text-blue-800">
+                    Historial de {todasLasValoraciones.length} valoración(es) generada(s) para este vehículo.
+                    Consulta la evolución de precios a lo largo del tiempo.
+                  </p>
+                </div>
+
+                {/* Línea de tiempo */}
+                <div className="relative">
+                  {/* Línea vertical */}
+                  <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 via-cyan-500 to-blue-300"></div>
+
+                  {todasLasValoraciones.map((val, index) => {
+                    const esMasReciente = val.id === informe.id
+                    return (
+                      <div key={val.id} className="relative pl-20 pb-8">
+                        {/* Círculo indicador */}
+                        <div className={`absolute left-5 w-6 h-6 rounded-full border-4 ${
+                          esMasReciente 
+                            ? 'bg-blue-600 border-blue-200 ring-4 ring-blue-100' 
+                            : 'bg-white border-gray-300'
+                        }`}>
+                          {esMasReciente && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-white text-xs font-bold">✓</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Contenido */}
+                        <div className={`rounded-lg border-2 p-4 ${
+                          esMasReciente 
+                            ? 'bg-blue-50 border-blue-400 shadow-md' 
+                            : 'bg-white border-gray-200'
+                        }`}>
+                          <div className="flex items-start justify-between mb-3">
+                            <div>
+                              <h4 className="font-semibold text-gray-900">
+                                Valoración #{todasLasValoraciones.length - index}
+                                {esMasReciente && (
+                                  <span className="ml-2 px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
+                                    Actual
+                                  </span>
+                                )}
+                              </h4>
+                              <p className="text-sm text-gray-600">
+                                {formatearFecha(val.fecha_valoracion)}
+                              </p>
+                            </div>
+                            <span className={`px-2 py-1 rounded text-xs font-semibold ${getNivelConfianzaColor(val.nivel_confianza)}`}>
+                              {val.nivel_confianza}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-3 text-sm">
+                            <div className="bg-green-50 rounded p-2">
+                              <span className="text-gray-600 text-xs">Precio Salida</span>
+                              <p className="font-bold text-green-700">
+                                {formatearPrecio(val.precio_salida)}
+                              </p>
+                            </div>
+                            <div className="bg-blue-50 rounded p-2">
+                              <span className="text-gray-600 text-xs">Precio Objetivo</span>
+                              <p className="font-bold text-blue-700">
+                                {formatearPrecio(val.precio_objetivo)}
+                              </p>
+                            </div>
+                            <div className="bg-orange-50 rounded p-2">
+                              <span className="text-gray-600 text-xs">Precio Mínimo</span>
+                              <p className="font-bold text-orange-700">
+                                {formatearPrecio(val.precio_minimo)}
+                              </p>
+                            </div>
+                          </div>
+
+                          {val.num_comparables > 0 && (
+                            <div className="mt-3 text-xs text-gray-600">
+                              📊 {val.num_comparables} comparables • 
+                              {val.precio_base_mercado && ` Mercado: ${formatearPrecio(val.precio_base_mercado)}`}
+                              {val.depreciacion_aplicada !== null && val.depreciacion_aplicada > 0 && 
+                                ` • Depreciación: ${val.depreciacion_aplicada.toFixed(1)}%`}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-500">
+                  Esta es la primera valoración de este vehículo
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Footer con acciones */}
-      {onPonerEnVenta && informe.precio_objetivo && (
-        <div className="bg-gray-50 px-6 py-4 border-t flex items-center justify-between">
-          <p className="text-sm text-gray-600">
-            ¿Quieres poner tu vehículo en venta con el precio recomendado?
-          </p>
+      <div className="bg-gray-50 px-6 py-4 border-t flex items-center justify-between">
+        <p className="text-sm text-gray-600">
+          Descarga un informe completo en PDF con fotos y detalles del vehículo
+        </p>
+        {onDescargarPDF && (
           <button
-            onClick={() => onPonerEnVenta(informe.precio_objetivo!)}
-            className="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all shadow-md hover:shadow-lg"
+            onClick={onDescargarPDF}
+            className="px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
           >
-            💰 Poner en Venta
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            📄 Descargar Valoración en PDF
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

@@ -244,6 +244,23 @@ export async function POST(
     // 7. GUARDAR EN BASE DE DATOS
     console.log(`\n💾 [PASO 7/7] Guardando en base de datos...`)
 
+    // Calcular precio base de mercado (promedio de comparables)
+    const precioBaseMercado = comparables.length > 0 
+      ? comparables.reduce((sum, c) => sum + (c.precio || 0), 0) / comparables.filter(c => c.precio).length 
+      : null
+
+    // Calcular depreciación aplicada (desde precio de compra del usuario hasta precio objetivo IA)
+    const precioCompraUsuario = valoracion?.precio_compra
+    const depreciacionAplicada = precioCompraUsuario && precioObjetivo
+      ? ((precioCompraUsuario - precioObjetivo) / precioCompraUsuario) * 100
+      : null
+
+    console.log(`\n📊 Cálculos finales:`)
+    console.log(`   💰 Precio base mercado: ${precioBaseMercado ? precioBaseMercado.toFixed(0) + '€' : 'N/A'}`)
+    console.log(`   💵 Precio compra usuario: ${precioCompraUsuario ? precioCompraUsuario.toFixed(0) + '€' : 'No especificado'}`)
+    console.log(`   🎯 Precio objetivo IA: ${precioObjetivo}€`)
+    console.log(`   📉 Depreciación aplicada: ${depreciacionAplicada !== null ? depreciacionAplicada.toFixed(1) + '%' : 'N/A (no hay precio de compra)'}`)
+
     const { data: informeGuardado, error: errorGuardar } = await supabase
       .from('valoracion_ia_informes')
       .insert({
@@ -258,8 +275,8 @@ export async function POST(
         comparables_json: comparables,
         num_comparables: comparables.length,
         nivel_confianza: comparables.length >= 5 ? 'Alta' : comparables.length >= 3 ? 'Media' : comparables.length >= 1 ? 'Baja' : 'Estimativa',
-        precio_base_mercado: comparables.length > 0 ? comparables.reduce((sum, c) => sum + (c.precio || 0), 0) / comparables.filter(c => c.precio).length : null,
-        depreciacion_aplicada: valoracion?.precio_compra && precioObjetivo ? ((valoracion.precio_compra - precioObjetivo) / valoracion.precio_compra) * 100 : null
+        precio_base_mercado: precioBaseMercado,
+        depreciacion_aplicada: depreciacionAplicada
       })
       .select()
       .single()
