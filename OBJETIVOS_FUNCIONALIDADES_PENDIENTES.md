@@ -181,11 +181,13 @@ Si no la sigues, podríamos:
 | Categoría | Total | ✅ Implementado | ⚠️ SQL OK, UI Falta | ❌ Pendiente |
 |-----------|-------|----------------|---------------------|--------------|
 | Mapa Interactivo | 3 | 2 (67%) | 0 | 1 (33%) |
-| Planificador Rutas | 6 | 2 (33%) | 0 | 4 (67%) |
+| **Planificador Rutas** | 6 | 3 (50%) ⬆️ | 0 | 3 (50%) |
 | Chatbot IA | 3 | 1 (33%) | 0 | 2 (67%) |
 | **Gestión Vehículos** | 10 | 2 (20%) | 6 (60%) | 2 (20%) |
 | Alertas Seguridad | 1 | 1 (100%) | 0 | 0 (0%) |
-| **TOTAL** | **23** | **8 (35%)** | **6 (26%)** | **9 (39%)** |
+| **TOTAL** | **23** | **9 (39%)** ⬆️ | **6 (26%)** | **8 (35%)** ⬇️ |
+
+**Última actualización:** 15 Nov 2025 - ✅ Exportar GPX implementado
 
 ---
 
@@ -377,30 +379,36 @@ Si no la sigues, podríamos:
 
 ---
 
-#### 2.6 Exportar Ruta a GPS (Formato GPX)
+#### 2.6 Exportar Ruta a GPS (Formato GPX) ✅ IMPLEMENTADO
+
 **Descripción:** 
 - Botón "Exportar GPX" en planificador
 - Descarga archivo GPX compatible con Garmin, TomTom, etc.
 - Incluye todos los waypoints de la ruta
 
-**Estado actual:** ❌ NO implementado - **MENCIONADO EN FAQs**  
+**Estado actual:** ✅ IMPLEMENTADO - 15 Nov 2025  
 **Impacto:** ALTO - Prometido explícitamente  
-**Complejidad:** Media  
 
-**Necesita:** 
-- Librería de generación GPX (gpx-builder o manual con XML)
-- Convertir ruta a formato GPX 1.1
-- Incluir waypoints, track, metadata
-- Validación del archivo generado
-- Botón de descarga en UI
+**Implementación:**
+- ✅ Utilidad de generación GPX: `lib/gpx/generate-gpx.ts`
+- ✅ Función `generateGPX()` - Genera XML GPX 1.1 estándar
+- ✅ Función `downloadGPX()` - Descarga archivo en navegador
+- ✅ Función `generateGPXFilename()` - Nombres sanitizados
+- ✅ Botón en UI del planificador de rutas
+- ✅ Incluye: waypoints (origen + paradas + destino), track completo, route para navegación, metadata con distancia y duración
+- ✅ Compatible con: Garmin, TomTom, Suunto, y mayoría de GPS
+
+**Verificado en código:**
+- Archivo: `lib/gpx/generate-gpx.ts` (nuevo, 214 líneas)
+- Archivo: `components/ruta/PlanificadorRuta.tsx` (añadida función `handleExportarGPX`)
+- UI: Botón azul "Exportar GPX" visible cuando hay ruta calculada
+- Fecha implementación: 15/11/2025
 
 **Prometido en:** 
 - README.md - Sección FAQs
 - Mencionado por usuario como prometido
 
-**Estimación:** 2 días desarrollo
-
-**Prioridad:** 🔴 ALTA (Prometido explícitamente al usuario)
+**Tiempo real:** 1 hora desarrollo ✅
 
 ---
 
@@ -983,9 +991,7 @@ Si no la sigues, podríamos:
 
 ### 🔴 PRIORIDAD ALTA - Implementar PRIMERO (Muy prometido o bloqueante)
 
-1. **Exportar Ruta a GPS (GPX)** - ⏱️ 2 días
-   - Mencionado en FAQs por el usuario
-   - Complejidad media, impacto alto
+1. ~~**Exportar Ruta a GPS (GPX)**~~ - ✅ **COMPLETADO** (15 Nov 2025)
    
 2. **Sistema de Mantenimientos - UI** - ⏱️ 3-4 días
    - Muy prometido en emails
@@ -1007,7 +1013,7 @@ Si no la sigues, podríamos:
    - Métrica esencial prometida
    - Depende de datos económicos
 
-**Total Prioridad Alta:** ~17-20 días desarrollo
+**Total Prioridad Alta restante:** ~15-18 días desarrollo (~~2 días~~ GPX completado)
 
 ---
 
@@ -1202,9 +1208,9 @@ Todas las fases
 ## 🏆 CONCLUSIÓN
 
 ### Estado Actual:
-- ✅ **8 funcionalidades (35%)** completamente implementadas
+- ✅ **9 funcionalidades (39%)** completamente implementadas ⬆️
 - ⚠️ **6 funcionalidades (26%)** con SQL listo, falta UI
-- ❌ **9 funcionalidades (39%)** pendientes de implementar
+- ❌ **8 funcionalidades (35%)** pendientes de implementar ⬇️
 
 ### El Camino Adelante:
 La buena noticia es que **la arquitectura (SQL) está muy avanzada**. La mayoría del trabajo pendiente es **frontend/UI**, que es más rápido que backend.
@@ -1222,6 +1228,28 @@ Con un desarrollo enfocado y priorizado, podemos tener la plataforma **cumpliend
 ---
 
 ## 📜 HISTORIAL DE VERIFICACIONES
+
+### 15 de Noviembre 2025 - Implementación: Exportar GPX ✅
+
+**Feature completada:** Exportación de rutas a formato GPX
+
+**Archivos creados:**
+- `lib/gpx/generate-gpx.ts` (214 líneas) - Utilidades de generación GPX
+
+**Archivos modificados:**
+- `components/ruta/PlanificadorRuta.tsx` - Añadida función `handleExportarGPX()` y botón UI
+
+**Funcionalidad:**
+- Genera archivos GPX 1.1 estándar
+- Compatible con Garmin, TomTom, Suunto, y mayoría de dispositivos GPS
+- Incluye waypoints, track completo, route de navegación
+- Metadata con distancia y duración
+- Nombres de archivo sanitizados
+
+**Tiempo de desarrollo:** 1 hora  
+**Estado:** 🟢 Listo para producción
+
+---
 
 ### 15 de Noviembre 2025 - Verificación Inicial Completa
 

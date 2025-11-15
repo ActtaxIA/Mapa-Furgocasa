@@ -12,9 +12,11 @@ import {
   ArrowPathIcon,
   FunnelIcon,
   XMarkIcon,
-  BookmarkIcon
+  BookmarkIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline'
 import { useToast } from '@/hooks/useToast'
+import { generateGPX, downloadGPX, generateGPXFilename } from '@/lib/gpx/generate-gpx'
 
 // Tipos simplificados para Google Maps
 type GoogleMap = any
@@ -1286,6 +1288,73 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
     }
   }
 
+  const handleExportarGPX = () => {
+    if (!currentRoute || !origen || !destino) {
+      showToast('No hay ruta para exportar', 'error')
+      return
+    }
+
+    try {
+      // Calcular distancia y duración totales
+      let distanciaTotal = 0
+      let duracionTotal = 0
+
+      currentRoute.legs.forEach((leg: any) => {
+        if (leg.distance) distanciaTotal += leg.distance.value
+        if (leg.duration) duracionTotal += leg.duration.value
+      })
+
+      // Preparar datos para GPX
+      const rutaDataGPX = {
+        nombre: loadedRuta?.nombre || `De ${origen.name} a ${destino.name}`,
+        descripcion: loadedRuta?.descripcion || undefined,
+        origen: {
+          nombre: origen.name,
+          latitud: origen.lat,
+          longitud: origen.lng
+        },
+        destino: {
+          nombre: destino.name,
+          latitud: destino.lat,
+          longitud: destino.lng
+        },
+        paradas: waypoints.map((wp: any, index: number) => ({
+          nombre: wp.name,
+          latitud: wp.lat,
+          longitud: wp.lng,
+          orden: index
+        })),
+        distancia_km: distanciaTotal / 1000,
+        duracion_minutos: Math.round(duracionTotal / 60),
+        geometria: {
+          type: 'FeatureCollection',
+          features: [{
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: currentRoute.overview_path.map((point: any) => [
+                point.lng(),
+                point.lat()
+              ])
+            }
+          }]
+        }
+      }
+
+      // Generar archivo GPX
+      const gpxContent = generateGPX(rutaDataGPX)
+      const filename = generateGPXFilename(rutaDataGPX.nombre)
+      
+      // Descargar archivo
+      downloadGPX(gpxContent, filename)
+      
+      showToast('📥 Archivo GPX descargado correctamente', 'success')
+    } catch (error) {
+      console.error('Error exportando a GPX:', error)
+      showToast('Error al exportar la ruta a GPX', 'error')
+    }
+  }
+
   return (
     <div className="h-full flex">
       {/* Modal para Guardar Ruta */}
@@ -1567,6 +1636,18 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                   </div>
                 )}
               </>
+            )}
+
+            {/* Botón Exportar GPX */}
+            {currentRoute && origen && destino && (
+              <button
+                onClick={handleExportarGPX}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30"
+                title="Descargar ruta en formato GPX para GPS (Garmin, TomTom, etc.)"
+              >
+                <ArrowDownTrayIcon className="w-5 h-5" />
+                Exportar GPX
+              </button>
             )}
 
             <button
