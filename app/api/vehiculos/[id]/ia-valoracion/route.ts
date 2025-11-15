@@ -15,16 +15,25 @@ export async function POST(
   const startTime = Date.now()
 
   try {
+    console.log(`\n${'='.repeat(60)}`)
+    console.log(`🤖 [IA-VALORACION] INICIANDO PROCESO`)
+    console.log(`${'='.repeat(60)}`)
+    console.log(`📍 Vehículo ID: ${params.id}`)
+    console.log(`⏰ Timestamp: ${new Date().toISOString()}`)
+    
     const supabase = createRouteHandlerClient({ cookies })
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
+      console.error('❌ Usuario no autenticado')
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
-    console.log(`🤖 Iniciando valoración IA para vehículo ${params.id}`)
+    console.log(`👤 Usuario: ${user.id} (${user.email})`)
 
     // 1. RECOPILAR DATOS DEL VEHÍCULO
+    console.log(`\n📥 [PASO 1/7] Recopilando datos del vehículo...`)
+    
     const { data: vehiculo, error: vehiculoError } = await supabase
       .from('vehiculos_registrados')
       .select('*')
@@ -33,8 +42,11 @@ export async function POST(
       .single()
 
     if (vehiculoError || !vehiculo) {
+      console.error('❌ Vehículo no encontrado:', vehiculoError)
       return NextResponse.json({ error: 'Vehículo no encontrado' }, { status: 404 })
     }
+
+    console.log(`✅ Vehículo encontrado: ${vehiculo.marca} ${vehiculo.modelo}`)
 
     const { data: valoracion } = await supabase
       .from('vehiculo_valoracion_economica')
@@ -42,11 +54,15 @@ export async function POST(
       .eq('vehiculo_id', params.id)
       .maybeSingle()
 
+    console.log(`   💰 Datos económicos: ${valoracion ? 'Sí (precio: ' + valoracion.precio_compra + '€)' : 'No disponibles'}`)
+
     const { data: ficha } = await supabase
       .from('vehiculo_ficha_tecnica')
       .select('*')
       .eq('vehiculo_id', params.id)
       .maybeSingle()
+
+    console.log(`   📋 Ficha técnica: ${ficha ? 'Sí' : 'No disponible'}`)
 
     const { data: averias } = await supabase
       .from('averias')
@@ -54,60 +70,64 @@ export async function POST(
       .eq('vehiculo_id', params.id)
       .in('severidad', ['alta', 'critica'])
 
+    console.log(`   🔧 Averías graves: ${averias?.length || 0}`)
+
     const { data: mejoras } = await supabase
       .from('vehiculo_mejoras')
       .select('*')
       .eq('vehiculo_id', params.id)
 
+    console.log(`   ⚙️  Mejoras: ${mejoras?.length || 0}`)
+
     // 2. BUSCAR COMPARABLES EN INTERNET (OPCIONAL)
-    console.log(`🔍 Buscando comparables...`)
+    console.log(`\n🔍 [PASO 2/7] Buscando comparables en internet...`)
     let comparables: any[] = []
 
     try {
       if (process.env.SERPAPI_KEY) {
+        console.log(`   🔑 SerpAPI key: ${process.env.SERPAPI_KEY.substring(0, 8)}...`)
         comparables = await buscarComparables(
           vehiculo.marca || 'Autocaravana',
           vehiculo.modelo || '',
           vehiculo.ano || 2020
         )
-        console.log(`✅ Encontrados ${comparables.length} comparables`)
+        console.log(`   ✅ Encontrados ${comparables.length} comparables`)
       } else {
-        console.log(`⚠️ SearchAPI no configurado, continuando sin comparables externos`)
+        console.log(`   ⚠️  SerpAPI KEY no configurada`)
+        console.log(`   ⏭️  Continuando sin comparables externos`)
       }
-    } catch (error) {
-      console.warn(`⚠️ Error buscando comparables (continuando sin ellos):`, error)
+    } catch (error: any) {
+      console.error(`   ❌ Error buscando comparables:`, error.message)
+      console.log(`   ⏭️  Continuando sin comparables externos`)
       comparables = []
     }
 
     // 3. OBTENER CONFIGURACIÓN DEL AGENTE DESDE LA BD
-    const { data: configData } = await supabase
+    console.log(`\n⚙️  [PASO 3/7] Cargando configuración del agente IA...`)
+    
+    const { data: configData, error: configError } = await supabase
       .from('ia_config')
       .select('config_value')
       .eq('config_key', 'valoracion_vehiculos')
       .single()
 
-    const config = configData?.config_value || {
-      model: 'gpt-4',
-      temperature: 0.7,
-      max_tokens: 2500,
-      prompts: [
-        {
-          role: 'system',
-          content: 'Eres un experto tasador de vehículos de segunda mano especializado en campers de gran volumen.',
-          order: 1
-        },
-        {
-          role: 'user',
-          content: 'Genera un informe de valoración profesional con los datos proporcionados.',
-          order: 2
-        }
-      ]
+    if (configError) {
+      console.error('   ❌ Error obteniendo configuración:', configError)
+      throw new Error('No se pudo cargar la configuración del agente IA')
     }
 
-    console.log(`📝 [IA-VALORACION] Configuración cargada:`)
-    console.log(`  - Modelo: ${config.model}`)
-    console.log(`  - Temperature: ${config.temperature}`)
-    console.log(`  - Max tokens: ${config.max_tokens}`)
+    if (!configData) {
+      console.error('   ❌ No se encontró configuración para "valoracion_vehiculos"')
+      throw new Error('Configuración del agente IA no encontrada')
+    }
+
+    const config = configData.config_value
+
+    console.log(`   ✅ Configuración cargada:`)
+    console.log(`      📦 Modelo: ${config.model}`)
+    console.log(`      🌡️  Temperature: ${config.temperature}`)
+    console.log(`      📏 Max tokens: ${config.max_tokens}`)
+    console.log(`      💬 Prompts: ${config.prompts?.length || 0}`)
 
     // 4. CONSTRUIR VARIABLES PARA EL PROMPT
     const fechaHoy = new Date().toLocaleDateString('es-ES', {
@@ -160,10 +180,12 @@ export async function POST(
       : 'No se encontraron comparables en esta búsqueda.'
 
     // 5. CONSTRUIR MENSAJES PARA OPENAI DESDE LOS PROMPTS
+    console.log(`\n🔨 [PASO 4/7] Preparando mensajes para OpenAI...`)
+    
     if (!config.prompts || !Array.isArray(config.prompts) || config.prompts.length === 0) {
-      console.error('❌ [IA-VALORACION] Configuración inválida: config.prompts no existe o está vacío')
-      console.error('   Por favor, ejecuta la migración SQL: supabase/migrations/20250114_add_valoracion_vehiculos_ia_config.sql')
-      throw new Error('Configuración del agente IA no encontrada. Contacta al administrador.')
+      console.error('   ❌ config.prompts no existe o está vacío')
+      console.error('   📦 config recibido:', JSON.stringify(config, null, 2))
+      throw new Error('Configuración del agente IA inválida. Faltan prompts.')
     }
 
     const messages = config.prompts
@@ -185,10 +207,12 @@ export async function POST(
         }
       })
 
-    // 6. LLAMAR A OPENAI GPT-4
-    console.log(`🤖 Generando informe con IA...`)
-    console.log(`  - ${messages.length} mensajes preparados`)
+    console.log(`   ✅ ${messages.length} mensajes preparados`)
 
+    // 6. LLAMAR A OPENAI GPT-4
+    console.log(`\n🤖 [PASO 5/7] Llamando a OpenAI GPT-4...`)
+    console.log(`   🔑 API Key: ${process.env.OPENAI_API_KEY ? 'Configurada' : 'NO CONFIGURADA'}`)
+    
     const completion = await openai.chat.completions.create({
       model: config.model,
       messages: messages,
@@ -199,9 +223,12 @@ export async function POST(
     const informeTexto = completion.choices[0].message.content || 'No se pudo generar el informe'
     const tokensUsados = completion.usage?.total_tokens || 0
 
-    console.log(`✅ Informe generado (${tokensUsados} tokens)`)
+    console.log(`   ✅ Informe generado`)
+    console.log(`   📊 Tokens: ${tokensUsados}`)
+    console.log(`   📝 Longitud: ${informeTexto.length} caracteres`)
 
     // 6. EXTRAER PRECIOS DEL INFORME
+    console.log(`\n💰 [PASO 6/7] Extrayendo precios del informe...`)
     const precioSalidaMatch = informeTexto.match(/precio\s+de\s+salida\s+recomendado[:\s]+(\d{1,3}(?:\.\d{3})*)/i)
     const precioObjetivoMatch = informeTexto.match(/precio\s+objetivo\s+de\s+venta[:\s]+(\d{1,3}(?:\.\d{3})*)/i)
     const precioMinimoMatch = informeTexto.match(/precio\s+mínimo\s+aceptable[:\s]+(\d{1,3}(?:\.\d{3})*)/i)
@@ -210,7 +237,13 @@ export async function POST(
     const precioObjetivo = precioObjetivoMatch ? parseFloat(precioObjetivoMatch[1].replace(/\./g, '')) : valoracion?.precio_compra || null
     const precioMinimo = precioMinimoMatch ? parseFloat(precioMinimoMatch[1].replace(/\./g, '')) : valoracion?.precio_compra ? valoracion.precio_compra * 0.9 : null
 
+    console.log(`   💵 Salida: ${precioSalida}€`)
+    console.log(`   🎯 Objetivo: ${precioObjetivo}€`)
+    console.log(`   📉 Mínimo: ${precioMinimo}€`)
+
     // 7. GUARDAR EN BASE DE DATOS
+    console.log(`\n💾 [PASO 7/7] Guardando en base de datos...`)
+    
     const { data: informeGuardado, error: errorGuardar } = await supabase
       .from('valoracion_ia_informes')
       .insert({
@@ -231,11 +264,18 @@ export async function POST(
       .select()
       .single()
 
-    if (errorGuardar) throw errorGuardar
+    if (errorGuardar) {
+      console.error('   ❌ Error al guardar:', errorGuardar)
+      throw errorGuardar
+    }
+
+    console.log(`   ✅ Informe guardado con ID: ${informeGuardado.id}`)
 
     const tiempoTotal = Date.now() - startTime
 
-    console.log(`✅ Valoración completada en ${(tiempoTotal / 1000).toFixed(2)}s`)
+    console.log(`\n${'='.repeat(60)}`)
+    console.log(`✅ VALORACIÓN COMPLETADA EN ${(tiempoTotal / 1000).toFixed(2)}s`)
+    console.log(`${'='.repeat(60)}\n`)
 
     return NextResponse.json({
       success: true,
@@ -244,8 +284,13 @@ export async function POST(
     })
 
   } catch (error: any) {
-    console.error('❌ [IA-VALORACION] Error al generar valoración:', error)
-    console.error('   Stack:', error.stack)
+    console.error(`\n${'='.repeat(60)}`)
+    console.error('❌ [IA-VALORACION] ERROR CRÍTICO')
+    console.error(`${'='.repeat(60)}`)
+    console.error('📛 Mensaje:', error.message)
+    console.error('📚 Stack:', error.stack)
+    console.error('🔍 Error completo:', JSON.stringify(error, null, 2))
+    console.error(`${'='.repeat(60)}\n`)
 
     // Mensajes de error más específicos
     let errorMessage = 'Error al generar valoración'
