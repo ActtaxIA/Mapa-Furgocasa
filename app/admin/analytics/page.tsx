@@ -258,13 +258,19 @@ export default function AdminAnalyticsPage() {
       console.log(`✅ ${totalRutas} rutas, ${distanciaTotal.toFixed(0)} km totales`)
 
       // Obtener métricas de CHATBOT
-      // NOTA: No existe tabla chatbot_mensajes aún
       // Los mensajes se trackean en user_interactions con event_type = 'chatbot_message'
-      // Por ahora dejamos en 0 hasta implementar el tracking completo
-      console.log('🤖 Métricas de chatbot: pendiente de implementación completa')
-      const mensajes: any[] = []
-      const totalInteraccionesIA = 0
-      console.log(`✅ ${totalInteraccionesIA} interacciones con IA`)
+      console.log('🤖 Obteniendo métricas de chatbot desde user_interactions...')
+      const { data: mensajes, error: mensajesError } = await supabase
+        .from('user_interactions')
+        .select('id, created_at, user_id, timestamp, event_data')
+        .eq('event_type', 'chatbot_message')
+
+      if (mensajesError) {
+        console.error('❌ Error obteniendo mensajes chatbot:', mensajesError)
+      }
+
+      const totalInteraccionesIA = mensajes?.length || 0
+      console.log(`✅ ${totalInteraccionesIA} interacciones con IA registradas`)
 
       // ========== MÉTRICAS TEMPORALES ==========
       console.log('📊 Calculando métricas temporales...')
@@ -390,9 +396,16 @@ export default function AdminAnalyticsPage() {
       console.log(`📏 Distancia promedio: ${distanciaPromedio.toFixed(1)} km, Más larga: ${rutaMasLarga.toFixed(1)} km`)
 
       // ========== MÉTRICAS DE VISITAS TEMPORALES ==========
-      const { data: visitas } = await supabase
+      console.log('👁️ Obteniendo visitas registradas...')
+      const { data: visitas, error: errorVisitas } = await supabase
         .from('visitas')
         .select('id, created_at, area_id, user_id')
+
+      if (errorVisitas) {
+        console.error('❌ Error obteniendo visitas:', errorVisitas)
+      } else {
+        console.log(`✅ ${visitas?.length || 0} visitas registradas en BD`)
+      }
 
       const visitasHoy = visitas?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
       const visitasEstaSemana = visitas?.filter(v => estaEnRango(v.created_at, inicioSemana)).length || 0
@@ -554,9 +567,10 @@ export default function AdminAnalyticsPage() {
       }
 
       // ========== MÉTRICAS DE CHATBOT IA TEMPORALES ==========
-      const interaccionesIAHoy = mensajes?.filter(m => estaEnRango(m.created_at, inicioDia)).length || 0
-      const interaccionesIAEstaSemana = mensajes?.filter(m => estaEnRango(m.created_at, inicioSemana)).length || 0
-      const interaccionesIAEsteMes = mensajes?.filter(m => estaEnRango(m.created_at, inicioMes)).length || 0
+      // user_interactions usa 'timestamp' como campo de fecha principal
+      const interaccionesIAHoy = mensajes?.filter(m => estaEnRango(m.timestamp || m.created_at, inicioDia)).length || 0
+      const interaccionesIAEstaSemana = mensajes?.filter(m => estaEnRango(m.timestamp || m.created_at, inicioSemana)).length || 0
+      const interaccionesIAEsteMes = mensajes?.filter(m => estaEnRango(m.timestamp || m.created_at, inicioMes)).length || 0
 
       // Interacciones IA por día (últimos 30 días)
       const interaccionesIAPorDia: { fecha: string; count: number }[] = []
@@ -568,7 +582,7 @@ export default function AdminAnalyticsPage() {
         fechaSiguiente.setDate(fecha.getDate() + 1)
 
         const count = mensajes?.filter(m => {
-          const f = new Date(m.created_at)
+          const f = new Date(m.timestamp || m.created_at)
           return f >= fecha && f < fechaSiguiente
         }).length || 0
 
@@ -820,7 +834,7 @@ export default function AdminAnalyticsPage() {
 
       // ========== DATOS DE MERCADO IA (Valoraciones realizadas por IA) ==========
       // IMPORTANTE: Esto NO es datos scrapeados, son las valoraciones que la IA ha hecho para usuarios
-      
+
       // Crear lista de vehículos valorados con su info completa
       const vehiculosValoradosConInfo = valoracionesIA.map(via => {
         const vehiculo = vehiculos.find(v => v.id === via.vehiculo_id)
