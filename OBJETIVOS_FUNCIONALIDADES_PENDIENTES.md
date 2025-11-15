@@ -186,16 +186,16 @@ Si no la sigues, podríamos:
 
 ### 📊 Estado Global del Proyecto
 
-| Categoría              | Total  | ✅ Implementado  | ⚠️ SQL OK, UI Falta | ❌ Pendiente |
-| ---------------------- | ------ | ---------------- | ------------------- | ------------ |
-| **Mapa Interactivo**   | 3      | 3 (100%) ✅      | 0                   | 0 (0%)       |
-| **Planificador Rutas** | 6      | 3 (50%)          | 0                   | 3 (50%)      |
-| Chatbot IA             | 3      | 1 (33%)          | 0                   | 2 (67%)      |
-| **Gestión Vehículos**  | 10     | 9 (90%) 🔥       | 0 (0%)              | 1 (10%)      |
-| **Alertas Seguridad**  | 1      | 1 (100%) ✅      | 0                   | 0 (0%)       |
-| **TOTAL**              | **23** | **18 (78%)** 🚀  | **0 (0%)**          | **5 (22%)**  |
+| Categoría              | Total  | ✅ Implementado | ⚠️ SQL OK, UI Falta | ❌ Pendiente |
+| ---------------------- | ------ | --------------- | ------------------- | ------------ |
+| **Mapa Interactivo**   | 3      | 3 (100%) ✅     | 0                   | 0 (0%)       |
+| **Planificador Rutas** | 6      | 4 (67%) 🎉      | 0                   | 2 (33%)      |
+| Chatbot IA             | 3      | 1 (33%)         | 0                   | 2 (67%)      |
+| **Gestión Vehículos**  | 10     | 9 (90%) 🔥      | 0 (0%)              | 1 (10%)      |
+| **Alertas Seguridad**  | 1      | 1 (100%) ✅     | 0                   | 0 (0%)       |
+| **TOTAL**              | **23** | **19 (83%)** 🎉 | **0 (0%)**          | **4 (17%)**  |
 
-**Última actualización:** 15 Nov 2025 - ✅ ¡78% completado! Clusters y colores de marcadores descubiertos 🚀
+**Última actualización:** 15 Nov 2025 - ✅ ¡83% completado! Paradas múltiples también funcionan 🎉
 
 ---
 
@@ -225,12 +225,14 @@ Si no la sigues, podríamos:
 - ✅ Escala dinámica según cantidad de áreas
 
 **Configuración:**
+
 - Radius: 100px (menos clusters, más limpio)
 - MinPoints: 3 (mínimo 3 áreas por cluster)
 - MaxZoom: 13 (agrupa hasta zoom 13)
 - Escala dinámica: <10 áreas = 22px, <50 = 30px, <100 = 38px, >100 = 45px
 
 **Verificado en código:**
+
 - Archivo: `components/mapa/MapaInteractivo.tsx`
 - Import: línea 5 `MarkerClusterer, SuperClusterAlgorithm`
 - Implementación: líneas 160-213
@@ -251,12 +253,14 @@ Si no la sigues, podríamos:
 - ✅ Aplicado a todos los marcadores
 
 **Paleta de colores:**
+
 - Pública: Azul (#0284c7)
 - Privada: Naranja (#FF6B35)
 - Camping: Verde (#52B788)
 - Parking: Arena (#F4A261)
 
 **Verificado en código:**
+
 - Archivo: `components/mapa/MapaInteractivo.tsx`
 - Función: líneas 317-325
 - Uso: línea 116 y 127
@@ -301,33 +305,44 @@ Si no la sigues, podríamos:
 - Visualizar rutas guardadas en perfil
 - Recargar rutas desde perfil
 
-### ❌ PENDIENTE DE IMPLEMENTACIÓN
+### ✅ PARCIALMENTE IMPLEMENTADO
 
-#### 2.2 Paradas Múltiples Ilimitadas con Arrastra y Suelta
+#### 2.2 Paradas Múltiples ✅ IMPLEMENTADO (Sin drag-and-drop)
 
 **Descripción:**
+- Añade tantas paradas intermedias como quieras ✅
+- Reordena paradas arrastrando y soltando ❌
+- Actualización dinámica de la ruta ✅
 
-- Añade tantas paradas intermedias como quieras
-- Reordena paradas arrastrando y soltando
-- Actualización dinámica de la ruta al reordenar
+**Estado actual:** ✅ Paradas múltiples FUNCIONAN, ❌ falta drag-and-drop para reordenar
 
-**Estado actual:** ❌ Solo origen y destino (2 puntos)  
-**Impacto:** ALTO - Feature clave diferenciador  
-**Complejidad:** Media-Alta
+**YA IMPLEMENTADO:**
+- ✅ Añadir paradas ilimitadas (botón "+ Añadir")
+- ✅ Eliminar paradas (botón X en cada una)
+- ✅ Autocomplete de Google Places en cada parada
+- ✅ Integración con Google Directions API (waypoints)
+- ✅ Persistencia en BD (campo `paradas` con orden)
+- ✅ Recarga de rutas con paradas guardadas
+- ✅ Scroll en lista si hay muchas paradas
 
-**Necesita:**
+**PENDIENTE:**
+- ❌ Drag-and-drop para reordenar (react-beautiful-dnd o dnd-kit)
+- ❌ Actualmente hay que borrar y volver a añadir para cambiar orden
 
-- Sistema de waypoints múltiples en Google Directions API (max 25 waypoints)
-- Librería drag-and-drop (react-beautiful-dnd o dnd-kit)
-- UI para añadir/eliminar paradas
-- Actualización automática de ruta al reordenar
-- Persistencia de orden en BD
+**Verificado en código:**
+- Archivo: `components/ruta/PlanificadorRuta.tsx`
+- Estado: línea 58 `waypoints`
+- UI: líneas 1486-1538
+- Función añadir: línea 896
+- Integración API: líneas 419-431
+- Fecha verificación: 15/11/2025
 
 **Prometido en:** `31_email-planificador-rutas-detallado.html` (líneas 66-78)
 
-**Estimación:** 3-4 días desarrollo
+**Estimación para drag-and-drop:** 1 día desarrollo
 
-**Prioridad:** 🔴 ALTA
+**Impacto:** Bajo (funciona sin drag-and-drop, solo es comodidad)
+**Prioridad actual:** 🟡 BAJA (feature principal ya funciona)
 
 ---
 
@@ -1319,13 +1334,17 @@ Todas las fases
 
 ### Estado Actual:
 
-- ✅ **18 funcionalidades (78%)** completamente implementadas 🚀
+- ✅ **19 funcionalidades (83%)** completamente implementadas 🎉
 - ⚠️ **0 funcionalidades (0%)** con SQL listo, falta UI (¡TODO integrado!)
-- ❌ **5 funcionalidades (22%)** pendientes de implementar
+- ❌ **4 funcionalidades (17%)** pendientes de implementar
 
 **¡2 CATEGORÍAS 100% COMPLETAS!**
 - 🗺️ Mapa Interactivo: 3/3 (100%) ✅
 - 🚨 Alertas Seguridad: 1/1 (100%) ✅
+
+**CASI COMPLETAS:**
+- 🛣️ Planificador Rutas: 4/6 (67%)
+- 🚐 Gestión Vehículos: 9/10 (90%)
 
 ### El Camino Adelante:
 
