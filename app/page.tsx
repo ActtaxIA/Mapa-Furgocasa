@@ -163,8 +163,8 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Feature 4 - DESTACADO CON IA - CENTRADO - GRIS */}
-            <div className="md:col-span-2 lg:col-span-3">
+            {/* Feature 4 - DESTACADO CON IA - CENTRADO - GRIS - MÁRGENES */}
+            <div className="md:col-span-2 lg:col-span-3 my-[100px]">
               <div className="max-w-6xl mx-auto">
                 <div className="bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 text-gray-900 rounded-3xl p-10 md:p-12 shadow-2xl relative overflow-hidden border-2 border-gray-300">
                 {/* Badge flotante */}
