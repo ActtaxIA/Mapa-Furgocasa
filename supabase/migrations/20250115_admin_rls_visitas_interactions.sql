@@ -15,7 +15,7 @@ CREATE POLICY "Admin puede ver todas las visitas"
   TO authenticated
   USING (
     auth.uid() IN (
-      SELECT id FROM auth.users 
+      SELECT id FROM auth.users
       WHERE raw_user_meta_data->>'role' = 'admin'
     )
   );
@@ -30,7 +30,7 @@ CREATE POLICY "Admin puede ver todas las interacciones"
   TO authenticated
   USING (
     auth.uid() IN (
-      SELECT id FROM auth.users 
+      SELECT id FROM auth.users
       WHERE raw_user_meta_data->>'role' = 'admin'
     )
   );
@@ -43,4 +43,3 @@ CREATE POLICY "Admin puede ver todas las interacciones"
 -- - Los admin ven TODOS los datos de todos los usuarios
 -- - Se verifica el role en raw_user_meta_data
 -- ===================================================================
-

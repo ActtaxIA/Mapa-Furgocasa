@@ -177,32 +177,304 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Feature 5 - NUEVO */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-2 border-[#0b3c74]/10">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] rounded-xl flex items-center justify-center mb-6">
-                <TruckIcon className="w-10 h-10 text-white" />
+            {/* Feature 5 - DESTACADO CON IA */}
+            <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 text-white rounded-2xl p-8 shadow-2xl transform hover:scale-105 transition-all md:col-span-2 lg:col-span-3 relative overflow-hidden">
+              {/* Badge "NUEVO" */}
+              <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                🤖 CON INTELIGENCIA ARTIFICIAL
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                Gestión de Vehículos
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Registra tu autocaravana y lleva un control completo: mantenimientos, averías,
-                gastos, consumo y valoración. Todo en un solo lugar.
+              
+              <div className="flex flex-col md:flex-row items-start gap-8">
+                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center flex-shrink-0">
+                  <TruckIcon className="w-12 h-12 text-white" />
+                </div>
+                
+                <div className="flex-1">
+                  <h3 className="text-3xl md:text-4xl font-black mb-4">
+                    Gestión Inteligente de tu Autocaravana
+                  </h3>
+                  <p className="text-white/95 leading-relaxed mb-6 text-lg">
+                    <strong>Valoración automática con GPT-4</strong> en segundos. Control total de tu vehículo 
+                    con comparación de precios de mercado en tiempo real.
+                  </p>
+                  
+                  <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                      <span className="text-2xl">🤖</span>
+                      <div>
+                        <p className="font-bold text-sm">Valoración IA</p>
+                        <p className="text-xs text-white/80">GPT-4 en segundos</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                      <span className="text-2xl">📊</span>
+                      <div>
+                        <p className="font-bold text-sm">Precios Mercado</p>
+                        <p className="text-xs text-white/80">Comparación real</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                      <span className="text-2xl">🔧</span>
+                      <div>
+                        <p className="font-bold text-sm">Mantenimientos</p>
+                        <p className="text-xs text-white/80">Historial completo</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                      <span className="text-2xl">💰</span>
+                      <div>
+                        <p className="font-bold text-sm">Control Gastos</p>
+                        <p className="text-xs text-white/80">ROI automático</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                      <span className="text-2xl">📈</span>
+                      <div>
+                        <p className="font-bold text-sm">Histórico Valor</p>
+                        <p className="text-xs text-white/80">Evolución precio</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                      <span className="text-2xl">📸</span>
+                      <div>
+                        <p className="font-bold text-sm">Gestión Fotos</p>
+                        <p className="text-xs text-white/80">Galería completa</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Feature 6 - Sistema QR Mejorado */}
+            <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-2 border-red-200 md:col-span-2">
+              <div className="flex items-start gap-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <ShieldCheckIcon className="w-10 h-10 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className="inline-block bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-3">
+                    🔒 SISTEMA ANTIRROBO
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    Sistema QR Inteligente: Protección 24/7
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed mb-4">
+                    Código QR único para tu vehículo. Los testigos pueden reportar incidentes, 
+                    robos o daños escaneándolo. <strong>Recibe notificaciones instantáneas</strong> con 
+                    fotos, ubicación GPS y datos del testigo.
+                  </p>
+                  <ul className="space-y-2 text-gray-700">
+                    <li className="flex items-center gap-2">
+                      <span className="text-red-500">✓</span> <strong>Alertas de accidentes</strong> con fotos y ubicación
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-red-500">✓</span> <strong>Notificación antirrobo</strong> si alguien ve tu vehículo
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-red-500">✓</span> <strong>Contacto emergencia</strong> visible para autoridades
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-red-500">✓</span> <strong>Historial completo</strong> de todos los reportes
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Nueva Sección: Tecnología IA */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            {/* Título */}
+            <div className="text-center mb-16">
+              <div className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full text-sm font-bold mb-4">
+                🤖 POWERED BY GPT-4
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Inteligencia Artificial que entiende tu autocaravana
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Tecnología de última generación para valorar, analizar y gestionar tu vehículo de forma profesional
               </p>
             </div>
 
-            {/* Feature 6 - NUEVO */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-2 border-[#0b3c74]/10">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] rounded-xl flex items-center justify-center mb-6">
-                <ExclamationTriangleIcon className="w-10 h-10 text-white" />
+            {/* Grid de características IA */}
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-8 border-2 border-purple-200">
+                <div className="text-5xl mb-4">🧠</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  Valoración Inteligente
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  GPT-4 analiza marca, modelo, año, kilometraje, estado y mercado actual 
+                  para darte una <strong>valoración precisa en segundos</strong>.
+                </p>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                Alertas de Accidentes
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Sistema único de QR para tu vehículo. Los testigos pueden reportar incidentes
-                y recibe notificaciones instantáneas con todos los detalles.
+
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 border-2 border-blue-200">
+                <div className="text-5xl mb-4">📊</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  Comparación de Mercado
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Comparamos tu vehículo con <strong>miles de anuncios reales</strong> de 
+                  portales especializados para darte el precio justo.
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 border-2 border-green-200">
+                <div className="text-5xl mb-4">💬</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  Chatbot Experto
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Asistente IA disponible 24/7 para responder dudas sobre áreas, 
+                  rutas, mantenimiento y <strong>recomendaciones personalizadas</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* Ejemplo visual */}
+            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-8 md:p-12 text-white shadow-2xl">
+              <div className="flex flex-col md:flex-row items-center gap-8">
+                <div className="flex-1">
+                  <div className="inline-block bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold mb-4">
+                    ✓ Valoración completada
+                  </div>
+                  <h3 className="text-3xl font-bold mb-4">
+                    Informe completo en 30 segundos
+                  </h3>
+                  <ul className="space-y-3 text-lg">
+                    <li className="flex items-center gap-3">
+                      <span className="text-green-400 text-2xl">✓</span>
+                      Precio objetivo recomendado
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <span className="text-green-400 text-2xl">✓</span>
+                      Rango de venta (mínimo-máximo)
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <span className="text-green-400 text-2xl">✓</span>
+                      Comparables del mercado
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <span className="text-green-400 text-2xl">✓</span>
+                      Análisis de depreciación
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <span className="text-green-400 text-2xl">✓</span>
+                      PDF descargable profesional
+                    </li>
+                  </ul>
+                </div>
+                <div className="flex-1 bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                  <div className="text-sm font-mono text-green-400 mb-2">// Ejemplo valoración IA</div>
+                  <div className="bg-black/40 rounded-lg p-4 font-mono text-sm">
+                    <div className="text-purple-400">GPT-4 Analyzing...</div>
+                    <div className="text-gray-400 mt-2">
+                      → Marca: Adria<br/>
+                      → Modelo: Twin Plus Family<br/>
+                      → Año: 2022<br/>
+                      → Kilometraje: 15.000 km
+                    </div>
+                    <div className="text-green-400 mt-4">
+                      ✓ Valoración: 58.000 - 63.500 €<br/>
+                      ✓ Precio Objetivo: 63.500 €
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Nueva Sección: Cómo Funciona */}
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            {/* Título */}
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Empieza en 3 simples pasos
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Desde el registro hasta tu primera valoración IA en menos de 5 minutos
               </p>
+            </div>
+
+            {/* Pasos */}
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              {/* Paso 1 */}
+              <div className="relative">
+                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-2 border-[#0b3c74]/10 h-full">
+                  <div className="absolute -top-6 left-8 w-12 h-12 bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                    1
+                  </div>
+                  <div className="text-5xl mb-6 mt-4">📝</div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    Regístrate Gratis
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Crea tu cuenta en 30 segundos. No requiere tarjeta de crédito. 
+                    Acceso inmediato a todas las funcionalidades.
+                  </p>
+                </div>
+              </div>
+
+              {/* Paso 2 */}
+              <div className="relative">
+                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-2 border-[#0b3c74]/10 h-full">
+                  <div className="absolute -top-6 left-8 w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                    2
+                  </div>
+                  <div className="text-5xl mb-6 mt-4">🚐</div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    Registra tu Vehículo
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Añade tu autocaravana con marca, modelo, año y kilometraje. 
+                    Sube fotos y obtén tu código QR de protección.
+                  </p>
+                </div>
+              </div>
+
+              {/* Paso 3 */}
+              <div className="relative">
+                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-2 border-[#0b3c74]/10 h-full">
+                  <div className="absolute -top-6 left-8 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                    3
+                  </div>
+                  <div className="text-5xl mb-6 mt-4">🤖</div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    Valoración IA Instantánea
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Haz clic en "Valorar con IA" y obtén en 30 segundos un informe 
+                    profesional con precio de mercado y análisis completo.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA de acción */}
+            <div className="text-center bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] rounded-2xl p-10 text-white">
+              <h3 className="text-3xl font-bold mb-4">
+                ¿Listo para comenzar?
+              </h3>
+              <p className="text-xl text-white/90 mb-6 max-w-2xl mx-auto">
+                Únete a miles de autocaravanistas que ya gestionan sus vehículos con IA
+              </p>
+              <Link
+                href="/auth/register"
+                className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-white text-[#0b3c74] text-xl font-bold rounded-xl hover:bg-gray-50 transition-all shadow-xl transform hover:-translate-y-1"
+              >
+                Crear Cuenta Gratuita →
+              </Link>
             </div>
           </div>
         </div>

@@ -5,23 +5,29 @@ import WelcomeModal from '@/components/ui/WelcomeModal'
 import ChatbotWidget from '@/components/chatbot/ChatbotWidget'
 
 export const metadata: Metadata = {
-  title: 'Mapa Furgocasa - Encuentra Áreas para Autocaravanas | +3600 Ubicaciones en Europa y LATAM',
-  description: 'Descubre más de 3600 áreas para autocaravanas en Europa y Latinoamérica (España, Portugal, Francia, Italia, Argentina, Chile, Uruguay...). Planifica rutas, encuentra servicios, guarda favoritos y viaja con libertad. Información actualizada de parkings, campings y áreas públicas.',
+  title: 'Mapa Furgocasa - Áreas Autocaravanas + Gestión Inteligente con IA | +3600 Ubicaciones',
+  description: '🚐 Descubre +3600 áreas para autocaravanas en Europa y LATAM. 🤖 Gestión inteligente con IA: valoración automática GPT-4, control de mantenimiento, gastos, ROI. 📍 Sistema QR anti-robos. 🗺️ Planifica rutas. ¡100% GRATIS!',
   keywords: [
     'áreas autocaravanas',
-    'mapa autocaravanas europa',
+    'mapa autocaravanas',
+    'gestión autocaravanas',
+    'valoración autocaravana IA',
+    'GPT-4 autocaravanas',
+    'inteligencia artificial autocaravanas',
+    'control mantenimiento autocaravana',
+    'QR antirrobo autocaravana',
+    'sistema alertas accidentes',
     'parkings autocaravanas',
     'camping autocaravanas',
     'pernocta autocaravanas',
     'rutas autocaravanas',
     'áreas autocaravanas europa',
     'áreas autocaravanas latinoamérica',
-    'áreas autocaravanas argentina',
     'furgocasa',
     'autocaravanas españa',
-    'autocaravanas francia',
-    'autocaravanas portugal',
-    'camper van'
+    'chatbot autocaravanas',
+    'valoración automática vehículo',
+    'precio mercado autocaravana'
   ],
   authors: [{ name: 'Furgocasa' }],
   manifest: '/manifest.json',
@@ -46,20 +52,20 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_ES',
     url: 'https://www.mapafurgocasa.com',
-    title: 'Mapa Furgocasa - Descubre +3600 Áreas para Autocaravanas en Europa y LATAM',
-    description: 'Encuentra las mejores áreas para autocaravanas en Europa y Latinoamérica: España, Portugal, Francia, Italia, Alemania, Argentina, Chile, Uruguay... Planifica rutas y viaja con libertad. Información completa de servicios, precios y ubicaciones actualizadas.',
+    title: '🚐 Mapa Furgocasa - Áreas + Gestión Inteligente IA | +3600 Ubicaciones',
+    description: '🤖 Gestión inteligente con IA GPT-4: valoración automática, control total de mantenimiento, gastos, ROI. 📍 +3600 áreas verificadas en Europa y LATAM. 🔒 Sistema QR anti-robos. ¡100% GRATIS!',
     siteName: 'Mapa Furgocasa',
     images: [{
       url: 'https://www.mapafurgocasa.com/og-image-v2.jpg',
       width: 1200,
       height: 630,
-      alt: 'Mapa Furgocasa - Planifica tu Ruta en Autocaravana'
+      alt: 'Mapa Furgocasa - Gestión Inteligente con IA + Áreas para Autocaravanas'
     }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Mapa Furgocasa - +1000 Áreas para Autocaravanas',
-    description: 'Descubre áreas para autocaravanas en Europa, América y resto del mundo. Planifica rutas, encuentra servicios y viaja con libertad.',
+    title: '🚐 Mapa Furgocasa - IA + Áreas Autocaravanas',
+    description: '🤖 Valoración automática GPT-4 | 📍 +3600 áreas verificadas | 🔒 Sistema QR antirrobo | 🗺️ Planificador rutas | ¡GRATIS!',
     images: ['https://www.mapafurgocasa.com/og-image-v2.jpg'],
     creator: '@furgocasa',
   },
