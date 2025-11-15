@@ -185,6 +185,14 @@ export function Footer() {
               </li>
               <li>
                 <Link
+                  href="/faqs"
+                  className="hover:text-white transition-colors"
+                >
+                  ❓ Preguntas Frecuentes
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/condiciones"
                   className="hover:text-white transition-colors"
                 >
