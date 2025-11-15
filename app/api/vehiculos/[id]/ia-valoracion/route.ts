@@ -289,6 +289,37 @@ export async function POST(
 
     console.log(`   ✅ Informe guardado con ID: ${informeGuardado.id}`)
 
+    // 8. GUARDAR COMPARABLES EN TABLA DE MERCADO (si hay)
+    if (comparables.length > 0) {
+      console.log(`\n📊 Guardando ${comparables.length} comparables en datos_mercado_autocaravanas...`)
+      
+      const comparablesParaGuardar = comparables.map(c => ({
+        marca: vehiculo.marca || null,
+        modelo: vehiculo.modelo || null,
+        año: vehiculo.año || null,
+        precio: c.precio || null,
+        kilometros: c.kilometros || null,
+        ubicacion: c.ubicacion || null,
+        url_anuncio: c.link || null,
+        fuente: c.fuente || 'SerpAPI',
+        descripcion: c.titulo || null,
+        fecha_scraping: new Date().toISOString(),
+        verificado: true, // Viene de SerpAPI, consideramos confiable
+        tipo_vehiculo: vehiculo.tipo_vehiculo || null
+      }))
+
+      const { data: mercadoGuardado, error: errorMercado } = await supabase
+        .from('datos_mercado_autocaravanas')
+        .insert(comparablesParaGuardar)
+        .select()
+
+      if (errorMercado) {
+        console.error(`   ⚠️ Error guardando en mercado (no crítico):`, errorMercado)
+      } else {
+        console.log(`   ✅ ${mercadoGuardado?.length || 0} comparables guardados en BD de mercado`)
+      }
+    }
+
     const tiempoTotal = Date.now() - startTime
 
     console.log(`\n${'='.repeat(60)}`)
