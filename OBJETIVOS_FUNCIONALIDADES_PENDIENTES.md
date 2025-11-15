@@ -1167,6 +1167,7 @@ Si no la sigues, podríamos:
 ### ⛔ SIN PRIORIDAD - NO implementar por ahora
 
 **Funcionalidades prometidas pero NO deseadas por el usuario:**
+
 - **Multi-idioma** - La app permanece en español
 - **Biblioteca de Documentos** - No se quiere gestionar documentos (ITV, seguros, etc.)
 - **Cálculo de Consumo en Rutas** - No es necesario
@@ -1348,9 +1349,10 @@ Todas las fases
 
 **¡MISIÓN CUMPLIDA!** 🎉
 
-La plataforma **YA cumple con TODAS las funcionalidades** que el usuario desea implementar. 
+La plataforma **YA cumple con TODAS las funcionalidades** que el usuario desea implementar.
 
 De las 23 funcionalidades prometidas en emails:
+
 - ✅ **19 (83%) están implementadas y funcionando**
 - ⛔ **4 (17%) fueron canceladas por decisión del usuario**
 
