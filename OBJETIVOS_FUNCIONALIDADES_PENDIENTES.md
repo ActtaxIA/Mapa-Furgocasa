@@ -186,16 +186,16 @@ Si no la sigues, podríamos:
 
 ### 📊 Estado Global del Proyecto
 
-| Categoría              | Total  | ✅ Implementado  | ⚠️ SQL OK, UI Falta | ❌ Pendiente   |
-| ---------------------- | ------ | ---------------- | ------------------- | -------------- |
-| Mapa Interactivo       | 3      | 2 (67%)          | 0                   | 1 (33%)        |
-| **Planificador Rutas** | 6      | 3 (50%)          | 0                   | 3 (50%)        |
-| Chatbot IA             | 3      | 1 (33%)          | 0                   | 2 (67%)        |
-| **Gestión Vehículos**  | 10     | 6 (60%) 🚀       | 1 (10%)             | 3 (30%)        |
-| Alertas Seguridad      | 1      | 1 (100%)         | 0                   | 0 (0%)         |
-| **TOTAL**              | **23** | **13 (57%)** 🚀  | **1 (4%)**          | **9 (39%)**    |
+| Categoría              | Total  | ✅ Implementado  | ⚠️ SQL OK, UI Falta | ❌ Pendiente |
+| ---------------------- | ------ | ---------------- | ------------------- | ------------ |
+| Mapa Interactivo       | 3      | 2 (67%)          | 0                   | 1 (33%)      |
+| **Planificador Rutas** | 6      | 3 (50%)          | 0                   | 3 (50%)      |
+| Chatbot IA             | 3      | 1 (33%)          | 0                   | 2 (67%)      |
+| **Gestión Vehículos**  | 10     | 8 (80%) 🎉       | 1 (10%)             | 1 (10%)      |
+| Alertas Seguridad      | 1      | 1 (100%)         | 0                   | 0 (0%)       |
+| **TOTAL**              | **23** | **15 (65%)** 🎉  | **1 (4%)**          | **7 (30%)**  |
 
-**Última actualización:** 15 Nov 2025 - ✅ 4 funcionalidades más descubiertas como YA implementadas
+**Última actualización:** 15 Nov 2025 - ✅ 6 funcionalidades más descubiertas como YA implementadas 🚀
 
 ---
 
@@ -337,7 +337,7 @@ Si no la sigues, podríamos:
 
 - Obtener tipo de vehículo del usuario (si tiene registrado)
 - Tabla de consumos promedio por tipo (autocaravana, camper, furgoneta)
-- Cálculo: (distancia_km / 100) _ consumo_medio_l _ precio_combustible
+- Cálculo: (distancia*km / 100) * consumo*medio_l * precio_combustible
 - UI para mostrar desglose por tramos
 - Input para precio actual combustible (o API de precios)
 
@@ -642,6 +642,7 @@ Si no la sigues, podríamos:
 - ✅ Integrado en página `/vehiculo/[id]` con tab "Mantenimientos"
 
 **Funcionalidades:**
+
 - Tipos: revisión, cambio aceite, filtros, neumáticos, frenos, ITV
 - Campos: fecha, kilometraje, tipo, descripción, coste, taller, ubicación taller
 - Próximo mantenimiento (fecha y km)
@@ -649,12 +650,14 @@ Si no la sigues, podríamos:
 - GET, POST, PUT, DELETE implementados en API
 
 **Verificado en código:**
+
 - Componente: `components/vehiculo/MantenimientosTab.tsx`
 - API: `app/api/vehiculos/[id]/mantenimientos/route.ts`
 - Integración: `app/(public)/vehiculo/[id]/page.tsx` línea 26
 - Fecha verificación: 15/11/2025
 
 **Prometido en:**
+
 - `33_email-mantenimientos-averias-detallado.html` (completo)
 - `02_email-lanzamiento-hero.html` (líneas 156-180)
 
@@ -673,6 +676,7 @@ Si no la sigues, podríamos:
 - ✅ Integrado en página `/vehiculo/[id]` con tab "Averías"
 
 **Funcionalidades:**
+
 - Tipos: mecánica, eléctrica, electrónica, carrocería, suspensión, frenos, motor, transmisión, etc.
 - Gravedad: leve, moderada, grave, crítica (con colores)
 - Estado: pendiente, en reparación, resuelto (con colores)
@@ -681,6 +685,7 @@ Si no la sigues, podríamos:
 - GET, POST, PUT, DELETE implementados en API
 
 **Verificado en código:**
+
 - Componente: `components/vehiculo/AveriasTab.tsx`
 - API: `app/api/vehiculos/[id]/averias/route.ts`
 - Integración: `app/(public)/vehiculo/[id]/page.tsx` línea 27
@@ -703,6 +708,7 @@ Si no la sigues, podríamos:
 - ✅ Integrado en página `/vehiculo/[id]` con tab "Mejoras"
 
 **Funcionalidades:**
+
 - Tipos: electrónica, mecánica, habitabilidad, seguridad, exterior, interior, energía, agua
 - Campos: nombre, tipo, descripción, fecha instalación, costes (materiales + mano obra)
 - Proveedor/instalador
@@ -711,6 +717,7 @@ Si no la sigues, podríamos:
 - GET, POST, PUT, DELETE implementados en API
 
 **Verificado en código:**
+
 - Componente: `components/vehiculo/MejorasTab.tsx`
 - API: `app/api/vehiculos/[id]/mejoras/route.ts`
 - Integración: `app/(public)/vehiculo/[id]/page.tsx` línea 28
@@ -762,6 +769,7 @@ Si no la sigues, podríamos:
 - ✅ Editar y eliminar registros
 
 **Funcionalidades:**
+
 - Registro de repostajes con fecha, km, litros, coste
 - Tipos de combustible: diesel, gasolina, gasolina 95, gasolina 98, GLP, eléctrico
 - Cálculo automático de consumo medio (L/100km)
@@ -772,6 +780,7 @@ Si no la sigues, podríamos:
 - GET, POST, PUT, DELETE implementados en API
 
 **Verificado en código:**
+
 - Componente: `components/vehiculo/KilometrajeTab.tsx`
 - API: `app/api/vehiculos/[id]/kilometraje/route.ts`
 - Fecha verificación: 15/11/2025
@@ -780,71 +789,67 @@ Si no la sigues, podríamos:
 
 ---
 
-#### 4.9 Datos Económicos Completos ⚠️
+#### 4.8 Datos Económicos Completos ✅ COMPLETO
 
-**Estado:**
+**Estado:** ✅ IMPLEMENTADO Y FUNCIONAL
 
 - ✅ Tabla `vehiculo_valoracion_economica` creada
-- ✅ Algunos campos implementados
-- ❌ **Formulario incompleto**
-- ❌ Faltan campos: precio_compra, fecha_compra, financiacion, inversion_total
+- ✅ Componente UI: `components/vehiculo/DatosCompraTab.tsx` (760 líneas)
+- ✅ Formulario SUPER COMPLETO con 25+ campos
+- ✅ Integrado en página `/vehiculo/[id]` con tab "Datos de Compra"
+- ✅ Guardado directo a Supabase (insert o update)
 
-**Impacto:** ALTO - Base del cálculo de coste por km  
-**Complejidad:** Baja
+**Funcionalidades:**
+- **Información Básica:** precio compra, fecha, procedencia, tipo vendedor, nombre vendedor, lugar
+- **Estado Vehículo:** km compra, estado general, propietarios anteriores, libro mantenimiento, ITV
+- **Garantía:** tiene garantía, meses, tipo, transferencia incluida
+- **Negociación:** precio inicial, descuento aplicado, vehículo entregado, precio entregado
+- **Financiación COMPLETA:** financiado (sí/no), entidad, importe, cuota mensual, plazo, interés, pendiente pago
+- **Extras:** lista de extras incluidos
+- **Notas:** campo libre
 
-**Necesita UI:**
-
-- Formulario "Datos de Compra"
-- Campos:
-  - Precio de compra (€)
-  - Fecha de compra
-  - Km al momento de compra
-  - ¿Financiado? (Sí/No)
-  - Si financiado: meses, interés, cuota mensual
-  - Inversión inicial (entrada + transferencia + impuestos)
-- Mostrar estos datos en dashboard
-- Usar en cálculo de depreciación
-
-**Scripts SQL:** `reportes/08_valoracion_economica.sql`
+**Verificado en código:**
+- Componente: `components/vehiculo/DatosCompraTab.tsx` (760 líneas)
+- Tipos: `types/gestion-vehiculos.types.ts` líneas 289-336
+- Integración: `app/(public)/vehiculo/[id]/page.tsx` línea 25
+- Fecha verificación: 15/11/2025
 
 **Prometido en:** `34_email-costes-historicos-detallado.html`
 
-**Estimación UI:** 1-2 días desarrollo
-
-**Prioridad:** 🔴 ALTA (Necesario para coste por km)
-
 ---
 
-#### 4.10 Sistema de Venta ⚠️
+#### 4.9 Sistema de Venta ✅ COMPLETO
 
-**Estado:**
+**Estado:** ✅ IMPLEMENTADO Y FUNCIONAL
 
-- ✅ Campo `vendido` existe en tabla
-- ✅ Campos `precio_venta`, `fecha_venta` existen
-- ❌ **NO existe flujo completo de venta**
-- ❌ Tab "venta" visible pero incompleto
+- ✅ Tabla `vehiculo_valoracion_economica` con campos de venta
+- ✅ Componente UI: `components/vehiculo/VentaTab.tsx`
+- ✅ Integrado en página `/vehiculo/[id]` con tab "Venta"
+- ✅ Campos completos: en_venta, precio_venta_deseado, precio_minimo, vendido, precio_final, fecha_venta
 
-**Impacto:** Medio - Cierra el ciclo de vida  
-**Complejidad:** Baja
+**Funcionalidades:**
+- Poner vehículo en venta
+- Precio deseado y precio mínimo
+- Sugerencias desde valoración IA
+- Registro de venta real cuando se venda
+- Tipo de comprador
+- Km al momento de venta
+- Estado del vehículo vendido
+- Cálculo de ganancia/pérdida
 
-**Necesita UI:**
+**Campos adicionales (SQL):**
+- `comprador_tipo` (particular, profesional, concesionario)
+- `kilometros_venta`
+- `estado_venta`
+- Ver: `reportes/25_add_campos_venta_detalle.sql`
 
-- Tab "Venta" mejorado
-- Botón "Poner en Venta" (marca en_venta = true)
-- Campo: precio deseado (sugerir desde valoración IA)
-- Cuando se venda: registrar precio real de venta, fecha, comprador (opcional)
-- Cálculo de ganancia/pérdida:
-  - Ganancia/pérdida = precio_venta - (precio_compra + suma_mantenimientos + suma_averias + suma_mejoras)
-- Vista de "Vehículos vendidos" en perfil
-- Estadísticas de rentabilidad
-
-**Scripts SQL:** `reportes/08_valoracion_economica.sql`
+**Verificado en código:**
+- Componente: `components/vehiculo/VentaTab.tsx`
+- Integración: `app/(public)/vehiculo/[id]/page.tsx` línea 29
+- SQL: `reportes/25_add_campos_venta_detalle.sql`
+- Fecha verificación: 15/11/2025
 
 **Prometido en:** `36_email-registro-ventas-detallado.html`
-
-**Estimación UI:** 2 días desarrollo
-
-**Prioridad:** 🟠 MEDIA
 
 ---
 
@@ -1082,10 +1087,12 @@ Si no la sigues, podríamos:
 **RESTANTES:**
 
 4. **Datos Económicos Completos** - ⏱️ 1-2 días
+
    - Formulario completo de datos de compra
    - Necesario para coste por km
 
 5. **Sistema de Costes Históricos** - ⏱️ 5-6 días
+
    - Muy prometido, feature diferenciador
    - Incluye gráficos y análisis
 
@@ -1105,19 +1112,14 @@ Si no la sigues, podríamos:
 
 2. **Paradas múltiples con drag-and-drop** - ⏱️ 3-4 días
    - Feature diferenciador del planificador
-   
 3. **Cálculo de consumo en rutas** - ⏱️ 2 días
    - Información valiosa para usuarios
-   
 4. **Sugerencias automáticas de áreas** - ⏱️ 3 días
    - Facilita planificación
-   
 5. **Biblioteca de Documentos - UI** - ⏱️ 3 días
    - SQL existe, falta frontend
-   
 6. **Sistema de Venta mejorado** - ⏱️ 2 días
    - Cierra ciclo de vida del vehículo
-   
 7. **Recomendaciones de rutas con IA** - ⏱️ 4-5 días
    - Feature de chatbot avanzado
 
@@ -1132,15 +1134,15 @@ Si no la sigues, podríamos:
 **RESTANTES:**
 
 2. **Clusters en mapa** - ⏱️ 1-2 días
-16. **Marcadores con colores** - ⏱️ 1 día
-17. **Optimización automática de rutas** - ⏱️ 3-4 días
-18. **Compartir rutas con comunidad** - ⏱️ 3-4 días
-19. **Historial de conversaciones chatbot** - ⏱️ 2 días
-20. **Info general con IA** - ⏱️ 5-6 días
-21. **Recordatorios de mantenimiento** - ⏱️ 4-5 días
-22. **Depreciación histórica con gráficos** - ⏱️ 2-3 días
-23. **Reportes avanzados** - ⏱️ 5-6 días
-24. **Dashboard estadísticas avanzado** - ⏱️ 3-4 días
+3. **Marcadores con colores** - ⏱️ 1 día
+4. **Optimización automática de rutas** - ⏱️ 3-4 días
+5. **Compartir rutas con comunidad** - ⏱️ 3-4 días
+6. **Historial de conversaciones chatbot** - ⏱️ 2 días
+7. **Info general con IA** - ⏱️ 5-6 días
+8. **Recordatorios de mantenimiento** - ⏱️ 4-5 días
+9. **Depreciación histórica con gráficos** - ⏱️ 2-3 días
+10. **Reportes avanzados** - ⏱️ 5-6 días
+11. **Dashboard estadísticas avanzado** - ⏱️ 3-4 días
 
 **Total Prioridad Baja:** ~32-40 días desarrollo
 
@@ -1306,9 +1308,9 @@ Todas las fases
 
 ### Estado Actual:
 
-- ✅ **13 funcionalidades (57%)** completamente implementadas 🚀
+- ✅ **15 funcionalidades (65%)** completamente implementadas 🎉
 - ⚠️ **1 funcionalidad (4%)** con SQL listo, falta UI
-- ❌ **9 funcionalidades (39%)** pendientes de implementar
+- ❌ **7 funcionalidades (30%)** pendientes de implementar
 
 ### El Camino Adelante:
 
@@ -1328,23 +1330,26 @@ Con un desarrollo enfocado y priorizado, podemos tener la plataforma **cumpliend
 
 ## 📜 HISTORIAL DE VERIFICACIONES
 
-### 15 de Noviembre 2025 - CORRECCIÓN MASIVA: 4 Features Ya Existían ✅
+### 15 de Noviembre 2025 - CORRECCIÓN MASIVA: 6 Features Ya Existían ✅
 
-**Descubrimiento importante:** Aplicando las REGLAS de verificación, descubrimos que 4 funcionalidades marcadas como "pendientes" **YA ESTABAN COMPLETAMENTE IMPLEMENTADAS**.
+**Descubrimiento importante:** Aplicando las REGLAS de verificación, descubrimos que 6 funcionalidades marcadas como "pendientes" **YA ESTABAN COMPLETAMENTE IMPLEMENTADAS**.
 
 **Features corregidas de ❌ a ✅:**
 
-1. **Sistema de Mantenimientos** 
+1. **Sistema de Mantenimientos**
+
    - Componente: `components/vehiculo/MantenimientosTab.tsx` (568 líneas)
    - API: `app/api/vehiculos/[id]/mantenimientos/route.ts`
    - Estado: 🟢 COMPLETAMENTE FUNCIONAL
 
 2. **Sistema de Averías**
+
    - Componente: `components/vehiculo/AveriasTab.tsx` (713 líneas)
    - API: `app/api/vehiculos/[id]/averias/route.ts`
    - Estado: 🟢 COMPLETAMENTE FUNCIONAL
 
 3. **Sistema de Mejoras**
+
    - Componente: `components/vehiculo/MejorasTab.tsx` (622 líneas)
    - API: `app/api/vehiculos/[id]/mejoras/route.ts`
    - Estado: 🟢 COMPLETAMENTE FUNCIONAL
@@ -1354,10 +1359,21 @@ Con un desarrollo enfocado y priorizado, podemos tener la plataforma **cumpliend
    - API: `app/api/vehiculos/[id]/kilometraje/route.ts`
    - Estado: 🟢 COMPLETAMENTE FUNCIONAL
 
-**Impacto:** 
-- Progreso real: de 9 features (39%) a 13 features (57%) ✅
-- 4 features (17%) recuperadas gracias a verificación exhaustiva
-- Ahorro estimado: ~11-13 días de desarrollo que no había que hacer
+5. **Datos Económicos Completos**
+   - Componente: `components/vehiculo/DatosCompraTab.tsx` (760 líneas)
+   - 25+ campos completos de compra y financiación
+   - Estado: 🟢 COMPLETAMENTE FUNCIONAL
+
+6. **Sistema de Venta**
+   - Componente: `components/vehiculo/VentaTab.tsx`
+   - Campos completos de venta y ganancia/pérdida
+   - Estado: 🟢 COMPLETAMENTE FUNCIONAL
+
+**Impacto:**
+
+- Progreso real: de 9 features (39%) a **15 features (65%)** ✅ 🎉
+- 6 features (26%) recuperadas gracias a verificación exhaustiva
+- Ahorro estimado: ~15-18 días de desarrollo que no había que hacer
 
 **Lección aprendida:** **SIEMPRE VERIFICAR ANTES DE ASUMIR** 🚨
 
@@ -1368,12 +1384,15 @@ Con un desarrollo enfocado y priorizado, podemos tener la plataforma **cumpliend
 **Feature completada:** Exportación de rutas a formato GPX
 
 **Archivos creados:**
+
 - `lib/gpx/generate-gpx.ts` (214 líneas) - Utilidades de generación GPX
 
 **Archivos modificados:**
+
 - `components/ruta/PlanificadorRuta.tsx` - Añadida función `handleExportarGPX()` y botón UI
 
 **Funcionalidad:**
+
 - Genera archivos GPX 1.1 estándar
 - Compatible con Garmin, TomTom, Suunto, y mayoría de dispositivos GPS
 - Incluye waypoints, track completo, route de navegación
