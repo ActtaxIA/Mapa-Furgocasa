@@ -1,17 +1,19 @@
 # 🚐 Mapa Furgocasa - Plataforma de Áreas para Autocaravanas en Europa y LATAM
 
-**Versión: 3.0.0 - PRODUCCIÓN** 🎉✅
+**Versión: 3.0.1 - PRODUCCIÓN** 🎉✅
 
-> 🔴 **ENTORNO DE PRODUCCIÓN ACTIVA EN AWS AMPLIFY**
+> 🔴 **ENTORNO DE PRODUCCIÓN ACTIVA**
 > - **URL:** https://www.mapafurgocasa.com
-> - **Deploy automático:** Activado en cada push a `main`
-> - **NO hay servidor de desarrollo local** - Cambios se despliegan automáticamente a producción
+> - **Hosting:** AWS Amplify
+> - **Repositorio:** GitHub (ActtaxIA/Mapa-Furgocasa)
+> - **Deploy automático:** Cada push a `main` → Despliega a AWS automáticamente
+> - **NO hay entorno de desarrollo local** - Se trabaja directamente en producción
 
 Plataforma web interactiva totalmente funcional para descubrir y gestionar áreas de autocaravanas, campers y vehículos recreativos en **Europa y Latinoamérica** (España, Portugal, Francia, Italia, Alemania, Argentina, Chile, Uruguay, Brasil, Colombia, Perú y más).
 
-**Estado:** 🟢 **100% OPERATIVO** - Chatbot IA funcionando, Editor de prompts activo, Sistema completo en producción, **Subida directa de fotos a Supabase Storage (bypass AWS Amplify)**.
+**Estado:** 🟢 **100% OPERATIVO** - Chatbot IA funcionando, Editor de prompts activo, Sistema completo en producción, **Valoración Inteligente con IA (GPT-4 + SerpAPI)**.
 
-**Última actualización:** 14 de Noviembre 2025 - 📊 Sistema de Analytics Avanzado v3.0 - Panel completo con análisis por pestañas (General, Áreas, Usuarios, Rutas, Vehículos, Engagement, Tops), métricas temporales, gráficos interactivos y datos financieros en tiempo real.
+**Última actualización:** 15 de Noviembre 2025 - 🤖 Sistema de Valoración IA v3.1 - Informes profesionales generados por GPT-4, búsqueda automática de comparables con SerpAPI, histórico de valoraciones, y análisis de mercado en tiempo real.
 
 ---
 
@@ -181,19 +183,36 @@ En Supabase Dashboard:
 }
 ```
 
-### 7. Despliegue en Producción
+### 7. Flujo de Trabajo de Desarrollo
 
-Esta aplicación está configurada para funcionar **únicamente en producción** a través de AWS Amplify.
+**IMPORTANTE:** Esta aplicación NO se ejecuta localmente. Todo el desarrollo se hace directamente en producción.
 
-**No se desarrolla localmente**. Todos los cambios se despliegan directamente:
-
+#### Workflow:
 ```bash
+# 1. Hacer cambios en el código localmente
+# 2. Commit de los cambios
 git add .
 git commit -m "descripción de cambios"
+
+# 3. Push a GitHub (rama main)
 git push origin main
+
+# 4. AWS Amplify detecta el push automáticamente
+# 5. Build y deploy se ejecutan en AWS (2-5 minutos)
+# 6. Cambios visibles en https://www.mapafurgocasa.com
 ```
 
-Amplify desplegará automáticamente en: `https://www.mapafurgocasa.com`
+#### Ver Logs de Deploy:
+1. Ve a AWS Console → Amplify
+2. Selecciona tu app
+3. Ve a **Deployments** para ver el progreso
+4. Click en el deployment para ver los logs
+
+#### Variables de Entorno en AWS:
+Las variables `.env.local` deben configurarse en AWS Amplify:
+1. AWS Console → Amplify → Tu App
+2. **Environment variables** en el menú lateral
+3. Añade las mismas variables que en `.env.local`
 
 ---
 
@@ -445,16 +464,18 @@ NEW MAPA FURGOCASA/
 - **Gestión de Estado** - Marca como leído o cierra reportes
 - **Página Pública** - Cualquiera puede reportar accediendo al QR de tu vehículo
 
-### 🤖 Valoración con IA ✨ **NUEVO v2.1**
-- **Informe Profesional Generado por IA** - GPT-4 analiza tu vehículo y genera un informe detallado de 400-700 palabras
-- **3 Precios Estratégicos** - Precio de salida (negociación), precio objetivo (realista), precio mínimo (límite)
-- **Búsqueda Automática de Comparables** - SerpAPI busca anuncios similares reales en internet (Milanuncios, Wallapop, etc.)
-- **Análisis de Mercado Completo** - Compara con vehículos similares en venta actualmente
-- **Historial de Valoraciones** - Guarda todas las valoraciones con su fecha para ver evolución temporal
-- **Informe Estructurado** - Incluye: introducción, precio nuevo, depreciación, valor extras, comparación mercado, precios recomendados
-- **Nivel de Confianza** - Alta/Media/Baja según cantidad de comparables encontrados
-- **Enlaces a Comparables** - Acceso directo a los anuncios usados para la valoración
-- **Poner en Venta** - Usa el precio recomendado por IA con un clic
+### 🤖 Valoración con IA ✨ **NUEVO v3.1**
+- **Informe Profesional Generado por IA** - GPT-4 analiza tu vehículo y genera un informe detallado de 400-700 palabras estructurado profesionalmente
+- **3 Precios Estratégicos** - Precio de salida (para negociación), precio objetivo (realista), precio mínimo (límite absoluto)
+- **Búsqueda Automática de Comparables** - SerpAPI busca automáticamente anuncios similares en portales de venta (Milanuncios, Wallapop, Autoscout24, etc.)
+- **Análisis de Mercado Completo** - Compara tu vehículo con anuncios reales actualmente en venta
+- **Histórico de Valoraciones** - Guarda todas las valoraciones con fecha para ver evolución del valor en el tiempo
+- **Informe Estructurado en Markdown** - Incluye: introducción, análisis de depreciación, valor de extras, comparación con mercado, precios recomendados, y conclusiones
+- **Nivel de Confianza** - Alta/Media/Baja según cantidad y calidad de comparables encontrados
+- **Enlaces a Comparables** - Acceso directo a los anuncios usados como referencia
+- **Descarga en PDF** - Exporta el informe completo con fotos del vehículo
+- **Gestión Graceful** - Si SerpAPI no está disponible, usa solo datos internos de GPT-4
+- **Prompts Configurables** - Administradores pueden ajustar el comportamiento de la IA desde `/admin/configuracion`
 
 ### 📊 Histórico de Valoraciones ✨ **NUEVO v2.0**
 - **Evolución Temporal** - Gráfico interactivo del valor en el tiempo

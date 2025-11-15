@@ -4,6 +4,76 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 ---
 
+## [3.0.1] - 2025-11-15 🤖✨
+
+### 🎯 SISTEMA DE VALORACIÓN IA MEJORADO Y ANALYTICS CORREGIDO
+
+Mejoras significativas en el sistema de valoración con IA (GPT-4 + SerpAPI), corrección completa del sistema de analytics de vehículos, y documentación actualizada sobre el entorno de producción.
+
+### ✅ Agregado
+
+#### Sistema de Valoración IA Robusto 🤖
+- **Gestión graceful de SerpAPI** - Si SerpAPI no está disponible (créditos agotados, error), el sistema continúa usando solo GPT-4 con datos internos
+- **Descarga en PDF mejorada** - Exporta informe completo con hasta 5 fotos del vehículo, corrección automática de orientación de imágenes
+- **Histórico de valoraciones** - Nueva pestaña que muestra todas las valoraciones pasadas con fechas, precios y nivel de confianza
+- **Cálculo correcto de depreciación** - Usa precio de compra del usuario vs precio objetivo de IA
+- **Prompts configurables desde BD** - Los 4 agentes IA (actualizar servicios, enriquecer textos, tío viajero, valoración vehículos) leen sus prompts de `ia_config`
+- **Informe estructurado** - Secciones: Introducción, Datos Técnicos, Comparables del Mercado, Precios Recomendados
+
+#### Analytics de Vehículos Corregido 📊
+- **Consulta directa a Supabase** - Usa el mismo cliente que `/admin/vehiculos` (que sí funciona) en lugar de API route
+- **RLS deshabilitado en tablas de vehículos** - Permite acceso admin sin políticas que bloqueen
+- **Corrección campo `año`** - Todas las referencias ahora usan `año` (con ñ) en lugar de `ano` (sin ñ)
+- **Tops de vehículos funcionales** - Muestra correctamente los vehículos más caros/baratos de usuarios
+- **Distribuciones por año y kilometraje** - Gráficos con datos reales
+- **Objetos sintéticos** - Si un vehículo no está en `vehiculos_registrados` pero sí en `vehiculo_valoracion_economica`, crea objeto temporal
+
+#### FAQ y Mejoras UI 📄
+- **Página de FAQs completa** - 24 preguntas frecuentes organizadas en 6 categorías (General, Áreas, Rutas, Vehículos, Cuenta, Técnico)
+- **Link en footer** - Acceso rápido a FAQs desde cualquier página
+- **Modal de confirmación nativa** - Reemplazado `confirm()` del sistema por modal personalizado de la app
+
+### 🔧 Corregido
+
+#### Errores Críticos de Analytics
+- **500 error en `/api/admin/vehiculos`** - API route no funcionaba con Service Role Key por problemas de RLS
+- **Tabla vacía** - `vehiculos_registrados` devolvía 0 resultados a pesar de tener datos
+- **Referencias `ano` vs `año`** - Corrección completa en 22 ubicaciones del código
+- **Error 403 chatbot_mensajes** - Tabla no existe, se trackea en `user_interactions` (pendiente de implementar)
+
+#### Sistema de Valoración IA
+- **Depreciación siempre 0%** - Ahora calcula correctamente usando precio compra vs precio objetivo
+- **Comparables no se mostraban** - Corrección en el componente de visualización
+- **SerpAPI bloqueaba todo** - Ahora es opcional, sistema funciona sin ella
+
+### 📚 Documentación
+
+#### README.md Actualizado
+- **Entorno de producción aclarado** - GitHub → AWS Amplify (NO Vercel, NO local)
+- **Workflow de desarrollo** - Commit → Push → Deploy automático en AWS
+- **Variables de entorno en AWS** - Cómo configurarlas en Amplify
+- **Sistema de valoración IA v3.1** - Descripción completa de funcionalidades
+
+#### Migraciones SQL Documentadas
+- `20250115_disable_rls_vehiculos.sql` - Deshabilita RLS en tablas de vehículos para analytics
+- `20250115_fix_valoracion_ia_rls_policies.sql` - Corrige políticas de valoraciones IA
+- `20250115_admin_rls_chatbot.sql` - Documentación sobre tabla inexistente `chatbot_mensajes`
+
+### 🔄 Cambios Técnicos
+
+#### Analytics (`app/admin/analytics/page.tsx`)
+- Usa cliente Supabase directo en lugar de API route
+- Consulta tablas directamente (igual que `/admin/vehiculos` que sí funciona)
+- Manejo robusto de datos: arrays vacíos no rompen la UI
+
+#### API de Valoración (`app/api/vehiculos/[id]/ia-valoracion/route.ts`)
+- SerpAPI ahora es opcional con try-catch
+- Si falla SerpAPI, continúa con GPT-4 solo
+- Logs detallados en cada paso del proceso
+- Depreciación calculada correctamente
+
+---
+
 ## [3.0.0] - 2025-11-14 📊🎉
 
 ### 🎯 SISTEMA DE ANALYTICS AVANZADO POR PESTAÑAS
