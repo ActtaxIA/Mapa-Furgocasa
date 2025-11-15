@@ -38,10 +38,10 @@ export default function ComparativaPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
+
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 text-white py-20">
+        <section className="bg-gradient-to-br from-primary-600 via-primary-700 to-sky-800 text-white py-20">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight">
               🚐 Mapa Furgocasa vs Park4Night
@@ -61,12 +61,12 @@ export default function ComparativaPage() {
             <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">
               📊 Comparativa Detallada
             </h2>
-            
+
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary-600 to-sky-600 text-white">
                       <th className="px-6 py-4 text-left font-semibold">Funcionalidad</th>
                       <th className="px-6 py-4 text-center font-semibold">🔵 Mapa Furgocasa</th>
                       <th className="px-6 py-4 text-center font-semibold">Park4Night</th>
@@ -110,7 +110,7 @@ export default function ComparativaPage() {
                       <td className="px-6 py-4 text-center text-red-600 font-bold">✗</td>
                       <td className="px-6 py-4 text-center text-red-600 font-bold">✗</td>
                     </tr>
-                    
+
                     {/* Features ÚNICOS */}
                     <tr className="bg-yellow-50">
                       <td className="px-6 py-4 font-bold">
@@ -148,7 +148,7 @@ export default function ComparativaPage() {
                       <td className="px-6 py-4 text-center text-red-600 font-bold">✗</td>
                       <td className="px-6 py-4 text-center text-red-600 font-bold">✗</td>
                     </tr>
-                    
+
                     {/* Features ÚNICOS EN EL MUNDO */}
                     <tr className="bg-green-50">
                       <td className="px-6 py-4 font-bold">
@@ -177,7 +177,7 @@ export default function ComparativaPage() {
                       <td className="px-6 py-4 text-center text-red-600 font-bold">✗</td>
                       <td className="px-6 py-4 text-center text-red-600 font-bold">✗</td>
                     </tr>
-                    
+
                     <tr className="hover:bg-gray-50">
                       <td className="px-6 py-4 font-medium">🤖 Chatbot IA 24/7</td>
                       <td className="px-6 py-4 text-center text-green-600 font-bold">✓ Con geolocalización</td>
@@ -205,7 +205,7 @@ export default function ComparativaPage() {
             <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">
               🏆 10 Razones para Elegir Mapa Furgocasa
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
                 { icon: '🤖', title: 'Valoración con IA', desc: 'GPT-4 analiza el mercado y te dice cuánto vale tu autocaravana. Nadie más lo tiene.' },
@@ -219,9 +219,9 @@ export default function ComparativaPage() {
                 { icon: '🎨', title: 'Marcadores con Colores', desc: 'Identifica el tipo de área al instante: azul (pública), naranja (privada), verde (camping).' },
                 { icon: '💚', title: '100% Gratis Siempre', desc: 'Sin suscripciones, sin premium, sin trucos. TODO gratis para TODOS. Así debe ser.' },
               ].map((feature, index) => (
-                <div key={index} className="bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-6 hover:shadow-xl transition-all hover:-translate-y-1">
+                <div key={index} className="bg-gradient-to-br from-primary-50 to-sky-50 border-2 border-primary-200 rounded-xl p-6 hover:shadow-xl transition-all hover:-translate-y-1">
                   <div className="text-5xl mb-4">{feature.icon}</div>
-                  <h3 className="text-xl font-bold text-blue-900 mb-3">{feature.title}</h3>
+                  <h3 className="text-xl font-bold text-primary-900 mb-3">{feature.title}</h3>
                   <p className="text-gray-700 leading-relaxed">{feature.desc}</p>
                 </div>
               ))}
@@ -235,7 +235,7 @@ export default function ComparativaPage() {
             <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">
               💎 Lo que Park4Night NO tiene
             </h2>
-            
+
             <div className="space-y-6">
               <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-xl">
                 <h3 className="text-2xl font-bold text-red-900 mb-3">❌ Park4Night es SOLO un mapa</h3>
@@ -243,7 +243,7 @@ export default function ComparativaPage() {
                   Te dice dónde ir, pero no te ayuda a gestionar tu vehículo, valorarlo, protegerlo o controlar tus gastos.
                 </p>
               </div>
-              
+
               <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-r-xl">
                 <h3 className="text-2xl font-bold text-green-900 mb-3">✅ Mapa Furgocasa es una PLATAFORMA COMPLETA</h3>
                 <ul className="text-green-800 text-lg space-y-2 ml-5 list-disc">
@@ -266,7 +266,7 @@ export default function ComparativaPage() {
             <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">
               ❓ Preguntas Frecuentes
             </h2>
-            
+
             <div className="space-y-6">
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <h3 className="text-xl font-bold text-gray-900 mb-3">
@@ -276,7 +276,7 @@ export default function ComparativaPage() {
                   Depende de lo que busques. Si solo necesitas un <strong>mapa de áreas para autocaravanas</strong>, ambas apps funcionan bien. Pero si quieres <strong>gestionar tu vehículo completo</strong>, saber <strong>cuánto vale tu autocaravana</strong>, tener <strong>alertas de accidentes</strong>, <strong>exportar rutas a tu GPS</strong>, y <strong>controlar todos tus gastos</strong>, entonces Mapa Furgocasa es muy superior. Y además, es <strong>100% gratis</strong> (Park4Night cobra 4.99€/mes por premium).
                 </p>
               </div>
-              
+
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <h3 className="text-xl font-bold text-gray-900 mb-3">
                   ¿Qué NO tiene Park4Night que sí tiene Mapa Furgocasa?
@@ -285,7 +285,7 @@ export default function ComparativaPage() {
                   Park4Night NO tiene: <strong>gestión de vehículos</strong>, <strong>registro de mantenimientos y averías</strong>, <strong>valoración automática con IA</strong>, <strong>alertas de accidentes por QR</strong>, <strong>control de gastos y coste por kilómetro</strong>, <strong>exportación de rutas a GPS</strong>, ni <strong>drag-and-drop para reordenar paradas</strong>. Mapa Furgocasa tiene TODAS estas funcionalidades y más.
                 </p>
               </div>
-              
+
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <h3 className="text-xl font-bold text-gray-900 mb-3">
                   ¿Por qué cambiar de Park4Night a Mapa Furgocasa?
@@ -299,7 +299,7 @@ export default function ComparativaPage() {
         </section>
 
         {/* CTA Final */}
-        <section className="py-20 bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 text-white">
+        <section className="py-20 bg-gradient-to-br from-primary-600 via-primary-700 to-sky-800 text-white">
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2 className="text-4xl font-bold mb-6">
               ¿Listo para la mejor experiencia?
@@ -307,7 +307,7 @@ export default function ComparativaPage() {
             <p className="text-xl mb-8 opacity-95">
               Únete a los cientos de caravanistas que ya disfrutan de Mapa Furgocasa
             </p>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
                 <div className="text-4xl font-extrabold">4,900+</div>
@@ -326,14 +326,14 @@ export default function ComparativaPage() {
                 <div className="text-sm opacity-90 mt-2">Gratis</div>
               </div>
             </div>
-            
+
             <Link 
               href="/auth/register"
-              className="inline-block bg-white text-purple-700 px-12 py-4 rounded-full text-xl font-bold hover:scale-105 transition-transform shadow-2xl"
+              className="inline-block bg-white text-primary-700 px-12 py-4 rounded-full text-xl font-bold hover:scale-105 transition-transform shadow-2xl"
             >
               ✨ Crear Cuenta Gratis
             </Link>
-            
+
             <p className="mt-6 text-sm opacity-80">
               Sin tarjeta, sin suscripciones, sin trucos
             </p>
@@ -354,9 +354,9 @@ export default function ComparativaPage() {
           </div>
         </section>
       </main>
-      
+
       <Footer />
-      
+
       {/* Schema.org JSON-LD */}
       <script
         type="application/ld+json"
@@ -388,4 +388,3 @@ export default function ComparativaPage() {
     </div>
   )
 }
-
