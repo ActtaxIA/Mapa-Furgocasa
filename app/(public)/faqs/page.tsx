@@ -163,16 +163,18 @@ export default function FAQsPage() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-16">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              ❓ Preguntas Frecuentes
-            </h1>
-            <p className="text-xl text-primary-100">
-              Encuentra respuestas rápidas a las preguntas más comunes
-            </p>
+        <section className="bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] text-white py-20">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                Preguntas Frecuentes
+              </h1>
+              <p className="text-xl md:text-2xl text-white/90 leading-relaxed">
+                Encuentra respuestas rápidas a las preguntas más comunes
+              </p>
+            </div>
           </div>
-        </div>
+        </section>
 
         {/* Buscador */}
         <div className="max-w-4xl mx-auto px-4 -mt-6">
