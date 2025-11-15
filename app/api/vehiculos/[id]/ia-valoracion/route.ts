@@ -102,6 +102,98 @@ export async function POST(
       comparables = []
     }
 
+    // 2B. BUSCAR COMPARABLES EN NUESTRA BASE DE DATOS
+    console.log(`\n🔍 [PASO 2B/7] Buscando comparables en nuestra BD...`)
+    
+    try {
+      // Buscar vehículos similares con valoraciones IA
+      const { data: valoracionesSimilares, error: errorValoraciones } = await supabase
+        .from('valoracion_ia_informes')
+        .select(`
+          precio_objetivo,
+          precio_salida,
+          precio_minimo,
+          precio_base_mercado,
+          fecha_valoracion,
+          vehiculo_id
+        `)
+        .neq('vehiculo_id', params.id) // Excluir el vehículo actual
+        .order('fecha_valoracion', { ascending: false })
+        .limit(20)
+
+      // Buscar datos de compra de usuarios
+      const { data: datosCompra, error: errorCompra } = await supabase
+        .from('vehiculo_valoracion_economica')
+        .select(`
+          precio_compra,
+          fecha_compra,
+          kilometros_compra,
+          vehiculo_id
+        `)
+        .neq('vehiculo_id', params.id)
+        .not('precio_compra', 'is', null)
+        .order('fecha_compra', { ascending: false })
+        .limit(20)
+
+      // Buscar datos de mercado scrapeados
+      const { data: datosMercado, error: errorMercado } = await supabase
+        .from('datos_mercado_autocaravanas')
+        .select('*')
+        .eq('verificado', true)
+        .not('precio', 'is', null)
+        .order('fecha_scraping', { ascending: false })
+        .limit(20)
+
+      let comparablesInternos = []
+
+      // Agregar valoraciones IA de otros vehículos
+      if (valoracionesSimilares && valoracionesSimilares.length > 0) {
+        comparablesInternos.push(...valoracionesSimilares.map(v => ({
+          titulo: `Valoración IA similar`,
+          precio: v.precio_objetivo || v.precio_base_mercado,
+          link: null,
+          fuente: 'BD Interna - Valoraciones IA',
+          fecha: v.fecha_valoracion
+        })))
+      }
+
+      // Agregar precios de compra de usuarios
+      if (datosCompra && datosCompra.length > 0) {
+        comparablesInternos.push(...datosCompra.map(d => ({
+          titulo: `Vehículo similar comprado`,
+          precio: d.precio_compra,
+          link: null,
+          fuente: 'BD Interna - Compras Usuarios',
+          fecha: d.fecha_compra
+        })))
+      }
+
+      // Agregar datos de mercado scrapeados
+      if (datosMercado && datosMercado.length > 0) {
+        comparablesInternos.push(...datosMercado.map(d => ({
+          titulo: `${d.marca || ''} ${d.modelo || ''} - ${d.ubicacion || 'España'}`.trim(),
+          precio: d.precio,
+          kilometros: d.kilometros,
+          ubicacion: d.ubicacion,
+          link: d.url_anuncio,
+          fuente: d.fuente || 'BD Interna - Mercado',
+          fecha: d.fecha_scraping
+        })))
+      }
+
+      // Combinar comparables externos (SerpAPI) con internos (BD)
+      const totalComparablesAntes = comparables.length
+      comparables = [...comparables, ...comparablesInternos]
+      
+      console.log(`   ✅ Comparables de SerpAPI: ${totalComparablesAntes}`)
+      console.log(`   ✅ Comparables de BD interna: ${comparablesInternos.length}`)
+      console.log(`   ✅ Total comparables: ${comparables.length}`)
+      
+    } catch (error: any) {
+      console.error(`   ⚠️  Error buscando en BD interna:`, error.message)
+      console.log(`   ⏭️  Continuando con comparables de SerpAPI únicamente`)
+    }
+
     // 3. OBTENER CONFIGURACIÓN DEL AGENTE DESDE LA BD
     console.log(`\n⚙️  [PASO 3/7] Cargando configuración del agente IA...`)
 
