@@ -130,8 +130,8 @@ interface AnalyticsData {
   vehiculosConDatosFinancieros: number
 
   // Vehículos - Top Mercado IA
-  vehiculosMasCarosMercado: { marca: string; modelo: string; ano: number | null; precio: number }[]
-  vehiculosMasBaratosMercado: { marca: string; modelo: string; ano: number | null; precio: number }[]
+  vehiculosMasCarosMercado: { marca: string; modelo: string; año: number | null; precio: number }[]
+  vehiculosMasBaratosMercado: { marca: string; modelo: string; año: number | null; precio: number }[]
   inversionTotalPromedio: number
 
   // Vehículos - Datos de Mercado
@@ -705,8 +705,8 @@ export default function AdminAnalyticsPage() {
         // Consultar directamente con el cliente (igual que admin/vehiculos)
         const { data: vehiculosData, error: vehiculosError } = await supabase
           .from('vehiculos_registrados')
-          .select('id, created_at, user_id, marca, modelo, matricula, ano, tipo_vehiculo')
-        
+          .select('id, created_at, user_id, marca, modelo, matricula, año, tipo_vehiculo')
+
         if (vehiculosError) {
           console.error('❌ Error vehiculos:', vehiculosError)
         } else {
@@ -718,28 +718,28 @@ export default function AdminAnalyticsPage() {
         const { data: valEcoData, error: valEcoError } = await supabase
           .from('vehiculo_valoracion_economica')
           .select('*')
-        
+
         if (!valEcoError) valoracionesEconomicas = valEcoData || []
 
         // Obtener fichas técnicas
         const { data: fichasData, error: fichasError } = await supabase
           .from('vehiculo_ficha_tecnica')
           .select('*')
-        
+
         if (!fichasError) fichasTecnicas = fichasData || []
 
         // Obtener datos de mercado IA
         const { data: mercadoData, error: mercadoError } = await supabase
           .from('datos_mercado_autocaravanas')
           .select('*')
-        
+
         if (!mercadoError) datosMercado = mercadoData || []
 
         // Obtener valoraciones IA
         const { data: valoracionesIAData, error: valoracionesIAError } = await supabase
           .from('valoracion_ia_informes')
           .select('*')
-        
+
         if (!valoracionesIAError) valoracionesIA = valoracionesIAData || []
 
       } catch (error) {
@@ -783,7 +783,7 @@ export default function AdminAnalyticsPage() {
         .map(v => {
           // Intentar buscar en vehiculos_registrados
           let vehiculo = vehiculos.find(vh => vh.id === v.vehiculo_id)
-          
+
           // Si no existe, crear objeto sintético
           if (!vehiculo && v.vehiculo_id) {
             vehiculo = {
@@ -791,12 +791,12 @@ export default function AdminAnalyticsPage() {
               matricula: `Vehículo ${v.vehiculo_id.substring(0, 8)}`,
               marca: 'N/A',
               modelo: 'N/A',
-              ano: null,
+              año: null,
               user_id: v.user_id,
               created_at: v.created_at
             }
           }
-          
+
           return { vehiculo, precio: v.precio_compra }
         })
         .filter(item => item.vehiculo)
@@ -856,7 +856,7 @@ export default function AdminAnalyticsPage() {
         .map(v => ({
           marca: v.marca || 'N/A',
           modelo: v.modelo || 'N/A',
-          ano: v.ano || null,
+          año: v.año || null,
           precio: v.precio || 0
         }))
 
@@ -866,7 +866,7 @@ export default function AdminAnalyticsPage() {
         .map(v => ({
           marca: v.marca || 'N/A',
           modelo: v.modelo || 'N/A',
-          ano: v.ano || null,
+          año: v.año || null,
           precio: v.precio || 0
         }))
 
@@ -925,13 +925,13 @@ export default function AdminAnalyticsPage() {
         }
       })
 
-      // Distribución por años (usando campo 'ano' sin ñ)
+      // Distribución por años (usando campo 'año' de la BD)
       const anoActual = new Date().getFullYear()
       const distribucionAños = [
-        { rango: '< 2010', count: vehiculos.filter((v: any) => v.ano && v.ano < 2010).length },
-        { rango: '2010-2015', count: vehiculos.filter((v: any) => v.ano && v.ano >= 2010 && v.ano < 2015).length },
-        { rango: '2015-2020', count: vehiculos.filter((v: any) => v.ano && v.ano >= 2015 && v.ano < 2020).length },
-        { rango: '2020-2025', count: vehiculos.filter((v: any) => v.ano && v.ano >= 2020 && v.ano <= anoActual).length }
+        { rango: '< 2010', count: vehiculos.filter((v: any) => v.año && v.año < 2010).length },
+        { rango: '2010-2015', count: vehiculos.filter((v: any) => v.año && v.año >= 2010 && v.año < 2015).length },
+        { rango: '2015-2020', count: vehiculos.filter((v: any) => v.año && v.año >= 2015 && v.año < 2020).length },
+        { rango: '2020-2025', count: vehiculos.filter((v: any) => v.año && v.año >= 2020 && v.año <= anoActual).length }
       ]
 
       // Distribución por kilometraje (de ficha técnica - ya cargado desde API)
@@ -2621,7 +2621,7 @@ export default function AdminAnalyticsPage() {
                               </p>
                               <p className="text-sm text-gray-600">
                                 {item.vehiculo?.marca || 'N/A'} {item.vehiculo?.modelo || ''}
-                                {item.vehiculo?.ano ? ` (${item.vehiculo.ano})` : ''}
+                                {item.vehiculo?.año ? ` (${item.vehiculo.año})` : ''}
                               </p>
                             </div>
                           </div>
@@ -2653,7 +2653,7 @@ export default function AdminAnalyticsPage() {
                               </p>
                               <p className="text-sm text-gray-600">
                                 {item.vehiculo?.marca || 'N/A'} {item.vehiculo?.modelo || ''}
-                                {item.vehiculo?.ano ? ` (${item.vehiculo.ano})` : ''}
+                                {item.vehiculo?.año ? ` (${item.vehiculo.año})` : ''}
                               </p>
                             </div>
                           </div>
@@ -2688,7 +2688,7 @@ export default function AdminAnalyticsPage() {
                             <span className="text-2xl font-bold text-orange-600">#{index + 1}</span>
                             <div>
                               <p className="font-semibold text-gray-900">{item.marca} {item.modelo}</p>
-                              <p className="text-sm text-gray-600">{item.ano || 'Año N/A'}</p>
+                              <p className="text-sm text-gray-600">{item.año || 'Año N/A'}</p>
                             </div>
                           </div>
                           <p className="text-xl font-bold text-orange-600">{item.precio.toLocaleString('es-ES')}€</p>
@@ -2715,7 +2715,7 @@ export default function AdminAnalyticsPage() {
                             <span className="text-2xl font-bold text-teal-600">#{index + 1}</span>
                             <div>
                               <p className="font-semibold text-gray-900">{item.marca} {item.modelo}</p>
-                              <p className="text-sm text-gray-600">{item.ano || 'Año N/A'}</p>
+                              <p className="text-sm text-gray-600">{item.año || 'Año N/A'}</p>
                             </div>
                           </div>
                           <p className="text-xl font-bold text-teal-600">{item.precio.toLocaleString('es-ES')}€</p>
