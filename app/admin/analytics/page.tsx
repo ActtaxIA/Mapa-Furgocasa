@@ -695,20 +695,16 @@ export default function AdminAnalyticsPage() {
       // ========== MÉTRICAS DE VEHÍCULOS ==========
       console.log('🚐 Calculando métricas financieras de vehículos...')
 
-      // Obtener vehículos con datos completos (usar servicio para evitar RLS)
+      // Obtener vehículos con datos completos
       const { data: vehiculos, error: errorVehiculos } = await supabase
         .from('vehiculos_registrados')
         .select('id, created_at, user_id, marca, modelo, matricula, ano')
       
-      console.log('🔍 Query vehículos ejecutada:', {
-        total: vehiculos?.length || 0,
-        error: errorVehiculos,
-        sample: vehiculos?.[0]
-      })
-      
       if (errorVehiculos) {
         console.error('❌ Error cargando vehículos:', errorVehiculos)
       }
+      
+      console.log(`📊 Vehículos cargados: ${vehiculos?.length || 0}`)
 
       const totalVehiculosRegistrados = vehiculos?.length || 0
       const vehiculosRegistradosHoy = vehiculos?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
