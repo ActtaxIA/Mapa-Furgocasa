@@ -207,6 +207,14 @@ export function Footer() {
                   🔒 Política de Privacidad
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/comparativa"
+                  className="hover:text-white transition-colors text-primary-400 font-semibold"
+                >
+                  ⚡ vs Park4Night
+                </Link>
+              </li>
             </ul>
           </div>
 
