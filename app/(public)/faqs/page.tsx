@@ -26,7 +26,37 @@ const faqs: FAQ[] = [
   {
     categoria: 'general',
     pregunta: '¿Necesito registrarme para usar la aplicación?',
-    respuesta: 'Puedes explorar el mapa sin registrarte, pero para acceder a funciones avanzadas como el planificador de rutas, guardar favoritos, gestionar tu vehículo y generar valoraciones con IA, necesitas crear una cuenta gratuita.'
+    respuesta: 'Sí, necesitas crear una cuenta gratuita para acceder a todas las funcionalidades de Mapa Furgocasa: mapa de áreas, planificador de rutas, gestión de vehículos, valoraciones con IA y todas las herramientas avanzadas.'
+  },
+  {
+    categoria: 'general',
+    pregunta: '¿Qué países están cubiertos?',
+    respuesta: 'Actualmente cubrimos más de 15 países en Europa (España, Portugal, Francia, Italia, Alemania, Andorra, etc.) y Latinoamérica (Argentina, Chile, Uruguay, Brasil, Colombia, Perú, etc.). Seguimos expandiendo nuestra cobertura constantemente.'
+  },
+  {
+    categoria: 'general',
+    pregunta: '¿Cómo puedo reportar un error o sugerir una mejora?',
+    respuesta: 'Puedes contactarnos a través del formulario de contacto en la página web o enviarnos un email. Valoramos mucho el feedback de nuestros usuarios y revisamos todas las sugerencias para mejorar continuamente la plataforma.'
+  },
+  {
+    categoria: 'general',
+    pregunta: '¿Hay límite de uso o restricciones?',
+    respuesta: 'No, Mapa Furgocasa es completamente gratuito y sin límites de uso. Puedes usar todas las funcionalidades las veces que quieras: consultar áreas, crear rutas ilimitadas, registrar múltiples vehículos y generar valoraciones sin restricciones.'
+  },
+  {
+    categoria: 'general',
+    pregunta: '¿Qué diferencia a Mapa Furgocasa de otras aplicaciones?',
+    respuesta: 'Mapa Furgocasa es la única plataforma que combina mapa de áreas, planificador de rutas, gestión completa de vehículos con valoración IA, control de gastos y sistema QR de protección. Todo en una sola plataforma, 100% gratis.'
+  },
+  {
+    categoria: 'general',
+    pregunta: '¿Ofrecen soporte técnico?',
+    respuesta: 'Sí, ofrecemos soporte técnico gratuito a través de nuestro formulario de contacto. Respondemos todas las consultas en un plazo máximo de 48 horas. También puedes consultar esta sección de FAQs para respuestas rápidas.'
+  },
+  {
+    categoria: 'general',
+    pregunta: '¿Es seguro usar Mapa Furgocasa?',
+    respuesta: 'Absolutamente. Utilizamos tecnología de encriptación para proteger todos tus datos. Nunca compartimos información personal con terceros. Tus documentos, fotos y datos de vehículos están completamente seguros y solo accesibles por ti.'
   },
 
   // Áreas
@@ -50,6 +80,41 @@ const faqs: FAQ[] = [
     pregunta: '¿Puedo filtrar áreas por servicios?',
     respuesta: 'Sí, el mapa incluye filtros avanzados para buscar áreas según servicios disponibles: agua, electricidad, vaciado de aguas grises/negras, WiFi, seguridad, y más. Puedes combinar múltiples filtros para encontrar el área perfecta para tus necesidades.'
   },
+  {
+    categoria: 'areas',
+    pregunta: '¿Cómo funciona el sistema de favoritos?',
+    respuesta: 'Puedes guardar tus áreas favoritas haciendo clic en el icono de estrella en cualquier área del mapa. Luego accede a "Mis Favoritos" desde tu perfil para ver todas las áreas guardadas y organizarlas según tus preferencias.'
+  },
+  {
+    categoria: 'areas',
+    pregunta: '¿Las áreas tienen información de precios?',
+    respuesta: 'Sí, cuando está disponible, mostramos información sobre precios y métodos de pago de cada área. Esta información se actualiza regularmente gracias a los reportes de nuestra comunidad de usuarios.'
+  },
+  {
+    categoria: 'areas',
+    pregunta: '¿Puedo ver fotos de las áreas?',
+    respuesta: 'Sí, muchas áreas incluyen fotos proporcionadas por nuestra comunidad y por Google Places. Puedes ver múltiples imágenes de cada área para tener una mejor idea de cómo es antes de visitarla.'
+  },
+  {
+    categoria: 'areas',
+    pregunta: '¿Cómo sé si un área acepta autocaravanas grandes?',
+    respuesta: 'Cada área muestra información sobre el tamaño máximo permitido y número de plazas. También puedes leer los comentarios de otros usuarios que han visitado el área para conocer experiencias reales con vehículos de diferentes tamaños.'
+  },
+  {
+    categoria: 'areas',
+    pregunta: '¿Puedo reportar que un área está cerrada o ha cambiado?',
+    respuesta: 'Sí, puedes reportar cualquier cambio en un área directamente desde su página de detalles. Nuestro equipo revisa todos los reportes y actualiza la información lo antes posible para mantener el mapa siempre actualizado.'
+  },
+  {
+    categoria: 'areas',
+    pregunta: '¿Hay áreas solo para autocaravanas o también para furgonetas?',
+    respuesta: 'Nuestro mapa incluye áreas para todo tipo de vehículos recreativos: autocaravanas, furgonetas camperizadas, campers y caravanas. Puedes filtrar según el tipo de vehículo que tengas para encontrar áreas adecuadas.'
+  },
+  {
+    categoria: 'areas',
+    pregunta: '¿Cómo funciona la integración con Google Maps?',
+    respuesta: 'Cada área está integrada con Google Maps para que puedas ver su ubicación exacta, obtener direcciones, calcular rutas y usar la navegación GPS directamente desde nuestra plataforma.'
+  },
 
   // Rutas
   {
@@ -66,6 +131,36 @@ const faqs: FAQ[] = [
     categoria: 'rutas',
     pregunta: '¿Cómo exporto una ruta a mi GPS?',
     respuesta: 'Desde el planificador de rutas, haz clic en "Exportar GPX" para descargar un archivo compatible con la mayoría de dispositivos GPS (Garmin, TomTom, etc.) y aplicaciones de navegación.'
+  },
+  {
+    categoria: 'rutas',
+    pregunta: '¿Puedo guardar múltiples rutas?',
+    respuesta: 'Sí, puedes crear y guardar tantas rutas como quieras. Cada ruta se guarda con un nombre personalizado y puedes acceder a ellas desde tu perfil para editarlas o reutilizarlas en el futuro.'
+  },
+  {
+    categoria: 'rutas',
+    pregunta: '¿El planificador calcula automáticamente las distancias?',
+    respuesta: 'Sí, el planificador calcula automáticamente la distancia total entre todas las paradas, el tiempo estimado de viaje y muestra un mapa visual de tu ruta completa. Todo se actualiza en tiempo real cuando modificas las paradas.'
+  },
+  {
+    categoria: 'rutas',
+    pregunta: '¿Puedo añadir paradas intermedias que no sean áreas?',
+    respuesta: 'Actualmente el planificador está optimizado para áreas de estacionamiento, pero puedes añadir cualquier punto de interés como parada intermedia. El sistema calculará la ruta completa incluyendo todas tus paradas.'
+  },
+  {
+    categoria: 'rutas',
+    pregunta: '¿Cómo encuentro áreas cercanas a mi ruta?',
+    respuesta: 'El planificador muestra automáticamente áreas cercanas a cada tramo de tu ruta. Puedes hacer clic en cualquier área sugerida para añadirla como parada en tu itinerario.'
+  },
+  {
+    categoria: 'rutas',
+    pregunta: '¿Puedo imprimir o compartir mi ruta?',
+    respuesta: 'Sí, puedes exportar tu ruta en formato GPX o imprimir un resumen con todas las paradas, distancias y tiempos. También puedes copiar el enlace de tu ruta para compartirlo con otros viajeros.'
+  },
+  {
+    categoria: 'rutas',
+    pregunta: '¿El planificador tiene en cuenta restricciones de altura o peso?',
+    respuesta: 'Actualmente el planificador calcula rutas estándar. Para restricciones específicas de altura o peso, recomendamos verificar manualmente cada tramo de la ruta y consultar las áreas individuales que muestran información sobre accesos y limitaciones.'
   },
 
   // Vehículos
@@ -89,6 +184,41 @@ const faqs: FAQ[] = [
     pregunta: '¿Es seguro subir documentos de mi vehículo?',
     respuesta: 'Sí, todos los documentos se almacenan de forma segura y encriptada en servidores protegidos. Solo tú puedes acceder a tu información. Nunca compartimos datos personales con terceros.'
   },
+  {
+    categoria: 'vehiculos',
+    pregunta: '¿Qué información necesito para registrar mi vehículo?',
+    respuesta: 'Para registrar tu vehículo necesitas: marca, modelo, año, número de bastidor (VIN), kilometraje actual y tipo de combustible. Opcionalmente puedes añadir fotos, documentos (ITV, seguro, etc.) y detalles adicionales.'
+  },
+  {
+    categoria: 'vehiculos',
+    pregunta: '¿Cómo funciona el sistema QR de protección?',
+    respuesta: 'Cada vehículo registrado recibe un código QR único que puedes imprimir y colocar en tu autocaravana. Si alguien encuentra daños o problemas, puede escanear el QR y reportarlos. Recibirás notificaciones instantáneas con fotos y ubicación GPS.'
+  },
+  {
+    categoria: 'vehiculos',
+    pregunta: '¿Puedo registrar mantenimientos y averías?',
+    respuesta: 'Sí, puedes registrar todos los mantenimientos (cambios de aceite, filtros, neumáticos, etc.) y averías con fecha, coste, taller y fotos. Esto te ayuda a llevar un historial completo y calcular el coste real de propiedad de tu vehículo.'
+  },
+  {
+    categoria: 'vehiculos',
+    pregunta: '¿La valoración con IA es precisa?',
+    respuesta: 'La valoración con IA utiliza GPT-4 y datos reales del mercado para generar precios precisos. Analiza comparables de portales especializados, estado del vehículo, kilometraje y características para darte tres precios: salida rápida, objetivo y mínimo aceptable.'
+  },
+  {
+    categoria: 'vehiculos',
+    pregunta: '¿Puedo ver el historial de valoraciones?',
+    respuesta: 'Sí, todas las valoraciones se guardan con fecha y puedes ver la evolución del valor de tu vehículo a lo largo del tiempo. Esto te ayuda a entender cómo se deprecia tu autocaravana y tomar decisiones informadas.'
+  },
+  {
+    categoria: 'vehiculos',
+    pregunta: '¿Puedo registrar gastos y calcular el ROI?',
+    respuesta: 'Sí, puedes registrar todos los gastos relacionados con tu vehículo (compra, mejoras, mantenimientos, seguros, etc.) y el sistema calcula automáticamente el ROI (Retorno de Inversión) y el coste total de propiedad.'
+  },
+  {
+    categoria: 'vehiculos',
+    pregunta: '¿Qué pasa si vendo mi vehículo?',
+    respuesta: 'Puedes marcar tu vehículo como "Vendido" y registrar el precio de venta. El historial completo se mantiene guardado para que puedas consultarlo en el futuro. Esto es útil para llevar un registro de todos los vehículos que has tenido.'
+  },
 
   // Cuenta
   {
@@ -111,6 +241,36 @@ const faqs: FAQ[] = [
     pregunta: '¿Cómo elimino mi cuenta?',
     respuesta: 'Si deseas eliminar tu cuenta, contáctanos a través del formulario de contacto. Eliminaremos toda tu información de forma permanente en un plazo de 48 horas.'
   },
+  {
+    categoria: 'cuenta',
+    pregunta: '¿Puedo usar mi cuenta de Google para registrarme?',
+    respuesta: 'Sí, puedes registrarte usando tu cuenta de Google para un proceso más rápido y seguro. Solo necesitas hacer clic en "Iniciar sesión con Google" y autorizar el acceso.'
+  },
+  {
+    categoria: 'cuenta',
+    pregunta: '¿Qué datos personales se almacenan?',
+    respuesta: 'Almacenamos solo la información necesaria para proporcionar el servicio: email, nombre (opcional), y datos de tus vehículos registrados. Nunca compartimos esta información con terceros ni la usamos para marketing sin tu consentimiento.'
+  },
+  {
+    categoria: 'cuenta',
+    pregunta: '¿Puedo cambiar mi contraseña?',
+    respuesta: 'Sí, desde tu perfil de usuario puedes cambiar tu contraseña en cualquier momento. Solo necesitas tu contraseña actual y establecer una nueva contraseña segura.'
+  },
+  {
+    categoria: 'cuenta',
+    pregunta: '¿Recibiré emails de la plataforma?',
+    respuesta: 'Solo recibirás emails importantes como confirmaciones de registro, restablecimiento de contraseña y notificaciones de reportes QR. Puedes gestionar tus preferencias de notificaciones desde tu perfil.'
+  },
+  {
+    categoria: 'cuenta',
+    pregunta: '¿Puedo tener múltiples cuentas?',
+    respuesta: 'No es necesario tener múltiples cuentas. Una sola cuenta te permite registrar múltiples vehículos, crear múltiples rutas y gestionar toda tu información. Si necesitas ayuda con algo específico, contáctanos.'
+  },
+  {
+    categoria: 'cuenta',
+    pregunta: '¿Qué pasa si no uso mi cuenta durante mucho tiempo?',
+    respuesta: 'Tu cuenta y toda tu información permanecen activas indefinidamente. No eliminamos cuentas por inactividad. Siempre puedes volver y acceder a todos tus datos guardados.'
+  },
 
   // Técnico
   {
@@ -132,6 +292,41 @@ const faqs: FAQ[] = [
     categoria: 'tecnico',
     pregunta: '¿Tenéis aplicación móvil nativa?',
     respuesta: 'Actualmente Mapa Furgocasa es una aplicación web responsive que funciona perfectamente en móviles. Estamos considerando desarrollar aplicaciones nativas para iOS y Android en el futuro según la demanda de los usuarios.'
+  },
+  {
+    categoria: 'tecnico',
+    pregunta: '¿Puedo usar la app sin conexión a internet?',
+    respuesta: 'La aplicación requiere conexión a internet para acceder al mapa y las funcionalidades en tiempo real. Sin embargo, puedes exportar rutas en formato GPX para usarlas offline en tu GPS o aplicación de navegación favorita.'
+  },
+  {
+    categoria: 'tecnico',
+    pregunta: '¿La aplicación consume mucha batería o datos?',
+    respuesta: 'La aplicación está optimizada para un consumo eficiente de batería y datos. El mapa carga solo las áreas visibles en pantalla y puedes ajustar la calidad de las imágenes. El consumo es similar al de otras aplicaciones de mapas modernas.'
+  },
+  {
+    categoria: 'tecnico',
+    pregunta: '¿Funciona con todos los sistemas operativos?',
+    respuesta: 'Sí, Mapa Furgocasa funciona en cualquier dispositivo con un navegador moderno: Windows, macOS, Linux, iOS, Android. No necesitas instalar nada, solo accede desde tu navegador web.'
+  },
+  {
+    categoria: 'tecnico',
+    pregunta: '¿Puedo añadir la app a la pantalla de inicio de mi móvil?',
+    respuesta: 'Sí, desde tu navegador móvil puedes añadir Mapa Furgocasa a la pantalla de inicio como si fuera una app nativa. Busca la opción "Añadir a pantalla de inicio" en el menú de tu navegador.'
+  },
+  {
+    categoria: 'tecnico',
+    pregunta: '¿Qué hago si la página no carga correctamente?',
+    respuesta: 'Primero intenta refrescar la página (F5 o Ctrl+R). Si el problema persiste, limpia la caché de tu navegador o prueba en modo incógnito. Si sigue sin funcionar, contáctanos con detalles del error y te ayudaremos.'
+  },
+  {
+    categoria: 'tecnico',
+    pregunta: '¿Los datos se sincronizan entre dispositivos?',
+    respuesta: 'Sí, todos tus datos (vehículos, rutas, favoritos) se almacenan en la nube y se sincronizan automáticamente entre todos tus dispositivos. Solo necesitas iniciar sesión con la misma cuenta.'
+  },
+  {
+    categoria: 'tecnico',
+    pregunta: '¿Hay límite de almacenamiento para fotos y documentos?',
+    respuesta: 'Ofrecemos generoso espacio de almacenamiento para fotos y documentos de tus vehículos. Si necesitas más espacio, contáctanos y podemos ampliarlo según tus necesidades.'
   }
 ]
 
@@ -151,7 +346,7 @@ export default function FAQsPage() {
 
   const faqsFiltrados = faqs.filter(faq => {
     const matchCategoria = faq.categoria === categoriaActiva
-    const matchBusqueda = busqueda === '' || 
+    const matchBusqueda = busqueda === '' ||
       faq.pregunta.toLowerCase().includes(busqueda.toLowerCase()) ||
       faq.respuesta.toLowerCase().includes(busqueda.toLowerCase())
     return matchCategoria && matchBusqueda
@@ -282,4 +477,3 @@ export default function FAQsPage() {
     </div>
   )
 }
-

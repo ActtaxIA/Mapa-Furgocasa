@@ -26,7 +26,7 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
   - Mis Favoritos
   - Mis Rutas Guardadas
 - 📱 **Responsive Design** - Funciona en móvil, tablet y desktop
-- 🌐 **Acceso Público** - Mapa y áreas sin registro, herramientas avanzadas con registro
+- 🌐 **Acceso Completo** - Todas las funcionalidades disponibles con registro gratuito
 - 🔔 **Notificaciones Toast** - Feedback elegante en todas las acciones
 
 ### Para Administradores
