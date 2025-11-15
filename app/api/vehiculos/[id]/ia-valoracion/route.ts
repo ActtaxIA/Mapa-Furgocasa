@@ -260,6 +260,7 @@ export async function POST(
     console.log(`   💵 Precio compra usuario: ${precioCompraUsuario ? precioCompraUsuario.toFixed(0) + '€' : 'No especificado'}`)
     console.log(`   🎯 Precio objetivo IA: ${precioObjetivo}€`)
     console.log(`   📉 Depreciación aplicada: ${depreciacionAplicada !== null ? depreciacionAplicada.toFixed(1) + '%' : 'N/A (no hay precio de compra)'}`)
+    console.log(`   🔍 Cálculo depreciación: (${precioCompraUsuario} - ${precioObjetivo}) / ${precioCompraUsuario} * 100 = ${depreciacionAplicada}`)
 
     const { data: informeGuardado, error: errorGuardar } = await supabase
       .from('valoracion_ia_informes')
