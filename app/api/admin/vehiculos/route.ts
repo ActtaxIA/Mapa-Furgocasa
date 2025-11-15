@@ -49,6 +49,11 @@ export async function GET(request: NextRequest) {
     }
 
     console.log(`✅ Vehículos: ${vehiculos?.length || 0}`)
+    if (vehiculos && vehiculos.length > 0) {
+      console.log('📋 Primeros IDs de vehículos:', vehiculos.slice(0, 3).map(v => v.id))
+    } else {
+      console.log('⚠️ La tabla vehiculos_registrados está VACÍA')
+    }
 
     // Obtener valoraciones económicas
     console.log('📥 Consultando vehiculo_valoracion_economica...')
@@ -60,6 +65,10 @@ export async function GET(request: NextRequest) {
       console.error('❌ Error valoraciones:', JSON.stringify(errorValoraciones, null, 2))
     }
     console.log(`✅ Valoraciones: ${valoracionesEconomicas?.length || 0}`)
+    if (valoracionesEconomicas && valoracionesEconomicas.length > 0) {
+      console.log('💰 Primeros vehiculo_id en valoraciones:', valoracionesEconomicas.slice(0, 3).map(v => v.vehiculo_id))
+      console.log('💰 Precios:', valoracionesEconomicas.slice(0, 3).map(v => v.precio_compra))
+    }
 
     // Obtener fichas técnicas
     console.log('📥 Consultando vehiculo_ficha_tecnica...')
