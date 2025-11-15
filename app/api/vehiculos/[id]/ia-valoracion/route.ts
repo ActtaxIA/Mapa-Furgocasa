@@ -104,7 +104,7 @@ export async function POST(
 
     // 2B. BUSCAR COMPARABLES EN NUESTRA BASE DE DATOS
     console.log(`\n🔍 [PASO 2B/7] Buscando comparables en nuestra BD...`)
-    
+
     try {
       // Buscar vehículos similares con valoraciones IA
       const { data: valoracionesSimilares, error: errorValoraciones } = await supabase
@@ -184,11 +184,11 @@ export async function POST(
       // Combinar comparables externos (SerpAPI) con internos (BD)
       const totalComparablesAntes = comparables.length
       comparables = [...comparables, ...comparablesInternos]
-      
+
       console.log(`   ✅ Comparables de SerpAPI: ${totalComparablesAntes}`)
       console.log(`   ✅ Comparables de BD interna: ${comparablesInternos.length}`)
       console.log(`   ✅ Total comparables: ${comparables.length}`)
-      
+
     } catch (error: any) {
       console.error(`   ⚠️  Error buscando en BD interna:`, error.message)
       console.log(`   ⏭️  Continuando con comparables de SerpAPI únicamente`)
@@ -337,8 +337,8 @@ export async function POST(
     console.log(`\n💾 [PASO 7/7] Guardando en base de datos...`)
 
     // Calcular precio base de mercado (promedio de comparables)
-    const precioBaseMercado = comparables.length > 0 
-      ? comparables.reduce((sum, c) => sum + (c.precio || 0), 0) / comparables.filter(c => c.precio).length 
+    const precioBaseMercado = comparables.length > 0
+      ? comparables.reduce((sum, c) => sum + (c.precio || 0), 0) / comparables.filter(c => c.precio).length
       : null
 
     // Calcular depreciación aplicada (desde precio de compra del usuario hasta precio objetivo IA)
@@ -384,7 +384,7 @@ export async function POST(
     // 8. GUARDAR COMPARABLES EN TABLA DE MERCADO (si hay)
     if (comparables.length > 0) {
       console.log(`\n📊 Guardando ${comparables.length} comparables en datos_mercado_autocaravanas...`)
-      
+
       const comparablesParaGuardar = comparables.map(c => ({
         marca: vehiculo.marca || null,
         modelo: vehiculo.modelo || null,

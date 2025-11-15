@@ -700,6 +700,7 @@ export default function AdminAnalyticsPage() {
       let fichasTecnicas: any[] = []
       let datosMercado: any[] = []
       let valoracionesIA: any[] = []
+      let registrosKilometraje: any[] = []
 
       try {
         // Consultar directamente con el cliente (igual que admin/vehiculos)
@@ -727,6 +728,14 @@ export default function AdminAnalyticsPage() {
           .select('*')
 
         if (!fichasError) fichasTecnicas = fichasData || []
+
+        // Obtener registros de kilometraje
+        const { data: kmData, error: kmError } = await supabase
+          .from('vehiculo_kilometraje')
+          .select('*')
+          .order('fecha', { ascending: false })
+
+        if (!kmError) registrosKilometraje = kmData || []
 
         // Obtener datos de mercado IA
         const { data: mercadoData, error: mercadoError } = await supabase
@@ -934,12 +943,22 @@ export default function AdminAnalyticsPage() {
         { rango: '2020-2025', count: vehiculos.filter((v: any) => v.año && v.año >= 2020 && v.año <= anoActual).length }
       ]
 
-      // Distribución por kilometraje (de ficha técnica - ya cargado desde API)
+      // Distribución por kilometraje (de tabla vehiculo_kilometraje)
+      // Para cada vehículo, obtener el registro más reciente
+      const ultimosKilometrajesPorVehiculo = new Map<string, number>()
+      registrosKilometraje.forEach(registro => {
+        if (!ultimosKilometrajesPorVehiculo.has(registro.vehiculo_id)) {
+          ultimosKilometrajesPorVehiculo.set(registro.vehiculo_id, registro.kilometros)
+        }
+      })
+
+      const kilometrosActuales = Array.from(ultimosKilometrajesPorVehiculo.values())
+
       const distribucionKilometraje = [
-        { rango: '< 50k km', count: fichasTecnicas.filter(f => (f.kilometros_actuales || 0) < 50000).length },
-        { rango: '50k-100k km', count: fichasTecnicas.filter(f => (f.kilometros_actuales || 0) >= 50000 && (f.kilometros_actuales || 0) < 100000).length },
-        { rango: '100k-150k km', count: fichasTecnicas.filter(f => (f.kilometros_actuales || 0) >= 100000 && (f.kilometros_actuales || 0) < 150000).length },
-        { rango: '> 150k km', count: fichasTecnicas.filter(f => (f.kilometros_actuales || 0) >= 150000).length }
+        { rango: '< 50k km', count: kilometrosActuales.filter(km => km < 50000).length },
+        { rango: '50k-100k km', count: kilometrosActuales.filter(km => km >= 50000 && km < 100000).length },
+        { rango: '100k-150k km', count: kilometrosActuales.filter(km => km >= 100000 && km < 150000).length },
+        { rango: '> 150k km', count: kilometrosActuales.filter(km => km >= 150000).length }
       ]
 
       console.log(`✅ Vehículos: ${totalVehiculosRegistrados} total, ${vehiculosConDatosFinancieros} con datos financieros`)
