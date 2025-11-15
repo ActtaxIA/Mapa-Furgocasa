@@ -245,7 +245,7 @@ export default function VehiculoPage() {
   const descargarValoracionPDF = async (valoracion: any) => {
     try {
       setToast({ message: "Generando PDF completo...", type: "info" })
-      
+
       // Importar jsPDF dinámicamente
       const { default: jsPDF } = await import('jspdf')
       const pdf = new jsPDF({
@@ -270,16 +270,16 @@ export default function VehiculoPage() {
       // 1. HEADER CON LOGO Y TÍTULO
       pdf.setFillColor(37, 99, 235) // Azul
       pdf.rect(0, 0, pageWidth, 40, 'F')
-      
+
       pdf.setTextColor(255, 255, 255)
       pdf.setFontSize(20)
       pdf.setFont("helvetica", "bold")
       pdf.text("Informe de Valoración IA", margin, 25)
-      
+
       pdf.setFontSize(12)
       pdf.setFont("helvetica", "normal")
       pdf.text(`${vehiculo?.marca || ''} ${vehiculo?.modelo || ''}`, margin, 32)
-      
+
       pdf.setTextColor(0, 0, 0)
       yPos = 50
 
@@ -316,7 +316,7 @@ export default function VehiculoPage() {
 
       pdf.setFontSize(10)
       pdf.setFont("helvetica", "normal")
-      
+
       if (valoracion.precio_salida) {
         pdf.setFillColor(34, 197, 94) // Verde
         pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, 'F')
@@ -374,7 +374,7 @@ export default function VehiculoPage() {
             if (fotoData) {
               const fotoBlob = await fotoData.arrayBuffer()
               const fotoBase64 = btoa(String.fromCharCode(...new Uint8Array(fotoBlob)))
-              
+
               // Procesar imagen para corregir orientación
               const img = new Image()
               const fotoCorregidaBase64 = await new Promise<string>((resolve) => {
@@ -431,7 +431,7 @@ export default function VehiculoPage() {
       pdf.setFontSize(9)
       pdf.setFont("helvetica", "normal")
       const lines = pdf.splitTextToSize(textoPlano, pageWidth - 2 * margin)
-      
+
       lines.forEach((line: string) => {
         checkPageBreak(6)
         pdf.text(line, margin, yPos)
@@ -461,7 +461,7 @@ export default function VehiculoPage() {
       // Descargar PDF
       const nombreArchivo = `Valoracion_${vehiculo?.matricula || 'vehiculo'}_${new Date().toISOString().split('T')[0]}.pdf`
       pdf.save(nombreArchivo)
-      
+
       setToast({ message: "✅ PDF descargado correctamente", type: "success" })
     } catch (error) {
       console.error('Error generando PDF:', error)
