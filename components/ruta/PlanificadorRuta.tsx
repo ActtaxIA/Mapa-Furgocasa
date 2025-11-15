@@ -13,10 +13,28 @@ import {
   FunnelIcon,
   XMarkIcon,
   BookmarkIcon,
-  ArrowDownTrayIcon
+  ArrowDownTrayIcon,
+  Bars3Icon
 } from '@heroicons/react/24/outline'
 import { useToast } from '@/hooks/useToast'
 import { generateGPX, downloadGPX, generateGPXFilename } from '@/lib/gpx/generate-gpx'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 // Tipos simplificados para Google Maps
 type GoogleMap = any
@@ -33,11 +51,93 @@ interface RoutePoint {
   name: string
   lat: number
   lng: number
+  id?: string // Para drag-and-drop
 }
 
 interface PlanificadorRutaProps {
   vistaMovil?: 'ruta' | 'mapa' | 'lista'
   onRutaCalculada?: () => void
+}
+
+// Componente sortable para cada waypoint
+interface SortableWaypointProps {
+  waypoint: RoutePoint
+  index: number
+  onUpdate: (index: number, waypoint: RoutePoint) => void
+  onDelete: (index: number) => void
+  map: GoogleMap | null
+  disabled: boolean
+}
+
+function SortableWaypoint({ waypoint, index, onUpdate, onDelete, map, disabled }: SortableWaypointProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: waypoint.id || `waypoint-${index}` })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center gap-2 ${isDragging ? 'z-50' : ''}`}
+    >
+      {/* Handle de arrastre */}
+      <button
+        type="button"
+        className="cursor-grab active:cursor-grabbing p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+        {...attributes}
+        {...listeners}
+      >
+        <Bars3Icon className="w-4 h-4" />
+      </button>
+
+      <input
+        type="text"
+        placeholder={`Parada ${index + 1}${waypoint.name ? `: ${waypoint.name}` : '...'}`}
+        defaultValue={waypoint.name}
+        className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        onChange={(e) => {
+          if (!map) return
+          const google = (window as any).google
+          const autocomplete = new google.maps.places.Autocomplete(e.target, {
+            componentRestrictions: { country: ['es', 'fr', 'pt', 'it'] }
+          })
+
+          autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace()
+            if (place.geometry?.location) {
+              onUpdate(index, {
+                id: waypoint.id,
+                name: place.name || place.formatted_address || `Parada ${index + 1}`,
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng()
+              })
+            }
+          })
+        }}
+        disabled={disabled}
+      />
+
+      <button
+        type="button"
+        onClick={() => onDelete(index)}
+        className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+        title="Eliminar parada"
+      >
+        <XMarkIcon className="w-4 h-4" />
+      </button>
+    </div>
+  )
 }
 
 export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada }: PlanificadorRutaProps = {}) {
@@ -83,6 +183,18 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
   const [progreso, setProgreso] = useState(0)
   const [mensajeProgreso, setMensajeProgreso] = useState('')
   const cancelarCalculoRef = useRef(false)
+
+  // Sensores para drag-and-drop
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px de movimiento antes de activar drag
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
 
   // Cargar estado del GPS desde localStorage DESPUÉS de montar (solo cliente)
   useEffect(() => {
@@ -894,12 +1006,35 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
   }
 
   const agregarPuntoIntermedio = () => {
-    setWaypoints([...waypoints, { name: '', lat: 0, lng: 0 }])
+    const newId = `waypoint-${Date.now()}-${Math.random()}`
+    setWaypoints([...waypoints, { name: '', lat: 0, lng: 0, id: newId }])
   }
 
   const eliminarPuntoIntermedio = (index: number) => {
     const nuevosWaypoints = waypoints.filter((_, i) => i !== index)
     setWaypoints(nuevosWaypoints)
+  }
+
+  const actualizarWaypoint = (index: number, waypoint: RoutePoint) => {
+    const nuevosWaypoints = [...waypoints]
+    nuevosWaypoints[index] = waypoint
+    setWaypoints(nuevosWaypoints)
+  }
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (over && active.id !== over.id) {
+      setWaypoints((items) => {
+        const oldIndex = items.findIndex(item => (item.id || `waypoint-${items.indexOf(item)}`) === active.id)
+        const newIndex = items.findIndex(item => (item.id || `waypoint-${items.indexOf(item)}`) === over.id)
+        
+        return arrayMove(items, oldIndex, newIndex)
+      })
+      
+      // Mostrar mensaje
+      showToast('📍 Orden de paradas actualizado. Recalcula la ruta para ver cambios.', 'info')
+    }
   }
 
   const loadRutaFromId = async (rutaId: string) => {
@@ -1498,45 +1633,30 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
             </div>
 
             {waypoints.length > 0 && (
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {waypoints.map((waypoint: any, index: number) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      placeholder={`Parada ${index + 1}...`}
-                      className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      onChange={(e) => {
-                        if (!map) return
-                        const google = (window as any).google
-                        const autocomplete = new google.maps.places.Autocomplete(e.target, {
-                          componentRestrictions: { country: ['es', 'fr', 'pt', 'it'] }
-                        })
-
-                        autocomplete.addListener('place_changed', () => {
-                          const place = autocomplete.getPlace()
-                          if (place.geometry?.location) {
-                            const nuevosWaypoints = [...waypoints]
-                            nuevosWaypoints[index] = {
-                              name: place.name || place.formatted_address || `Parada ${index + 1}`,
-                              lat: place.geometry.location.lat(),
-                              lng: place.geometry.location.lng()
-                            }
-                            setWaypoints(nuevosWaypoints)
-                          }
-                        })
-                      }}
-                      disabled={isLoading}
-                    />
-                    <button
-                      onClick={() => eliminarPuntoIntermedio(index)}
-                      className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
-                      title="Eliminar parada"
-                    >
-                      <XMarkIcon className="w-4 h-4" />
-                    </button>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={waypoints.map((wp, i) => wp.id || `waypoint-${i}`)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {waypoints.map((waypoint: RoutePoint, index: number) => (
+                      <SortableWaypoint
+                        key={waypoint.id || `waypoint-${index}`}
+                        waypoint={waypoint}
+                        index={index}
+                        onUpdate={actualizarWaypoint}
+                        onDelete={eliminarPuntoIntermedio}
+                        map={map}
+                        disabled={isLoading}
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </SortableContext>
+              </DndContext>
             )}
 
             {waypoints.length === 0 && (

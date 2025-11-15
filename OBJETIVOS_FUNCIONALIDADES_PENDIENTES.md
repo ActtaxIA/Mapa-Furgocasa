@@ -307,42 +307,45 @@ Si no la sigues, podríamos:
 
 ### ✅ PARCIALMENTE IMPLEMENTADO
 
-#### 2.2 Paradas Múltiples ✅ IMPLEMENTADO (Sin drag-and-drop)
+#### 2.2 Paradas Múltiples con Drag-and-Drop ✅ COMPLETO
 
 **Descripción:**
 - Añade tantas paradas intermedias como quieras ✅
-- Reordena paradas arrastrando y soltando ❌
+- Reordena paradas arrastrando y soltando ✅
 - Actualización dinámica de la ruta ✅
 
-**Estado actual:** ✅ Paradas múltiples FUNCIONAN, ❌ falta drag-and-drop para reordenar
+**Estado actual:** ✅ COMPLETAMENTE IMPLEMENTADO (15 Nov 2025)
 
-**YA IMPLEMENTADO:**
+**IMPLEMENTADO:**
 - ✅ Añadir paradas ilimitadas (botón "+ Añadir")
 - ✅ Eliminar paradas (botón X en cada una)
+- ✅ **Drag-and-drop para reordenar** (dnd-kit)
+- ✅ **Icono de handle (barras)** para arrastrar
 - ✅ Autocomplete de Google Places en cada parada
 - ✅ Integración con Google Directions API (waypoints)
-- ✅ Persistencia en BD (campo `paradas` con orden)
+- ✅ Persistencia en BD con orden correcto
 - ✅ Recarga de rutas con paradas guardadas
 - ✅ Scroll en lista si hay muchas paradas
+- ✅ Feedback visual al reordenar (opacidad)
+- ✅ Toast informativo al cambiar orden
 
-**PENDIENTE:**
-- ❌ Drag-and-drop para reordenar (react-beautiful-dnd o dnd-kit)
-- ❌ Actualmente hay que borrar y volver a añadir para cambiar orden
+**Tecnología:**
+- Librería: @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities
+- Sensores: PointerSensor (8px activación) + KeyboardSensor
+- Estrategia: verticalListSortingStrategy
+- Componente: SortableWaypoint (custom)
 
 **Verificado en código:**
 - Archivo: `components/ruta/PlanificadorRuta.tsx`
-- Estado: línea 58 `waypoints`
-- UI: líneas 1486-1538
-- Función añadir: línea 896
-- Integración API: líneas 419-431
-- Fecha verificación: 15/11/2025
+- Componente SortableWaypoint: líneas 72-141
+- Sensores: líneas 187-197
+- Función handleDragEnd: líneas 1024-1038
+- UI con DndContext: líneas 1636-1660
+- Fecha implementación: 15/11/2025
 
 **Prometido en:** `31_email-planificador-rutas-detallado.html` (líneas 66-78)
 
-**Estimación para drag-and-drop:** 1 día desarrollo
-
-**Impacto:** Bajo (funciona sin drag-and-drop, solo es comodidad)
-**Prioridad actual:** 🟡 BAJA (feature principal ya funciona)
+**Tiempo de desarrollo:** 30 minutos ✅
 
 ---
 
