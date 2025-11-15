@@ -693,8 +693,7 @@ export default function AdminAnalyticsPage() {
       console.log(`✅ Usuarios activos: ${usuariosActivosHoy} hoy, ${usuariosActivosEstaSemana} esta semana`)
 
       // ========== MÉTRICAS DE VEHÍCULOS ==========
-      console.log('🚐 Cargando métricas de vehículos desde API...')
-
+      console.log('🚐 Obteniendo vehículos desde API...')
       let vehiculos: any[] = []
       let valoracionesEconomicas: any[] = []
       let fichasTecnicas: any[] = []
@@ -707,21 +706,17 @@ export default function AdminAnalyticsPage() {
         })
         const vehiculosData = await vehiculosResponse.json()
 
-        if (vehiculosData.success) {
-          vehiculos = vehiculosData.vehiculos || []
+        if (vehiculosData.vehiculos && Array.isArray(vehiculosData.vehiculos)) {
+          vehiculos = vehiculosData.vehiculos
           valoracionesEconomicas = vehiculosData.valoracionesEconomicas || []
           fichasTecnicas = vehiculosData.fichasTecnicas || []
           datosMercado = vehiculosData.datosMercado || []
           valoracionesIA = vehiculosData.valoracionesIA || []
-
-          console.log(`✅ Vehículos cargados: ${vehiculos.length}`)
-          console.log(`💰 Valoraciones económicas: ${valoracionesEconomicas.length}`)
-          console.log(`📋 Fichas técnicas: ${fichasTecnicas.length}`)
-          console.log(`📊 Datos mercado: ${datosMercado.length}`)
-          console.log(`🤖 Valoraciones IA: ${valoracionesIA.length}`)
+          console.log(`✅ ${vehiculos.length} vehículos obtenidos`)
         }
       } catch (error) {
-        console.error('❌ Error cargando datos de vehículos:', error)
+        console.error('❌ Error obteniendo vehículos:', error)
+        vehiculos = []
       }
 
       const totalVehiculosRegistrados = vehiculos.length
@@ -2576,7 +2571,7 @@ export default function AdminAnalyticsPage() {
                                 {item.vehiculo?.matricula || 'Sin matrícula'}
                               </p>
                               <p className="text-sm text-gray-600">
-                                {item.vehiculo?.marca || 'N/A'} {item.vehiculo?.modelo || ''} 
+                                {item.vehiculo?.marca || 'N/A'} {item.vehiculo?.modelo || ''}
                                 {item.vehiculo?.ano ? ` (${item.vehiculo.ano})` : ''}
                               </p>
                             </div>
@@ -2608,7 +2603,7 @@ export default function AdminAnalyticsPage() {
                                 {item.vehiculo?.matricula || 'Sin matrícula'}
                               </p>
                               <p className="text-sm text-gray-600">
-                                {item.vehiculo?.marca || 'N/A'} {item.vehiculo?.modelo || ''} 
+                                {item.vehiculo?.marca || 'N/A'} {item.vehiculo?.modelo || ''}
                                 {item.vehiculo?.ano ? ` (${item.vehiculo.ano})` : ''}
                               </p>
                             </div>
