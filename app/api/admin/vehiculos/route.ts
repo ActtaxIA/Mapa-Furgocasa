@@ -11,10 +11,16 @@ export const fetchCache = 'force-no-store'
  */
 export async function GET(request: NextRequest) {
   try {
+    console.log('🚐 [API VEHICULOS] Iniciando...')
+    
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
+    console.log('🔑 Service Key existe:', !!supabaseServiceKey)
+    console.log('🌐 URL:', supabaseUrl)
+
     if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('❌ Faltan credenciales de Supabase')
       return NextResponse.json(
         { error: 'Configuración de Supabase no disponible' },
         { status: 500 }
@@ -29,69 +35,68 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    console.log('🚐 Cargando todos los vehículos...')
+    console.log('📦 Cliente Supabase Admin creado')
 
     // Obtener todos los vehículos
+    console.log('📥 Consultando vehiculos_registrados...')
     const { data: vehiculos, error: errorVehiculos } = await supabaseAdmin
       .from('vehiculos_registrados')
       .select('id, created_at, user_id, marca, modelo, matricula, ano, tipo_vehiculo')
 
     if (errorVehiculos) {
-      console.error('❌ Error cargando vehículos:', errorVehiculos)
-      return NextResponse.json(
-        { error: 'Error al obtener vehículos', details: errorVehiculos.message },
-        { status: 500 }
-      )
+      console.error('❌ Error cargando vehículos:', JSON.stringify(errorVehiculos, null, 2))
+      // NO retornar error, continuar con array vacío
     }
 
-    console.log(`✅ Vehículos cargados: ${vehiculos?.length || 0}`)
+    console.log(`✅ Vehículos: ${vehiculos?.length || 0}`)
 
     // Obtener valoraciones económicas
+    console.log('📥 Consultando vehiculo_valoracion_economica...')
     const { data: valoracionesEconomicas, error: errorValoraciones } = await supabaseAdmin
       .from('vehiculo_valoracion_economica')
       .select('*')
 
     if (errorValoraciones) {
-      console.error('❌ Error cargando valoraciones:', errorValoraciones)
+      console.error('❌ Error valoraciones:', JSON.stringify(errorValoraciones, null, 2))
     }
-
-    console.log(`💰 Valoraciones económicas: ${valoracionesEconomicas?.length || 0}`)
+    console.log(`✅ Valoraciones: ${valoracionesEconomicas?.length || 0}`)
 
     // Obtener fichas técnicas
+    console.log('📥 Consultando vehiculo_ficha_tecnica...')
     const { data: fichasTecnicas, error: errorFichas } = await supabaseAdmin
       .from('vehiculo_ficha_tecnica')
       .select('*')
 
     if (errorFichas) {
-      console.error('❌ Error cargando fichas técnicas:', errorFichas)
+      console.error('❌ Error fichas:', JSON.stringify(errorFichas, null, 2))
     }
-
-    console.log(`📋 Fichas técnicas: ${fichasTecnicas?.length || 0}`)
+    console.log(`✅ Fichas: ${fichasTecnicas?.length || 0}`)
 
     // Obtener datos de mercado IA
+    console.log('📥 Consultando datos_mercado_autocaravanas...')
     const { data: datosMercado, error: errorMercado } = await supabaseAdmin
       .from('datos_mercado_autocaravanas')
       .select('*')
 
     if (errorMercado) {
-      console.error('❌ Error cargando datos de mercado:', errorMercado)
+      console.error('❌ Error mercado:', JSON.stringify(errorMercado, null, 2))
     }
-
-    console.log(`📊 Datos mercado IA: ${datosMercado?.length || 0}`)
+    console.log(`✅ Mercado: ${datosMercado?.length || 0}`)
 
     // Obtener valoraciones IA
+    console.log('📥 Consultando valoracion_ia_informes...')
     const { data: valoracionesIA, error: errorValoracionesIA } = await supabaseAdmin
       .from('valoracion_ia_informes')
       .select('*')
 
     if (errorValoracionesIA) {
-      console.error('❌ Error cargando valoraciones IA:', errorValoracionesIA)
+      console.error('❌ Error valoraciones IA:', JSON.stringify(errorValoracionesIA, null, 2))
     }
+    console.log(`✅ Valoraciones IA: ${valoracionesIA?.length || 0}`)
 
-    console.log(`🤖 Valoraciones IA: ${valoracionesIA?.length || 0}`)
+    console.log('✅ [API VEHICULOS] Completado exitosamente')
 
     const response = NextResponse.json({
-      success: true,
       vehiculos: vehiculos || [],
       valoracionesEconomicas: valoracionesEconomicas || [],
       fichasTecnicas: fichasTecnicas || [],
@@ -108,9 +113,15 @@ export async function GET(request: NextRequest) {
     return response
 
   } catch (error: any) {
-    console.error('Error en API de vehículos:', error)
+    console.error('❌ [API VEHICULOS] ERROR FATAL:', error)
+    console.error('   Mensaje:', error.message)
+    console.error('   Stack:', error.stack)
     return NextResponse.json(
-      { error: 'Error interno del servidor', details: error.message },
+      { 
+        error: 'Error interno del servidor', 
+        details: error.message,
+        stack: error.stack 
+      },
       { status: 500 }
     )
   }
