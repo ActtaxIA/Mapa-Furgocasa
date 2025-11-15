@@ -693,7 +693,8 @@ export default function AdminAnalyticsPage() {
       console.log(`✅ Usuarios activos: ${usuariosActivosHoy} hoy, ${usuariosActivosEstaSemana} esta semana`)
 
       // ========== MÉTRICAS DE VEHÍCULOS ==========
-      console.log('🚐 Obteniendo vehículos desde API...')
+      // Usar cliente de Supabase con RPC (igual que /admin/vehiculos)
+      console.log('🚐 Obteniendo vehículos con RPC...')
       let vehiculos: any[] = []
       let valoracionesEconomicas: any[] = []
       let fichasTecnicas: any[] = []
@@ -701,36 +702,48 @@ export default function AdminAnalyticsPage() {
       let valoracionesIA: any[] = []
 
       try {
-        const vehiculosResponse = await fetch(`/api/admin/vehiculos?t=${Date.now()}`, {
-          cache: 'no-store'
-        })
+        // Consultar directamente con el cliente (igual que admin/vehiculos)
+        const { data: vehiculosData, error: vehiculosError } = await supabase
+          .from('vehiculos_registrados')
+          .select('id, created_at, user_id, marca, modelo, matricula, ano, tipo_vehiculo')
         
-        if (!vehiculosResponse.ok) {
-          console.error('❌ Error HTTP:', vehiculosResponse.status)
-          throw new Error(`HTTP ${vehiculosResponse.status}`)
-        }
-        
-        const vehiculosData = await vehiculosResponse.json()
-        console.log('📦 Respuesta API vehiculos:', {
-          tieneVehiculos: !!vehiculosData.vehiculos,
-          esArray: Array.isArray(vehiculosData.vehiculos),
-          longitud: vehiculosData.vehiculos?.length,
-          keys: Object.keys(vehiculosData)
-        })
-
-        if (vehiculosData.vehiculos && Array.isArray(vehiculosData.vehiculos)) {
-          vehiculos = vehiculosData.vehiculos
-          valoracionesEconomicas = vehiculosData.valoracionesEconomicas || []
-          fichasTecnicas = vehiculosData.fichasTecnicas || []
-          datosMercado = vehiculosData.datosMercado || []
-          valoracionesIA = vehiculosData.valoracionesIA || []
-          console.log(`✅ ${vehiculos.length} vehículos obtenidos`)
+        if (vehiculosError) {
+          console.error('❌ Error vehiculos:', vehiculosError)
         } else {
-          console.warn('⚠️ vehiculosData.vehiculos no es un array válido')
+          vehiculos = vehiculosData || []
+          console.log(`✅ ${vehiculos.length} vehículos obtenidos con cliente directo`)
         }
+
+        // Obtener valoraciones económicas
+        const { data: valEcoData, error: valEcoError } = await supabase
+          .from('vehiculo_valoracion_economica')
+          .select('*')
+        
+        if (!valEcoError) valoracionesEconomicas = valEcoData || []
+
+        // Obtener fichas técnicas
+        const { data: fichasData, error: fichasError } = await supabase
+          .from('vehiculo_ficha_tecnica')
+          .select('*')
+        
+        if (!fichasError) fichasTecnicas = fichasData || []
+
+        // Obtener datos de mercado IA
+        const { data: mercadoData, error: mercadoError } = await supabase
+          .from('datos_mercado_autocaravanas')
+          .select('*')
+        
+        if (!mercadoError) datosMercado = mercadoData || []
+
+        // Obtener valoraciones IA
+        const { data: valoracionesIAData, error: valoracionesIAError } = await supabase
+          .from('valoracion_ia_informes')
+          .select('*')
+        
+        if (!valoracionesIAError) valoracionesIA = valoracionesIAData || []
+
       } catch (error) {
         console.error('❌ Error obteniendo vehículos:', error)
-        vehiculos = []
       }
 
       const totalVehiculosRegistrados = vehiculos.length
