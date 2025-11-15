@@ -9,8 +9,8 @@ ON vehiculos_registrados
 FOR SELECT
 TO authenticated
 USING (
-  (SELECT (raw_user_meta_data->>'is_admin')::boolean 
-   FROM auth.users 
+  (SELECT (raw_user_meta_data->>'is_admin')::boolean
+   FROM auth.users
    WHERE id = auth.uid()) = true
 );
 
@@ -20,8 +20,8 @@ ON vehiculo_valoracion_economica
 FOR SELECT
 TO authenticated
 USING (
-  (SELECT (raw_user_meta_data->>'is_admin')::boolean 
-   FROM auth.users 
+  (SELECT (raw_user_meta_data->>'is_admin')::boolean
+   FROM auth.users
    WHERE id = auth.uid()) = true
 );
 
@@ -31,8 +31,8 @@ ON vehiculo_ficha_tecnica
 FOR SELECT
 TO authenticated
 USING (
-  (SELECT (raw_user_meta_data->>'is_admin')::boolean 
-   FROM auth.users 
+  (SELECT (raw_user_meta_data->>'is_admin')::boolean
+   FROM auth.users
    WHERE id = auth.uid()) = true
 );
 
@@ -42,8 +42,8 @@ ON datos_mercado_autocaravanas
 FOR SELECT
 TO authenticated
 USING (
-  (SELECT (raw_user_meta_data->>'is_admin')::boolean 
-   FROM auth.users 
+  (SELECT (raw_user_meta_data->>'is_admin')::boolean
+   FROM auth.users
    WHERE id = auth.uid()) = true
 );
 
@@ -53,10 +53,9 @@ ON valoracion_ia_informes
 FOR SELECT
 TO authenticated
 USING (
-  (SELECT (raw_user_meta_data->>'is_admin')::boolean 
-   FROM auth.users 
+  (SELECT (raw_user_meta_data->>'is_admin')::boolean
+   FROM auth.users
    WHERE id = auth.uid()) = true
 );
 
 -- ✅ COMPLETADO
-

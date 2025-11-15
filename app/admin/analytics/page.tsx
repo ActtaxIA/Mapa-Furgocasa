@@ -693,23 +693,41 @@ export default function AdminAnalyticsPage() {
       console.log(`✅ Usuarios activos: ${usuariosActivosHoy} hoy, ${usuariosActivosEstaSemana} esta semana`)
 
       // ========== MÉTRICAS DE VEHÍCULOS ==========
-      console.log('🚐 Calculando métricas financieras de vehículos...')
+      console.log('🚐 Cargando métricas de vehículos desde API...')
 
-      // Obtener vehículos con datos completos
-      const { data: vehiculos, error: errorVehiculos } = await supabase
-        .from('vehiculos_registrados')
-        .select('id, created_at, user_id, marca, modelo, matricula, ano')
-      
-      if (errorVehiculos) {
-        console.error('❌ Error cargando vehículos:', errorVehiculos)
+      let vehiculos: any[] = []
+      let valoracionesEconomicas: any[] = []
+      let fichasTecnicas: any[] = []
+      let datosMercado: any[] = []
+      let valoracionesIA: any[] = []
+
+      try {
+        const vehiculosResponse = await fetch(`/api/admin/vehiculos?t=${Date.now()}`, {
+          cache: 'no-store'
+        })
+        const vehiculosData = await vehiculosResponse.json()
+
+        if (vehiculosData.success) {
+          vehiculos = vehiculosData.vehiculos || []
+          valoracionesEconomicas = vehiculosData.valoracionesEconomicas || []
+          fichasTecnicas = vehiculosData.fichasTecnicas || []
+          datosMercado = vehiculosData.datosMercado || []
+          valoracionesIA = vehiculosData.valoracionesIA || []
+
+          console.log(`✅ Vehículos cargados: ${vehiculos.length}`)
+          console.log(`💰 Valoraciones económicas: ${valoracionesEconomicas.length}`)
+          console.log(`📋 Fichas técnicas: ${fichasTecnicas.length}`)
+          console.log(`📊 Datos mercado: ${datosMercado.length}`)
+          console.log(`🤖 Valoraciones IA: ${valoracionesIA.length}`)
+        }
+      } catch (error) {
+        console.error('❌ Error cargando datos de vehículos:', error)
       }
-      
-      console.log(`📊 Vehículos cargados: ${vehiculos?.length || 0}`)
 
-      const totalVehiculosRegistrados = vehiculos?.length || 0
-      const vehiculosRegistradosHoy = vehiculos?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
-      const vehiculosRegistradosEstaSemana = vehiculos?.filter(v => estaEnRango(v.created_at, inicioSemana)).length || 0
-      const vehiculosRegistradosEsteMes = vehiculos?.filter(v => estaEnRango(v.created_at, inicioMes)).length || 0
+      const totalVehiculosRegistrados = vehiculos.length
+      const vehiculosRegistradosHoy = vehiculos.filter(v => estaEnRango(v.created_at, inicioDia)).length
+      const vehiculosRegistradosEstaSemana = vehiculos.filter(v => estaEnRango(v.created_at, inicioSemana)).length
+      const vehiculosRegistradosEsteMes = vehiculos.filter(v => estaEnRango(v.created_at, inicioMes)).length
 
       // Vehículos por mes (últimos 12 meses)
       const vehiculosPorMes: { mes: string; count: number }[] = []
@@ -717,55 +735,33 @@ export default function AdminAnalyticsPage() {
         const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
         const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
 
-        const count = vehiculos?.filter(v => {
+        const count = vehiculos.filter(v => {
           const f = new Date(v.created_at)
           return f.getFullYear() === fechaMes.getFullYear() &&
                  f.getMonth() === fechaMes.getMonth()
-        }).length || 0
+        }).length
 
         vehiculosPorMes.push({ mes: mesNombre, count })
       }
 
       // ========== MÉTRICAS FINANCIERAS DE VEHÍCULOS ==========
-      const { data: valoracionesEconomicas } = await supabase
-        .from('vehiculo_valoracion_economica')
-        .select('*')
-
-      const valorTotalParqueVehiculos = valoracionesEconomicas?.reduce((sum, v) => sum + (v.precio_compra || 0), 0) || 0
-      const vehiculosConDatosFinancieros = valoracionesEconomicas?.filter(v => v.precio_compra && v.precio_compra > 0).length || 0
+      const valorTotalParqueVehiculos = valoracionesEconomicas.reduce((sum, v) => sum + (v.precio_compra || 0), 0)
+      const vehiculosConDatosFinancieros = valoracionesEconomicas.filter(v => v.precio_compra && v.precio_compra > 0).length
       const promedioValorVehiculo = vehiculosConDatosFinancieros > 0 ? valorTotalParqueVehiculos / vehiculosConDatosFinancieros : 0
 
       // Inversión total promedio (incluye mantenimientos, averías, mejoras, etc)
       const inversionTotalPromedio = vehiculosConDatosFinancieros > 0
-        ? (valoracionesEconomicas?.reduce((sum, v) => sum + (v.inversion_total || 0), 0) || 0) / vehiculosConDatosFinancieros
+        ? valoracionesEconomicas.reduce((sum, v) => sum + (v.inversion_total || 0), 0) / vehiculosConDatosFinancieros
         : 0
 
       // Top 5 vehículos más caros
-      console.log(`📊 Total vehículos registrados: ${vehiculos?.length || 0}`)
-      console.log(`💰 Valoraciones económicas: ${valoracionesEconomicas?.length || 0}`)
-      console.log(`💵 Con precio de compra: ${valoracionesEconomicas?.filter(v => v.precio_compra && v.precio_compra > 0).length || 0}`)
-      
       const vehiculosConPrecio = valoracionesEconomicas
-        ?.filter(v => v.precio_compra && v.precio_compra > 0)
+        .filter(v => v.precio_compra && v.precio_compra > 0)
         .map(v => {
-          const vehiculo = vehiculos?.find(vh => vh.id === v.vehiculo_id)
-          console.log('🔍 Buscando vehículo:', {
-            vehiculo_id: v.vehiculo_id,
-            precio: v.precio_compra,
-            encontrado: !!vehiculo,
-            total_vehiculos: vehiculos?.length,
-            vehiculoData: vehiculo
-          })
+          const vehiculo = vehiculos.find(vh => vh.id === v.vehiculo_id)
           return { vehiculo, precio: v.precio_compra }
         })
-        .filter(item => {
-          if (!item.vehiculo) {
-            console.warn('⚠️ Vehículo no encontrado para precio:', item.precio)
-          }
-          return item.vehiculo
-        }) || []
-
-      console.log(`✅ Vehículos con precio y datos: ${vehiculosConPrecio.length}`)
+        .filter(item => item.vehiculo)
 
       const vehiculosMasCaros = vehiculosConPrecio
         .sort((a, b) => (b.precio || 0) - (a.precio || 0))
@@ -776,21 +772,17 @@ export default function AdminAnalyticsPage() {
         .slice(0, 5)
 
       // ========== DATOS DE MERCADO ==========
-      const { data: datosMercado } = await supabase
-        .from('datos_mercado_autocaravanas')
-        .select('*')
-        .eq('verificado', true)
-
-      const totalDatosMercado = datosMercado?.length || 0
+      const datosMercadoVerificados = datosMercado.filter(d => d.verificado)
+      const totalDatosMercado = datosMercadoVerificados.length
       const precioPromedioMercado = totalDatosMercado > 0
-        ? (datosMercado?.reduce((sum, d) => sum + (d.precio || 0), 0) || 0) / totalDatosMercado
+        ? datosMercadoVerificados.reduce((sum, d) => sum + (d.precio || 0), 0) / totalDatosMercado
         : 0
 
       // Marcas más populares en el mercado
-      const marcasPorCount = datosMercado?.reduce((acc: any, d) => {
+      const marcasPorCount = datosMercadoVerificados.reduce((acc: any, d) => {
         if (d.marca) acc[d.marca] = (acc[d.marca] || 0) + 1
         return acc
-      }, {}) || {}
+      }, {})
 
       const marcasMasPopulares = Object.entries(marcasPorCount)
         .map(([marca, count]) => ({
@@ -819,7 +811,7 @@ export default function AdminAnalyticsPage() {
         .slice(0, 10)
 
       // Top 5 más caros y baratos del MERCADO IA
-      const vehiculosConPrecioMercado = datosMercado?.filter(d => d.precio && d.precio > 0) || []
+      const vehiculosConPrecioMercado = datosMercadoVerificados.filter(d => d.precio && d.precio > 0)
       const vehiculosMasCarosMercado = vehiculosConPrecioMercado
         .sort((a, b) => (b.precio || 0) - (a.precio || 0))
         .slice(0, 5)
@@ -841,21 +833,33 @@ export default function AdminAnalyticsPage() {
         }))
 
       // ========== VALORACIONES IA ==========
-      const vehiculosValorados = valoracionesEconomicas?.filter(v => v.valor_estimado_actual && v.valor_estimado_actual > 0).length || 0
+      // Usar valoracionesIA (de la tabla valoracion_ia_informes) en lugar de valoracionesEconomicas
+      const vehiculosValorados = valoracionesIA.length
       const valorPromedioEstimado = vehiculosValorados > 0
-        ? (valoracionesEconomicas?.reduce((sum, v) => sum + (v.valor_estimado_actual || 0), 0) || 0) / vehiculosValorados
+        ? valoracionesIA.reduce((sum, v) => sum + (v.precio_objetivo || 0), 0) / vehiculosValorados
         : 0
 
-      const vehiculosEnVenta = valoracionesEconomicas?.filter(v => v.en_venta).length || 0
+      // Vehículos en venta (buscar en valoraciones económicas si tienen campo en_venta)
+      const vehiculosEnVenta = valoracionesEconomicas.filter(v => v.en_venta).length
       const precioPromedioVenta = vehiculosEnVenta > 0
-        ? (valoracionesEconomicas?.filter(v => v.en_venta).reduce((sum, v) => sum + (v.precio_venta_deseado || 0), 0) || 0) / vehiculosEnVenta
+        ? valoracionesEconomicas
+            .filter(v => v.en_venta)
+            .reduce((sum, v) => sum + (v.precio_venta_deseado || 0), 0) / vehiculosEnVenta
         : 0
 
-      // Ganancia proyectada (diferencia entre valor estimado y precio compra)
-      const gananciaPromedioProyectada = vehiculosValorados > 0
-        ? (valoracionesEconomicas
-            ?.filter(v => v.valor_estimado_actual && v.precio_compra)
-            .reduce((sum, v) => sum + ((v.valor_estimado_actual || 0) - (v.precio_compra || 0)), 0) || 0) / vehiculosValorados
+      // Ganancia proyectada (diferencia entre precio objetivo IA y precio compra)
+      const vehiculosConValoracionYCompra = valoracionesIA
+        .map(via => {
+          const valoracionEco = valoracionesEconomicas.find(ve => ve.vehiculo_id === via.vehiculo_id)
+          if (valoracionEco && valoracionEco.precio_compra && via.precio_objetivo) {
+            return via.precio_objetivo - valoracionEco.precio_compra
+          }
+          return null
+        })
+        .filter((v): v is number => v !== null)
+
+      const gananciaPromedioProyectada = vehiculosConValoracionYCompra.length > 0
+        ? vehiculosConValoracionYCompra.reduce((sum, v) => sum + v, 0) / vehiculosConValoracionYCompra.length
         : 0
 
       // ========== DISTRIBUCIONES ==========
@@ -870,11 +874,11 @@ export default function AdminAnalyticsPage() {
       ]
 
       const distribucionPreciosCompra = rangosPrecios.map(rango => {
-        const count = valoracionesEconomicas?.filter(v =>
+        const count = valoracionesEconomicas.filter(v =>
           v.precio_compra &&
           v.precio_compra >= rango.min &&
           v.precio_compra < rango.max
-        ).length || 0
+        ).length
 
         return {
           rango: rango.label,
@@ -886,22 +890,18 @@ export default function AdminAnalyticsPage() {
       // Distribución por años (usando campo 'ano' sin ñ)
       const anoActual = new Date().getFullYear()
       const distribucionAños = [
-        { rango: '< 2010', count: vehiculos?.filter((v: any) => v.ano && v.ano < 2010).length || 0 },
-        { rango: '2010-2015', count: vehiculos?.filter((v: any) => v.ano && v.ano >= 2010 && v.ano < 2015).length || 0 },
-        { rango: '2015-2020', count: vehiculos?.filter((v: any) => v.ano && v.ano >= 2015 && v.ano < 2020).length || 0 },
-        { rango: '2020-2025', count: vehiculos?.filter((v: any) => v.ano && v.ano >= 2020 && v.ano <= anoActual).length || 0 }
+        { rango: '< 2010', count: vehiculos.filter((v: any) => v.ano && v.ano < 2010).length },
+        { rango: '2010-2015', count: vehiculos.filter((v: any) => v.ano && v.ano >= 2010 && v.ano < 2015).length },
+        { rango: '2015-2020', count: vehiculos.filter((v: any) => v.ano && v.ano >= 2015 && v.ano < 2020).length },
+        { rango: '2020-2025', count: vehiculos.filter((v: any) => v.ano && v.ano >= 2020 && v.ano <= anoActual).length }
       ]
 
-      // Distribución por kilometraje (de ficha técnica)
-      const { data: fichasTecnicas } = await supabase
-        .from('vehiculo_ficha_tecnica')
-        .select('kilometros_actuales')
-
+      // Distribución por kilometraje (de ficha técnica - ya cargado desde API)
       const distribucionKilometraje = [
-        { rango: '< 50k km', count: fichasTecnicas?.filter(f => (f.kilometros_actuales || 0) < 50000).length || 0 },
-        { rango: '50k-100k km', count: fichasTecnicas?.filter(f => (f.kilometros_actuales || 0) >= 50000 && (f.kilometros_actuales || 0) < 100000).length || 0 },
-        { rango: '100k-150k km', count: fichasTecnicas?.filter(f => (f.kilometros_actuales || 0) >= 100000 && (f.kilometros_actuales || 0) < 150000).length || 0 },
-        { rango: '> 150k km', count: fichasTecnicas?.filter(f => (f.kilometros_actuales || 0) >= 150000).length || 0 }
+        { rango: '< 50k km', count: fichasTecnicas.filter(f => (f.kilometros_actuales || 0) < 50000).length },
+        { rango: '50k-100k km', count: fichasTecnicas.filter(f => (f.kilometros_actuales || 0) >= 50000 && (f.kilometros_actuales || 0) < 100000).length },
+        { rango: '100k-150k km', count: fichasTecnicas.filter(f => (f.kilometros_actuales || 0) >= 100000 && (f.kilometros_actuales || 0) < 150000).length },
+        { rango: '> 150k km', count: fichasTecnicas.filter(f => (f.kilometros_actuales || 0) >= 150000).length }
       ]
 
       console.log(`✅ Vehículos: ${totalVehiculosRegistrados} total, ${vehiculosConDatosFinancieros} con datos financieros`)
