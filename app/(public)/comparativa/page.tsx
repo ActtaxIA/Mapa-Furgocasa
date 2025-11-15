@@ -2,6 +2,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import Link from 'next/link'
 import { Metadata } from 'next'
+import { SparklesIcon } from '@heroicons/react/24/outline'
 
 export const metadata: Metadata = {
   title: 'Mapa Furgocasa vs Park4Night | Alternativa GRATUITA con Valoración IA',
@@ -41,17 +42,59 @@ export default function ComparativaPage() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-primary-600 via-primary-700 to-sky-800 text-white py-20">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight">
-              🚐 Mapa Furgocasa vs Park4Night
-            </h1>
-            <p className="text-2xl md:text-3xl mb-4 font-semibold">
-              ¿Por qué somos diferentes?
-            </p>
-            <p className="text-lg md:text-xl max-w-4xl mx-auto opacity-95">
-              No somos solo otro mapa de áreas para autocaravanas. Somos la <strong>primera plataforma integral</strong> que gestiona TODO lo relacionado con tu vehículo y tus viajes.
-            </p>
+        <section className="relative bg-gradient-to-br from-[#0b3c74] via-[#0d4a8f] to-[#0b3c74] text-white overflow-hidden">
+          <div className="container mx-auto px-4 py-16 md:py-24">
+            <div className="max-w-4xl mx-auto text-center">
+              {/* Badge superior */}
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-white/30">
+                <SparklesIcon className="w-5 h-5" />
+                <span className="font-semibold">Mucho más que Park4Night</span>
+              </div>
+
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                <span className="text-yellow-400">La alternativa completa</span> a Park4Night
+              </h1>
+
+              <p className="text-xl md:text-2xl text-white/90 mb-10 leading-relaxed max-w-3xl mx-auto">
+                No somos solo otro mapa. Somos la primera plataforma integral que gestiona TODO: tu vehículo, tus rutas, tus gastos y tu seguridad.
+              </p>
+
+              {/* CTAs principales */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <Link
+                  href="/auth/register"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-white text-[#0b3c74] rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
+                >
+                  ✨ Crear Cuenta Gratis
+                </Link>
+                <Link
+                  href="/mapa"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 rounded-xl font-bold text-lg hover:bg-white/20 transition-all"
+                >
+                  🗺️ Ver Mapa de Áreas
+                </Link>
+              </div>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                  <div className="text-3xl md:text-4xl font-bold mb-2">4,900+</div>
+                  <div className="text-sm text-white/80">Áreas Verificadas</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                  <div className="text-3xl md:text-4xl font-bold mb-2">25+</div>
+                  <div className="text-sm text-white/80">Países</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                  <div className="text-3xl md:text-4xl font-bold mb-2">9</div>
+                  <div className="text-sm text-white/80">Features Únicas</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                  <div className="text-3xl md:text-4xl font-bold mb-2 text-yellow-400">0€</div>
+                  <div className="text-sm text-white/80">100% Gratis</div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -66,7 +109,7 @@ export default function ComparativaPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-gradient-to-r from-primary-600 to-sky-600 text-white">
+                    <tr className="bg-gradient-to-r from-[#0b3c74] to-[#0d4a8f] text-white">
                       <th className="px-6 py-4 text-left font-semibold">Funcionalidad</th>
                       <th className="px-6 py-4 text-center font-semibold">🔵 Mapa Furgocasa</th>
                       <th className="px-6 py-4 text-center font-semibold">Park4Night</th>
@@ -219,9 +262,9 @@ export default function ComparativaPage() {
                 { icon: '🎨', title: 'Marcadores con Colores', desc: 'Identifica el tipo de área al instante: azul (pública), naranja (privada), verde (camping).' },
                 { icon: '💚', title: '100% Gratis Siempre', desc: 'Sin suscripciones, sin premium, sin trucos. TODO gratis para TODOS. Así debe ser.' },
               ].map((feature, index) => (
-                <div key={index} className="bg-gradient-to-br from-primary-50 to-sky-50 border-2 border-primary-200 rounded-xl p-6 hover:shadow-xl transition-all hover:-translate-y-1">
+                <div key={index} className="bg-gradient-to-br from-blue-50 to-sky-50 border-2 border-[#0ea5e9] rounded-xl p-6 hover:shadow-xl transition-all hover:-translate-y-1">
                   <div className="text-5xl mb-4">{feature.icon}</div>
-                  <h3 className="text-xl font-bold text-primary-900 mb-3">{feature.title}</h3>
+                  <h3 className="text-xl font-bold text-[#0b3c74] mb-3">{feature.title}</h3>
                   <p className="text-gray-700 leading-relaxed">{feature.desc}</p>
                 </div>
               ))}
@@ -299,44 +342,46 @@ export default function ComparativaPage() {
         </section>
 
         {/* CTA Final */}
-        <section className="py-20 bg-gradient-to-br from-primary-600 via-primary-700 to-sky-800 text-white">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-4xl font-bold mb-6">
-              ¿Listo para la mejor experiencia?
-            </h2>
-            <p className="text-xl mb-8 opacity-95">
-              Únete a los cientos de caravanistas que ya disfrutan de Mapa Furgocasa
-            </p>
+        <section className="relative bg-gradient-to-br from-[#0b3c74] via-[#0d4a8f] to-[#0b3c74] text-white overflow-hidden">
+          <div className="container mx-auto px-4 py-16 md:py-20">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                ¿Listo para la mejor experiencia?
+              </h2>
+              <p className="text-xl md:text-2xl text-white/90 mb-10">
+                Únete a los cientos de caravanistas que ya disfrutan de Mapa Furgocasa
+              </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-                <div className="text-4xl font-extrabold">4,900+</div>
-                <div className="text-sm opacity-90 mt-2">Áreas Verificadas</div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                  <div className="text-3xl md:text-4xl font-bold mb-2">4,900+</div>
+                  <div className="text-sm text-white/80">Áreas Verificadas</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                  <div className="text-3xl md:text-4xl font-bold mb-2">25+</div>
+                  <div className="text-sm text-white/80">Países</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                  <div className="text-3xl md:text-4xl font-bold mb-2">9</div>
+                  <div className="text-sm text-white/80">Features Únicas</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                  <div className="text-3xl md:text-4xl font-bold mb-2 text-yellow-400">0€</div>
+                  <div className="text-sm text-white/80">100% Gratis</div>
+                </div>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-                <div className="text-4xl font-extrabold">25+</div>
-                <div className="text-sm opacity-90 mt-2">Países</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-                <div className="text-4xl font-extrabold">9</div>
-                <div className="text-sm opacity-90 mt-2">Features Únicas</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-                <div className="text-4xl font-extrabold">100%</div>
-                <div className="text-sm opacity-90 mt-2">Gratis</div>
-              </div>
+
+              <Link 
+                href="/auth/register"
+                className="inline-flex items-center justify-center px-8 py-4 bg-white text-[#0b3c74] rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
+              >
+                ✨ Crear Cuenta Gratis
+              </Link>
+
+              <p className="mt-6 text-sm text-white/70">
+                Sin tarjeta, sin suscripciones, sin trucos
+              </p>
             </div>
-
-            <Link 
-              href="/auth/register"
-              className="inline-block bg-white text-primary-700 px-12 py-4 rounded-full text-xl font-bold hover:scale-105 transition-transform shadow-2xl"
-            >
-              ✨ Crear Cuenta Gratis
-            </Link>
-
-            <p className="mt-6 text-sm opacity-80">
-              Sin tarjeta, sin suscripciones, sin trucos
-            </p>
           </div>
         </section>
 
