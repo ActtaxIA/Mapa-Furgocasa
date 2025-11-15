@@ -59,7 +59,7 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              Mucho más que una app de áreas de autocaravanas
+              Mucho más que una <span className="text-yellow-400">app</span> de áreas de autocaravanas
             </h1>
 
             <p className="text-xl md:text-2xl text-white/90 mb-10 leading-relaxed max-w-3xl mx-auto">
