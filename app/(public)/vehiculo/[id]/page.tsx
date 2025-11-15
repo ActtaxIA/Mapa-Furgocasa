@@ -18,7 +18,8 @@ import {
   PencilIcon,
   CheckIcon,
   XMarkIcon,
-  PhotoIcon
+  PhotoIcon,
+  BanknotesIcon
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { ResumenEconomicoTab } from '@/components/vehiculo/ResumenEconomicoTab'
@@ -27,13 +28,14 @@ import MantenimientosTab from '@/components/vehiculo/MantenimientosTab'
 import AveriasTab from '@/components/vehiculo/AveriasTab'
 import MejorasTab from '@/components/vehiculo/MejorasTab'
 import VentaTab from '@/components/vehiculo/VentaTab'
+import GastosAdicionalesTab from '@/components/vehiculo/GastosAdicionalesTab'
 import { GaleriaFotosTab } from '@/components/vehiculo/GaleriaFotosTab'
 import { Toast } from '@/components/ui/Toast'
 import InformeValoracionIA from '@/components/vehiculo/InformeValoracionIA'
 import { SparklesIcon as SparklesIconSolid } from '@heroicons/react/24/solid'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
-type TabType = 'resumen' | 'compra' | 'fotos' | 'mantenimientos' | 'averias' | 'mejoras' | 'venta' | 'valoracion-ia'
+type TabType = 'resumen' | 'compra' | 'fotos' | 'mantenimientos' | 'averias' | 'mejoras' | 'gastos' | 'venta' | 'valoracion-ia'
 
 export default function VehiculoPage() {
   const params = useParams()
@@ -64,7 +66,7 @@ export default function VehiculoPage() {
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search)
       const tabParam = searchParams.get('tab') as TabType
-      if (tabParam && ['resumen', 'compra', 'fotos', 'mantenimientos', 'averias', 'mejoras', 'venta', 'valoracion-ia'].includes(tabParam)) {
+      if (tabParam && ['resumen', 'compra', 'fotos', 'mantenimientos', 'averias', 'mejoras', 'gastos', 'venta', 'valoracion-ia'].includes(tabParam)) {
         setActiveTab(tabParam)
       }
     }
@@ -493,6 +495,7 @@ export default function VehiculoPage() {
     { id: 'mantenimientos', label: 'Mantenimientos', icon: WrenchScrewdriverIcon },
     { id: 'averias', label: 'Averías', icon: ExclamationTriangleIcon },
     { id: 'mejoras', label: 'Mejoras', icon: SparklesIcon },
+    { id: 'gastos', label: 'Gastos Adicionales', icon: BanknotesIcon },
     { id: 'valoracion-ia', label: 'Valoración IA', icon: SparklesIconSolid },
     { id: 'venta', label: 'Venta', icon: TagIcon },
   ]
@@ -680,6 +683,8 @@ export default function VehiculoPage() {
                   'Mantenimientos': 'Mant.',
                   'Averías': 'Averías',
                   'Mejoras': 'Mejoras',
+                  'Gastos Adicionales': 'Gastos',
+                  'Valoración IA': 'IA',
                   'Venta': 'Venta'
                 }
                 return (
@@ -822,6 +827,10 @@ export default function VehiculoPage() {
                 </div>
               )}
             </div>
+          )}
+
+          {activeTab === 'gastos' && (
+            <GastosAdicionalesTab vehiculoId={vehiculoId} />
           )}
 
           {activeTab === 'venta' && (

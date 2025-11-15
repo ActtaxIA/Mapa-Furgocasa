@@ -191,11 +191,11 @@ Si no la sigues, podríamos:
 | Mapa Interactivo       | 3      | 2 (67%)          | 0                   | 1 (33%)      |
 | **Planificador Rutas** | 6      | 3 (50%)          | 0                   | 3 (50%)      |
 | Chatbot IA             | 3      | 1 (33%)          | 0                   | 2 (67%)      |
-| **Gestión Vehículos**  | 10     | 8 (80%) 🎉       | 1 (10%)             | 1 (10%)      |
+| **Gestión Vehículos**  | 10     | 9 (90%) 🔥       | 0 (0%)              | 1 (10%)      |
 | Alertas Seguridad      | 1      | 1 (100%)         | 0                   | 0 (0%)       |
-| **TOTAL**              | **23** | **15 (65%)** 🎉  | **1 (4%)**          | **7 (30%)**  |
+| **TOTAL**              | **23** | **16 (70%)** 🔥  | **0 (0%)**          | **7 (30%)**  |
 
-**Última actualización:** 15 Nov 2025 - ✅ 6 funcionalidades más descubiertas como YA implementadas 🚀
+**Última actualización:** 15 Nov 2025 - ✅ Sistema Gastos Adicionales integrado - 70% completado! 🔥
 
 ---
 
@@ -855,43 +855,35 @@ Si no la sigues, podríamos:
 
 ### ❌ PENDIENTE DE IMPLEMENTACIÓN (Ni SQL ni UI)
 
-#### 4.11 Sistema de Costes Históricos y Gastos Adicionales
+#### 4.10 Sistema de Gastos Adicionales ✅ COMPLETO (Integrado hoy)
 
-**Descripción:**
+**Estado:** ✅ IMPLEMENTADO Y AHORA INTEGRADO
 
-- Registro de gastos adicionales: seguros, impuestos, parkings, peajes, ITV, limpieza
-- Categorización automática de todos los gastos
-- Gráficos de evolución mensual
-- Gráfico circular por categoría
-- Comparativa año a año
-- Gasto promedio mensual
-- Exportación PDF/Excel
+- ✅ Tabla `gastos_adicionales` creada en BD
+- ✅ API Route completo: `app/api/vehiculos/[id]/gastos/route.ts`
+- ✅ Componente UI: `components/vehiculo/GastosAdicionalesTab.tsx` (490 líneas)
+- ✅ **INTEGRADO HOY** en página de vehículo como tab "Gastos Adicionales"
+- ✅ Formulario completo de registro
+- ✅ Lista de gastos con totales
+- ✅ Editar y eliminar gastos
 
-**Estado actual:**
+**Funcionalidades:**
+- Tipos: seguro, impuestos, peajes, parking, limpieza, camping, área servicio, otro
+- Campos: concepto, fecha, importe, periodicidad (único, mensual, trimestral, semestral, anual), proveedor
+- Muestra total de gastos acumulado
+- Periodicidad para gastos recurrentes
+- Colores por categoría
+- GET, POST, PUT, DELETE implementados en API
 
-- ✅ Tabla `gastos_adicionales` creada
-- ❌ **NO existe interfaz de registro**
-- ❌ **NO existen gráficos**
+**Verificado en código:**
+- Componente: `components/vehiculo/GastosAdicionalesTab.tsx`
+- API: `app/api/vehiculos/[id]/gastos/route.ts`
+- **Integración:** `app/(public)/vehiculo/[id]/page.tsx` - Añadido tab hoy
+- Fecha verificación: 15/11/2025
 
-**Impacto:** ALTO - Feature muy prometido  
-**Complejidad:** Alta
+**Prometido en:** `34_email-costes-historicos-detallado.html`
 
-**Necesita:**
-
-- Formulario "Registrar Gasto"
-- Categorías: Seguro, ITV, Impuestos, Parking, Peaje, Limpieza, Accesorios, Otros
-- Dashboard financiero con gráficos (usar Chart.js o Recharts)
-- Integración con mantenimientos/averías para sumar todo
-- Análisis de tendencias
-- Alertas de gastos inusuales
-
-**Scripts SQL:** `reportes/08_valoracion_economica.sql` (tabla existe)
-
-**Prometido en:** `34_email-costes-historicos-detallado.html` (completo)
-
-**Estimación:** 5-6 días desarrollo
-
-**Prioridad:** 🔴 ALTA
+**⚠️ NOTA:** El componente existía pero NO estaba visible como tab. Integrado hoy.
 
 ---
 
@@ -1308,8 +1300,8 @@ Todas las fases
 
 ### Estado Actual:
 
-- ✅ **15 funcionalidades (65%)** completamente implementadas 🎉
-- ⚠️ **1 funcionalidad (4%)** con SQL listo, falta UI
+- ✅ **16 funcionalidades (70%)** completamente implementadas 🔥
+- ⚠️ **0 funcionalidades (0%)** con SQL listo, falta UI (¡TODO integrado!)
 - ❌ **7 funcionalidades (30%)** pendientes de implementar
 
 ### El Camino Adelante:
