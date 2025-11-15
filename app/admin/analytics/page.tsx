@@ -818,16 +818,28 @@ export default function AdminAnalyticsPage() {
         .sort((a, b) => (a.precio || 0) - (b.precio || 0))
         .slice(0, 5)
 
-      // ========== DATOS DE MERCADO ==========
-      const datosMercadoVerificados = datosMercado.filter(d => d.verificado)
-      const totalDatosMercado = datosMercadoVerificados.length
+      // ========== DATOS DE MERCADO IA (Valoraciones realizadas por IA) ==========
+      // IMPORTANTE: Esto NO es datos scrapeados, son las valoraciones que la IA ha hecho para usuarios
+      
+      // Crear lista de vehículos valorados con su info completa
+      const vehiculosValoradosConInfo = valoracionesIA.map(via => {
+        const vehiculo = vehiculos.find(v => v.id === via.vehiculo_id)
+        return {
+          ...via,
+          marca: vehiculo?.marca || 'N/A',
+          modelo: vehiculo?.modelo || 'N/A',
+          año: vehiculo?.año || null
+        }
+      })
+
+      const totalDatosMercado = vehiculosValoradosConInfo.length
       const precioPromedioMercado = totalDatosMercado > 0
-        ? datosMercadoVerificados.reduce((sum, d) => sum + (d.precio || 0), 0) / totalDatosMercado
+        ? vehiculosValoradosConInfo.reduce((sum, v) => sum + (v.precio_objetivo || 0), 0) / totalDatosMercado
         : 0
 
-      // Marcas más populares en el mercado
-      const marcasPorCount = datosMercadoVerificados.reduce((acc: any, d) => {
-        if (d.marca) acc[d.marca] = (acc[d.marca] || 0) + 1
+      // Marcas más populares en valoraciones IA
+      const marcasPorCount = vehiculosValoradosConInfo.reduce((acc: any, v) => {
+        if (v.marca && v.marca !== 'N/A') acc[v.marca] = (acc[v.marca] || 0) + 1
         return acc
       }, {})
 
@@ -840,14 +852,14 @@ export default function AdminAnalyticsPage() {
         .sort((a, b) => b.count - a.count)
         .slice(0, 10)
 
-      // Modelos más populares (marca + modelo)
-      const modelosPorCount = datosMercado?.reduce((acc: any, d) => {
-        if (d.marca && d.modelo) {
-          const key = `${d.marca}|${d.modelo}`
+      // Modelos más populares en valoraciones IA (marca + modelo)
+      const modelosPorCount = vehiculosValoradosConInfo.reduce((acc: any, v) => {
+        if (v.marca && v.marca !== 'N/A' && v.modelo && v.modelo !== 'N/A') {
+          const key = `${v.marca}|${v.modelo}`
           acc[key] = (acc[key] || 0) + 1
         }
         return acc
-      }, {}) || {}
+      }, {})
 
       const modelosMasPopulares = Object.entries(modelosPorCount)
         .map(([key, count]) => {
@@ -857,26 +869,26 @@ export default function AdminAnalyticsPage() {
         .sort((a, b) => b.count - a.count)
         .slice(0, 10)
 
-      // Top 5 más caros y baratos del MERCADO IA
-      const vehiculosConPrecioMercado = datosMercadoVerificados.filter(d => d.precio && d.precio > 0)
+      // Top 5 más caros y baratos del MERCADO IA (según valoraciones realizadas)
+      const vehiculosConPrecioMercado = vehiculosValoradosConInfo.filter(v => v.precio_objetivo && v.precio_objetivo > 0)
       const vehiculosMasCarosMercado = vehiculosConPrecioMercado
-        .sort((a, b) => (b.precio || 0) - (a.precio || 0))
+        .sort((a, b) => (b.precio_objetivo || 0) - (a.precio_objetivo || 0))
         .slice(0, 5)
         .map(v => ({
-          marca: v.marca || 'N/A',
-          modelo: v.modelo || 'N/A',
-          año: v.año || null,
-          precio: v.precio || 0
+          marca: v.marca,
+          modelo: v.modelo,
+          año: v.año,
+          precio: v.precio_objetivo || 0
         }))
 
       const vehiculosMasBaratosMercado = vehiculosConPrecioMercado
-        .sort((a, b) => (a.precio || 0) - (b.precio || 0))
+        .sort((a, b) => (a.precio_objetivo || 0) - (b.precio_objetivo || 0))
         .slice(0, 5)
         .map(v => ({
-          marca: v.marca || 'N/A',
-          modelo: v.modelo || 'N/A',
-          año: v.año || null,
-          precio: v.precio || 0
+          marca: v.marca,
+          modelo: v.modelo,
+          año: v.año,
+          precio: v.precio_objetivo || 0
         }))
 
       // ========== VALORACIONES IA ==========
