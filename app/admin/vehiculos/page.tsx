@@ -202,13 +202,15 @@ export default function AdminVehiculosPage() {
       render: (item) => (
         item.depreciacion_media !== null ? (
           <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-            item.depreciacion_media > 30
-              ? 'bg-red-100 text-red-800'
-              : item.depreciacion_media > 15
-              ? 'bg-yellow-100 text-yellow-800'
-              : 'bg-green-100 text-green-800'
+            item.depreciacion_media > 25
+              ? 'bg-red-100 text-red-800'  // Pérdida alta (>25%)
+              : item.depreciacion_media > 10
+              ? 'bg-orange-100 text-orange-800'  // Pérdida media (10-25%)
+              : item.depreciacion_media > 0
+              ? 'bg-yellow-100 text-yellow-800'  // Pérdida baja (0-10%)
+              : 'bg-gray-100 text-gray-600'  // Sin datos o 0%
           }`}>
-            {formatNumber(item.depreciacion_media)}%
+            -{formatNumber(item.depreciacion_media)}%
           </span>
         ) : (
           <span className="text-gray-400">N/A</span>
