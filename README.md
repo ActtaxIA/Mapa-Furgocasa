@@ -3,6 +3,7 @@
 **Versión: 3.5.0 - PRODUCCIÓN** 🎉✅
 
 > 🔴 **ENTORNO DE PRODUCCIÓN ACTIVA**
+>
 > - **URL:** https://www.mapafurgocasa.com
 > - **Hosting:** AWS Amplify
 > - **Repositorio:** GitHub (ActtaxIA/Mapa-Furgocasa)
@@ -14,6 +15,7 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 **Estado:** 🟢 **100% OPERATIVO** - Sistema COMPLETO en producción con todas las funcionalidades deseadas implementadas.
 
 **Última actualización:** 15 de Noviembre 2025 - 🎊 **v3.5.0 - VERSIÓN COMPLETA** 🎊
+
 - ✅ Exportación de rutas a formato GPX (Garmin, TomTom, etc.)
 - ✅ Drag-and-drop para reordenar paradas en rutas
 - ✅ Sistema de Gastos Adicionales integrado
@@ -26,6 +28,7 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 ## 🌟 Características Principales
 
 ### Para Usuarios
+
 - 🗺️ **Mapa Interactivo** con todas las áreas disponibles (Google Maps API)
 - 🔍 **Búsqueda y Filtros** avanzados (servicios, precio, ubicación)
 - 📍 **Información Detallada** de cada área (servicios, fotos, contacto)
@@ -61,6 +64,7 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 - 🗑️ **Gestión Completa de Fotos** ✨ **NUEVO v2.1** - Subir, borrar y gestionar fotos en reportes y vehículos
 
 ### Para Administradores
+
 - ⚙️ **Panel de Administración** completo en `/admin`
 - ➕ **Crear, Editar y Borrar** áreas
 - 🔍 **Búsqueda Multi-campo** - Buscar por nombre, ciudad, dirección, provincia, país
@@ -98,7 +102,7 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 
 ### 1. Prerrequisitos
 
-- Node.js 18+ 
+- Node.js 18+
 - Cuenta de Supabase
 - Google Maps API Key (requerido)
 - (Opcional) API Keys: OpenAI, SerpAPI, Google Places
@@ -106,6 +110,7 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 ### 2. Directorio del Proyecto
 
 **Ruta completa del proyecto:**
+
 ```
 E:\Acttax Dropbox\Narciso Pardo\Acttax\EI - FURGOCASA\1 - ADMINISTRACION\7 - ACTIVOS\6 - MAPA FURGOCASA\NEW MAPA FURGOCASA
 ```
@@ -186,9 +191,11 @@ reportes/12_funciones_admin.sql
 ### 6. Crear Usuario Administrador
 
 En Supabase Dashboard:
+
 1. Ve a **Authentication** → **Users**
 2. Crea un nuevo usuario o selecciona uno existente
 3. Edita el usuario y añade en **User Metadata**:
+
 ```json
 {
   "is_admin": true
@@ -200,6 +207,7 @@ En Supabase Dashboard:
 **IMPORTANTE:** Esta aplicación NO se ejecuta localmente. Todo el desarrollo se hace directamente en producción.
 
 #### Workflow:
+
 ```bash
 # 1. Hacer cambios en el código localmente
 # 2. Commit de los cambios
@@ -215,13 +223,16 @@ git push origin main
 ```
 
 #### Ver Logs de Deploy:
+
 1. Ve a AWS Console → Amplify
 2. Selecciona tu app
 3. Ve a **Deployments** para ver el progreso
 4. Click en el deployment para ver los logs
 
 #### Variables de Entorno en AWS:
+
 Las variables `.env.local` deben configurarse en AWS Amplify:
+
 1. AWS Console → Amplify → Tu App
 2. **Environment variables** en el menú lateral
 3. Añade las mismas variables que en `.env.local`
@@ -315,6 +326,7 @@ NEW MAPA FURGOCASA/
 ## 🔐 Roles y Permisos
 
 ### Usuario Público (Sin Autenticación)
+
 - ✅ Ver mapa con todas las áreas activas
 - ✅ Ver detalles de áreas
 - ✅ Usar filtros y búsqueda
@@ -322,6 +334,7 @@ NEW MAPA FURGOCASA/
 - ❌ No puede valorar, favoritar, registrar visitas o guardar rutas
 
 ### Usuario Registrado
+
 - ✅ Todo lo anterior
 - ✅ **Acceso completo al Planificador de Rutas** 🎉
 - ✅ Guardar rutas personalizadas
@@ -333,6 +346,7 @@ NEW MAPA FURGOCASA/
 - ✅ Recargar rutas guardadas
 
 ### Administrador (`is_admin: true`)
+
 - ✅ Todo lo anterior
 - ✅ Acceso al panel `/admin`
 - ✅ Crear, editar y borrar áreas
@@ -348,6 +362,7 @@ NEW MAPA FURGOCASA/
 **La herramienta más potente de la app - Requiere registro gratuito**
 
 ### Características
+
 - 📍 **Origen, Destino y Paradas** - Planifica rutas complejas
 - 🔍 **Búsqueda de Áreas** - Encuentra áreas a X km de tu ruta
 - 📏 **Radio Configurable** - 5, 10, 20 o 50 km
@@ -359,6 +374,7 @@ NEW MAPA FURGOCASA/
 - 🔒 **Acceso Exclusivo** - Solo para usuarios registrados
 
 ### Cómo Usar
+
 1. **Regístrate gratis** en la plataforma (si no lo has hecho)
 2. Ve a `/ruta`
 3. Introduce origen y destino (usa el autocompletado)
@@ -370,6 +386,7 @@ NEW MAPA FURGOCASA/
 9. Desde tu perfil, puedes recargar cualquier ruta guardada
 
 ### ¿Por qué requiere registro?
+
 - 💾 Guardar tus rutas personalizadas
 - 📊 Acceso a estadísticas de uso
 - 🎯 Mejor experiencia personalizada
@@ -382,6 +399,7 @@ NEW MAPA FURGOCASA/
 **Búsqueda inteligente en lenguaje natural - Requiere registro gratuito**
 
 ### Características Principales
+
 - 💬 **Conversación Natural** - Pregunta en español como a un amigo
 - 🔍 **Búsqueda Inteligente** - Encuentra áreas con IA (OpenAI GPT-4o-mini)
 - 📍 **Geolocalización GPS** - Busca "áreas cerca de mí" con tu ubicación real
@@ -394,6 +412,7 @@ NEW MAPA FURGOCASA/
 - 🔒 **Acceso Exclusivo** - Solo para usuarios registrados
 
 ### Tecnología Avanzada
+
 - **Function Calling de OpenAI** - La IA decide qué funciones usar
 - **Geocoding Reverso** - GPS → Ciudad automáticamente (Google Maps API)
 - **Historial Contextual** - Carga últimos 10 mensajes de la conversación
@@ -401,6 +420,7 @@ NEW MAPA FURGOCASA/
 - **Contexto Enriquecido** - Ubicación del usuario, estadísticas de BD, historial
 
 ### Lo que PUEDE hacer
+
 - ✅ Buscar áreas por ubicación específica
 - ✅ Recomendar áreas según servicios (agua, electricidad, WiFi, etc.)
 - ✅ Filtrar por precio ("áreas gratuitas", "máximo 10€")
@@ -409,12 +429,14 @@ NEW MAPA FURGOCASA/
 - ✅ Responder preguntas sobre servicios
 
 ### Lo que NO hace (usa el Planificador de Rutas para esto)
+
 - ❌ NO planifica rutas entre ciudades
 - ❌ NO calcula distancias
 - ❌ NO encuentra áreas a lo largo de una ruta
 - 🔀 **Redirige** al Planificador de Rutas cuando preguntas sobre rutas
 
 ### Ejemplos de Preguntas
+
 - "Áreas cerca de Barcelona con electricidad"
 - "Busco áreas gratuitas en Portugal"
 - "¿Qué hay cerca de mí?"
@@ -423,6 +445,7 @@ NEW MAPA FURGOCASA/
 - "Cuéntame sobre el Área Camping del Mar"
 
 ### ¿Por qué requiere registro?
+
 - 💬 Historial de conversaciones
 - 📍 Geolocalización personalizada
 - 🎯 Recomendaciones basadas en tu perfil
@@ -434,24 +457,28 @@ NEW MAPA FURGOCASA/
 ## 👤 Dashboard de Perfil
 
 ### Mis Visitas
+
 - Lista completa de áreas visitadas
 - Mapa interactivo mostrando todas tus visitas
 - Fecha de visita y notas personales
 - Estadística total de visitas
 
 ### Mis Valoraciones
+
 - Todas tus valoraciones y comentarios
 - Puntuación dada a cada área
 - Fecha de valoración
 - Contador total
 
 ### Mis Favoritos
+
 - Áreas marcadas como favoritas
 - Acceso rápido a información
 - Botón para quitar de favoritos
 - Contador total
 
 ### Mis Rutas
+
 - Todas tus rutas guardadas
 - Información completa (origen, destino, paradas)
 - Distancia y duración
@@ -461,6 +488,7 @@ NEW MAPA FURGOCASA/
 - Contador total
 
 ### 🚐 Mi Autocaravana ✨ **NUEVO v2.0**
+
 - **Registro de Vehículos** - Añade tu autocaravana con matrícula, marca, modelo
 - **QR Único** - Genera un código QR para pegar en tu vehículo
 - **Gestión Completa** - Historial de mantenimientos, averías, documentos, mejoras
@@ -469,6 +497,7 @@ NEW MAPA FURGOCASA/
 - **Dashboard del Vehículo** - Vista completa con estadísticas y accesos rápidos
 
 ### 📋 Mis Reportes ✨ **NUEVO v2.0**
+
 - **Sistema de Alertas** - Recibe notificaciones cuando alguien reporta un accidente
 - **Reportes Recibidos** - Lista completa de reportes de testigos
 - **Información del Testigo** - Contacto directo con quien reportó
@@ -477,6 +506,7 @@ NEW MAPA FURGOCASA/
 - **Página Pública** - Cualquiera puede reportar accediendo al QR de tu vehículo
 
 ### 🤖 Valoración con IA ✨ **NUEVO v3.1**
+
 - **Informe Profesional Generado por IA** - GPT-4 analiza tu vehículo y genera un informe detallado de 400-700 palabras estructurado profesionalmente
 - **3 Precios Estratégicos** - Precio de salida (para negociación), precio objetivo (realista), precio mínimo (límite absoluto)
 - **Búsqueda Automática de Comparables** - SerpAPI busca automáticamente anuncios similares en portales de venta (Milanuncios, Wallapop, Autoscout24, etc.)
@@ -490,6 +520,7 @@ NEW MAPA FURGOCASA/
 - **Prompts Configurables** - Administradores pueden ajustar el comportamiento de la IA desde `/admin/configuracion`
 
 ### 📊 Histórico de Valoraciones ✨ **NUEVO v2.0**
+
 - **Evolución Temporal** - Gráfico interactivo del valor en el tiempo
 - **Estadísticas de Cambio** - Valor inicial, actual, variación total
 - **Valoraciones Manuales** - Añade tasaciones externas (concesionarios, peritos)
@@ -501,18 +532,21 @@ NEW MAPA FURGOCASA/
 ## 🤖 Funciones de IA
 
 ### 1. Actualizar Servicios (`/admin/areas/actualizar-servicios`)
+
 - Busca información en web sobre cada área (SerpAPI)
 - Analiza los resultados con IA (OpenAI)
 - Detecta servicios disponibles automáticamente
 - Actualiza la base de datos
 
 ### 2. Enriquecer Textos (`/admin/areas/enriquecer-textos`)
+
 - Genera descripciones detalladas y atractivas
 - Incluye información turística de la zona
 - Estilo natural y profesional
 - 400-600 palabras por descripción
 
 ### 3. Enriquecer Imágenes (`/admin/areas/enriquecer-imagenes`)
+
 - Busca imágenes de Google para cada área
 - Selecciona las mejores fotos
 - Las añade automáticamente a la galería
@@ -577,6 +611,7 @@ Todas las funciones de IA son configurables desde `/admin/configuracion` con pro
   - RLS: usuarios ven solo sus valoraciones, admins ven todas
 
 **Row Level Security (RLS):**
+
 - ✅ Habilitado en todas las tablas
 - ✅ Políticas optimizadas para rendimiento
 - ✅ Acceso público controlado
@@ -587,6 +622,7 @@ Todas las funciones de IA son configurables desde `/admin/configuracion` con pro
 ## 🎨 Sistema de Notificaciones
 
 ### Toast Notifications
+
 - ✅ Notificaciones elegantes en la interfaz
 - ✅ 3 tipos: success, error, info
 - ✅ Auto-cierre a los 3 segundos
@@ -595,12 +631,13 @@ Todas las funciones de IA son configurables desde `/admin/configuracion` con pro
 - ❌ Sin más `alert()` del sistema
 
 **Uso en el código:**
-```typescript
-import { useToast } from '@/hooks/useToast'
 
-const { showToast } = useToast()
-showToast('Mensaje exitoso', 'success')
-showToast('Ocurrió un error', 'error')
+```typescript
+import { useToast } from "@/hooks/useToast";
+
+const { showToast } = useToast();
+showToast("Mensaje exitoso", "success");
+showToast("Ocurrió un error", "error");
 ```
 
 ---
@@ -608,24 +645,31 @@ showToast('Ocurrió un error', 'error')
 ## 🚨 Troubleshooting
 
 ### Las áreas no se ven en el mapa
+
 **Solución:** Verifica que las áreas tengan `activo = true` en Supabase
 
 ### No puedo acceder a /admin
+
 **Solución:** Verifica que tu usuario tenga `is_admin: true` en User Metadata
 
 ### Error al borrar/editar áreas
+
 **Solución:** Ejecuta `supabase/FIX-admin-permisos-v3-SIMPLE.sql`
 
 ### Las funciones de IA no funcionan
+
 **Solución:** Verifica que tienes las API Keys configuradas en `.env.local`
 
 ### El mapa no carga
+
 **Solución:** Verifica que `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` esté configurada correctamente
 
 ### No puedo guardar rutas
+
 **Solución:** Ejecuta `supabase/add-rutas-table.sql` en tu base de datos
 
 ### Las visitas no aparecen en mi perfil
+
 **Solución:** Verifica que estés autenticado y que las RLS policies estén correctas
 
 ---
@@ -633,11 +677,13 @@ showToast('Ocurrió un error', 'error')
 ## 📝 Scripts Útiles
 
 **IMPORTANTE:** Ejecutar desde el directorio del proyecto:
+
 ```powershell
 cd "E:\Acttax Dropbox\Narciso Pardo\Acttax\EI - FURGOCASA\1 - ADMINISTRACION\7 - ACTIVOS\6 - MAPA FURGOCASA\NEW MAPA FURGOCASA"
 ```
 
 Luego ejecutar los comandos:
+
 ```powershell
 # Desarrollo
 npm run dev
@@ -678,28 +724,33 @@ node scripts/migrate-users-to-supabase.js # Migrar usuarios
 ### Documentos Esenciales
 
 #### Instalación y Setup
+
 - **[INSTALACION_RAPIDA.md](./INSTALACION_RAPIDA.md)** - Guía de instalación en 5 pasos
 - **[COMANDOS_UTILES.md](./COMANDOS_UTILES.md)** - Comandos frecuentes de desarrollo
 - **[docs/configuracion/CONFIGURACION_SUPABASE_URLS.md](./docs/configuracion/CONFIGURACION_SUPABASE_URLS.md)** - Configurar OAuth y URLs
 - **[docs/configuracion/CONFIGURACION_SEO.md](./docs/configuracion/CONFIGURACION_SEO.md)** - 🆕 SEO, Sitemap XML y Robots.txt
 
 #### Deployment y SEO
+
 - **[docs/deployment/GUIA_DEPLOYMENT_AWS.md](./docs/deployment/GUIA_DEPLOYMENT_AWS.md)** - Guía completa de deployment en AWS Amplify
 - **[docs/configuracion/GUIA_GOOGLE_SEARCH_CONSOLE.md](./docs/configuracion/GUIA_GOOGLE_SEARCH_CONSOLE.md)** - 🆕 Configuración paso a paso de Google Search Console
 - **[docs/temporales/FIX_IA_PRODUCCION.md](./docs/temporales/FIX_IA_PRODUCCION.md)** - Solución de funciones IA en producción
 
 #### Sistemas Principales
+
 - **[docs/temporales/SISTEMA_VISITAS_VALORACIONES_COMPLETO.md](./docs/temporales/SISTEMA_VISITAS_VALORACIONES_COMPLETO.md)** - Visitas y valoraciones
 - **[docs/temporales/SISTEMA_DETECCION_DUPLICADOS.md](./docs/temporales/SISTEMA_DETECCION_DUPLICADOS.md)** - 7 criterios anti-duplicados
 - **[docs/temporales/BUSQUEDA_MASIVA_AREAS.md](./docs/temporales/BUSQUEDA_MASIVA_AREAS.md)** - Importación masiva desde Google Places
 - **[docs/temporales/SISTEMA_PROMPTS_FLEXIBLE.md](./docs/temporales/SISTEMA_PROMPTS_FLEXIBLE.md)** - Configuración de IA
 
 #### Soluciones Aplicadas
+
 - **[docs/temporales/SOLUCION_ADMIN_AREAS_FINAL.md](./docs/temporales/SOLUCION_ADMIN_AREAS_FINAL.md)** - Permisos de administrador
 - **[docs/temporales/SOLUCION_FUNCIONES_IA_ADMIN.md](./docs/temporales/SOLUCION_FUNCIONES_IA_ADMIN.md)** - Funciones de IA
 - **[docs/temporales/OAUTH_GOOGLE_SOLUCION_FINAL.md](./docs/temporales/OAUTH_GOOGLE_SOLUCION_FINAL.md)** - OAuth redirect a producción
 
 #### Debugging
+
 - **[docs/temporales/GUIA_DEBUGGING_IA.md](./docs/temporales/GUIA_DEBUGGING_IA.md)** - Debugging de funciones IA paso a paso
 - **[docs/diagnosticos/DIAGNOSTICO_GOOGLE_PLACES_API.md](./docs/diagnosticos/DIAGNOSTICO_GOOGLE_PLACES_API.md)** - Diagnóstico de Google Places API
 
@@ -709,6 +760,7 @@ Para ver **TODA la documentación organizada** consulta:
 👉 **[INDICE_DOCUMENTACION.md](./INDICE_DOCUMENTACION.md)**
 
 Incluye:
+
 - 30+ documentos organizados por categoría
 - Búsqueda por tema
 - Flujos de trabajo comunes
@@ -723,6 +775,7 @@ Incluye:
 **Panel de administración completamente renovado** (`/admin/analytics`) con análisis detallado por categorías.
 
 #### 🎯 Navegación por Pestañas
+
 - **General** - Vista resumen con KPIs principales
 - **Áreas** - Métricas de áreas, distribución, popularidad
 - **Usuarios** - Análisis de usuarios, crecimiento, actividad
@@ -732,6 +785,7 @@ Incluye:
 - **Tops** - Rankings de áreas más populares, visitadas, valoradas
 
 #### 📈 Métricas Temporales Completas
+
 - **Diarias** - Rutas, visitas, IA, actividad hoy
 - **Semanales** - Comparativa últimos 7 días
 - **Mensuales** - Evolución últimos 30 días
@@ -739,6 +793,7 @@ Incluye:
 - **Gráficos interactivos** - Barras verticales con altura mínima visible
 
 #### 🚐 Análisis de Vehículos
+
 - **Datos Históricos de Usuarios** - Precios de compra reales, inversión total
 - **Base de Datos de Mercado (IA)** - Datos scrapeados de anuncios
 - **Valoraciones IA** - Vehículos valorados, precios estimados, en venta
@@ -748,6 +803,7 @@ Incluye:
 - **Registros Mensuales** - Evolución de vehículos registrados
 
 #### 🗺️ Análisis de Rutas
+
 - **Estadísticas básicas** - Total, hoy, semana, mes
 - **Distancias** - Promedio, más larga, más corta
 - **Distribución** - Por número de puntos, por rango de km
@@ -755,12 +811,14 @@ Incluye:
 - **Evolución** - Rutas y distancia por mes últimos 12 meses
 
 #### 👥 Análisis de Usuarios
+
 - **Usuarios activos** - Hoy, semana, mes
 - **Crecimiento** - Nuevos usuarios por mes últimos 12 meses
 - **Conversión** - Tasa de registro
 - **Retención** - Usuarios recurrentes vs nuevos
 
 #### 💬 Engagement
+
 - **Sesiones** - Total, hoy, semana
 - **Métricas de calidad** - Tiempo promedio, páginas por sesión, tasa de rebote
 - **Búsquedas** - Total, hoy, semana
@@ -770,12 +828,14 @@ Incluye:
 - **Eventos comunes** - Acciones más frecuentes
 
 #### 🏆 Tops
+
 - **Áreas más visitadas** - Top 10 con foto, ubicación y contador
 - **Áreas más valoradas** - Top 10 con promedio de estrellas
 - **Áreas en más favoritos** - Top 10 más guardadas
 - **Gráficos de barra** - Visualización horizontal con % y gradientes
 
 #### 🎨 Mejoras UI/UX
+
 - **Sticky navigation** - Pestañas siempre visibles al hacer scroll
 - **Gráficos mejorados** - Altura mínima 40% para valores, 15% para ceros
 - **Colores diferenciados** - Gradientes distintos por sección
@@ -790,11 +850,13 @@ Incluye:
 ### 🚐 Sistema Completo de Gestión de Vehículos
 
 1. **Registro de Autocaravanas**
+
    - Registra tu vehículo con matrícula, marca, modelo, año
    - Genera QR único para pegar en el vehículo
    - Múltiples vehículos por usuario
 
 2. **Sistema de Alertas de Accidentes** 🚨
+
    - QR único por vehículo para reportes públicos
    - Página pública `/reporte/[qr-id]` para testigos
    - Notificaciones automáticas al propietario
@@ -803,6 +865,7 @@ Incluye:
    - Gestión completa desde el perfil
 
 3. **Gestión Integral del Vehículo**
+
    - **Mantenimientos:** ITV, cambios de aceite, revisiones periódicas
    - **Averías:** Registro completo con costes y resolución
    - **Documentos:** Biblioteca digital (ITV, seguro, ficha técnica)
@@ -811,6 +874,7 @@ Incluye:
    - **Ficha Técnica:** Datos técnicos completos
 
 4. **Valoración Automática con IA** 💶
+
    - Algoritmo propio de valoración basado en mercado real
    - Comparativa con vehículos similares vendidos
    - 3 rangos de precio: venta rápida, justo, óptimo
@@ -819,6 +883,7 @@ Incluye:
    - Poner vehículo en venta con un clic
 
 5. **Análisis Económico Completo** 📊
+
    - Control financiero total (compra, gastos, venta)
    - Histórico de valoraciones con gráficos interactivos
    - Comparativa con mercado en tiempo real
@@ -839,6 +904,7 @@ Incluye:
 ### 📈 Potencial de Monetización
 
 El sistema genera datos únicos y valiosos:
+
 - Base de datos de mercado español de autocaravanas
 - Precios reales de compra/venta
 - Costes reales de mantenimiento
@@ -847,6 +913,7 @@ El sistema genera datos únicos y valiosos:
 - Depreciación real por marca/modelo
 
 **Vías de monetización identificadas:**
+
 - Informes corporativos (aseguradoras, fabricantes)
 - Suscripciones B2B (concesionarios)
 - API de valoraciones (webs externas)
@@ -860,6 +927,7 @@ El sistema genera datos únicos y valiosos:
 ### ✨ Panel de Administración Optimizado
 
 1. **Gestión de Usuarios Mejorada** 👥
+
    - Tabla reorganizada con columnas separadas: Tipo | Nombre | Email | ID | Rol | Fecha | Último Acceso | Estado
    - Iconos visuales de proveedor (Google OAuth / Email)
    - Ordenación inteligente: usuarios más recientes primero por defecto
@@ -868,6 +936,7 @@ El sistema genera datos únicos y valiosos:
    - Sin caché: siempre muestra datos actualizados
 
 2. **Analytics en Tiempo Real** 📊
+
    - Usuarios reales desde Supabase Auth (no hardcodeado)
    - **Nueva métrica**: Rutas Calculadas 🗺️
    - **Nueva métrica**: Distancia Total de rutas 🛣️ (en km)
@@ -884,22 +953,26 @@ El sistema genera datos únicos y valiosos:
 ### ✨ Características Anteriores (BETA 1.0)
 
 1. **Planificador de Rutas Completo**
+
    - Integración con Google Maps Directions API
    - Búsqueda de áreas cercanas a la ruta
    - Guardar y recargar rutas
 
 2. **Dashboard de Perfil de Usuario**
+
    - Vista completa de visitas con mapa
    - Gestión de valoraciones
    - Lista de favoritos
    - Rutas guardadas con recarga
 
 3. **Sistema de Notificaciones Toast**
+
    - Notificaciones elegantes sin `alert()`
    - Feedback visual mejorado
    - Animaciones suaves
 
 4. **Mejoras en el Mapa**
+
    - Migración completa a Google Maps API
    - InfoWindows mejoradas con fotos
    - Mejor rendimiento y UX
@@ -930,6 +1003,7 @@ Este proyecto es de uso personal y educativo.
 ## 👨‍💻 Autor
 
 **Narciso Pardo Buendía**
+
 - Versión 3.0 - Noviembre 2025 (Sistema de Analytics Avanzado por pestañas)
 - Versión 2.1 - Noviembre 2025 (Sistema de valoración con IA - GPT-4 + SerpAPI)
 - Versión 2.0 - Noviembre 2025 (Sistema completo de gestión de vehículos)
@@ -950,12 +1024,14 @@ Este proyecto es de uso personal y educativo.
 ## 📊 Estadísticas del Sistema
 
 ### Base de Datos Global
+
 - 🌍 **25+ países** con áreas normalizadas
 - 🗺️ **100+ regiones** administrativas mapeadas (CCAA, Länder, Regioni, States, etc.)
 - 📍 **13,850+ áreas** con datos geográficos estructurados
 - ✅ **100% cobertura** de país y región para todas las áreas activas
 
 ### Países Incluidos
+
 **🇪🇺 Europa:** España, Francia, Alemania, Italia, Portugal, Austria, Suiza, Bélgica, Países Bajos, Reino Unido, Polonia, Chequia, Croacia, Noruega, Suecia, Dinamarca, Grecia, Eslovenia, y más
 
 **🌎 América:** Estados Unidos, México, Argentina, Chile, Brasil, Colombia, Perú
@@ -969,6 +1045,7 @@ Este proyecto es de uso personal y educativo.
 ## 📚 Documentación Completa
 
 Para más información, consulta:
+
 - **[INDICE_DOCUMENTACION.md](./INDICE_DOCUMENTACION.md)** - Índice completo de 30+ documentos
 - **[CHANGELOG.md](./CHANGELOG.md)** - Registro detallado de cambios
 - **[docs/mejoras/MEJORAS_FILTROS_Y_NORMALIZACION.md](./docs/mejoras/MEJORAS_FILTROS_Y_NORMALIZACION.md)** - Última actualización (29-oct-2025)
@@ -978,6 +1055,7 @@ Para más información, consulta:
 ## 📞 Soporte
 
 Para dudas o problemas:
+
 - Revisa la **[documentación completa](./INDICE_DOCUMENTACION.md)**
 - Consulta los scripts SQL en `/supabase`
 - Verifica la consola del navegador (F12)
@@ -986,4 +1064,4 @@ Para dudas o problemas:
 
 **¡Feliz viaje! 🚐✨**
 
-*Mapa Furgocasa - v3.0.0 - Sistema Global con Analytics Avanzado en Producción*
+_Mapa Furgocasa - v3.0.0 - Sistema Global con Analytics Avanzado en Producción_
