@@ -58,6 +58,33 @@ export default function HomePage() {
               <span className="font-semibold">Ahora con Inteligencia Artificial GPT-4</span>
             </div>
 
+            {/* Tres iconos principales */}
+            <div className="flex justify-center items-center gap-6 md:gap-12 mb-8">
+              {/* Icono Mapa */}
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border-2 border-white/30 mb-2">
+                  <MapIcon className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                </div>
+                <span className="text-sm md:text-base font-semibold text-white/90">Mapa</span>
+              </div>
+
+              {/* Icono Rutas */}
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border-2 border-white/30 mb-2">
+                  <ArrowPathIcon className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                </div>
+                <span className="text-sm md:text-base font-semibold text-white/90">Rutas</span>
+              </div>
+
+              {/* Icono IA */}
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border-2 border-white/30 mb-2">
+                  <SparklesIcon className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                </div>
+                <span className="text-sm md:text-base font-semibold text-white/90">IA</span>
+              </div>
+            </div>
+
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
               Mucho más que una <span className="text-yellow-400">app</span> de áreas de autocaravanas
             </h1>
