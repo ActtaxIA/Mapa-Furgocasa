@@ -109,9 +109,9 @@ export default function HomePage() {
       </section>
 
       {/* Features principales - Sin espacio blanco */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-12 md:py-16 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 md:mb-12">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Mucho más que una app de áreas de autocaravanas
             </h2>
@@ -164,7 +164,7 @@ export default function HomePage() {
             </div>
 
             {/* Feature 4 - DESTACADO CON IA - CENTRADO - GRIS - MÁRGENES */}
-            <div className="md:col-span-2 lg:col-span-3 my-[100px]">
+            <div className="md:col-span-2 lg:col-span-3 my-12 md:my-20">
               <div className="max-w-6xl mx-auto">
                 <div className="bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 text-gray-900 rounded-3xl p-10 md:p-12 shadow-2xl relative overflow-hidden border-2 border-gray-300">
                 {/* Badge flotante */}
@@ -228,7 +228,7 @@ export default function HomePage() {
             </div>
 
             {/* Feature 5 - Sistema QR Elegante CENTRADO - MÁRGENES */}
-            <div className="md:col-span-2 lg:col-span-3 mt-[100px]">
+            <div className="md:col-span-2 lg:col-span-3 mt-12 md:mt-20">
               <div className="max-w-6xl mx-auto">
                 <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-3xl p-10 md:p-12 shadow-xl hover:shadow-2xl transition-all border border-red-100">
                 {/* Badge */}
@@ -284,11 +284,11 @@ export default function HomePage() {
       </section>
 
       {/* Nueva Sección: Tecnología IA - MEJORADA Y CENTRADA */}
-      <section className="py-32 bg-gradient-to-b from-white via-gray-50 to-white">
+      <section className="py-12 md:py-20 bg-gradient-to-b from-white via-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             {/* Título con más espacio */}
-            <div className="text-center mb-20">
+            <div className="text-center mb-10 md:mb-16">
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full text-sm font-bold mb-6 shadow-lg">
                 <span className="text-lg">🤖</span>
                 POWERED BY GPT-4
@@ -395,11 +395,11 @@ export default function HomePage() {
       </section>
 
       {/* Nueva Sección: Cómo Funciona - CENTRADO Y ESPACIADO */}
-      <section className="py-32 bg-gradient-to-b from-gray-50 via-white to-gray-50">
+      <section className="py-12 md:py-20 bg-gradient-to-b from-gray-50 via-white to-gray-50">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             {/* Título con más espacio */}
-            <div className="text-center mb-24">
+            <div className="text-center mb-10 md:mb-16">
               <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Empieza en 3 simples pasos
               </h2>
@@ -482,10 +482,10 @@ export default function HomePage() {
       </section>
 
       {/* Sección "Por qué nosotros" con testimonial */}
-      <section className="py-20 bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f]">
+      <section className="py-12 md:py-16 bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f]">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-10 md:mb-12">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 ¿Por qué los autocaravanistas confían en nosotros?
               </h2>
