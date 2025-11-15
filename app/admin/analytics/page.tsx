@@ -704,7 +704,19 @@ export default function AdminAnalyticsPage() {
         const vehiculosResponse = await fetch(`/api/admin/vehiculos?t=${Date.now()}`, {
           cache: 'no-store'
         })
+        
+        if (!vehiculosResponse.ok) {
+          console.error('❌ Error HTTP:', vehiculosResponse.status)
+          throw new Error(`HTTP ${vehiculosResponse.status}`)
+        }
+        
         const vehiculosData = await vehiculosResponse.json()
+        console.log('📦 Respuesta API vehiculos:', {
+          tieneVehiculos: !!vehiculosData.vehiculos,
+          esArray: Array.isArray(vehiculosData.vehiculos),
+          longitud: vehiculosData.vehiculos?.length,
+          keys: Object.keys(vehiculosData)
+        })
 
         if (vehiculosData.vehiculos && Array.isArray(vehiculosData.vehiculos)) {
           vehiculos = vehiculosData.vehiculos
@@ -713,6 +725,8 @@ export default function AdminAnalyticsPage() {
           datosMercado = vehiculosData.datosMercado || []
           valoracionesIA = vehiculosData.valoracionesIA || []
           console.log(`✅ ${vehiculos.length} vehículos obtenidos`)
+        } else {
+          console.warn('⚠️ vehiculosData.vehiculos no es un array válido')
         }
       } catch (error) {
         console.error('❌ Error obteniendo vehículos:', error)
