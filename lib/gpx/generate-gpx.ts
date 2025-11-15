@@ -1,6 +1,6 @@
 /**
  * 🗺️ Generador de Archivos GPX
- * 
+ *
  * Convierte rutas de Mapa Furgocasa a formato GPX 1.1
  * Compatible con: Garmin, TomTom, Suunto, y la mayoría de dispositivos GPS
  */
@@ -53,7 +53,7 @@ export function generateGPX(rutaData: GPXRouteData): string {
 
   // Construir waypoints (puntos de interés)
   const waypoints: GPXPoint[] = []
-  
+
   // Añadir origen como waypoint
   waypoints.push({
     lat: rutaData.origen.latitud,
@@ -89,7 +89,7 @@ export function generateGPX(rutaData: GPXRouteData): string {
 
   // Construir track points (trazado de la ruta)
   let trackPoints: GPXPoint[] = []
-  
+
   if (rutaData.geometria?.features?.[0]?.geometry?.coordinates) {
     // Convertir GeoJSON LineString a puntos GPX
     const coordinates = rutaData.geometria.features[0].geometry.coordinates
@@ -109,8 +109,8 @@ export function generateGPX(rutaData: GPXRouteData): string {
 
   // Generar XML GPX 1.1
   let gpx = `<?xml version="1.0" encoding="UTF-8"?>
-<gpx version="1.1" 
-  creator="Mapa Furgocasa - https://www.mapafurgocasa.com" 
+<gpx version="1.1"
+  creator="Mapa Furgocasa - https://www.mapafurgocasa.com"
   xmlns="http://www.topografix.com/GPX/1/1"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
@@ -185,17 +185,17 @@ export function generateGPX(rutaData: GPXRouteData): string {
 export function downloadGPX(gpxContent: string, filename: string): void {
   // Crear blob con el contenido GPX
   const blob = new Blob([gpxContent], { type: 'application/gpx+xml;charset=utf-8' })
-  
+
   // Crear enlace de descarga
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
   link.download = filename.endsWith('.gpx') ? filename : `${filename}.gpx`
-  
+
   // Trigger descarga
   document.body.appendChild(link)
   link.click()
-  
+
   // Limpiar
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
@@ -213,9 +213,8 @@ export function generateGPXFilename(routeName: string): string {
     .replace(/\s+/g, '-') // Espacios a guiones
     .replace(/-+/g, '-') // Múltiples guiones a uno
     .substring(0, 50) // Máximo 50 caracteres
-  
+
   const timestamp = new Date().toISOString().split('T')[0] // YYYY-MM-DD
-  
+
   return `mapa-furgocasa-${sanitized}-${timestamp}.gpx`
 }
-

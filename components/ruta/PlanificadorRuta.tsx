@@ -1344,10 +1344,10 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       // Generar archivo GPX
       const gpxContent = generateGPX(rutaDataGPX)
       const filename = generateGPXFilename(rutaDataGPX.nombre)
-      
+
       // Descargar archivo
       downloadGPX(gpxContent, filename)
-      
+
       showToast('📥 Archivo GPX descargado correctamente', 'success')
     } catch (error) {
       console.error('Error exportando a GPX:', error)
