@@ -43,6 +43,10 @@ export async function GET(request: NextRequest) {
       .from('vehiculos_registrados')
       .select('id, created_at, user_id, marca, modelo, matricula, ano, tipo_vehiculo')
 
+    console.log('📊 Resultado consulta vehiculos:')
+    console.log('  - Data:', vehiculos?.length || 0, 'registros')
+    console.log('  - Error:', errorVehiculos ? JSON.stringify(errorVehiculos) : 'ninguno')
+
     if (errorVehiculos) {
       console.error('❌ Error cargando vehículos:', JSON.stringify(errorVehiculos, null, 2))
       // NO retornar error, continuar con array vacío
@@ -52,7 +56,9 @@ export async function GET(request: NextRequest) {
     if (vehiculos && vehiculos.length > 0) {
       console.log('📋 Primeros IDs de vehículos:', vehiculos.slice(0, 3).map(v => v.id))
     } else {
-      console.log('⚠️ La tabla vehiculos_registrados está VACÍA')
+      console.log('⚠️ La tabla vehiculos_registrados está VACÍA o no se puede acceder')
+      console.log('⚠️ Service Key length:', supabaseServiceKey?.length)
+      console.log('⚠️ Service Key prefix:', supabaseServiceKey?.substring(0, 20))
     }
 
     // Obtener valoraciones económicas
