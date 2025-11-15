@@ -324,12 +324,23 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    console.log(`\n🔍 [GET VALORACIONES] Iniciando carga para vehículo: ${params.id}`)
+    
     const supabase = createRouteHandlerClient({ cookies })
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
+
+    if (userError) {
+      console.error('❌ Error obteniendo usuario:', userError)
+      return NextResponse.json({ error: 'Error de autenticación' }, { status: 401 })
+    }
 
     if (!user) {
+      console.error('❌ Usuario no autenticado')
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
+
+    console.log(`👤 Usuario autenticado: ${user.id}`)
+    console.log(`📊 Consultando tabla valoracion_ia_informes...`)
 
     const { data: informes, error } = await supabase
       .from('valoracion_ia_informes')
@@ -338,14 +349,30 @@ export async function GET(
       .eq('user_id', user.id)
       .order('fecha_valoracion', { ascending: false })
 
-    if (error) throw error
+    if (error) {
+      console.error('❌ Error en query Supabase:', error)
+      console.error('   Código:', error.code)
+      console.error('   Mensaje:', error.message)
+      console.error('   Detalles:', error.details)
+      throw error
+    }
+
+    console.log(`✅ Valoraciones encontradas: ${informes?.length || 0}`)
 
     return NextResponse.json({ informes })
 
   } catch (error: any) {
-    console.error('Error obteniendo valoraciones:', error)
+    console.error('\n❌ [GET VALORACIONES] ERROR:', error)
+    console.error('   Mensaje:', error.message)
+    console.error('   Código:', error.code)
+    console.error('   Stack:', error.stack)
+    
     return NextResponse.json(
-      { error: 'Error obteniendo valoraciones' },
+      { 
+        error: 'Error obteniendo valoraciones',
+        detalle: error.message,
+        codigo: error.code
+      },
       { status: 500 }
     )
   }
