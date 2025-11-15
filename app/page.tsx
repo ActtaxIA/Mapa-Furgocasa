@@ -177,107 +177,115 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Feature 5 - DESTACADO CON IA */}
-            <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 text-white rounded-2xl p-8 shadow-2xl transform hover:scale-105 transition-all md:col-span-2 lg:col-span-3 relative overflow-hidden">
-              {/* Badge "NUEVO" */}
-              <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
-                🤖 CON INTELIGENCIA ARTIFICIAL
-              </div>
-              
-              <div className="flex flex-col md:flex-row items-start gap-8">
-                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <TruckIcon className="w-12 h-12 text-white" />
+            {/* Feature 5 - DESTACADO CON IA - DISEÑO ELEGANTE */}
+            <div className="md:col-span-2 lg:col-span-3 relative">
+              <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 text-white rounded-3xl p-10 md:p-12 shadow-2xl relative overflow-hidden">
+                {/* Badge flotante */}
+                <div className="absolute top-6 right-6 bg-yellow-400 text-gray-900 px-5 py-2 rounded-full text-xs font-bold shadow-xl animate-pulse">
+                  🤖 CON IA GPT-4
                 </div>
                 
-                <div className="flex-1">
-                  <h3 className="text-3xl md:text-4xl font-black mb-4">
+                {/* Icono grande centrado arriba en móvil */}
+                <div className="flex justify-center md:justify-start mb-6">
+                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                    <TruckIcon className="w-10 h-10 text-white" />
+                  </div>
+                </div>
+                
+                {/* Contenido */}
+                <div className="max-w-5xl">
+                  <h3 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
                     Gestión Inteligente de tu Autocaravana
                   </h3>
-                  <p className="text-white/95 leading-relaxed mb-6 text-lg">
-                    <strong>Valoración automática con GPT-4</strong> en segundos. Control total de tu vehículo 
-                    con comparación de precios de mercado en tiempo real.
+                  <p className="text-white/95 text-lg md:text-xl mb-8 leading-relaxed max-w-3xl">
+                    Valoración automática con <span className="font-bold text-yellow-300">GPT-4</span> en segundos. 
+                    Control total con comparación de precios de mercado en tiempo real.
                   </p>
                   
-                  <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                      <span className="text-2xl">🤖</span>
-                      <div>
-                        <p className="font-bold text-sm">Valoración IA</p>
-                        <p className="text-xs text-white/80">GPT-4 en segundos</p>
-                      </div>
+                  {/* Grid de características más espaciado */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 hover:bg-white/20 transition-all">
+                      <div className="text-3xl mb-3">🤖</div>
+                      <p className="font-bold text-base mb-1">Valoración IA</p>
+                      <p className="text-sm text-white/80">GPT-4 en segundos</p>
                     </div>
-                    <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                      <span className="text-2xl">📊</span>
-                      <div>
-                        <p className="font-bold text-sm">Precios Mercado</p>
-                        <p className="text-xs text-white/80">Comparación real</p>
-                      </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 hover:bg-white/20 transition-all">
+                      <div className="text-3xl mb-3">📊</div>
+                      <p className="font-bold text-base mb-1">Precios Mercado</p>
+                      <p className="text-sm text-white/80">Comparación real</p>
                     </div>
-                    <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                      <span className="text-2xl">🔧</span>
-                      <div>
-                        <p className="font-bold text-sm">Mantenimientos</p>
-                        <p className="text-xs text-white/80">Historial completo</p>
-                      </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 hover:bg-white/20 transition-all">
+                      <div className="text-3xl mb-3">🔧</div>
+                      <p className="font-bold text-base mb-1">Mantenimientos</p>
+                      <p className="text-sm text-white/80">Historial completo</p>
                     </div>
-                    <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                      <span className="text-2xl">💰</span>
-                      <div>
-                        <p className="font-bold text-sm">Control Gastos</p>
-                        <p className="text-xs text-white/80">ROI automático</p>
-                      </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 hover:bg-white/20 transition-all">
+                      <div className="text-3xl mb-3">💰</div>
+                      <p className="font-bold text-base mb-1">Control Gastos</p>
+                      <p className="text-sm text-white/80">ROI automático</p>
                     </div>
-                    <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                      <span className="text-2xl">📈</span>
-                      <div>
-                        <p className="font-bold text-sm">Histórico Valor</p>
-                        <p className="text-xs text-white/80">Evolución precio</p>
-                      </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 hover:bg-white/20 transition-all">
+                      <div className="text-3xl mb-3">📈</div>
+                      <p className="font-bold text-base mb-1">Histórico Valor</p>
+                      <p className="text-sm text-white/80">Evolución precio</p>
                     </div>
-                    <div className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                      <span className="text-2xl">📸</span>
-                      <div>
-                        <p className="font-bold text-sm">Gestión Fotos</p>
-                        <p className="text-xs text-white/80">Galería completa</p>
-                      </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 hover:bg-white/20 transition-all">
+                      <div className="text-3xl mb-3">📸</div>
+                      <p className="font-bold text-base mb-1">Gestión Fotos</p>
+                      <p className="text-sm text-white/80">Galería completa</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Feature 6 - Sistema QR Mejorado */}
-            <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-2 border-red-200 md:col-span-2">
-              <div className="flex items-start gap-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <ShieldCheckIcon className="w-10 h-10 text-white" />
+            {/* Feature 6 - Sistema QR Elegante */}
+            <div className="md:col-span-2 lg:col-span-2">
+              <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-3xl p-10 md:p-12 shadow-xl hover:shadow-2xl transition-all border border-red-100">
+                {/* Badge */}
+                <div className="inline-flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-full text-xs font-bold mb-6 shadow-lg">
+                  <ShieldCheckIcon className="w-4 h-4" />
+                  SISTEMA ANTIRROBO
                 </div>
-                <div className="flex-1">
-                  <div className="inline-block bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-3">
-                    🔒 SISTEMA ANTIRROBO
+                
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">
+                  Sistema QR Inteligente: Protección 24/7
+                </h3>
+                <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-6 max-w-2xl">
+                  Código QR único para tu vehículo. Los testigos pueden reportar incidentes o robos escaneándolo. 
+                  <span className="font-bold text-red-600"> Recibe notificaciones instantáneas</span> con fotos, GPS y datos.
+                </p>
+                
+                {/* Lista con iconos más grandes */}
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3 bg-white rounded-xl p-4 shadow-sm">
+                    <div className="text-2xl">🚨</div>
+                    <div>
+                      <p className="font-bold text-gray-900 mb-1">Alertas de accidentes</p>
+                      <p className="text-sm text-gray-600">Con fotos y ubicación</p>
+                    </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                    Sistema QR Inteligente: Protección 24/7
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed mb-4">
-                    Código QR único para tu vehículo. Los testigos pueden reportar incidentes, 
-                    robos o daños escaneándolo. <strong>Recibe notificaciones instantáneas</strong> con 
-                    fotos, ubicación GPS y datos del testigo.
-                  </p>
-                  <ul className="space-y-2 text-gray-700">
-                    <li className="flex items-center gap-2">
-                      <span className="text-red-500">✓</span> <strong>Alertas de accidentes</strong> con fotos y ubicación
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-red-500">✓</span> <strong>Notificación antirrobo</strong> si alguien ve tu vehículo
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-red-500">✓</span> <strong>Contacto emergencia</strong> visible para autoridades
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-red-500">✓</span> <strong>Historial completo</strong> de todos los reportes
-                    </li>
-                  </ul>
+                  <div className="flex items-start gap-3 bg-white rounded-xl p-4 shadow-sm">
+                    <div className="text-2xl">🔔</div>
+                    <div>
+                      <p className="font-bold text-gray-900 mb-1">Notificación antirrobo</p>
+                      <p className="text-sm text-gray-600">Si ven tu vehículo</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 bg-white rounded-xl p-4 shadow-sm">
+                    <div className="text-2xl">📞</div>
+                    <div>
+                      <p className="font-bold text-gray-900 mb-1">Contacto emergencia</p>
+                      <p className="text-sm text-gray-600">Para autoridades</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 bg-white rounded-xl p-4 shadow-sm">
+                    <div className="text-2xl">📋</div>
+                    <div>
+                      <p className="font-bold text-gray-900 mb-1">Historial completo</p>
+                      <p className="text-sm text-gray-600">Todos los reportes</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -285,105 +293,108 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Nueva Sección: Tecnología IA */}
-      <section className="py-20 bg-white">
+      {/* Nueva Sección: Tecnología IA - MEJORADA */}
+      <section className="py-24 bg-gradient-to-b from-white via-gray-50 to-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            {/* Título */}
-            <div className="text-center mb-16">
-              <div className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full text-sm font-bold mb-4">
-                🤖 POWERED BY GPT-4
+          <div className="max-w-7xl mx-auto">
+            {/* Título con más espacio */}
+            <div className="text-center mb-20">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full text-sm font-bold mb-6 shadow-lg">
+                <span className="text-lg">🤖</span>
+                POWERED BY GPT-4
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Inteligencia Artificial que entiende tu autocaravana
+              <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                Inteligencia Artificial que<br className="hidden md:block" /> entiende tu autocaravana
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Tecnología de última generación para valorar, analizar y gestionar tu vehículo de forma profesional
+              <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Tecnología de última generación para valorar, analizar y gestionar tu vehículo
               </p>
             </div>
 
-            {/* Grid de características IA */}
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-8 border-2 border-purple-200">
-                <div className="text-5xl mb-4">🧠</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+            {/* Grid de características IA más espaciado */}
+            <div className="grid md:grid-cols-3 gap-8 md:gap-10 mb-16">
+              <div className="bg-white rounded-3xl p-8 md:p-10 border border-purple-100 shadow-lg hover:shadow-xl transition-all">
+                <div className="text-6xl mb-6">🧠</div>
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
                   Valoración Inteligente
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  GPT-4 analiza marca, modelo, año, kilometraje, estado y mercado actual 
-                  para darte una <strong>valoración precisa en segundos</strong>.
+                <p className="text-gray-600 text-lg leading-relaxed">
+                  GPT-4 analiza marca, modelo, año, kilometraje y mercado para darte una 
+                  <span className="font-bold text-purple-600"> valoración precisa en segundos</span>.
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 border-2 border-blue-200">
-                <div className="text-5xl mb-4">📊</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              <div className="bg-white rounded-3xl p-8 md:p-10 border border-blue-100 shadow-lg hover:shadow-xl transition-all">
+                <div className="text-6xl mb-6">📊</div>
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
                   Comparación de Mercado
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Comparamos tu vehículo con <strong>miles de anuncios reales</strong> de 
-                  portales especializados para darte el precio justo.
+                <p className="text-gray-600 text-lg leading-relaxed">
+                  Comparamos con <span className="font-bold text-blue-600">miles de anuncios reales</span> de 
+                  portales especializados para el precio justo.
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 border-2 border-green-200">
-                <div className="text-5xl mb-4">💬</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              <div className="bg-white rounded-3xl p-8 md:p-10 border border-green-100 shadow-lg hover:shadow-xl transition-all">
+                <div className="text-6xl mb-6">💬</div>
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
                   Chatbot Experto
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Asistente IA disponible 24/7 para responder dudas sobre áreas, 
-                  rutas, mantenimiento y <strong>recomendaciones personalizadas</strong>.
+                <p className="text-gray-600 text-lg leading-relaxed">
+                  Asistente IA 24/7 para áreas, rutas y 
+                  <span className="font-bold text-green-600"> recomendaciones personalizadas</span>.
                 </p>
               </div>
             </div>
 
-            {/* Ejemplo visual */}
-            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-8 md:p-12 text-white shadow-2xl">
-              <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="flex-1">
-                  <div className="inline-block bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold mb-4">
-                    ✓ Valoración completada
+            {/* Ejemplo visual mejorado */}
+            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-10 md:p-16 text-white shadow-2xl">
+              <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+                <div className="flex-1 text-center lg:text-left">
+                  <div className="inline-flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-full text-sm font-bold mb-6">
+                    <span>✓</span> Valoración completada
                   </div>
-                  <h3 className="text-3xl font-bold mb-4">
+                  <h3 className="text-3xl md:text-4xl font-bold mb-8">
                     Informe completo en 30 segundos
                   </h3>
-                  <ul className="space-y-3 text-lg">
-                    <li className="flex items-center gap-3">
-                      <span className="text-green-400 text-2xl">✓</span>
-                      Precio objetivo recomendado
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <span className="text-green-400 text-2xl">✓</span>
-                      Rango de venta (mínimo-máximo)
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <span className="text-green-400 text-2xl">✓</span>
-                      Comparables del mercado
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <span className="text-green-400 text-2xl">✓</span>
-                      Análisis de depreciación
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <span className="text-green-400 text-2xl">✓</span>
-                      PDF descargable profesional
-                    </li>
-                  </ul>
-                </div>
-                <div className="flex-1 bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                  <div className="text-sm font-mono text-green-400 mb-2">// Ejemplo valoración IA</div>
-                  <div className="bg-black/40 rounded-lg p-4 font-mono text-sm">
-                    <div className="text-purple-400">GPT-4 Analyzing...</div>
-                    <div className="text-gray-400 mt-2">
-                      → Marca: Adria<br/>
-                      → Modelo: Twin Plus Family<br/>
-                      → Año: 2022<br/>
-                      → Kilometraje: 15.000 km
+                  <div className="space-y-5">
+                    <div className="flex items-center gap-4">
+                      <span className="text-green-400 text-3xl">✓</span>
+                      <span className="text-lg md:text-xl">Precio objetivo recomendado</span>
                     </div>
-                    <div className="text-green-400 mt-4">
-                      ✓ Valoración: 58.000 - 63.500 €<br/>
-                      ✓ Precio Objetivo: 63.500 €
+                    <div className="flex items-center gap-4">
+                      <span className="text-green-400 text-3xl">✓</span>
+                      <span className="text-lg md:text-xl">Rango de venta (mín-máx)</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-green-400 text-3xl">✓</span>
+                      <span className="text-lg md:text-xl">Comparables del mercado</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-green-400 text-3xl">✓</span>
+                      <span className="text-lg md:text-xl">Análisis de depreciación</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-green-400 text-3xl">✓</span>
+                      <span className="text-lg md:text-xl">PDF descargable profesional</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1 w-full">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/20">
+                    <div className="text-sm font-mono text-green-400 mb-4">// Ejemplo valoración IA</div>
+                    <div className="bg-black/50 rounded-xl p-6 font-mono text-sm md:text-base space-y-4">
+                      <div className="text-purple-400 font-bold">GPT-4 Analyzing...</div>
+                      <div className="text-gray-300 space-y-2">
+                        <div>→ Marca: <span className="text-white font-bold">Adria</span></div>
+                        <div>→ Modelo: <span className="text-white font-bold">Twin Plus Family</span></div>
+                        <div>→ Año: <span className="text-white font-bold">2022</span></div>
+                        <div>→ Kilometraje: <span className="text-white font-bold">15.000 km</span></div>
+                      </div>
+                      <div className="text-green-400 font-bold space-y-2 pt-4 border-t border-white/10">
+                        <div>✓ Valoración: 58.000 - 63.500 €</div>
+                        <div>✓ Precio Objetivo: 63.500 €</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -393,69 +404,69 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Nueva Sección: Cómo Funciona */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      {/* Nueva Sección: Cómo Funciona - MEJORADA */}
+      <section className="py-24 bg-gradient-to-b from-gray-50 via-white to-gray-50">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            {/* Título */}
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <div className="max-w-7xl mx-auto">
+            {/* Título con más espacio */}
+            <div className="text-center mb-20">
+              <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Empieza en 3 simples pasos
               </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
                 Desde el registro hasta tu primera valoración IA en menos de 5 minutos
               </p>
             </div>
 
-            {/* Pasos */}
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
+            {/* Pasos con más espacio */}
+            <div className="grid md:grid-cols-3 gap-8 md:gap-10 mb-16">
               {/* Paso 1 */}
-              <div className="relative">
-                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-2 border-[#0b3c74]/10 h-full">
-                  <div className="absolute -top-6 left-8 w-12 h-12 bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+              <div className="relative group">
+                <div className="bg-white rounded-3xl p-10 md:p-12 shadow-lg hover:shadow-2xl transition-all border border-gray-100 h-full">
+                  <div className="absolute -top-6 left-10 w-14 h-14 bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-xl group-hover:scale-110 transition-transform">
                     1
                   </div>
-                  <div className="text-5xl mb-6 mt-4">📝</div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  <div className="text-6xl mb-8 mt-4 text-center">📝</div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 text-center">
                     Regístrate Gratis
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Crea tu cuenta en 30 segundos. No requiere tarjeta de crédito. 
-                    Acceso inmediato a todas las funcionalidades.
+                  <p className="text-gray-600 text-lg leading-relaxed text-center">
+                    Crea tu cuenta en 30 segundos. Sin tarjeta de crédito. 
+                    Acceso inmediato a todo.
                   </p>
                 </div>
               </div>
 
               {/* Paso 2 */}
-              <div className="relative">
-                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-2 border-[#0b3c74]/10 h-full">
-                  <div className="absolute -top-6 left-8 w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+              <div className="relative group">
+                <div className="bg-white rounded-3xl p-10 md:p-12 shadow-lg hover:shadow-2xl transition-all border border-gray-100 h-full">
+                  <div className="absolute -top-6 left-10 w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-xl group-hover:scale-110 transition-transform">
                     2
                   </div>
-                  <div className="text-5xl mb-6 mt-4">🚐</div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  <div className="text-6xl mb-8 mt-4 text-center">🚐</div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 text-center">
                     Registra tu Vehículo
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Añade tu autocaravana con marca, modelo, año y kilometraje. 
-                    Sube fotos y obtén tu código QR de protección.
+                  <p className="text-gray-600 text-lg leading-relaxed text-center">
+                    Añade marca, modelo, año, km. 
+                    Sube fotos y obtén tu QR de protección.
                   </p>
                 </div>
               </div>
 
               {/* Paso 3 */}
-              <div className="relative">
-                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border-2 border-[#0b3c74]/10 h-full">
-                  <div className="absolute -top-6 left-8 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+              <div className="relative group">
+                <div className="bg-white rounded-3xl p-10 md:p-12 shadow-lg hover:shadow-2xl transition-all border border-gray-100 h-full">
+                  <div className="absolute -top-6 left-10 w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-xl group-hover:scale-110 transition-transform">
                     3
                   </div>
-                  <div className="text-5xl mb-6 mt-4">🤖</div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  <div className="text-6xl mb-8 mt-4 text-center">🤖</div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 text-center">
                     Valoración IA Instantánea
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Haz clic en "Valorar con IA" y obtén en 30 segundos un informe 
-                    profesional con precio de mercado y análisis completo.
+                  <p className="text-gray-600 text-lg leading-relaxed text-center">
+                    Clic en "Valorar con IA" e informe profesional 
+                    en 30 segundos con precio real.
                   </p>
                 </div>
               </div>
