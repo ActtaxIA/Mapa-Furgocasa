@@ -20,7 +20,7 @@ export async function POST(
     console.log(`${'='.repeat(60)}`)
     console.log(`📍 Vehículo ID: ${params.id}`)
     console.log(`⏰ Timestamp: ${new Date().toISOString()}`)
-    
+
     const supabase = createRouteHandlerClient({ cookies })
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -33,7 +33,7 @@ export async function POST(
 
     // 1. RECOPILAR DATOS DEL VEHÍCULO
     console.log(`\n📥 [PASO 1/7] Recopilando datos del vehículo...`)
-    
+
     const { data: vehiculo, error: vehiculoError } = await supabase
       .from('vehiculos_registrados')
       .select('*')
@@ -104,7 +104,7 @@ export async function POST(
 
     // 3. OBTENER CONFIGURACIÓN DEL AGENTE DESDE LA BD
     console.log(`\n⚙️  [PASO 3/7] Cargando configuración del agente IA...`)
-    
+
     const { data: configData, error: configError } = await supabase
       .from('ia_config')
       .select('config_value')
@@ -162,11 +162,11 @@ export async function POST(
 - Kilometraje en compra: ${valoracion?.kilometros_compra?.toLocaleString() || 'No especificado'} km
 - Inversión total (mantenimientos + averías + mejoras): ${valoracion?.inversion_total?.toLocaleString() || '0'}€`
 
-    const averiasTexto = averias && averias.length > 0 
+    const averiasTexto = averias && averias.length > 0
       ? `${averias.length} averías críticas/graves registradas:\n` + averias.map((a: any) => `- ${a.descripcion} (${a.fecha}, severidad: ${a.severidad})`).join('\n')
       : 'No hay averías graves registradas'
 
-    const mejorasTexto = mejoras && mejoras.length > 0 
+    const mejorasTexto = mejoras && mejoras.length > 0
       ? mejoras.map((m: any) => `- ${m.nombre}: ${m.coste ? m.coste.toLocaleString() + '€' : 'coste no especificado'} (${m.fecha_instalacion || 'fecha no especificada'})`).join('\n')
       : 'No hay mejoras registradas'
 
@@ -181,7 +181,7 @@ export async function POST(
 
     // 5. CONSTRUIR MENSAJES PARA OPENAI DESDE LOS PROMPTS
     console.log(`\n🔨 [PASO 4/7] Preparando mensajes para OpenAI...`)
-    
+
     if (!config.prompts || !Array.isArray(config.prompts) || config.prompts.length === 0) {
       console.error('   ❌ config.prompts no existe o está vacío')
       console.error('   📦 config recibido:', JSON.stringify(config, null, 2))
@@ -200,7 +200,7 @@ export async function POST(
           .replace(/\{\{averias\}\}/g, averiasTexto)
           .replace(/\{\{mejoras\}\}/g, mejorasTexto)
           .replace(/\{\{comparables\}\}/g, comparablesTexto)
-        
+
         return {
           role: prompt.role as 'system' | 'user' | 'assistant',
           content: content
@@ -212,7 +212,7 @@ export async function POST(
     // 6. LLAMAR A OPENAI GPT-4
     console.log(`\n🤖 [PASO 5/7] Llamando a OpenAI GPT-4...`)
     console.log(`   🔑 API Key: ${process.env.OPENAI_API_KEY ? 'Configurada' : 'NO CONFIGURADA'}`)
-    
+
     const completion = await openai.chat.completions.create({
       model: config.model,
       messages: messages,
@@ -243,7 +243,7 @@ export async function POST(
 
     // 7. GUARDAR EN BASE DE DATOS
     console.log(`\n💾 [PASO 7/7] Guardando en base de datos...`)
-    
+
     const { data: informeGuardado, error: errorGuardar } = await supabase
       .from('valoracion_ia_informes')
       .insert({
@@ -325,7 +325,7 @@ export async function GET(
 ) {
   try {
     console.log(`\n🔍 [GET VALORACIONES] Iniciando carga para vehículo: ${params.id}`)
-    
+
     const supabase = createRouteHandlerClient({ cookies })
     const { data: { user }, error: userError } = await supabase.auth.getUser()
 
@@ -366,9 +366,9 @@ export async function GET(
     console.error('   Mensaje:', error.message)
     console.error('   Código:', error.code)
     console.error('   Stack:', error.stack)
-    
+
     return NextResponse.json(
-      { 
+      {
         error: 'Error obteniendo valoraciones',
         detalle: error.message,
         codigo: error.code
