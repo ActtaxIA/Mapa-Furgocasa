@@ -764,10 +764,26 @@ export default function AdminAnalyticsPage() {
         : 0
 
       // Top 5 vehículos más caros
+      // SOLUCIÓN: Si vehiculos[] está vacío, crear objetos sintéticos desde valoracionesEconomicas
       const vehiculosConPrecio = valoracionesEconomicas
         .filter(v => v.precio_compra && v.precio_compra > 0)
         .map(v => {
-          const vehiculo = vehiculos.find(vh => vh.id === v.vehiculo_id)
+          // Intentar buscar en vehiculos_registrados
+          let vehiculo = vehiculos.find(vh => vh.id === v.vehiculo_id)
+          
+          // Si no existe, crear objeto sintético
+          if (!vehiculo && v.vehiculo_id) {
+            vehiculo = {
+              id: v.vehiculo_id,
+              matricula: `Vehículo ${v.vehiculo_id.substring(0, 8)}`,
+              marca: 'N/A',
+              modelo: 'N/A',
+              ano: null,
+              user_id: v.user_id,
+              created_at: v.created_at
+            }
+          }
+          
           return { vehiculo, precio: v.precio_compra }
         })
         .filter(item => item.vehiculo)
