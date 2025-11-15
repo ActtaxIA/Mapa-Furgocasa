@@ -583,57 +583,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Final potente */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] rounded-3xl p-12 md:p-16 shadow-2xl">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                Comienza tu próxima aventura hoy
-              </h2>
-              <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-                Únete a miles de autocaravanistas que ya planifican sus viajes con Mapa Furgocasa.
-                <strong className="text-sky-200"> 100% gratis para siempre</strong>.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-                <Link
-                  href="/auth/register"
-                  className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-white text-[#0b3c74] text-xl font-bold rounded-xl hover:bg-gray-50 transition-all shadow-xl transform hover:-translate-y-1"
-                >
-                  Registrarme Gratis
-                </Link>
-                <Link
-                  href="/auth/login"
-                  className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-transparent text-white text-xl font-bold rounded-xl border-2 border-white hover:bg-white/10 transition-all"
-                >
-                  Iniciar Sesión
-                </Link>
-              </div>
-
-              <p className="text-sm text-white/70">
-                No requiere tarjeta de crédito • Acceso inmediato • Compatible con todos los dispositivos
-              </p>
-            </div>
-
-            {/* Mini features */}
-            <div className="grid grid-cols-3 gap-6 mt-12 max-w-3xl mx-auto">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-[#0b3c74] mb-2">100%</div>
-                <div className="text-sm text-gray-600">Gratis</div>
-              </div>
-              <div className="text-center border-l border-r border-gray-200">
-                <div className="text-3xl font-bold text-[#0b3c74] mb-2">+{totalAreas}</div>
-                <div className="text-sm text-gray-600">Áreas</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-[#0b3c74] mb-2">10K+</div>
-                <div className="text-sm text-gray-600">Usuarios</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <Footer />
     </div>
