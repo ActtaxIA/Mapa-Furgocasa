@@ -399,12 +399,16 @@ export default function AdminAnalyticsPage() {
       console.log('👁️ Obteniendo visitas registradas...')
       const { data: visitas, error: errorVisitas } = await supabase
         .from('visitas')
-        .select('id, created_at, area_id, user_id')
+        .select('id, created_at, area_id, user_id, fecha_visita')
 
       if (errorVisitas) {
         console.error('❌ Error obteniendo visitas:', errorVisitas)
+        console.error('❌ Detalles error visitas:', JSON.stringify(errorVisitas))
       } else {
         console.log(`✅ ${visitas?.length || 0} visitas registradas en BD`)
+        if (visitas && visitas.length > 0) {
+          console.log('📋 Primera visita ejemplo:', visitas[0])
+        }
       }
 
       const visitasHoy = visitas?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
