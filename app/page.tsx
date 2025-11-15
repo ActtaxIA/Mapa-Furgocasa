@@ -446,94 +446,130 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* POR QUÉ CONFÍAN - Azul corporativo con testimonial */}
+      {/* POR QUÉ CONFIAR - Azul corporativo con credenciales técnicas */}
       <section className="py-20 bg-gradient-to-br from-[#0b3c74] to-[#0d4a8f] text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                ¿Por qué los autocaravanistas confían en nosotros?
+                ¿Por qué deberías confiar en nosotros?
               </h2>
               <p className="text-xl text-white/80">
-                Parte de Furgocasa, especialistas en el mundo del caravaning desde hace años
+                Tecnología de primera línea para darte la información más precisa y confiable
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 mb-12">
-              {/* Razón 1 */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <ShieldCheckIcon className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-2">Información Verificada</h3>
-                    <p className="text-white/80">
-                      Cada área es revisada y actualizada por nuestro equipo. Datos reales de ubicación, servicios disponibles, precios actualizados y estado operativo.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Razón 2 */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <UserGroupIcon className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-2">Comunidad Activa</h3>
-                    <p className="text-white/80">
-                      Miles de autocaravanistas comparten experiencias, consejos y recomendaciones. La comunidad más grande de España y en crecimiento internacional.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Razón 3 */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <ClockIcon className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-2">Siempre Actualizado</h3>
-                    <p className="text-white/80">
-                      Nuevas áreas añadidas constantemente. Sistema de reportes de la comunidad. Nunca llegarás a un lugar cerrado o inexistente.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Razón 4 */}
+              {/* Razón 1 - Google Maps */}
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
                     <MapIcon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold mb-2">Tecnología Google Maps</h3>
+                    <h3 className="text-xl font-bold mb-2">Integración Google Maps API</h3>
                     <p className="text-white/80">
-                      Integración completa con Google Maps. Visualización precisa, cálculo de rutas, navegación directa y vista satélite de cada ubicación.
+                      Datos verificados directamente de Google Maps. Ubicaciones precisas con GPS, fotos reales, horarios actualizados y valoraciones de usuarios. La información más confiable del mundo en tus manos.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Razón 2 - OpenAI GPT-4 */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <SparklesIcon className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Valoración con OpenAI GPT-4</h3>
+                    <p className="text-white/80">
+                      Inteligencia artificial de última generación analiza miles de datos del mercado real. Comparación con portales especializados, análisis de deprecación y precios justos basados en datos reales, no estimaciones.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Razón 3 - Historial Completo */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <ChartBarIcon className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Historial y Trazabilidad Total</h3>
+                    <p className="text-white/80">
+                      Registra cada mantenimiento, gasto y valoración con fecha exacta. Base de datos segura que guarda toda la vida de tu vehículo. Acceso a tu información desde cualquier dispositivo, sincronización automática en la nube.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Razón 4 - Seguridad */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <ShieldCheckIcon className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Seguridad y Privacidad</h3>
+                    <p className="text-white/80">
+                      Encriptación de extremo a extremo para todos tus datos. Servidores seguros en Europa. Nunca compartimos tu información con terceros. Cumplimiento total con RGPD. Tus datos son solo tuyos.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Razón 5 - Datos Verificados */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <ClockIcon className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Actualizaciones en Tiempo Real</h3>
+                    <p className="text-white/80">
+                      Sistema de sincronización automática con fuentes oficiales. Los precios de mercado se actualizan diariamente. Nuevas áreas verificadas cada semana. Información siempre fresca y precisa.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Razón 6 - Sin Publicidad */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <UserGroupIcon className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">100% Independiente</h3>
+                    <p className="text-white/80">
+                      Sin conflictos de interés. No vendemos tus datos. Sin publicidad que influya en resultados. Información objetiva y neutral. Nuestro único compromiso es contigo y con la calidad de nuestro servicio.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Testimonial */}
+            {/* Badge Tecnología */}
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-10 border border-white/20 text-center">
-              <div className="flex justify-center mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <StarSolid key={i} className="w-8 h-8 text-yellow-400" />
-                ))}
+              <div className="flex justify-center gap-8 mb-6 flex-wrap">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-yellow-400 mb-1">Google Maps</div>
+                  <div className="text-sm text-white/70">API Oficial</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-yellow-400 mb-1">OpenAI GPT-4</div>
+                  <div className="text-sm text-white/70">IA Avanzada</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-yellow-400 mb-1">AWS Cloud</div>
+                  <div className="text-sm text-white/70">Infraestructura Segura</div>
+                </div>
               </div>
-              <blockquote className="text-2xl md:text-3xl mb-6 italic font-light">
-                "La mejor herramienta para planificar rutas en autocaravana. He descubierto áreas increíbles que nunca hubiera encontrado por mi cuenta."
-              </blockquote>
-              <div className="text-white/80 font-medium">
-                — Comunidad Furgocasa
-              </div>
+              <p className="text-lg text-white/90">
+                Tecnología empresarial de primer nivel al servicio de los autocaravanistas
+              </p>
             </div>
           </div>
         </div>

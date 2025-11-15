@@ -46,7 +46,7 @@ export default function SobreNosotrosPage() {
               <p className="text-xl">
                 <strong className="text-[#0b3c74]">Mapa Furgocasa</strong> nació de la pasión por el mundo del caravaning y la necesidad de una herramienta completa que facilitara la vida a los autocaravanistas.
               </p>
-              
+
               <p>
                 Somos parte de <strong>Furgocasa</strong>, empresa especializada en el sector del caravaning desde hace años. Con nuestra experiencia en el sector y el feedback constante de miles de usuarios, hemos creado una plataforma que va mucho más allá de un simple mapa de áreas.
               </p>

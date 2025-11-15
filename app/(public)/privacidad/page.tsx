@@ -26,7 +26,7 @@ export default function PrivacidadPage() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto prose prose-lg">
-            
+
             <div className="bg-blue-50 border-l-4 border-[#0b3c74] p-6 rounded-r-xl mb-12">
               <p className="text-gray-700 leading-relaxed m-0">
                 En Mapa Furgocasa, respetamos tu privacidad y estamos comprometidos con la protección de tus datos personales. Esta política explica qué información recopilamos, cómo la usamos y cuáles son tus derechos.
@@ -34,7 +34,7 @@ export default function PrivacidadPage() {
             </div>
 
             <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-12">1. Información que Recopilamos</h2>
-            
+
             <h3 className="text-2xl font-bold text-gray-900 mb-4">1.1. Información que Proporcionas</h3>
             <ul className="list-disc pl-6 space-y-2 text-gray-600">
               <li><strong>Registro:</strong> Email, nombre, contraseña</li>

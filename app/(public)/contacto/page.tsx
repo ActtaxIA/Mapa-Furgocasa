@@ -31,7 +31,7 @@ export default function ContactoPage() {
       setEnviando(false)
       setEnviado(true)
       setFormData({ nombre: '', email: '', asunto: '', mensaje: '' })
-      
+
       // Resetear mensaje de éxito después de 5 segundos
       setTimeout(() => setEnviado(false), 5000)
     }, 1500)

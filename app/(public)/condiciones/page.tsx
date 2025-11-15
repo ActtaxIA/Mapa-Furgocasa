@@ -26,7 +26,7 @@ export default function CondicionesPage() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto prose prose-lg">
-            
+
             <div className="bg-blue-50 border-l-4 border-[#0b3c74] p-6 rounded-r-xl mb-12">
               <p className="text-gray-700 leading-relaxed m-0">
                 Al acceder y utilizar Mapa Furgocasa, aceptas estar sujeto a estos términos y condiciones. Si no estás de acuerdo con alguna parte de estos términos, no debes utilizar nuestro servicio.
