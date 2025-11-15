@@ -228,7 +228,7 @@ export default function HomePage() {
             </div>
 
             {/* Feature 5 - Sistema QR Elegante CENTRADO - MÁRGENES */}
-            <div className="md:col-span-2 lg:col-span-3 mt-12 md:mt-20">
+            <div className="md:col-span-2 lg:col-span-3 mt-8 md:mt-12">
               <div className="max-w-6xl mx-auto">
                 <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-3xl p-10 md:p-12 shadow-xl hover:shadow-2xl transition-all border border-red-100">
                 {/* Badge */}
