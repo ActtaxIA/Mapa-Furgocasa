@@ -487,7 +487,7 @@ export default function HomePage() {
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                ¿Por qué más de 10.000 autocaravanistas confían en nosotros?
+                ¿Por qué los autocaravanistas confían en nosotros?
               </h2>
               <p className="text-xl text-white/80">
                 Parte de Furgocasa, especialistas en el mundo del caravaning desde hace años
