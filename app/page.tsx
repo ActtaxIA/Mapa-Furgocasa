@@ -234,14 +234,14 @@ export default function HomePage() {
                 {/* Badge */}
                 <div className="inline-flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-full text-xs font-bold mb-6 shadow-lg">
                   <ShieldCheckIcon className="w-4 h-4" />
-                  SISTEMA ANTIRROBO
+                  SISTEMA ANTI DAÑOS
                 </div>
 
                 <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">
                   Sistema QR Inteligente: Protección 24/7
                 </h3>
                 <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-6 max-w-2xl">
-                  Código QR único para tu vehículo. Los testigos pueden reportar incidentes o robos escaneándolo.
+                  Código QR único para tu vehículo. Los testigos pueden reportar incidentes o daños escaneándolo.
                   <span className="font-bold text-red-600"> Recibe notificaciones instantáneas</span> con fotos, GPS y datos.
                 </p>
 
@@ -257,8 +257,8 @@ export default function HomePage() {
                   <div className="flex items-start gap-3 bg-white rounded-xl p-4 shadow-sm">
                     <div className="text-2xl">🔔</div>
                     <div>
-                      <p className="font-bold text-gray-900 mb-1">Notificación antirrobo</p>
-                      <p className="text-sm text-gray-600">Si ven tu vehículo</p>
+                      <p className="font-bold text-gray-900 mb-1">Notificación de daños</p>
+                      <p className="text-sm text-gray-600">Si ven daños en tu vehículo</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 bg-white rounded-xl p-4 shadow-sm">
