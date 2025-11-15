@@ -163,63 +163,63 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Feature 4 - DESTACADO CON IA - CENTRADO */}
+            {/* Feature 4 - DESTACADO CON IA - CENTRADO - GRIS */}
             <div className="md:col-span-2 lg:col-span-3">
               <div className="max-w-6xl mx-auto">
-                <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 text-white rounded-3xl p-10 md:p-12 shadow-2xl relative overflow-hidden">
+                <div className="bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 text-gray-900 rounded-3xl p-10 md:p-12 shadow-2xl relative overflow-hidden border-2 border-gray-300">
                 {/* Badge flotante */}
-                <div className="absolute top-6 right-6 bg-yellow-400 text-gray-900 px-5 py-2 rounded-full text-xs font-bold shadow-xl animate-pulse">
+                <div className="absolute top-6 right-6 bg-purple-600 text-white px-5 py-2 rounded-full text-xs font-bold shadow-xl animate-pulse">
                   🤖 CON IA GPT-4
                 </div>
 
                 {/* Icono grande centrado arriba en móvil */}
                 <div className="flex justify-center md:justify-start mb-6">
-                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                  <div className="w-16 h-16 bg-gray-700 rounded-2xl flex items-center justify-center shadow-lg">
                     <TruckIcon className="w-10 h-10 text-white" />
                   </div>
                 </div>
 
                 {/* Contenido */}
                 <div className="max-w-5xl">
-                  <h3 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+                  <h3 className="text-3xl md:text-4xl font-bold mb-4 leading-tight text-gray-900">
                     Gestión Inteligente de tu Autocaravana
                   </h3>
-                  <p className="text-white/95 text-lg md:text-xl mb-8 leading-relaxed max-w-3xl">
-                    Valoración automática con <span className="font-bold text-yellow-300">GPT-4</span> en segundos.
+                  <p className="text-gray-800 text-lg md:text-xl mb-8 leading-relaxed max-w-3xl">
+                    Valoración automática con <span className="font-bold text-purple-700">GPT-4</span> en segundos.
                     Control total con comparación de precios de mercado en tiempo real.
                   </p>
 
                   {/* Grid de características más espaciado */}
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 hover:bg-white/20 transition-all">
+                    <div className="bg-white rounded-xl p-5 hover:shadow-lg transition-all shadow-md border border-gray-300">
                       <div className="text-3xl mb-3">🤖</div>
-                      <p className="font-bold text-base mb-1">Valoración IA</p>
-                      <p className="text-sm text-white/80">GPT-4 en segundos</p>
+                      <p className="font-bold text-base mb-1 text-gray-900">Valoración IA</p>
+                      <p className="text-sm text-gray-600">GPT-4 en segundos</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 hover:bg-white/20 transition-all">
+                    <div className="bg-white rounded-xl p-5 hover:shadow-lg transition-all shadow-md border border-gray-300">
                       <div className="text-3xl mb-3">📊</div>
-                      <p className="font-bold text-base mb-1">Precios Mercado</p>
-                      <p className="text-sm text-white/80">Comparación real</p>
+                      <p className="font-bold text-base mb-1 text-gray-900">Precios Mercado</p>
+                      <p className="text-sm text-gray-600">Comparación real</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 hover:bg-white/20 transition-all">
+                    <div className="bg-white rounded-xl p-5 hover:shadow-lg transition-all shadow-md border border-gray-300">
                       <div className="text-3xl mb-3">🔧</div>
-                      <p className="font-bold text-base mb-1">Mantenimientos</p>
-                      <p className="text-sm text-white/80">Historial completo</p>
+                      <p className="font-bold text-base mb-1 text-gray-900">Mantenimientos</p>
+                      <p className="text-sm text-gray-600">Historial completo</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 hover:bg-white/20 transition-all">
+                    <div className="bg-white rounded-xl p-5 hover:shadow-lg transition-all shadow-md border border-gray-300">
                       <div className="text-3xl mb-3">💰</div>
-                      <p className="font-bold text-base mb-1">Control Gastos</p>
-                      <p className="text-sm text-white/80">ROI automático</p>
+                      <p className="font-bold text-base mb-1 text-gray-900">Control Gastos</p>
+                      <p className="text-sm text-gray-600">ROI automático</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 hover:bg-white/20 transition-all">
+                    <div className="bg-white rounded-xl p-5 hover:shadow-lg transition-all shadow-md border border-gray-300">
                       <div className="text-3xl mb-3">📈</div>
-                      <p className="font-bold text-base mb-1">Histórico Valor</p>
-                      <p className="text-sm text-white/80">Evolución precio</p>
+                      <p className="font-bold text-base mb-1 text-gray-900">Histórico Valor</p>
+                      <p className="text-sm text-gray-600">Evolución precio</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 hover:bg-white/20 transition-all">
+                    <div className="bg-white rounded-xl p-5 hover:shadow-lg transition-all shadow-md border border-gray-300">
                       <div className="text-3xl mb-3">📸</div>
-                      <p className="font-bold text-base mb-1">Gestión Fotos</p>
-                      <p className="text-sm text-white/80">Galería completa</p>
+                      <p className="font-bold text-base mb-1 text-gray-900">Gestión Fotos</p>
+                      <p className="text-sm text-gray-600">Galería completa</p>
                     </div>
                   </div>
                 </div>
