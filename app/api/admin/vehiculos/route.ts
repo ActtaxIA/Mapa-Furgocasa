@@ -12,7 +12,7 @@ export const fetchCache = 'force-no-store'
 export async function GET(request: NextRequest) {
   try {
     console.log('🚐 [API VEHICULOS] Iniciando...')
-    
+
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
@@ -117,13 +117,12 @@ export async function GET(request: NextRequest) {
     console.error('   Mensaje:', error.message)
     console.error('   Stack:', error.stack)
     return NextResponse.json(
-      { 
-        error: 'Error interno del servidor', 
+      {
+        error: 'Error interno del servidor',
         details: error.message,
-        stack: error.stack 
+        stack: error.stack
       },
       { status: 500 }
     )
   }
 }
-

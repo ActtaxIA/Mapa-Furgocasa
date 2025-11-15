@@ -258,12 +258,12 @@ export default function AdminAnalyticsPage() {
       console.log(`✅ ${totalRutas} rutas, ${distanciaTotal.toFixed(0)} km totales`)
 
       // Obtener métricas de CHATBOT
-      console.log('🤖 Obteniendo métricas de chatbot...')
-      const { data: mensajes, error: mensajesError } = await supabase
-        .from('chatbot_mensajes')
-        .select('id, created_at')
-
-      const totalInteraccionesIA = mensajes?.length || 0
+      // NOTA: No existe tabla chatbot_mensajes aún
+      // Los mensajes se trackean en user_interactions con event_type = 'chatbot_message'
+      // Por ahora dejamos en 0 hasta implementar el tracking completo
+      console.log('🤖 Métricas de chatbot: pendiente de implementación completa')
+      const mensajes: any[] = []
+      const totalInteraccionesIA = 0
       console.log(`✅ ${totalInteraccionesIA} interacciones con IA`)
 
       // ========== MÉTRICAS TEMPORALES ==========
@@ -902,6 +902,12 @@ export default function AdminAnalyticsPage() {
       console.log(`✅ Vehículos: ${totalVehiculosRegistrados} total, ${vehiculosConDatosFinancieros} con datos financieros`)
       console.log(`💰 Valor total parque: ${valorTotalParqueVehiculos.toLocaleString()}€`)
       console.log(`📊 Datos mercado: ${totalDatosMercado} registros, precio promedio: ${precioPromedioMercado.toLocaleString()}€`)
+      console.log(`📋 Top vehículos usuarios - Caros: ${vehiculosMasCaros.length}, Baratos: ${vehiculosMasBaratos.length}`)
+      console.log(`🤖 Top vehículos mercado - Caros: ${vehiculosMasCarosMercado.length}, Baratos: ${vehiculosMasBaratosMercado.length}`)
+      console.log(`🏭 Marcas populares: ${marcasMasPopulares.length}`)
+      console.log(`🚐 Modelos populares: ${modelosMasPopulares.length}`)
+      console.log(`📅 Distribución años:`, distribucionAños)
+      console.log(`🛣️ Distribución kilometraje:`, distribucionKilometraje)
 
       // ========== MÉTRICAS DE ENGAGEMENT ==========
       // Como aún no tenemos la tabla user_sessions implementada, calculamos métricas estimadas
