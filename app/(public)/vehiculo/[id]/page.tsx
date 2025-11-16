@@ -130,7 +130,7 @@ export default function VehiculoPage() {
       setUser(session.user);
 
       // Cargar vehículo
-      const { data: vehiculoData, error } = await supabase
+      const { data: vehiculoData, error } = await (supabase as any)
         .from("vehiculos_registrados")
         .select("*")
         .eq("id", vehiculoId)
@@ -214,7 +214,7 @@ export default function VehiculoPage() {
         updateData.año = null;
       }
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("vehiculos_registrados")
         .update(updateData)
         .eq("id", vehiculoId)
@@ -270,7 +270,7 @@ export default function VehiculoPage() {
   const loadKilometrajeActual = async () => {
     try {
       const supabase = createClient();
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("vehiculo_kilometraje")
         .select("kilometros")
         .eq("vehiculo_id", vehiculoId)
@@ -312,7 +312,7 @@ export default function VehiculoPage() {
       const supabase = createClient();
 
       // Insertar nuevo registro de kilometraje
-      const { error: kmError } = await supabase
+      const { error: kmError } = await (supabase as any)
         .from("vehiculo_kilometraje")
         .insert({
           vehiculo_id: vehiculoId,
@@ -324,7 +324,7 @@ export default function VehiculoPage() {
       if (kmError) throw kmError;
 
       // Actualizar ficha técnica si existe
-      const { error: fichaError } = await supabase
+      const { error: fichaError } = await (supabase as any)
         .from("vehiculo_ficha_tecnica")
         .update({ kilometros_actuales: kmNuevo })
         .eq("vehiculo_id", vehiculoId);
