@@ -165,7 +165,47 @@ export async function POST(
       const vehiculosUnicos = new Map<string, any>()
 
       // 1. Primero procesar valoraciones IA (más actuales y relevantes)
+      // MEJORA: Obtener km actuales de los vehículos de valoraciones IA
       if (valoracionesSimilares && valoracionesSimilares.length > 0) {
+        // Obtener km actuales de todos los vehículos de una vez
+        const vehiculosIds = [...new Set(valoracionesSimilares.map(v => v.vehiculo_id))]
+        const { data: fichasComparables } = await supabase
+          .from('vehiculo_ficha_tecnica')
+          .select('vehiculo_id, kilometros_actuales')
+          .in('vehiculo_id', vehiculosIds)
+
+        // Crear mapa rápido de km por vehículo
+        const kmPorVehiculo = new Map<string, number>()
+        fichasComparables?.forEach(f => {
+          if (f.kilometros_actuales) {
+            kmPorVehiculo.set(f.vehiculo_id, f.kilometros_actuales)
+          }
+        })
+
+        // Si no hay en ficha técnica, buscar en kilometraje más reciente
+        if (kmPorVehiculo.size < vehiculosIds.length) {
+          const { data: kmRegistros } = await supabase
+            .from('vehiculo_kilometraje')
+            .select('vehiculo_id, kilometros')
+            .in('vehiculo_id', vehiculosIds)
+            .order('fecha', { ascending: false })
+
+          // Agrupar por vehículo y tomar el más reciente
+          const kmPorVehiculoRegistro = new Map<string, number>()
+          kmRegistros?.forEach(k => {
+            if (!kmPorVehiculoRegistro.has(k.vehiculo_id) && k.kilometros) {
+              kmPorVehiculoRegistro.set(k.vehiculo_id, k.kilometros)
+            }
+          })
+
+          // Combinar ambos mapas
+          kmPorVehiculoRegistro.forEach((km, id) => {
+            if (!kmPorVehiculo.has(id)) {
+              kmPorVehiculo.set(id, km)
+            }
+          })
+        }
+
         for (const valoracion of valoracionesSimilares) {
           const vehiculoId = valoracion.vehiculo_id
           const existente = vehiculosUnicos.get(vehiculoId)
@@ -180,7 +220,7 @@ export async function POST(
               año: valoracion.vehiculos_registrados?.año || null,
               marca: valoracion.vehiculos_registrados?.marca || null,
               modelo: valoracion.vehiculos_registrados?.modelo || null,
-              kilometros: null // Las valoraciones IA no tienen km directo
+              kilometros: kmPorVehiculo.get(vehiculoId) || null // MEJORA: Obtener km real
             })
           }
         }
@@ -190,7 +230,7 @@ export async function POST(
       if (datosCompra && datosCompra.length > 0) {
         for (const compra of datosCompra) {
           const vehiculoId = compra.vehiculo_id
-          
+
           // Solo agregar si este vehículo no tiene ya una valoración IA
           if (!vehiculosUnicos.has(vehiculoId)) {
             vehiculosUnicos.set(vehiculoId, {
@@ -207,50 +247,241 @@ export async function POST(
         }
       }
 
-      // 3. Convertir a array y limitar a máximo 8 comparables internos
+      // 3. FUNCIONES DE ANÁLISIS DE COMPARABLES
+      // Datos del vehículo a valorar para comparación
+      const kmVehiculo = ficha?.kilometros_actuales || null
+      const añoVehiculo = vehiculo.año || null
+      const precioCompraVehiculo = valoracion?.precio_compra || null
+
+      // Función para calcular relevancia de un comparable
+      const calcularRelevancia = (comparable: any): number => {
+        let relevancia = 100
+
+        // Penalizar diferencia de km (más importante)
+        if (comparable.kilometros && kmVehiculo) {
+          const diffKm = Math.abs(comparable.kilometros - kmVehiculo)
+          // -0.5% por cada 1000 km de diferencia
+          relevancia -= (diffKm / 1000) * 0.5
+        } else if (!comparable.kilometros && kmVehiculo) {
+          // Si falta km en comparable, penalizar más
+          relevancia -= 15
+        }
+
+        // Penalizar diferencia de año
+        if (comparable.año && añoVehiculo) {
+          const diffAño = Math.abs(comparable.año - añoVehiculo)
+          // -5% por cada año de diferencia
+          relevancia -= diffAño * 5
+        } else if (!comparable.año && añoVehiculo) {
+          relevancia -= 10
+        }
+
+        // Penalizar diferencia de precio (muy diferente = menos relevante)
+        if (comparable.precio && precioCompraVehiculo) {
+          const diffPrecio = Math.abs(comparable.precio - precioCompraVehiculo) / precioCompraVehiculo
+          if (diffPrecio > 0.3) relevancia -= 20 // -20% si precio difiere >30%
+          else if (diffPrecio > 0.2) relevancia -= 10 // -10% si difiere >20%
+        }
+
+        return Math.max(0, Math.min(100, Math.round(relevancia)))
+      }
+
+      // Función para ajustar precio según diferencia de km
+      const ajustarPrecioPorKm = (comparable: any): number => {
+        if (!comparable.precio || !comparable.kilometros || !kmVehiculo) {
+          return comparable.precio || 0
+        }
+
+        const diffKm = comparable.kilometros - kmVehiculo
+        const ajustePor10k = 0.025 // 2.5% por cada 10.000 km de diferencia
+
+        // Si comparable tiene más km → precio debería ser menor
+        // Si comparable tiene menos km → precio debería ser mayor
+        const factorAjuste = 1 - (diffKm / 10000) * ajustePor10k
+
+        return Math.round(comparable.precio * factorAjuste)
+      }
+
+      // Función para filtrar comparables por similitud
+      const esComparableRelevante = (comparable: any): boolean => {
+        // Filtro por km: ±30.000 km (como dice el prompt)
+        if (comparable.kilometros && kmVehiculo) {
+          const diferenciaKm = Math.abs(comparable.kilometros - kmVehiculo)
+          if (diferenciaKm > 30000) {
+            console.log(`   ⚠️  Descartado por km: ${comparable.titulo} (diff: ${diferenciaKm} km)`)
+            return false
+          }
+        }
+
+        // Filtro por año: ±2 años
+        if (comparable.año && añoVehiculo) {
+          const diferenciaAño = Math.abs(comparable.año - añoVehiculo)
+          if (diferenciaAño > 2) {
+            console.log(`   ⚠️  Descartado por año: ${comparable.titulo} (diff: ${diferenciaAño} años)`)
+            return false
+          }
+        }
+
+        return true
+      }
+
+      // 4. Convertir a array y crear comparables con información completa
       const vehiculosDeduplicados = Array.from(vehiculosUnicos.values())
-        .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()) // Más recientes primero
-        .slice(0, 8) // Máximo 8 comparables internos
 
-      console.log(`   ✅ Vehículos únicos después de deduplicación: ${vehiculosDeduplicados.length}`)
-
-      // 4. Crear comparables con títulos apropiados e información completa
-      comparablesInternos = vehiculosDeduplicados.map(v => {
-        const titulo = v.marca && v.modelo 
+      let comparablesConRelevancia = vehiculosDeduplicados.map(v => {
+        const titulo = v.marca && v.modelo
           ? `${v.marca} ${v.modelo} - España`
           : (v.tipo === 'valoracion_ia' ? 'Valoración IA similar' : 'Vehículo similar comprado')
-        
-        return {
+
+        const comparable = {
           titulo,
           precio: v.precio,
           año: v.año,
           kilometros: v.kilometros,
           link: null,
           fuente: v.tipo === 'valoracion_ia' ? 'BD Interna - Valoraciones IA' : 'BD Interna - Compras Usuarios',
-          fecha: v.fecha
+          fecha: v.fecha,
+          relevancia: 0 // Se calculará después
         }
+
+        // Calcular relevancia
+        comparable.relevancia = calcularRelevancia(comparable)
+
+        // Ajustar precio por km
+        const precioAjustado = ajustarPrecioPorKm(comparable)
+        if (precioAjustado !== comparable.precio) {
+          comparable.precio = precioAjustado
+        }
+
+        return comparable
       })
 
-      // Agregar datos de mercado scrapeados
-      if (datosMercado && datosMercado.length > 0) {
-        comparablesInternos.push(...datosMercado.map(d => ({
-          titulo: `${d.marca || ''} ${d.modelo || ''} - ${d.pais || 'España'}`.trim(),
-          precio: d.precio,
-          kilometros: d.kilometros,
-          ubicacion: d.pais || 'España',
-          link: null,
-          fuente: d.origen || 'BD Interna - Mercado',
-          fecha: d.fecha_transaccion || d.created_at
-        })))
+      // 5. Filtrar comparables irrelevantes
+      const comparablesFiltrados = comparablesConRelevancia.filter(esComparableRelevante)
+      console.log(`   🔍 Comparables después de filtrado: ${comparablesFiltrados.length} de ${comparablesConRelevancia.length}`)
+
+      // 6. Ordenar por relevancia DESC, luego por fecha DESC
+      comparablesConRelevancia = comparablesFiltrados
+        .sort((a, b) => {
+          if (a.relevancia !== b.relevancia) {
+            return b.relevancia - a.relevancia
+          }
+          return new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+        })
+        .slice(0, 8) // Máximo 8 comparables internos
+
+      console.log(`   ✅ Comparables finales ordenados por relevancia: ${comparablesConRelevancia.length}`)
+
+      // 7. Validación de comparables mínimos
+      if (comparablesConRelevancia.length < 3) {
+        console.warn(`   ⚠️  ADVERTENCIA: Solo ${comparablesConRelevancia.length} comparables relevantes encontrados`)
+        console.warn(`   💡 Se recomienda ampliar criterios de búsqueda`)
       }
 
-      // Combinar comparables externos (SerpAPI) con internos (BD)
+      comparablesInternos = comparablesConRelevancia
+
+      // Agregar datos de mercado scrapeados (con relevancia y filtrado)
+      if (datosMercado && datosMercado.length > 0) {
+        const comparablesMercado = datosMercado.map(d => {
+          const comparable = {
+            titulo: `${d.marca || ''} ${d.modelo || ''} - ${d.pais || 'España'}`.trim(),
+            precio: d.precio,
+            año: d.año || null,
+            kilometros: d.kilometros,
+            ubicacion: d.pais || 'España',
+            link: null,
+            fuente: d.origen || 'BD Interna - Mercado',
+            fecha: d.fecha_transaccion || d.created_at,
+            relevancia: 0
+          }
+
+          // Calcular relevancia
+          comparable.relevancia = calcularRelevancia(comparable)
+
+          // Ajustar precio por km
+          const precioAjustado = ajustarPrecioPorKm(comparable)
+          if (precioAjustado !== comparable.precio) {
+            comparable.precio = precioAjustado
+          }
+
+          return comparable
+        })
+
+        // Filtrar y ordenar comparables de mercado
+        const comparablesMercadoFiltrados = comparablesMercado
+          .filter(esComparableRelevante)
+          .sort((a, b) => {
+            if (a.relevancia !== b.relevancia) {
+              return b.relevancia - a.relevancia
+            }
+            return new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+          })
+          .slice(0, 5) // Máximo 5 comparables de mercado
+
+        comparablesInternos.push(...comparablesMercadoFiltrados)
+        console.log(`   ✅ Comparables de mercado filtrados: ${comparablesMercadoFiltrados.length} de ${comparablesMercado.length}`)
+      }
+
+      // Procesar comparables externos (SerpAPI) con relevancia y filtrado
       const totalComparablesAntes = comparables.length
+      if (comparables.length > 0) {
+        const comparablesExternosProcesados = comparables.map(c => {
+          const comparable = {
+            ...c,
+            relevancia: 0
+          }
+
+          // Calcular relevancia
+          comparable.relevancia = calcularRelevancia(comparable)
+
+          // Ajustar precio por km
+          const precioAjustado = ajustarPrecioPorKm(comparable)
+          if (precioAjustado !== comparable.precio) {
+            comparable.precio = precioAjustado
+          }
+
+          return comparable
+        })
+
+        // Filtrar y ordenar comparables externos
+        const comparablesExternosFiltrados = comparablesExternosProcesados
+          .filter(esComparableRelevante)
+          .sort((a, b) => {
+            if (a.relevancia !== b.relevancia) {
+              return b.relevancia - a.relevancia
+            }
+            return new Date(b.fecha || 0).getTime() - new Date(a.fecha || 0).getTime()
+          })
+          .slice(0, 10) // Máximo 10 comparables externos
+
+        comparables = comparablesExternosFiltrados
+        console.log(`   ✅ Comparables externos filtrados: ${comparablesExternosFiltrados.length} de ${totalComparablesAntes}`)
+      }
+
+      // Combinar todos los comparables
       comparables = [...comparables, ...comparablesInternos]
+
+      // Ordenar todos por relevancia DESC
+      comparables.sort((a, b) => {
+        if (a.relevancia !== b.relevancia) {
+          return b.relevancia - a.relevancia
+        }
+        return new Date(b.fecha || 0).getTime() - new Date(a.fecha || 0).getTime()
+      })
+
+      // Limitar total a 15 comparables (los más relevantes)
+      comparables = comparables.slice(0, 15)
 
       console.log(`   ✅ Comparables de SerpAPI: ${totalComparablesAntes}`)
       console.log(`   ✅ Comparables de BD interna: ${comparablesInternos.length}`)
-      console.log(`   ✅ Total comparables: ${comparables.length}`)
+      console.log(`   ✅ Total comparables finales: ${comparables.length}`)
+      console.log(`   📊 Relevancia promedio: ${comparables.length > 0 ? Math.round(comparables.reduce((sum, c) => sum + (c.relevancia || 0), 0) / comparables.length) : 0}%`)
+
+      // Validación final de comparables mínimos
+      if (comparables.length < 3) {
+        console.warn(`   ⚠️  ADVERTENCIA CRÍTICA: Solo ${comparables.length} comparables relevantes encontrados`)
+        console.warn(`   💡 La valoración puede ser menos precisa. Se recomienda ampliar criterios de búsqueda.`)
+      }
 
     } catch (error: any) {
       console.error(`   ⚠️  Error buscando en BD interna:`, error.message)
@@ -314,10 +545,10 @@ export async function POST(
 
     // Calcular datos derivados para el análisis
     const fechaCompra = valoracion?.fecha_compra || vehiculo.created_at?.split('T')[0]
-    const añosAntiguedad = fechaCompra 
+    const añosAntiguedad = fechaCompra
       ? ((Date.now() - new Date(fechaCompra).getTime()) / (365.25 * 24 * 60 * 60 * 1000)).toFixed(1)
       : null
-    
+
     const kmActuales = ficha?.kilometros_actuales || null
     const kmCompra = valoracion?.kilometros_compra || 0
     const kmRecorridos = kmActuales && kmCompra ? kmActuales - kmCompra : null
@@ -342,11 +573,11 @@ export async function POST(
 
     const comparablesTexto = comparables.length > 0
       ? comparables.map((c, i) => `${i + 1}. ${c.titulo}
-   - Precio: ${c.precio ? c.precio.toLocaleString() + '€' : 'No especificado'}
+   - Precio: ${c.precio ? c.precio.toLocaleString() + '€' : 'No especificado'}${c.relevancia ? ` (Relevancia: ${c.relevancia}%)` : ''}
    - Kilometraje: ${c.kilometros ? c.kilometros.toLocaleString() + ' km' : 'No especificado'}
    - Año: ${c.año || 'No especificado'}
    - Fuente: ${c.fuente}
-   - URL: ${c.url}`).join('\n\n')
+   ${c.url ? `- URL: ${c.url}` : ''}`).join('\n\n')
       : 'No se encontraron comparables en esta búsqueda.'
 
     // 5. CONSTRUIR MENSAJES PARA OPENAI DESDE LOS PROMPTS
