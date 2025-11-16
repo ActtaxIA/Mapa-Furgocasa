@@ -1001,21 +1001,21 @@ export default function VehiculoPage() {
           {activeTab === "valoracion-ia" && (
             <div className="space-y-6">
               {/* Botón para generar nueva valoración */}
-              <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border border-purple-200">
-                <div className="flex items-start justify-between gap-4">
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4 md:p-6 border border-purple-200">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-                      <SparklesIconSolid className="w-6 h-6 text-purple-600" />
+                    <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                      <SparklesIconSolid className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
                       Valoración con Inteligencia Artificial
                     </h3>
-                    <p className="text-gray-700 mb-4">
+                    <p className="text-sm md:text-base text-gray-700 mb-3 md:mb-4">
                       Genera un informe profesional de valoración de tu vehículo
                       utilizando IA. Analizamos datos reales del mercado, el
                       estado de tu vehículo, inversiones realizadas y te
                       proporcionamos 3 precios estratégicos: de salida, objetivo
                       y mínimo.
                     </p>
-                    <ul className="text-sm text-gray-600 space-y-1">
+                    <ul className="text-xs md:text-sm text-gray-600 space-y-1">
                       <li>✓ Búsqueda automática de comparables en internet</li>
                       <li>✓ Análisis de depreciación por tiempo y uso</li>
                       <li>✓ Valoración de extras y mejoras instaladas</li>
@@ -1023,12 +1023,12 @@ export default function VehiculoPage() {
                     </ul>
                   </div>
 
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3 w-full lg:w-auto lg:min-w-[280px]">
                     {/* Actualizar kilometraje */}
-                    <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                    <div className="bg-white rounded-lg p-3 md:p-4 border border-gray-200 shadow-sm">
                       <div className="flex items-center gap-2 mb-2">
-                        <TruckIcon className="w-5 h-5 text-orange-600" />
-                        <span className="text-sm font-semibold text-gray-900">
+                        <TruckIcon className="w-4 h-4 md:w-5 md:h-5 text-orange-600" />
+                        <span className="text-xs md:text-sm font-semibold text-gray-900">
                           Kilometraje Actual
                         </span>
                       </div>
@@ -1050,13 +1050,13 @@ export default function VehiculoPage() {
                           value={nuevoKilometraje}
                           onChange={(e) => setNuevoKilometraje(e.target.value)}
                           placeholder="Nuevo km"
-                          className="w-32 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                          className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                           disabled={actualizandoKm}
                         />
                         <button
                           onClick={handleActualizarKilometraje}
                           disabled={actualizandoKm || !nuevoKilometraje}
-                          className="px-3 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-3 py-2 bg-orange-600 text-white text-xs md:text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                           title="Actualizar kilometraje del vehículo"
                         >
                           {actualizandoKm ? "..." : "Actualizar"}
@@ -1071,7 +1071,7 @@ export default function VehiculoPage() {
                     <button
                       onClick={handleGenerarValoracion}
                       disabled={generandoValoracion}
-                      className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="w-full px-4 md:px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm md:text-base font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {generandoValoracion ? (
                         <>
