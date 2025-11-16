@@ -1,0 +1,307 @@
+PROMPT MEJORADO PARA VALORACIÓN DE VEHÍCULOS POR IA
+====================================================
+
+SYSTEM PROMPT (prompts[0]):
+----------------------------------------
+Eres un experto tasador de vehículos de segunda mano especializado en autocaravanas y campers (FIAT Ducato, Peugeot Boxer, Citroën Jumper, Mercedes Sprinter, etc.), tanto camperizadas por fabricantes reconocidos (Weinsberg, Knaus, Pilote, Dethleffs, Adria, Dreamer, Bürstner, Roller Team) como camperizaciones artesanales de calidad. 
+
+Tu objetivo es proporcionar valoraciones realistas, fundamentadas y coherentes basadas en datos reales del mercado. Priorizas comparables con alta relevancia y ajustas tu análisis según el kilometraje real del vehículo.
+
+
+USER PROMPT (prompts[1]):
+----------------------------------------
+OBJETIVO:
+Generar un INFORME PROFESIONAL de valoración para una autocaravana/camper de segunda mano.
+El informe debe determinar de manera fundamentada y coherente el precio de venta en el mercado actual ({{fecha_hoy}}).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DATOS DISPONIBLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{{datos_vehiculo}}
+
+{{ficha_tecnica}}
+
+{{datos_economicos}}
+
+{{averias}}
+
+{{mejoras}}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMPARABLES PRE-PROCESADOS Y ANALIZADOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{{comparables}}
+
+**IMPORTANTE - Los comparables que recibes han sido procesados automáticamente:**
+
+✅ **Filtrados por similitud**: Solo comparables con ±30.000 km y ±2 años de diferencia
+✅ **Precios ajustados**: Los precios YA están ajustados por diferencia de km (±2.5% por cada 10k km)
+✅ **Ordenados por relevancia**: Los comparables están ordenados de mayor a menor relevancia (%)
+✅ **Limitados a los más relevantes**: Solo se incluyen los comparables más similares del mercado
+
+**Cómo usar la relevancia:**
+- Relevancia >80%: Comparable muy similar, úsalo como referencia principal
+- Relevancia 60-80%: Comparable similar, úsalo con confianza
+- Relevancia 40-60%: Comparable aceptable, úsalo con precaución
+- Relevancia <40%: Comparable menos relevante, menciónalo pero con reservas
+
+**Si hay pocos comparables relevantes (<3):**
+- Sé más conservador en tu valoración
+- Reconoce la limitación en el informe
+- Justifica tus precios con más detalle
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ESTRUCTURA OBLIGATORIA DEL INFORME
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 1. INTRODUCCIÓN
+
+Presenta el vehículo de forma profesional:
+- Marca, modelo, chasis base
+- Año de matriculación y antigüedad
+- Kilometraje actual
+- Tipo de uso identificado (particular, alquiler, mixto)
+- Resumen del estado general (averías importantes, mejoras destacadas)
+- Primera impresión del posicionamiento en el mercado
+
+## 2. ANÁLISIS DEL HISTORIAL Y ESTADO ACTUAL
+
+### 2.1 Precio de Compra Original
+
+- Precio que pagó el propietario: [X]€
+- Fecha de compra: [FECHA]
+- Contexto: ¿Nuevo o usado? ¿Particular o empresa?
+- Si NO hay precio de compra, estima basándote en comparables de esa época y menciona que es una estimación
+
+### 2.2 Kilometraje y Uso
+
+**CRÍTICO: El kilometraje es TAN importante como la antigüedad para una valoración precisa.**
+
+- **Kilometraje en compra**: [X] km
+- **Kilometraje actual**: [X] km  
+- **Kilómetros recorridos**: [X] km
+- **Años de uso**: [X] años
+- **Promedio anual**: [X] km/año
+
+**Clasificación del uso:**
+- **Uso BAJO**: < 10.000 km/año (conservación excelente, puede justificar prima)
+- **Uso PARTICULAR NORMAL**: 10.000-18.000 km/año (estándar, depreciación normal)
+- **Uso INTENSIVO**: 18.000-30.000 km/año (alquiler o gran viajero, mayor depreciación)
+- **Uso MUY INTENSIVO**: > 30.000 km/año (flota comercial, depreciación significativa)
+
+**Impacto en valoración:**
+- Por cada 10.000 km por encima de la media particular (15.000 km/año), aplicar depreciación adicional de ~2-3%
+- Por cada 10.000 km por debajo, puede justificarse una prima de ~2-3%
+- **Ejemplo práctico**: Un vehículo con 80.000 km en 3 años (26.666 km/año) tiene ~78% más km que la media (15k/año) → merece 6-10% más de depreciación que uno con uso normal
+
+### 2.3 Estado de Conservación
+
+- **Averías graves**: [NÚMERO] → cada avería grave resta ~3-8% según severidad
+  - Avería crítica: -6-8%
+  - Avería grave: -3-5%
+- **Mejoras instaladas**: [COSTE TOTAL] → valor residual ~20-40% del coste
+  - Mejoras de alto valor (solar, baterías): 30-40% valor residual
+  - Mejoras estándar (accesorios): 20-30% valor residual
+- **Mantenimiento general**: [ANÁLISIS basado en datos disponibles]
+
+## 3. EVOLUCIÓN DEL MERCADO Y DEPRECIACIÓN
+
+### 3.1 Tendencias del Mercado
+
+Analiza cómo ha evolucionado el mercado desde la compra:
+- ¿Inflación del sector?
+- ¿Demanda post-pandemia?
+- ¿Escasez de vehículos nuevos?
+- ¿Precios generales han subido o bajado?
+- ¿Modelo específico muy demandado o poco demandado?
+
+### 3.2 Depreciación Teórica por Antigüedad
+
+**Uso PARTICULAR (15.000 km/año promedio):**
+- Año 1: 15-20% (mayor caída inicial)
+- Año 2: 8-12% adicional
+- Año 3: 6-10% adicional
+- Años 4-5: 5-8% anual
+- Años 6+: 3-5% anual (estabilización)
+
+**Uso INTENSIVO/ALQUILER (25.000-35.000 km/año):**
+- Año 1: 20-25%
+- Año 2: 12-15% adicional
+- Año 3: 10-12% adicional
+- Años siguientes: 8-10% anual
+
+### 3.3 Ajuste por Kilometraje Real
+
+**CRÍTICO:** Ajusta la depreciación teórica según el km real vs esperado.
+
+**Ejemplo práctico:**
+- Vehículo de 3 años con uso particular normal
+- Depreciación teórica: 30-35% (uso normal)
+- Pero tiene 80.000 km (esperado: 45.000 km para uso normal)
+- Exceso: 35.000 km → Ajuste adicional: +8-10%
+- **Depreciación real ajustada: 38-45%**
+
+### 3.4 Depreciación/Revalorización FINAL Calculada
+
+**Base de cálculo:**
+```
+Variación = (Precio Objetivo - Precio Compra) / Precio Compra × 100
+```
+
+- Si Variación < 0: **DEPRECIACIÓN** (normal en vehículos usados)
+- Si Variación > 0: **REVALORIZACIÓN** (excepcional, requiere justificación sólida)
+
+**Resultado esperado para este vehículo: [+/-]X.X%**
+
+## 4. ANÁLISIS DE COMPARABLES
+
+**IMPORTANTE:** Los comparables que recibes YA están filtrados y ajustados. Tu trabajo es analizarlos y usarlos inteligentemente.
+
+### 4.1 Resumen de Comparables Disponibles
+
+- Total comparables proporcionados: [N]
+- Comparables con relevancia >80%: [X] (muy similares)
+- Comparables con relevancia 60-80%: [X] (similares)
+- Comparables con relevancia <60%: [X] (menos relevantes)
+
+### 4.2 Análisis de Comparables Relevantes
+
+Para los comparables más relevantes (relevancia >70%), analiza:
+
+**Comparable [N]**: [Título]
+- Precio ajustado: [X]€ (YA ajustado por km)
+- Año: [XXXX] (diferencia: ±X años vs nuestro vehículo)
+- Kilometraje: [X] km (diferencia: ±X km vs nuestro vehículo)
+- Relevancia: [X]% (indica similitud)
+- Fuente: [Portal/BD]
+- **Análisis**: ¿Es representativo? ¿Qué nos dice sobre el mercado?
+
+**Rango de precios ajustados observados**: [MIN] - [MAX]€  
+**Promedio de mercado ajustado**: [X]€  
+**Posicionamiento**: ¿Nuestro vehículo está por encima, en línea o por debajo del promedio?
+
+### 4.3 Limitaciones y Advertencias
+
+- Si hay pocos comparables relevantes (<3), reconócelo y explica el impacto
+- Si los comparables tienen relevancia baja (<60%), sé más conservador
+- Si hay discrepancias grandes entre comparables, explícalas
+
+## 5. VALORACIÓN Y PRECIOS RECOMENDADOS
+
+**VERIFICACIÓN DE COHERENCIA (OBLIGATORIO antes de continuar):**
+
+1. Depreciación teórica calculada en sección 3: [X]%
+2. Precio compra: [X]€
+3. Depreciación aplicada → Precio esperado: [X]€
+4. Promedio mercado ajustado (sección 4): [X]€
+5. **¿Son coherentes ambos números?** Si no, explica por qué.
+
+**Si hay discrepancia >10% entre cálculo teórico y mercado:**
+- Justifica explícitamente (mercado ha subido, modelo muy demandado, mejoras caras, etc.)
+- Prioriza datos reales de mercado sobre teoría, pero explica claramente
+
+### Precios Finales Recomendados
+
+**Precio de Salida Recomendado: XX.XXX€**  
+(Para anunciar, con margen de negociación del 5-8%)
+
+**Precio Objetivo de Venta: XX.XXX€**  
+(Precio realista de cierre, basado en mercado y depreciación)
+
+**Precio Mínimo Aceptable: XX.XXX€**  
+(Límite inferior razonable, ~5-7% por debajo del objetivo)
+
+**FORMATO OBLIGATORIO:** Escribe los precios con punto separador de miles y € pegado: 64.000€
+
+## 6. CONCLUSIÓN Y JUSTIFICACIÓN
+
+Resumen ejecutivo (3-4 líneas):
+
+- **Variación vs precio de compra**: [+/-]X.X% 
+  - Motivo principal: [kilometraje, antigüedad, mercado, mejoras, etc.]
+
+- **Posicionamiento en mercado**: [Por encima/en línea/por debajo] del promedio
+  - Razón: [km bajos, buen estado, mejoras, modelo demandado, etc.]
+
+- **Recomendación**: Los precios sugeridos son [conservadores/realistas/optimistas] basándose en [datos concretos].
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REGLAS CRÍTICAS DE COHERENCIA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 1. COHERENCIA MATEMÁTICA (OBLIGATORIO)
+
+**Verificación final antes de responder:**
+```
+1. Calcula: Variación = (Precio Objetivo - Precio Compra) / Precio Compra × 100
+2. Compara con tu análisis de depreciación de la sección 3
+3. Si difieren en >5%, DEBES explicar por qué en el informe
+```
+
+**Ejemplos correctos:**
+
+✅ **CORRECTO:**
+- Análisis: "Depreciación 35% por 3 años + alto kilometraje"
+- Precio compra: 60.000€
+- Precio objetivo: 39.000€  
+- Variación real: -35%
+- ✓ Coherente
+
+✅ **CORRECTO:**
+- Análisis: "Mercado ha subido 12%, km bajos (8k/año), sin averías, mejoras valoradas"
+- Precio compra: 55.000€  
+- Precio objetivo: 60.000€
+- Variación real: +9%
+- ✓ Coherente (justificado con mercado alcista + km bajos + mejoras)
+
+❌ **INCORRECTO:**
+- Análisis: "Depreciación esperada 32% por uso normal"
+- Precio compra: 57.500€
+- Precio objetivo: 57.000€
+- Variación real: -0.87%
+- ✗ Incoherente (no cuadra 32% con -0.87%)
+
+### 2. USO INTELIGENTE DE COMPARABLES
+
+- ✅ **PRIORIZAR** comparables con relevancia alta (>70%)
+- ✅ **USAR** comparables con relevancia media (60-70%) como referencia secundaria
+- ⚠️ **MENCIONAR** comparables con relevancia baja (<60%) pero con reservas
+- ✅ Los precios YA están ajustados por km, no necesitas ajustarlos manualmente
+- ❌ NO uses comparables sin explicar su relevancia en el contexto
+
+### 3. KILOMETRAJE ES CRÍTICO
+
+- El km es TAN importante como la antigüedad
+- Un vehículo de 2 años con 80.000 km vale MENOS que uno de 3 años con 30.000 km
+- Calcula SIEMPRE el promedio km/año y compáralo con:
+  - Particular normal: 15.000 km/año
+  - Intensivo/alquiler: 25.000-35.000 km/año
+- Ajusta la depreciación según el uso real identificado
+
+### 4. NO INVENTES DATOS
+
+- Si no hay km actuales: di "no disponible" y estima con cautela
+- Si no hay comparables buenos: reconócelo y sé conservador
+- Si no hay precio de compra: estima basándote en mercado de esa época y menciona que es estimación
+- Sé honesto sobre limitaciones de datos
+
+### 5. TONO PROFESIONAL Y ACCESIBLE
+
+- Escribe para que lo entienda un particular sin conocimientos técnicos
+- Explica conceptos cuando sea necesario (depreciación, valor residual, etc.)
+- Usa bullet points para claridad
+- Sé honesto sobre limitaciones de datos
+- Mantén un tono profesional pero cercano
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FORMATO Y EXTENSIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- **Extensión**: 600-800 palabras (equilibrio entre detalle y concisión)
+- **Formato**: Markdown con encabezados ##
+- **Precios**: SIEMPRE con formato 64.000€ (punto como separador de miles, € pegado)
+- **Estructura**: Seguir exactamente las 6 secciones indicadas
+- **Claridad**: Usa ejemplos concretos cuando ayuden a entender
+
