@@ -206,12 +206,12 @@ export async function POST(
           })
         }
 
-        for (const valoracion of valoracionesSimilares) {
+        for (const valoracion of valoracionesSimilares as any[]) {
           const vehiculoId = valoracion.vehiculo_id
-
+          
           // FIX: Manejar JOIN que puede venir como objeto o array
-          const vehiculoData = Array.isArray(valoracion.vehiculos_registrados)
-            ? valoracion.vehiculos_registrados[0]
+          const vehiculoData = Array.isArray(valoracion.vehiculos_registrados) 
+            ? valoracion.vehiculos_registrados[0] 
             : valoracion.vehiculos_registrados
 
           const existente = vehiculosUnicos.get(vehiculoId)
@@ -236,12 +236,12 @@ export async function POST(
 
       // 2. Agregar compras SOLO si el vehículo NO tiene valoración IA
       if (datosCompra && datosCompra.length > 0) {
-        for (const compra of datosCompra) {
+        for (const compra of datosCompra as any[]) {
           const vehiculoId = compra.vehiculo_id
 
           // FIX: Manejar JOIN que puede venir como objeto o array
-          const vehiculoDataCompra = Array.isArray(compra.vehiculos_registrados)
-            ? compra.vehiculos_registrados[0]
+          const vehiculoDataCompra = Array.isArray(compra.vehiculos_registrados) 
+            ? compra.vehiculos_registrados[0] 
             : compra.vehiculos_registrados
 
           // Solo agregar si este vehículo no tiene ya una valoración IA
