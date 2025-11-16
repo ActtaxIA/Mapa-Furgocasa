@@ -42,7 +42,7 @@ export async function GET(request: Request) {
     const problemas: any[] = []
     const porPais: Record<string, number> = {}
     
-    areas.forEach(area => {
+    areas.forEach((area: any) => {
       const pais = area.pais || 'NULL'
       const paisTrimmed = area.pais?.trim() || 'NULL'
       

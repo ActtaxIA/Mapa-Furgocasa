@@ -360,7 +360,7 @@ export async function POST(request: NextRequest) {
 
     // Validar que solo tenga servicios válidos
     const serviciosFinales: Record<string, boolean> = {}
-    SERVICIOS_VALIDOS.forEach(servicio => {
+    SERVICIOS_VALIDOS.forEach((servicio: any) => {
       serviciosFinales[servicio] = serviciosDetectados[servicio] === true
     })
 

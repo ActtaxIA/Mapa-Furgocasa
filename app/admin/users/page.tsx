@@ -38,7 +38,7 @@ export default function AdminUsersPage() {
     // Limpiar cualquier caché del Service Worker para esta ruta
     if ('caches' in window) {
       caches.keys().then(cacheNames => {
-        cacheNames.forEach(cacheName => {
+        cacheNames.forEach((cacheName: any) => {
           if (cacheName.includes('supabase') || cacheName.includes('api')) {
             caches.delete(cacheName)
             console.log('🗑️ Caché eliminado:', cacheName)

@@ -976,7 +976,7 @@ export default function AdminAnalyticsPage() {
       // Distribución por kilometraje (de tabla vehiculo_kilometraje)
       // Para cada vehículo, obtener el registro más reciente
       const ultimosKilometrajesPorVehiculo = new Map<string, number>()
-      registrosKilometraje.forEach(registro => {
+      registrosKilometraje.forEach((registro: any) => {
         if (!ultimosKilometrajesPorVehiculo.has(registro.vehiculo_id)) {
           ultimosKilometrajesPorVehiculo.set(registro.vehiculo_id, registro.kilometros)
         }
@@ -1141,7 +1141,7 @@ export default function AdminAnalyticsPage() {
         alto: 0  // 21+€
       }
 
-      areas?.forEach(area => {
+      areas?.forEach((area: any) => {
         if (area.precio_noche === 0 || area.precio_noche === null) {
           distribucionPrecios.gratis++
         } else if (area.precio_noche <= 10) {

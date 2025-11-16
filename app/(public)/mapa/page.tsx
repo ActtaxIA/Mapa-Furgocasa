@@ -102,7 +102,7 @@ export default function MapaPage() {
         // Log de depuración para ver distribución de países
         if (process.env.NODE_ENV === 'development') {
           const porPais: Record<string, number> = {}
-          allAreas.forEach(area => {
+          allAreas.forEach((area: any) => {
             const pais = area.pais?.trim() || 'Sin país'
             porPais[pais] = (porPais[pais] || 0) + 1
           })
@@ -256,7 +256,7 @@ export default function MapaPage() {
   // Obtener países únicos de las áreas
   const paisesDisponibles = useMemo(() => {
     const paises = new Set<string>()
-    areas.forEach(area => {
+    areas.forEach((area: any) => {
       if (area.pais) {
         const paisNormalizado = area.pais.trim()
         paises.add(paisNormalizado)

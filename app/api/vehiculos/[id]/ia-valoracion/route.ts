@@ -176,7 +176,7 @@ export async function POST(
 
         // Crear mapa rápido de km por vehículo
         const kmPorVehiculo = new Map<string, number>()
-        fichasComparables?.forEach(f => {
+        fichasComparables?.forEach((f: any) => {
           if (f.kilometros_actuales) {
             kmPorVehiculo.set(f.vehiculo_id, f.kilometros_actuales)
           }
@@ -192,7 +192,7 @@ export async function POST(
 
           // Agrupar por vehículo y tomar el más reciente
           const kmPorVehiculoRegistro = new Map<string, number>()
-          kmRegistros?.forEach(k => {
+          kmRegistros?.forEach((k: any) => {
             if (!kmPorVehiculoRegistro.has(k.vehiculo_id) && k.kilometros) {
               kmPorVehiculoRegistro.set(k.vehiculo_id, k.kilometros)
             }

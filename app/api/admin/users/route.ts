@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
     // Log para debug - mostrar info de los primeros usuarios
     if (users.length > 0) {
       console.log('📊 Primeros 3 usuarios desde Supabase Auth:')
-      users.slice(0, 3).forEach(user => {
+      users.slice(0, 3).forEach((user: any) => {
         console.log({
           email: user.email,
           last_sign_in_at: user.last_sign_in_at,

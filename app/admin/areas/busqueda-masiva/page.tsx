@@ -518,7 +518,7 @@ export default function BusquedaMasivaPage() {
 
   const selectAll = () => {
     const newSelection = new Set<string>()
-    results.forEach(place => {
+    results.forEach((place: any) => {
       if (!place.exists_in_db) {
         newSelection.add(place.place_id)
       }
@@ -543,7 +543,7 @@ export default function BusquedaMasivaPage() {
 
   const selectAllMap = () => {
     const newSelection = new Set<string>()
-    mapResults.forEach(place => {
+    mapResults.forEach((place: any) => {
       if (!place.exists_in_db) {
         newSelection.add(place.place_id)
       }

@@ -329,7 +329,7 @@ Responde con JSON con esta estructura exacta:
 
       // 8. Validar servicios
       const serviciosFinales: Record<string, boolean> = {}
-      SERVICIOS_VALIDOS.forEach(servicio => {
+      SERVICIOS_VALIDOS.forEach((servicio: any) => {
         serviciosFinales[servicio] = serviciosDetectados[servicio] === true
       })
 

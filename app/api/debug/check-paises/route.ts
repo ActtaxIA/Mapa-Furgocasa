@@ -19,7 +19,7 @@ export async function GET() {
 
     // Agrupar por país
     const porPais: Record<string, any[]> = {}
-    data.forEach(area => {
+    data.forEach((area: any) => {
       const pais = area.pais || 'NULL'
       if (!porPais[pais]) {
         porPais[pais] = []

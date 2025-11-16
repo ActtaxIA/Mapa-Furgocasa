@@ -17,7 +17,7 @@ function normalizeNumericFields(data: any): any {
     // Campos numéricos conocidos en averías
     const numericFields = ['coste_reparacion', 'coste_total', 'kilometraje']
     
-    numericFields.forEach(field => {
+    numericFields.forEach((field: any) => {
       if (normalized[field] !== null && normalized[field] !== undefined) {
         const parsed = typeof normalized[field] === 'string' 
           ? parseFloat(normalized[field]) 
