@@ -106,7 +106,7 @@ export async function POST(
     console.log(`\n🔍 [PASO 2B/7] Buscando comparables en nuestra BD...`)
 
     try {
-      // Buscar vehículos similares con valoraciones IA
+      // Buscar vehículos similares con valoraciones IA (con datos del vehículo)
       const { data: valoracionesSimilares, error: errorValoraciones } = await supabase
         .from('valoracion_ia_informes')
         .select(`
@@ -115,20 +115,30 @@ export async function POST(
           precio_minimo,
           precio_base_mercado,
           fecha_valoracion,
-          vehiculo_id
+          vehiculo_id,
+          vehiculos_registrados (
+            año,
+            marca,
+            modelo
+          )
         `)
         .neq('vehiculo_id', params.id) // Excluir el vehículo actual
         .order('fecha_valoracion', { ascending: false })
         .limit(20)
 
-      // Buscar datos de compra de usuarios
+      // Buscar datos de compra de usuarios (con datos del vehículo)
       const { data: datosCompra, error: errorCompra } = await supabase
         .from('vehiculo_valoracion_economica')
         .select(`
           precio_compra,
           fecha_compra,
           kilometros_compra,
-          vehiculo_id
+          vehiculo_id,
+          vehiculos_registrados (
+            año,
+            marca,
+            modelo
+          )
         `)
         .neq('vehiculo_id', params.id)
         .not('precio_compra', 'is', null)
@@ -166,7 +176,11 @@ export async function POST(
               tipo: 'valoracion_ia',
               precio: valoracion.precio_objetivo,
               fecha: valoracion.fecha_valoracion,
-              vehiculo_id: vehiculoId
+              vehiculo_id: vehiculoId,
+              año: valoracion.vehiculos_registrados?.año || null,
+              marca: valoracion.vehiculos_registrados?.marca || null,
+              modelo: valoracion.vehiculos_registrados?.modelo || null,
+              kilometros: null // Las valoraciones IA no tienen km directo
             })
           }
         }
@@ -183,7 +197,11 @@ export async function POST(
               tipo: 'compra',
               precio: compra.precio_compra,
               fecha: compra.fecha_compra,
-              vehiculo_id: vehiculoId
+              vehiculo_id: vehiculoId,
+              año: compra.vehiculos_registrados?.año || null,
+              marca: compra.vehiculos_registrados?.marca || null,
+              modelo: compra.vehiculos_registrados?.modelo || null,
+              kilometros: compra.kilometros_compra || null
             })
           }
         }
@@ -196,14 +214,22 @@ export async function POST(
 
       console.log(`   ✅ Vehículos únicos después de deduplicación: ${vehiculosDeduplicados.length}`)
 
-      // 4. Crear comparables con títulos apropiados
-      comparablesInternos = vehiculosDeduplicados.map(v => ({
-        titulo: v.tipo === 'valoracion_ia' ? 'Valoración IA similar' : 'Vehículo similar comprado',
-        precio: v.precio,
-        link: null,
-        fuente: v.tipo === 'valoracion_ia' ? 'BD Interna - Valoraciones IA' : 'BD Interna - Compras Usuarios',
-        fecha: v.fecha
-      }))
+      // 4. Crear comparables con títulos apropiados e información completa
+      comparablesInternos = vehiculosDeduplicados.map(v => {
+        const titulo = v.marca && v.modelo 
+          ? `${v.marca} ${v.modelo} - España`
+          : (v.tipo === 'valoracion_ia' ? 'Valoración IA similar' : 'Vehículo similar comprado')
+        
+        return {
+          titulo,
+          precio: v.precio,
+          año: v.año,
+          kilometros: v.kilometros,
+          link: null,
+          fuente: v.tipo === 'valoracion_ia' ? 'BD Interna - Valoraciones IA' : 'BD Interna - Compras Usuarios',
+          fecha: v.fecha
+        }
+      })
 
       // Agregar datos de mercado scrapeados
       if (datosMercado && datosMercado.length > 0) {
