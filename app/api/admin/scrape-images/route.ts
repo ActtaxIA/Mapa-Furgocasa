@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
     const imagenesUnicas = eliminarDuplicados(imagenesEncontradas)
     
     // Ordenar por prioridad (1 = máxima)
-    imagenesUnicas.sort((a, b) => a.prioridad - b.prioridad)
+    imagenesUnicas.sort((a: any, b: any) => a.prioridad - b.prioridad)
 
     console.log(`📊 [IMAGES] Total imágenes encontradas: ${imagenesUnicas.length}`)
     console.log(`  - Web oficial: ${imagenesUnicas.filter(i => i.fuente === 'Web Oficial').length}`)

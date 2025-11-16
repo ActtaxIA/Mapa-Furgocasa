@@ -292,7 +292,7 @@ export default function ConfiguracionPage() {
 
     const updatedPrompts = editedChatbotConfig.prompts.prompts
       .filter(p => p.id !== promptId)
-      .map((p, index) => ({ ...p, order: index + 1 }))
+      .map((p: any, index: any) => ({ ...p, order: index + 1 }))
 
     setEditedChatbotConfig({
       ...editedChatbotConfig,
@@ -313,7 +313,7 @@ export default function ConfiguracionPage() {
 
     [prompts[index], prompts[newIndex]] = [prompts[newIndex], prompts[index]]
 
-    const reorderedPrompts = prompts.map((p, i) => ({ ...p, order: i + 1 }))
+    const reorderedPrompts = prompts.map((p: any, i: any) => ({ ...p, order: i + 1 }))
 
     setEditedChatbotConfig({
       ...editedChatbotConfig,
@@ -362,7 +362,7 @@ export default function ConfiguracionPage() {
   const movePrompt = (index: number, direction: 'up' | 'down') => {
     if (!editedConfig) return
 
-    const prompts = [...editedConfig.config_value.prompts].sort((a, b) => a.order - b.order)
+    const prompts = [...editedConfig.config_value.prompts].sort((a: any, b: any) => a.order - b.order)
     const targetIndex = direction === 'up' ? index - 1 : index + 1
 
     if (targetIndex < 0 || targetIndex >= prompts.length) return
@@ -665,8 +665,8 @@ export default function ConfiguracionPage() {
                 {/* Lista de Prompts */}
                 <div className="space-y-4">
                   {editedConfig.config_value.prompts
-                    .sort((a, b) => a.order - b.order)
-                    .map((prompt, index) => {
+                    .sort((a: any, b: any) => a.order - b.order)
+                    .map((prompt: any, index: any) => {
                       const colors = PROMPT_COLORS[prompt.role]
                       const label = PROMPT_LABELS[prompt.role]
 
@@ -914,8 +914,8 @@ export default function ConfiguracionPage() {
                   {/* Lista de Prompts */}
                   <div className="space-y-4">
                     {editedChatbotConfig.prompts.prompts
-                      .sort((a, b) => a.order - b.order)
-                      .map((prompt, index) => {
+                      .sort((a: any, b: any) => a.order - b.order)
+                      .map((prompt: any, index: any) => {
                         const colors = PROMPT_COLORS[prompt.role]
                         const label = PROMPT_LABELS[prompt.role]
 

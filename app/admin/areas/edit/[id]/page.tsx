@@ -650,7 +650,7 @@ export default function EditAreaPage() {
             {/* Grid de Imágenes */}
             {(area.fotos_urls as string[] || []).length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {(area.fotos_urls as string[] || []).map((foto, index) => (
+                {(area.fotos_urls as string[] || []).map((foto: any, index: any) => (
                   <div
                     key={index}
                     className="relative group aspect-square rounded-lg overflow-hidden border-2 border-gray-200 hover:border-sky-500 transition-all bg-gray-100"
@@ -742,7 +742,7 @@ export default function EditAreaPage() {
                 ))}
 
                 {/* Placeholder para más imágenes */}
-                {Array.from({ length: 7 - (area.fotos_urls as string[] || []).length }).map((_, i) => (
+                {Array.from({ length: 7 - (area.fotos_urls as string[] || []).length }).map((_: any, i: any) => (
                   <div
                     key={`empty-${i}`}
                     className="aspect-square rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center text-gray-400"

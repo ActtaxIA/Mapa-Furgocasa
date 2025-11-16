@@ -411,7 +411,7 @@ export default function FAQsPage() {
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="space-y-3">
             {faqsFiltrados.length > 0 ? (
-              faqsFiltrados.map((faq, index) => (
+              faqsFiltrados.map((faq: any, index: any) => (
                 <div
                   key={index}
                   className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"

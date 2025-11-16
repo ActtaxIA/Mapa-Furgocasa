@@ -175,7 +175,7 @@ export default function EnriquecerImagenesPage() {
 
       // 4. Filtrar duplicados y ordenar
       const imagenesUnicas = eliminarDuplicados(imagenesEncontradas)
-      imagenesUnicas.sort((a, b) => a.prioridad - b.prioridad)
+      imagenesUnicas.sort((a: any, b: any) => a.prioridad - b.prioridad)
 
       console.log(`📊 Total imágenes encontradas: ${imagenesUnicas.length}`)
       setProcessLog(prev => [...prev, `📊 Total: ${imagenesUnicas.length} imágenes únicas`])
@@ -509,7 +509,7 @@ export default function EnriquecerImagenesPage() {
 
               <div className="p-6 bg-gray-900 overflow-y-auto max-h-96">
                 <div className="font-mono text-sm space-y-2">
-                  {processLog.map((line, idx) => (
+                  {processLog.map((line: any, idx: any) => (
                     <div 
                       key={idx}
                       className={`${
@@ -531,7 +531,7 @@ export default function EnriquecerImagenesPage() {
         {/* Log final */}
         {processLog.length > 0 && !processing && (
           <div className="mt-6 bg-gray-900 text-green-400 rounded-lg p-4 font-mono text-sm max-h-96 overflow-y-auto">
-            {processLog.map((line, idx) => (
+            {processLog.map((line: any, idx: any) => (
               <div key={idx}>{line}</div>
             ))}
           </div>

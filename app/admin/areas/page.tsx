@@ -482,7 +482,7 @@ export default function AdminAreasPage() {
 
   // Aplicar ordenación si hay columna seleccionada
   if (sortColumn) {
-    areasFiltradas = [...areasFiltradas].sort((a, b) => {
+    areasFiltradas = [...areasFiltradas].sort((a: any, b: any) => {
       let aValue: any = a[sortColumn as keyof Area]
       let bValue: any = b[sortColumn as keyof Area]
 
@@ -599,7 +599,7 @@ export default function AdminAreasPage() {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Áreas')
 
     // Ajustar ancho de columnas automáticamente
-    const colWidths = headers.map((_, colIndex) => {
+    const colWidths = headers.map((_: any, colIndex: any) => {
       const maxLength = Math.max(
         headers[colIndex].length,
         ...rows.map(row => String(row[colIndex] ?? '').length)
@@ -1000,7 +1000,7 @@ export default function AdminAreasPage() {
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">
                           {serviciosActivos.length > 0 ? (
-                            serviciosActivos.map((servicio, idx) => (
+                            serviciosActivos.map((servicio: any, idx: any) => (
                               <div key={idx} className="inline-flex items-center">
                                 {getServicioIcon(servicio)}
                               </div>

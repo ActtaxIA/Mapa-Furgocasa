@@ -378,7 +378,7 @@ export default function AdminAnalyticsPage() {
 
       const usuariosConMasRutas = Object.entries(rutasPorUsuario)
         .map(([userId, count]: [string, any]) => ({ userId, count: count as number }))
-        .sort((a, b) => b.count - a.count)
+        .sort((a: any, b: any) => b.count - a.count)
         .slice(0, 10)
 
       const usuariosUnicos = Object.keys(rutasPorUsuario).length
@@ -611,7 +611,7 @@ export default function AdminAnalyticsPage() {
           return { area, visitas: count as number }
         })
         .filter((item: any) => item.area)
-        .sort((a, b) => b.visitas - a.visitas)
+        .sort((a: any, b: any) => b.visitas - a.visitas)
         .slice(0, 10)
 
       // ========== TOP ÁREAS MÁS VALORADAS ==========
@@ -635,7 +635,7 @@ export default function AdminAnalyticsPage() {
           }
         })
         .filter((item: any) => item.area)
-        .sort((a, b) => b.valoraciones - a.valoraciones)
+        .sort((a: any, b: any) => b.valoraciones - a.valoraciones)
         .slice(0, 10)
 
       // ========== TOP ÁREAS EN MÁS FAVORITOS ==========
@@ -651,7 +651,7 @@ export default function AdminAnalyticsPage() {
           return { area, favoritos: count as number }
         })
         .filter((item: any) => item.area)
-        .sort((a, b) => b.favoritos - a.favoritos)
+        .sort((a: any, b: any) => b.favoritos - a.favoritos)
         .slice(0, 10)
 
       console.log('✅ Tops calculados: áreas más visitadas, valoradas y favoritas')
@@ -829,11 +829,11 @@ export default function AdminAnalyticsPage() {
         .filter((item: any) => item.vehiculo)
 
       const vehiculosMasCaros = vehiculosConPrecio
-        .sort((a, b) => (b.precio || 0) - (a.precio || 0))
+        .sort((a: any, b: any) => (b.precio || 0) - (a.precio || 0))
         .slice(0, 5)
 
       const vehiculosMasBaratos = vehiculosConPrecio
-        .sort((a, b) => (a.precio || 0) - (b.precio || 0))
+        .sort((a: any, b: any) => (a.precio || 0) - (b.precio || 0))
         .slice(0, 5)
 
       // ========== DATOS DE MERCADO IA (Valoraciones realizadas por IA) ==========
@@ -867,7 +867,7 @@ export default function AdminAnalyticsPage() {
           count: count as number,
           porcentaje: totalDatosMercado > 0 ? ((count as number) / totalDatosMercado) * 100 : 0
         }))
-        .sort((a, b) => b.count - a.count)
+        .sort((a: any, b: any) => b.count - a.count)
         .slice(0, 10)
 
       // Modelos más populares en valoraciones IA (marca + modelo)
@@ -884,13 +884,13 @@ export default function AdminAnalyticsPage() {
           const [marca, modelo] = (key as string).split('|')
           return { marca, modelo, count: count as number }
         })
-        .sort((a, b) => b.count - a.count)
+        .sort((a: any, b: any) => b.count - a.count)
         .slice(0, 10)
 
       // Top 5 más caros y baratos del MERCADO IA (según valoraciones realizadas)
       const vehiculosConPrecioMercado = vehiculosValoradosConInfo.filter((v: any) => v.precio_objetivo && v.precio_objetivo > 0)
       const vehiculosMasCarosMercado = vehiculosConPrecioMercado
-        .sort((a, b) => (b.precio_objetivo || 0) - (a.precio_objetivo || 0))
+        .sort((a: any, b: any) => (b.precio_objetivo || 0) - (a.precio_objetivo || 0))
         .slice(0, 5)
         .map((v: any) => ({
           marca: v.marca,
@@ -900,7 +900,7 @@ export default function AdminAnalyticsPage() {
         }))
 
       const vehiculosMasBaratosMercado = vehiculosConPrecioMercado
-        .sort((a, b) => (a.precio_objetivo || 0) - (b.precio_objetivo || 0))
+        .sort((a: any, b: any) => (a.precio_objetivo || 0) - (b.precio_objetivo || 0))
         .slice(0, 5)
         .map((v: any) => ({
           marca: v.marca,
@@ -1076,7 +1076,7 @@ export default function AdminAnalyticsPage() {
         { evento: 'Dejar valoración', count: valoracionesTotales },
         { evento: 'Mensaje chatbot', count: totalInteraccionesIA },
         { evento: 'Registrar vehículo', count: totalVehiculosRegistrados }
-      ].sort((a, b) => b.count - a.count)
+      ].sort((a: any, b: any) => b.count - a.count)
 
       console.log('✅ Métricas de comportamiento calculadas')
 
@@ -1094,7 +1094,7 @@ export default function AdminAnalyticsPage() {
           count: count as number,
           porcentaje: ((count as number) / areas.length) * 100
         }))
-        .sort((a, b) => b.count - a.count)
+        .sort((a: any, b: any) => b.count - a.count)
 
       // ========== ESTADÍSTICAS POR COMUNIDAD/REGIÓN ==========
       const areasPorComunidad = areas?.reduce((acc: any, area: any) => {
@@ -1111,7 +1111,7 @@ export default function AdminAnalyticsPage() {
           const [comunidad, pais] = key.split('|')
           return { comunidad, pais, count: count as number }
         })
-        .sort((a, b) => b.count - a.count)
+        .sort((a: any, b: any) => b.count - a.count)
         .slice(0, 15)
 
       // ========== ESTADÍSTICAS POR PROVINCIA ==========
@@ -1156,7 +1156,7 @@ export default function AdminAnalyticsPage() {
       // ========== TOP 10 ÁREAS CON MEJOR RATING ==========
       const areasConRating = areas?.filter((a: any) => a.google_rating !== null) || []
       const top10 = areasConRating
-        .sort((a, b) => (b.google_rating || 0) - (a.google_rating || 0))
+        .sort((a: any, b: any) => (b.google_rating || 0) - (a.google_rating || 0))
         .slice(0, 10)
 
       // Promedio de rating
@@ -1204,7 +1204,7 @@ export default function AdminAnalyticsPage() {
         areasPorComunidad: areasPorComunidadArray,
         areasPorProvincia: Object.entries(areasPorProvincia || {})
           .map(([provincia, count]: [string, any]) => ({ provincia, count: count as number }))
-          .sort((a, b) => b.count - a.count)
+          .sort((a: any, b: any) => b.count - a.count)
           .slice(0, 10),
         areasGratis: distribucionPrecios.gratis,
         areasDePago: distribucionPrecios.bajo + distribucionPrecios.medio + distribucionPrecios.alto,
@@ -1213,7 +1213,7 @@ export default function AdminAnalyticsPage() {
         areasConImagenes,
         areasConServicios: Object.entries(serviciosCount)
           .map(([servicio, count]: [string, any]) => ({ servicio, count: count as number }))
-          .sort((a, b) => b.count - a.count)
+          .sort((a: any, b: any) => b.count - a.count)
           .slice(0, 7),
         // Métricas de rutas
         totalRutas,
@@ -1866,7 +1866,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="p-6">
               <div className="flex items-end justify-between gap-2 h-80">
-                {analytics.crecimientoUsuariosMensual.map((mes, index) => {
+                {analytics.crecimientoUsuariosMensual.map((mes: any, index: any) => {
                   const maxNuevos = Math.max(...analytics.crecimientoUsuariosMensual.map((m: any) => m.nuevos), 1)
                   const altura = (mes.nuevos / maxNuevos) * 100
                   return (
@@ -1909,7 +1909,7 @@ export default function AdminAnalyticsPage() {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {analytics.areasPorPais.slice(0, 10).map((item, index) => (
+              {analytics.areasPorPais.slice(0, 10).map((item: any, index: any) => (
                 <div key={item.pais} className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-200">
                   <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-sky-500 to-sky-700 text-white rounded-full text-lg font-bold shadow-md">
                     {index + 1}
@@ -1941,7 +1941,7 @@ export default function AdminAnalyticsPage() {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {analytics.areasPorComunidad.map((item, index) => (
+              {analytics.areasPorComunidad.map((item: any, index: any) => (
                 <div key={`${item.comunidad}-${item.pais}`} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                   <div className="flex items-start gap-3">
                     <span className="flex items-center justify-center w-7 h-7 bg-purple-100 text-purple-600 rounded-full text-sm font-bold">
@@ -1967,7 +1967,7 @@ export default function AdminAnalyticsPage() {
           </div>
           <div className="p-6">
             <div className="space-y-4">
-              {analytics.areasPorProvincia.map((item, index) => (
+              {analytics.areasPorProvincia.map((item: any, index: any) => (
                 <div key={item.provincia}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium text-gray-700">
@@ -1996,7 +1996,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="p-6">
               <div className="space-y-3">
-                {analytics.areasConServicios.map((item, index) => (
+                {analytics.areasConServicios.map((item: any, index: any) => (
                   <div key={item.servicio} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center gap-3">
                       <span className="flex items-center justify-center w-6 h-6 bg-sky-100 text-sky-600 rounded-full text-xs font-bold">
@@ -2059,7 +2059,7 @@ export default function AdminAnalyticsPage() {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {analytics.top10AreasPopulares.map((area, index) => (
+              {analytics.top10AreasPopulares.map((area: any, index: any) => (
                 <div key={area.id} className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
                   <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 text-white rounded-full text-lg font-bold">
                     {index + 1}
@@ -2093,7 +2093,7 @@ export default function AdminAnalyticsPage() {
           </div>
           <div className="p-6">
             <div className="flex items-end justify-between gap-4 h-64">
-              {analytics.crecimientoMensual.map((mes, index) => {
+              {analytics.crecimientoMensual.map((mes: any, index: any) => {
                 const maxNuevas = Math.max(...analytics.crecimientoMensual.map((m: any) => m.nuevas))
                 const alturaPorcentaje = maxNuevas > 0 ? (mes.nuevas / maxNuevas) * 100 : 0
 
@@ -2145,7 +2145,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="p-6">
               <div className="flex items-end justify-between gap-1 h-64">
-                {analytics.rutasPorDia.map((dia, index) => {
+                {analytics.rutasPorDia.map((dia: any, index: any) => {
                   const maxCount = Math.max(...analytics.rutasPorDia.map((d: any) => d.count), 1)
                   const altura = (dia.count / maxCount) * 100
                   return (
@@ -2188,7 +2188,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="p-6">
               <div className="flex items-end justify-between gap-1 h-64">
-                {analytics.visitasPorDia.map((dia, index) => {
+                {analytics.visitasPorDia.map((dia: any, index: any) => {
                   const maxCount = Math.max(...analytics.visitasPorDia.map((d: any) => d.count), 1)
                   const altura = (dia.count / maxCount) * 100
                   return (
@@ -2231,7 +2231,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="p-6">
               <div className="flex items-end justify-between gap-1 h-64">
-                {analytics.interaccionesIAPorDia.map((dia, index) => {
+                {analytics.interaccionesIAPorDia.map((dia: any, index: any) => {
                   const maxCount = Math.max(...analytics.interaccionesIAPorDia.map((d: any) => d.count), 1)
                   const altura = (dia.count / maxCount) * 100
                   return (
@@ -2274,7 +2274,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="p-6">
               <div className="flex items-end justify-between gap-2 h-64">
-                {analytics.rutasPorMes.map((mes, index) => {
+                {analytics.rutasPorMes.map((mes: any, index: any) => {
                   const maxCount = Math.max(...analytics.rutasPorMes.map((m: any) => m.count), 1)
                   const altura = (mes.count / maxCount) * 100
                   return (
@@ -2338,7 +2338,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                {analytics.areasMasVisitadas.map((item, index) => {
+                {analytics.areasMasVisitadas.map((item: any, index: any) => {
                   const maxVisitas = analytics.areasMasVisitadas[0]?.visitas || 1
                   const porcentaje = (item.visitas / maxVisitas) * 100
 
@@ -2387,7 +2387,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                {analytics.areasMasValoradas.map((item, index) => {
+                {analytics.areasMasValoradas.map((item: any, index: any) => {
                   const maxValoraciones = analytics.areasMasValoradas[0]?.valoraciones || 1
                   const porcentaje = (item.valoraciones / maxValoraciones) * 100
 
@@ -2440,7 +2440,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                {analytics.areasEnMasFavoritos.map((item, index) => {
+                {analytics.areasEnMasFavoritos.map((item: any, index: any) => {
                   const maxFavoritos = analytics.areasEnMasFavoritos[0]?.favoritos || 1
                   const porcentaje = (item.favoritos / maxFavoritos) * 100
 
@@ -2660,7 +2660,7 @@ export default function AdminAnalyticsPage() {
                 <div className="p-6">
                   {analytics.vehiculosMasCaros.length > 0 ? (
                     <div className="space-y-3">
-                      {analytics.vehiculosMasCaros.map((item, index) => (
+                      {analytics.vehiculosMasCaros.map((item: any, index: any) => (
                         <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200">
                           <div className="flex items-center gap-3">
                             <span className="text-2xl font-bold text-amber-600">#{index + 1}</span>
@@ -2692,7 +2692,7 @@ export default function AdminAnalyticsPage() {
                 <div className="p-6">
                   {analytics.vehiculosMasBaratos.length > 0 ? (
                     <div className="space-y-3">
-                      {analytics.vehiculosMasBaratos.map((item, index) => (
+                      {analytics.vehiculosMasBaratos.map((item: any, index: any) => (
                         <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
                           <div className="flex items-center gap-3">
                             <span className="text-2xl font-bold text-green-600">#{index + 1}</span>
@@ -2731,7 +2731,7 @@ export default function AdminAnalyticsPage() {
                 <div className="p-6">
                   {analytics.vehiculosMasCarosMercado.length > 0 ? (
                     <div className="space-y-3">
-                      {analytics.vehiculosMasCarosMercado.map((item, index) => (
+                      {analytics.vehiculosMasCarosMercado.map((item: any, index: any) => (
                         <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border border-orange-200">
                           <div className="flex items-center gap-3">
                             <span className="text-2xl font-bold text-orange-600">#{index + 1}</span>
@@ -2758,7 +2758,7 @@ export default function AdminAnalyticsPage() {
                 <div className="p-6">
                   {analytics.vehiculosMasBaratosMercado.length > 0 ? (
                     <div className="space-y-3">
-                      {analytics.vehiculosMasBaratosMercado.map((item, index) => (
+                      {analytics.vehiculosMasBaratosMercado.map((item: any, index: any) => (
                         <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg border border-teal-200">
                           <div className="flex items-center gap-3">
                             <span className="text-2xl font-bold text-teal-600">#{index + 1}</span>
@@ -2789,7 +2789,7 @@ export default function AdminAnalyticsPage() {
                 <div className="p-6">
                   {analytics.marcasMasPopulares.length > 0 ? (
                     <div className="space-y-2">
-                      {analytics.marcasMasPopulares.map((marca, index) => (
+                      {analytics.marcasMasPopulares.map((marca: any, index: any) => (
                         <div key={index} className="group">
                           <div className="flex items-center justify-between mb-1">
                             <div className="flex items-center gap-2">
@@ -2822,7 +2822,7 @@ export default function AdminAnalyticsPage() {
                 <div className="p-6">
                   {analytics.modelosMasPopulares.length > 0 ? (
                     <div className="space-y-3">
-                      {analytics.modelosMasPopulares.map((modelo, index) => (
+                      {analytics.modelosMasPopulares.map((modelo: any, index: any) => (
                         <div key={index} className="flex items-center justify-between p-2 hover:bg-purple-50 rounded-lg transition-colors">
                           <div className="flex items-center gap-2">
                             <span className="text-lg font-bold text-purple-600">#{index + 1}</span>
@@ -2852,7 +2852,7 @@ export default function AdminAnalyticsPage() {
                 </div>
                 <div className="p-6">
                   <div className="space-y-3">
-                    {analytics.distribucionPreciosCompra.map((rango, index) => (
+                    {analytics.distribucionPreciosCompra.map((rango: any, index: any) => (
                       <div key={index} className="group">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-sm font-semibold text-gray-700">{rango.rango}</span>
@@ -2878,7 +2878,7 @@ export default function AdminAnalyticsPage() {
                 </div>
                 <div className="p-6">
                   <div className="space-y-3">
-                    {analytics.distribucionAños.map((rango, index) => {
+                    {analytics.distribucionAños.map((rango: any, index: any) => {
                       const total = analytics.totalVehiculosRegistrados || 1
                       const porcentaje = (rango.count / total) * 100
                       return (
@@ -2908,7 +2908,7 @@ export default function AdminAnalyticsPage() {
                 </div>
                 <div className="p-6">
                   <div className="space-y-3">
-                    {analytics.distribucionKilometraje.map((rango, index) => {
+                    {analytics.distribucionKilometraje.map((rango: any, index: any) => {
                       const total = analytics.distribucionKilometraje.reduce((sum: any, r: any) => sum + r.count, 0) || 1
                       const porcentaje = (rango.count / total) * 100
                       return (
@@ -2939,7 +2939,7 @@ export default function AdminAnalyticsPage() {
               </div>
               <div className="p-6">
                 <div className="flex items-end justify-between gap-2 h-80">
-                  {analytics.vehiculosPorMes.map((mes, index) => {
+                  {analytics.vehiculosPorMes.map((mes: any, index: any) => {
                     const maxCount = Math.max(...analytics.vehiculosPorMes.map((m: any) => m.count), 1)
                     const altura = (mes.count / maxCount) * 100
                     return (
@@ -3137,7 +3137,7 @@ export default function AdminAnalyticsPage() {
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {analytics.usuariosPorDispositivo.map((dispositivo, index) => {
+                  {analytics.usuariosPorDispositivo.map((dispositivo: any, index: any) => {
                     const colores = [
                       { bg: 'slate', border: 'slate', text: 'slate' },
                       { bg: 'blue', border: 'blue', text: 'blue' },
@@ -3175,7 +3175,7 @@ export default function AdminAnalyticsPage() {
               </div>
               <div className="p-6">
                 <div className="space-y-3">
-                  {analytics.eventosMasComunes.map((evento, index) => {
+                  {analytics.eventosMasComunes.map((evento: any, index: any) => {
                     const maxCount = analytics.eventosMasComunes[0]?.count || 1
                     const porcentaje = (evento.count / maxCount) * 100
 

@@ -199,7 +199,7 @@ export async function POST(
           })
 
           // Combinar ambos mapas
-          kmPorVehiculoRegistro.forEach((km, id) => {
+          kmPorVehiculoRegistro.forEach((km: any, id: any) => {
             if (!kmPorVehiculo.has(id)) {
               kmPorVehiculo.set(id, km)
             }
@@ -382,7 +382,7 @@ export async function POST(
 
       // 6. Ordenar por relevancia DESC, luego por fecha DESC
       comparablesConRelevancia = comparablesFiltrados
-        .sort((a, b) => {
+        .sort((a: any, b: any) => {
           if (a.relevancia !== b.relevancia) {
             return b.relevancia - a.relevancia
           }
@@ -431,7 +431,7 @@ export async function POST(
         // Filtrar y ordenar comparables de mercado
         const comparablesMercadoFiltrados = comparablesMercado
           .filter(esComparableRelevante)
-          .sort((a, b) => {
+          .sort((a: any, b: any) => {
             if (a.relevancia !== b.relevancia) {
               return b.relevancia - a.relevancia
             }
@@ -468,7 +468,7 @@ export async function POST(
         // Filtrar y ordenar comparables externos
         const comparablesExternosFiltrados = comparablesExternosProcesados
           .filter(esComparableRelevante)
-          .sort((a, b) => {
+          .sort((a: any, b: any) => {
             if (a.relevancia !== b.relevancia) {
               return b.relevancia - a.relevancia
             }
@@ -524,7 +524,7 @@ export async function POST(
       })
 
       // Ordenar todos por relevancia DESC
-      comparables.sort((a, b) => {
+      comparables.sort((a: any, b: any) => {
         if (a.relevancia !== b.relevancia) {
           return b.relevancia - a.relevancia
         }
@@ -542,7 +542,7 @@ export async function POST(
       // Log de muestra de comparables para debug
       if (comparables.length > 0) {
         console.log(`   📋 Muestra de comparables (primeros 3):`)
-        comparables.slice(0, 3).forEach((c, i) => {
+        comparables.slice(0, 3).forEach((c: any, i: any) => {
           console.log(`      ${i + 1}. ${c.titulo} - Precio: ${c.precio}€ - Año: ${c.año || 'N/A'} - Km: ${c.kilometros || 'N/A'} - Relevancia: ${c.relevancia}%`)
         })
       }
@@ -642,7 +642,7 @@ export async function POST(
       : 'No hay mejoras registradas'
 
     const comparablesTexto = comparables.length > 0
-      ? comparables.map((c, i) => `${i + 1}. ${c.titulo}
+      ? comparables.map((c: any, i: any) => `${i + 1}. ${c.titulo}
    - Precio: ${c.precio ? c.precio.toLocaleString() + '€' : 'No especificado'}${c.relevancia ? ` (Relevancia: ${c.relevancia}%)` : ''}
    - Kilometraje: ${c.kilometros ? c.kilometros.toLocaleString() + ' km' : 'No especificado'}
    - Año: ${c.año || 'No especificado'}

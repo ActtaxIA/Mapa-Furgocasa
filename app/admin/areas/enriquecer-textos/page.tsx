@@ -788,7 +788,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
               {/* Contenido del Log */}
               <div className="p-6 bg-gray-900 overflow-y-auto max-h-96">
                 <div className="font-mono text-sm space-y-2">
-                  {processLog.map((line, idx) => (
+                  {processLog.map((line: any, idx: any) => (
                     <div 
                       key={idx}
                       className={`${
@@ -840,7 +840,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
         {/* Log de procesamiento (oculto cuando hay modal) */}
         {processLog.length > 0 && !processing && (
           <div className="mt-6 bg-gray-900 text-green-400 rounded-lg p-4 font-mono text-sm max-h-96 overflow-y-auto">
-            {processLog.map((line, idx) => (
+            {processLog.map((line: any, idx: any) => (
               <div key={idx}>{line}</div>
             ))}
           </div>

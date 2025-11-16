@@ -1112,7 +1112,7 @@ export default function ReporteAccidentePage() {
                         ¡Perfecto! {formData.fotos.length} foto(s) lista(s) para enviar:
                       </p>
                       <div className="space-y-2">
-                        {formData.fotos.map((foto, idx) => (
+                        {formData.fotos.map((foto: any, idx: any) => (
                           <div key={idx} className="flex items-center gap-2 text-xs bg-green-50 p-2 rounded border-l-4 border-green-400">
                             <span className="text-green-700">📷</span>
                             <span className="flex-1 text-gray-700 truncate">{foto.name}</span>

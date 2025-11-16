@@ -262,7 +262,7 @@ export default function ComparativaPage() {
                 { icon: '🗺️', title: 'Clusters Inteligentes', desc: 'El mapa agrupa áreas automáticamente. Navegación fluida sin saturar.' },
                 { icon: '🎨', title: 'Marcadores con Colores', desc: 'Identifica el tipo de área al instante: azul (pública), naranja (privada), verde (camping).' },
                 { icon: '💚', title: '100% Gratis Siempre', desc: 'Sin suscripciones, sin premium, sin trucos. TODO gratis para TODOS. Así debe ser.' },
-              ].map((feature, index) => (
+              ].map((feature: any, index: any) => (
                 <div key={index} className="bg-gradient-to-br from-blue-50 to-sky-50 border-2 border-[#0ea5e9] rounded-xl p-6 hover:shadow-xl transition-all hover:-translate-y-1">
                   <div className="text-5xl mb-4">{feature.icon}</div>
                   <h3 className="text-xl font-bold text-[#0b3c74] mb-3">{feature.title}</h3>
