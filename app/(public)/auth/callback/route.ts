@@ -112,11 +112,13 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('❌ No hay código o error en el proceso')
-    return NextResponse.redirect(new URL('/auth/login?error=no_code', request.url))
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mapafurgocasa.com'
+    return NextResponse.redirect(new URL('/auth/login?error=no_code', baseUrl))
     
   } catch (error) {
     console.error('❌ [OAuth Callback] Error general:', error)
-    return NextResponse.redirect(new URL('/auth/login?error=server_error', request.url))
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mapafurgocasa.com'
+    return NextResponse.redirect(new URL('/auth/login?error=server_error', baseUrl))
   }
 }
 

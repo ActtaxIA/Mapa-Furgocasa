@@ -45,13 +45,15 @@ export default function LoginPage() {
   const handleGoogleLogin = async () => {
     try {
       const supabase = createClient()
-      
-      // SIEMPRE redirigir a producción
-      const redirectUrl = 'https://www.mapafurgocasa.com/auth/callback?next=/mapa'
-      
+
+      // Determinar URL de callback (producción o desarrollo)
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mapafurgocasa.com'
+      const redirectUrl = `${siteUrl}/auth/callback?next=/mapa`
+
       // Debug en consola para verificar
       console.log('🔐 OAuth redirectTo:', redirectUrl)
-      
+      console.log('🌍 Site URL:', siteUrl)
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -62,7 +64,7 @@ export default function LoginPage() {
           },
         },
       })
-      
+
       if (error) {
         console.error('❌ Error OAuth:', error)
         throw error
@@ -78,10 +80,10 @@ export default function LoginPage() {
         {/* Logo y título */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
-            <Image 
-              src="/logo-negro.png" 
-              alt="Furgocasa" 
-              width={200} 
+            <Image
+              src="/logo-negro.png"
+              alt="Furgocasa"
+              width={200}
               height={80}
               className="mx-auto mb-4"
             />
@@ -228,4 +230,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
