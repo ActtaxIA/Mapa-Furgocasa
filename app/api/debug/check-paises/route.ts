@@ -47,7 +47,7 @@ export async function GET() {
       paisesUnicos,
       resumen,
       problemasEspacios: problemasEspacios.length,
-      ejemplosProblemas: problemasEspacios.slice(0, 5).map(a => ({
+      ejemplosProblemas: problemasEspacios.slice(0, 5).map((a: any) => ({
         pais: a.pais,
         paisTrimmed: a.pais?.trim(),
         nombre: a.nombre
