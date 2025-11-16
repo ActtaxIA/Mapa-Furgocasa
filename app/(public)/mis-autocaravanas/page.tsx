@@ -28,7 +28,8 @@ export default function MisAutocaravanasPage() {
   const loadUnreadCount = async (userId: string) => {
     try {
       const supabase = createClient()
-      const result: any = await supabase
+      // @ts-ignore - RPC type mismatch
+      const result = await supabase
         .rpc('obtener_reportes_usuario', { usuario_uuid: userId })
 
       if (!result.error && result.data) {
