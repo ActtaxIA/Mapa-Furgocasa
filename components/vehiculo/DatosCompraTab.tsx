@@ -246,11 +246,11 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Datos de Compra</h2>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Datos de Compra</h2>
         {existingData && (
-          <span className="text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full">
+          <span className="text-xs sm:text-sm text-green-600 bg-green-50 px-2 sm:px-3 py-1 rounded-full whitespace-nowrap">
             ✓ Datos registrados
           </span>
         )}
@@ -271,17 +271,17 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {/* Datos Básicos de Compra */}
-        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <CurrencyEuroIcon className="w-6 h-6 text-primary-600" />
+        <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-gray-200">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+            <CurrencyEuroIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600" />
             Información Básica de Compra
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Precio de Compra (€) <span className="text-red-500">*</span>
               </label>
               <input
@@ -290,31 +290,31 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                 step="0.01"
                 value={formData.precio_compra}
                 onChange={(e) => setFormData({ ...formData, precio_compra: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="35000"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Fecha de Compra
               </label>
               <input
                 type="date"
                 value={formData.fecha_compra}
                 onChange={(e) => setFormData({ ...formData, fecha_compra: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-2 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Procedencia
               </label>
               <select
                 value={formData.procedencia}
                 onChange={(e) => setFormData({ ...formData, procedencia: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">Selecciona...</option>
                 <option value="Nueva">Nueva</option>
@@ -325,13 +325,13 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Tipo de Vendedor
               </label>
               <select
                 value={formData.tipo_vendedor}
                 onChange={(e) => setFormData({ ...formData, tipo_vendedor: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">Selecciona...</option>
                 <option value="Concesionario oficial">Concesionario oficial</option>
@@ -345,53 +345,53 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Nombre del Vendedor / Concesionario
               </label>
               <input
                 type="text"
                 value={formData.nombre_vendedor}
                 onChange={(e) => setFormData({ ...formData, nombre_vendedor: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Ej: Autocaravanas López S.L."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Lugar de Compra
               </label>
               <input
                 type="text"
                 value={formData.lugar_compra}
                 onChange={(e) => setFormData({ ...formData, lugar_compra: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Nombre y dirección"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 País de Compra
               </label>
               <input
                 type="text"
                 value={formData.pais_compra}
                 onChange={(e) => setFormData({ ...formData, pais_compra: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="España"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Ciudad
               </label>
               <input
                 type="text"
                 value={formData.ciudad_compra}
                 onChange={(e) => setFormData({ ...formData, ciudad_compra: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Madrid, Barcelona, etc."
               />
             </div>
@@ -399,31 +399,31 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
         </div>
 
         {/* Estado del Vehículo */}
-        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Estado del Vehículo en la Compra</h3>
+        <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-gray-200">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">Estado del Vehículo en la Compra</h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Kilómetros en la Compra
               </label>
               <input
                 type="number"
                 value={formData.kilometros_compra}
                 onChange={(e) => setFormData({ ...formData, kilometros_compra: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="50000"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Estado General
               </label>
               <select
                 value={formData.estado_general}
                 onChange={(e) => setFormData({ ...formData, estado_general: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">Selecciona...</option>
                 <option value="Excelente">Excelente</option>
@@ -435,7 +435,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Número de Propietarios Anteriores
               </label>
               <input
@@ -443,7 +443,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                 min="0"
                 value={formData.num_propietarios_anteriores}
                 onChange={(e) => setFormData({ ...formData, num_propietarios_anteriores: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="1"
               />
             </div>
@@ -477,8 +477,8 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
         </div>
 
         {/* Garantía y Documentación */}
-        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Garantía y Documentación</h3>
+        <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-gray-200">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">Garantía y Documentación</h3>
 
           <div className="mb-4">
             <label className="flex items-center gap-2 cursor-pointer">
@@ -495,9 +495,9 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
           </div>
 
           {formData.tiene_garantia && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                   Duración de la Garantía (meses)
                 </label>
                 <input
@@ -505,19 +505,19 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                   min="0"
                   value={formData.meses_garantia}
                   onChange={(e) => setFormData({ ...formData, meses_garantia: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="12"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                   Tipo de Garantía
                 </label>
                 <select
                   value={formData.tipo_garantia}
                   onChange={(e) => setFormData({ ...formData, tipo_garantia: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="">Selecciona...</option>
                   <option value="Oficial del fabricante">Oficial del fabricante</option>
@@ -546,12 +546,12 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
         </div>
 
         {/* Negociación */}
-        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Negociación y Descuentos</h3>
+        <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-gray-200">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">Negociación y Descuentos</h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Precio Inicial Pedido (€)
               </label>
               <input
@@ -559,13 +559,13 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                 step="0.01"
                 value={formData.precio_inicial}
                 onChange={(e) => setFormData({ ...formData, precio_inicial: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="38000"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                 Descuento Aplicado (€)
               </label>
               <input
@@ -573,7 +573,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                 step="0.01"
                 value={formData.descuento_aplicado}
                 onChange={(e) => setFormData({ ...formData, descuento_aplicado: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="3000"
               />
             </div>
@@ -594,7 +594,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
 
             {formData.vehiculo_entregado && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                   Valoración del Vehículo Entregado (€)
                 </label>
                 <input
@@ -602,7 +602,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                   step="0.01"
                   value={formData.precio_vehiculo_entregado}
                   onChange={(e) => setFormData({ ...formData, precio_vehiculo_entregado: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="5000"
                 />
               </div>
@@ -611,8 +611,8 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
         </div>
 
         {/* Financiación */}
-        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Financiación</h3>
+        <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-gray-200">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">Financiación</h3>
 
           <div className="mb-4">
             <label className="flex items-center gap-2 cursor-pointer">
@@ -629,22 +629,22 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
           </div>
 
           {formData.financiado && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                   Entidad Financiera
                 </label>
                 <input
                   type="text"
                   value={formData.entidad_financiera}
                   onChange={(e) => setFormData({ ...formData, entidad_financiera: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Banco Santander, BBVA, etc."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                   Tipo de Interés (%)
                 </label>
                 <input
@@ -652,13 +652,13 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                   step="0.01"
                   value={formData.tipo_interes}
                   onChange={(e) => setFormData({ ...formData, tipo_interes: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="5.5"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                   Importe Financiado (€)
                 </label>
                 <input
@@ -666,13 +666,13 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                   step="0.01"
                   value={formData.importe_financiado}
                   onChange={(e) => setFormData({ ...formData, importe_financiado: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="20000"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                   Cuota Mensual (€)
                 </label>
                 <input
@@ -680,26 +680,26 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                   step="0.01"
                   value={formData.cuota_mensual}
                   onChange={(e) => setFormData({ ...formData, cuota_mensual: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="350"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                   Plazo (meses)
                 </label>
                 <input
                   type="number"
                   value={formData.plazo_meses}
                   onChange={(e) => setFormData({ ...formData, plazo_meses: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="60"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                   Pendiente de Pago (€)
                 </label>
                 <input
@@ -707,7 +707,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                   step="0.01"
                   value={formData.pendiente_pago}
                   onChange={(e) => setFormData({ ...formData, pendiente_pago: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="15000"
                 />
               </div>
@@ -716,30 +716,30 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
         </div>
 
         {/* Extras Incluidos */}
-        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Extras Incluidos en la Compra</h3>
+        <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-gray-200">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">Extras Incluidos en la Compra</h3>
 
           <textarea
             value={formData.extras_incluidos}
             onChange={(e) => setFormData({ ...formData, extras_incluidos: e.target.value })}
             rows={4}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             placeholder="Ej: Toldo Fiamma, Portabicis Thule, Panel solar 200W, Nevera Dometic 12V, Calefacción Truma, Sistema de Alarma, etc..."
           />
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-xs sm:text-sm text-gray-500 mt-2">
             Lista todos los accesorios y extras que venían incluidos en el precio de compra
           </p>
         </div>
 
         {/* Notas */}
-        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Notas Adicionales</h3>
+        <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-gray-200">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">Notas Adicionales</h3>
 
           <textarea
             rows={4}
             value={formData.notas}
             onChange={(e) => setFormData({ ...formData, notas: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             placeholder="Cualquier información adicional sobre la compra, el estado del vehículo, la negociación, etc..."
           />
         </div>
@@ -749,7 +749,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 disabled:opacity-50 transition-colors"
+            className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 bg-primary-600 text-white text-sm sm:text-base rounded-lg font-semibold hover:bg-primary-700 disabled:opacity-50 transition-colors"
           >
             {saving ? 'Guardando...' : 'Guardar Datos de Compra'}
           </button>
