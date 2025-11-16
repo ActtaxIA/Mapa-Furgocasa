@@ -150,17 +150,17 @@ export async function POST(
       if (valoracionesSimilares && valoracionesSimilares.length > 0) {
         // Deduplicar: quedarnos solo con la valoración más reciente de cada vehículo
         const valoracionesPorVehiculo = new Map<string, any>()
-        
+
         for (const valoracion of valoracionesSimilares) {
           const vehiculoId = valoracion.vehiculo_id
           const existente = valoracionesPorVehiculo.get(vehiculoId)
-          
+
           // Si no existe o esta es más reciente, reemplazar
           if (!existente || new Date(valoracion.fecha_valoracion) > new Date(existente.fecha_valoracion)) {
             valoracionesPorVehiculo.set(vehiculoId, valoracion)
           }
         }
-        
+
         // Convertir a array y solo usar precio_objetivo (el más realista)
         comparablesInternos.push(...Array.from(valoracionesPorVehiculo.values()).map(v => ({
           titulo: `Valoración IA similar`,
@@ -175,13 +175,13 @@ export async function POST(
       if (datosCompra && datosCompra.length > 0) {
         // Deduplicar: un vehículo solo se compra una vez (precio de compra único)
         const comprasPorVehiculo = new Map<string, any>()
-        
+
         for (const compra of datosCompra) {
           if (!comprasPorVehiculo.has(compra.vehiculo_id)) {
             comprasPorVehiculo.set(compra.vehiculo_id, compra)
           }
         }
-        
+
         comparablesInternos.push(...Array.from(comprasPorVehiculo.values()).map(d => ({
           titulo: `Vehículo similar comprado`,
           precio: d.precio_compra,
@@ -272,9 +272,24 @@ export async function POST(
 - Depósito aguas grises: ${ficha.deposito_aguas_grises || 'N/A'} L
 ` : 'No disponible'
 
-    const datosEconomicos = `- Precio de compra Furgocasa (SIN Impuesto de Matriculación): ${valoracion?.precio_compra?.toLocaleString() || 'No especificado'}€
-- Fecha de compra/matriculación: ${valoracion?.fecha_compra || vehiculo.created_at?.split('T')[0] || 'No especificado'}
-- Kilometraje en compra: ${valoracion?.kilometros_compra?.toLocaleString() || 'No especificado'} km
+    // Calcular datos derivados para el análisis
+    const fechaCompra = valoracion?.fecha_compra || vehiculo.created_at?.split('T')[0]
+    const añosAntiguedad = fechaCompra 
+      ? ((Date.now() - new Date(fechaCompra).getTime()) / (365.25 * 24 * 60 * 60 * 1000)).toFixed(1)
+      : null
+    
+    const kmActuales = ficha?.kilometros_actuales || null
+    const kmCompra = valoracion?.kilometros_compra || 0
+    const kmRecorridos = kmActuales && kmCompra ? kmActuales - kmCompra : null
+    const kmPorAño = kmRecorridos && añosAntiguedad ? (kmRecorridos / parseFloat(añosAntiguedad)).toFixed(0) : null
+
+    const datosEconomicos = `- Precio de compra: ${valoracion?.precio_compra?.toLocaleString() || 'No especificado'}€
+- Fecha de compra/matriculación: ${fechaCompra || 'No especificado'}
+- Antigüedad: ${añosAntiguedad ? añosAntiguedad + ' años' : 'No especificado'}
+- Kilometraje en compra: ${kmCompra?.toLocaleString() || 'No especificado'} km
+- Kilometraje actual: ${kmActuales?.toLocaleString() || 'No especificado'} km
+- Kilómetros recorridos: ${kmRecorridos ? kmRecorridos.toLocaleString() + ' km' : 'No calculable'}
+- Promedio anual: ${kmPorAño ? kmPorAño.toLocaleString() + ' km/año' : 'No calculable'}
 - Inversión total (mantenimientos + averías + mejoras): ${valoracion?.inversion_total?.toLocaleString() || '0'}€`
 
     const averiasTexto = averias && averias.length > 0
@@ -344,7 +359,7 @@ export async function POST(
 
     // 6. EXTRAER PRECIOS DEL INFORME
     console.log(`\n💰 [PASO 6/7] Extrayendo precios del informe...`)
-    
+
     // Regex mejorado: captura números con puntos o comas como separadores de miles
     // Ejemplos: "64.000€", "64,000€", "64000€", "64.000 €", "64,000 €"
     const precioSalidaMatch = informeTexto.match(/precio\s+de\s+salida\s+recomendado[:\s]+(\d{1,3}(?:[.,]\d{3})*)/i)
@@ -569,12 +584,12 @@ export async function DELETE(
 ) {
   try {
     console.log(`\n🗑️ [DELETE VALORACION] Iniciando eliminación`)
-    
+
     const supabase = createRouteHandlerClient({ cookies })
-    
+
     // 1. Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     if (authError || !user) {
       console.error('❌ Usuario no autenticado')
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 })

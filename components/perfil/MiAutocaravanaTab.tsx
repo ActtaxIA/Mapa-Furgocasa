@@ -917,9 +917,10 @@ export function MiAutocaravanaTab({ userId }: Props) {
                             vehiculo.valor_estimado_actual && (
                               <div className="flex justify-between items-center pt-2 border-t border-green-300">
                                 <span className="text-gray-600">
-                                  {vehiculo.valor_estimado_actual >= vehiculo.precio_compra
-                                    ? 'Revalorización:'
-                                    : 'Depreciación:'}
+                                  {vehiculo.valor_estimado_actual >=
+                                  vehiculo.precio_compra
+                                    ? "Revalorización:"
+                                    : "Depreciación:"}
                                 </span>
                                 <span
                                   className={`font-bold ${
@@ -929,7 +930,10 @@ export function MiAutocaravanaTab({ userId }: Props) {
                                       : "text-green-600"
                                   }`}
                                 >
-                                  {vehiculo.valor_estimado_actual >= vehiculo.precio_compra ? '+' : ''}
+                                  {vehiculo.valor_estimado_actual >=
+                                  vehiculo.precio_compra
+                                    ? "+"
+                                    : ""}
                                   {(
                                     ((vehiculo.valor_estimado_actual -
                                       vehiculo.precio_compra) /
