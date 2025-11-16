@@ -289,9 +289,9 @@ export default function AdminAnalyticsPage() {
       }
 
       // ========== MÉTRICAS DE RUTAS TEMPORALES ==========
-      const rutasHoy = rutas?.filter(r => estaEnRango(r.created_at, inicioDia)).length || 0
-      const rutasEstaSemana = rutas?.filter(r => estaEnRango(r.created_at, inicioSemana)).length || 0
-      const rutasEsteMes = rutas?.filter(r => estaEnRango(r.created_at, inicioMes)).length || 0
+      const rutasHoy = rutas?.filter((r: any) => estaEnRango(r.created_at, inicioDia)).length || 0
+      const rutasEstaSemana = rutas?.filter((r: any) => estaEnRango(r.created_at, inicioSemana)).length || 0
+      const rutasEsteMes = rutas?.filter((r: any) => estaEnRango(r.created_at, inicioMes)).length || 0
 
       // Rutas por día (últimos 30 días)
       const rutasPorDia: { fecha: string; count: number }[] = []
@@ -302,7 +302,7 @@ export default function AdminAnalyticsPage() {
         const fechaSiguiente = new Date(fecha)
         fechaSiguiente.setDate(fecha.getDate() + 1)
 
-        const count = rutas?.filter(r => {
+        const count = rutas?.filter((r: any) => {
           const f = new Date(r.created_at)
           return f >= fecha && f < fechaSiguiente
         }).length || 0
@@ -319,13 +319,13 @@ export default function AdminAnalyticsPage() {
         const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
         const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
 
-        const rutasDelMes = rutas?.filter(r => {
+        const rutasDelMes = rutas?.filter((r: any) => {
           const f = new Date(r.created_at)
           return f.getFullYear() === fechaMes.getFullYear() &&
                  f.getMonth() === fechaMes.getMonth()
         }) || []
 
-        const distanciaMes = rutasDelMes.reduce((sum, r) => sum + (r.distancia_km || 0), 0)
+        const distanciaMes = rutasDelMes.reduce((sum: any, r: any) => sum + (r.distancia_km || 0), 0)
 
         rutasPorMes.push({
           mes: mesNombre,
@@ -336,7 +336,7 @@ export default function AdminAnalyticsPage() {
 
       // Análisis adicional de rutas
       const distanciaPromedio = totalRutas > 0 ? distanciaTotal / totalRutas : 0
-      const distancias = rutas?.map(r => r.distancia_km || 0).filter(d => d > 0) || []
+      const distancias = rutas?.map((r: any) => r.distancia_km || 0).filter((d: any) => d > 0) || []
       const rutaMasLarga = distancias.length > 0 ? Math.max(...distancias) : 0
       const rutaMasCorta = distancias.length > 0 ? Math.min(...distancias) : 0
 
@@ -350,8 +350,8 @@ export default function AdminAnalyticsPage() {
         { min: 1000, max: Infinity, label: '> 1000 km' }
       ]
 
-      const distribucionDistancias = rangosDistancia.map(rango => {
-        const count = rutas?.filter(r =>
+      const distribucionDistancias = rangosDistancia.map((rango: any) => {
+        const count = rutas?.filter((r: any) =>
           (r.distancia_km || 0) >= rango.min && (r.distancia_km || 0) < rango.max
         ).length || 0
 
@@ -364,10 +364,10 @@ export default function AdminAnalyticsPage() {
 
       // Rutas por número de puntos (origen + waypoints + destino)
       const rutasPorNumeroPuntos = [
-        { puntos: '2 puntos (A→B)', count: rutas?.filter(r => !r.waypoints || (r.waypoints as any[])?.length === 0).length || 0 },
-        { puntos: '3 puntos', count: rutas?.filter(r => (r.waypoints as any[])?.length === 1).length || 0 },
-        { puntos: '4 puntos', count: rutas?.filter(r => (r.waypoints as any[])?.length === 2).length || 0 },
-        { puntos: '5+ puntos', count: rutas?.filter(r => (r.waypoints as any[])?.length >= 3).length || 0 }
+        { puntos: '2 puntos (A→B)', count: rutas?.filter((r: any) => !r.waypoints || (r.waypoints as any[])?.length === 0).length || 0 },
+        { puntos: '3 puntos', count: rutas?.filter((r: any) => (r.waypoints as any[])?.length === 1).length || 0 },
+        { puntos: '4 puntos', count: rutas?.filter((r: any) => (r.waypoints as any[])?.length === 2).length || 0 },
+        { puntos: '5+ puntos', count: rutas?.filter((r: any) => (r.waypoints as any[])?.length >= 3).length || 0 }
       ]
 
       // Usuarios con más rutas
@@ -411,9 +411,9 @@ export default function AdminAnalyticsPage() {
         }
       }
 
-      const visitasHoy = visitas?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
-      const visitasEstaSemana = visitas?.filter(v => estaEnRango(v.created_at, inicioSemana)).length || 0
-      const visitasEsteMes = visitas?.filter(v => estaEnRango(v.created_at, inicioMes)).length || 0
+      const visitasHoy = visitas?.filter((v: any) => estaEnRango(v.created_at, inicioDia)).length || 0
+      const visitasEstaSemana = visitas?.filter((v: any) => estaEnRango(v.created_at, inicioSemana)).length || 0
+      const visitasEsteMes = visitas?.filter((v: any) => estaEnRango(v.created_at, inicioMes)).length || 0
 
       // Visitas por día (últimos 30 días)
       const visitasPorDia: { fecha: string; count: number }[] = []
@@ -424,7 +424,7 @@ export default function AdminAnalyticsPage() {
         const fechaSiguiente = new Date(fecha)
         fechaSiguiente.setDate(fecha.getDate() + 1)
 
-        const count = visitas?.filter(v => {
+        const count = visitas?.filter((v: any) => {
           const f = new Date(v.created_at)
           return f >= fecha && f < fechaSiguiente
         }).length || 0
@@ -441,7 +441,7 @@ export default function AdminAnalyticsPage() {
         const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
         const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
 
-        const count = visitas?.filter(v => {
+        const count = visitas?.filter((v: any) => {
           const f = new Date(v.created_at)
           return f.getFullYear() === fechaMes.getFullYear() &&
                  f.getMonth() === fechaMes.getMonth()
@@ -458,9 +458,9 @@ export default function AdminAnalyticsPage() {
         .select('id, created_at, rating, area_id, user_id')
 
       const valoracionesTotales = valoraciones?.length || 0
-      const valoracionesHoy = valoraciones?.filter(v => estaEnRango(v.created_at, inicioDia)).length || 0
-      const valoracionesEstaSemana = valoraciones?.filter(v => estaEnRango(v.created_at, inicioSemana)).length || 0
-      const valoracionesEsteMes = valoraciones?.filter(v => estaEnRango(v.created_at, inicioMes)).length || 0
+      const valoracionesHoy = valoraciones?.filter((v: any) => estaEnRango(v.created_at, inicioDia)).length || 0
+      const valoracionesEstaSemana = valoraciones?.filter((v: any) => estaEnRango(v.created_at, inicioSemana)).length || 0
+      const valoracionesEsteMes = valoraciones?.filter((v: any) => estaEnRango(v.created_at, inicioMes)).length || 0
 
       // Valoraciones por día (últimos 30 días)
       const valoracionesPorDia: { fecha: string; count: number; promedio: number }[] = []
@@ -471,13 +471,13 @@ export default function AdminAnalyticsPage() {
         const fechaSiguiente = new Date(fecha)
         fechaSiguiente.setDate(fecha.getDate() + 1)
 
-        const valoracionesDia = valoraciones?.filter(v => {
+        const valoracionesDia = valoraciones?.filter((v: any) => {
           const f = new Date(v.created_at)
           return f >= fecha && f < fechaSiguiente
         }) || []
 
         const promedio = valoracionesDia.length > 0
-          ? valoracionesDia.reduce((sum, v) => sum + v.rating, 0) / valoracionesDia.length
+          ? valoracionesDia.reduce((sum: any, v: any) => sum + v.rating, 0) / valoracionesDia.length
           : 0
 
         valoracionesPorDia.push({
@@ -495,9 +495,9 @@ export default function AdminAnalyticsPage() {
         .select('id, created_at, area_id, user_id')
 
       const favoritosTotales = favoritos?.length || 0
-      const favoritosHoy = favoritos?.filter(f => estaEnRango(f.created_at, inicioDia)).length || 0
-      const favoritosEstaSemana = favoritos?.filter(f => estaEnRango(f.created_at, inicioSemana)).length || 0
-      const favoritosEsteMes = favoritos?.filter(f => estaEnRango(f.created_at, inicioMes)).length || 0
+      const favoritosHoy = favoritos?.filter((f: any) => estaEnRango(f.created_at, inicioDia)).length || 0
+      const favoritosEstaSemana = favoritos?.filter((f: any) => estaEnRango(f.created_at, inicioSemana)).length || 0
+      const favoritosEsteMes = favoritos?.filter((f: any) => estaEnRango(f.created_at, inicioMes)).length || 0
 
       // Favoritos por día (últimos 30 días)
       const favoritosPorDia: { fecha: string; count: number }[] = []
@@ -508,7 +508,7 @@ export default function AdminAnalyticsPage() {
         const fechaSiguiente = new Date(fecha)
         fechaSiguiente.setDate(fecha.getDate() + 1)
 
-        const count = favoritos?.filter(f => {
+        const count = favoritos?.filter((f: any) => {
           const fec = new Date(f.created_at)
           return fec >= fecha && fec < fechaSiguiente
         }).length || 0
@@ -572,9 +572,9 @@ export default function AdminAnalyticsPage() {
 
       // ========== MÉTRICAS DE CHATBOT IA TEMPORALES ==========
       // user_interactions usa 'timestamp' como campo de fecha principal
-      const interaccionesIAHoy = mensajes?.filter(m => estaEnRango(m.timestamp || m.created_at, inicioDia)).length || 0
-      const interaccionesIAEstaSemana = mensajes?.filter(m => estaEnRango(m.timestamp || m.created_at, inicioSemana)).length || 0
-      const interaccionesIAEsteMes = mensajes?.filter(m => estaEnRango(m.timestamp || m.created_at, inicioMes)).length || 0
+      const interaccionesIAHoy = mensajes?.filter((m: any) => estaEnRango(m.timestamp || m.created_at, inicioDia)).length || 0
+      const interaccionesIAEstaSemana = mensajes?.filter((m: any) => estaEnRango(m.timestamp || m.created_at, inicioSemana)).length || 0
+      const interaccionesIAEsteMes = mensajes?.filter((m: any) => estaEnRango(m.timestamp || m.created_at, inicioMes)).length || 0
 
       // Interacciones IA por día (últimos 30 días)
       const interaccionesIAPorDia: { fecha: string; count: number }[] = []
@@ -585,7 +585,7 @@ export default function AdminAnalyticsPage() {
         const fechaSiguiente = new Date(fecha)
         fechaSiguiente.setDate(fecha.getDate() + 1)
 
-        const count = mensajes?.filter(m => {
+        const count = mensajes?.filter((m: any) => {
           const f = new Date(m.timestamp || m.created_at)
           return f >= fecha && f < fechaSiguiente
         }).length || 0
@@ -610,7 +610,7 @@ export default function AdminAnalyticsPage() {
           const area = areas?.find(a => a.id === areaId)
           return { area, visitas: count as number }
         })
-        .filter(item => item.area)
+        .filter((item: any) => item.area)
         .sort((a, b) => b.visitas - a.visitas)
         .slice(0, 10)
 
@@ -634,7 +634,7 @@ export default function AdminAnalyticsPage() {
             promedio: parseFloat((data.sumRating / data.count).toFixed(1))
           }
         })
-        .filter(item => item.area)
+        .filter((item: any) => item.area)
         .sort((a, b) => b.valoraciones - a.valoraciones)
         .slice(0, 10)
 
@@ -650,7 +650,7 @@ export default function AdminAnalyticsPage() {
           const area = areas?.find(a => a.id === areaId)
           return { area, favoritos: count as number }
         })
-        .filter(item => item.area)
+        .filter((item: any) => item.area)
         .sort((a, b) => b.favoritos - a.favoritos)
         .slice(0, 10)
 
@@ -774,9 +774,9 @@ export default function AdminAnalyticsPage() {
       }
 
       const totalVehiculosRegistrados = vehiculos.length
-      const vehiculosRegistradosHoy = vehiculos.filter(v => estaEnRango(v.created_at, inicioDia)).length
-      const vehiculosRegistradosEstaSemana = vehiculos.filter(v => estaEnRango(v.created_at, inicioSemana)).length
-      const vehiculosRegistradosEsteMes = vehiculos.filter(v => estaEnRango(v.created_at, inicioMes)).length
+      const vehiculosRegistradosHoy = vehiculos.filter((v: any) => estaEnRango(v.created_at, inicioDia)).length
+      const vehiculosRegistradosEstaSemana = vehiculos.filter((v: any) => estaEnRango(v.created_at, inicioSemana)).length
+      const vehiculosRegistradosEsteMes = vehiculos.filter((v: any) => estaEnRango(v.created_at, inicioMes)).length
 
       // Vehículos por mes (últimos 12 meses)
       const vehiculosPorMes: { mes: string; count: number }[] = []
@@ -784,7 +784,7 @@ export default function AdminAnalyticsPage() {
         const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
         const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
 
-        const count = vehiculos.filter(v => {
+        const count = vehiculos.filter((v: any) => {
           const f = new Date(v.created_at)
           return f.getFullYear() === fechaMes.getFullYear() &&
                  f.getMonth() === fechaMes.getMonth()
@@ -794,20 +794,20 @@ export default function AdminAnalyticsPage() {
       }
 
       // ========== MÉTRICAS FINANCIERAS DE VEHÍCULOS ==========
-      const valorTotalParqueVehiculos = valoracionesEconomicas.reduce((sum, v) => sum + (v.precio_compra || 0), 0)
-      const vehiculosConDatosFinancieros = valoracionesEconomicas.filter(v => v.precio_compra && v.precio_compra > 0).length
+      const valorTotalParqueVehiculos = valoracionesEconomicas.reduce((sum: any, v: any) => sum + (v.precio_compra || 0), 0)
+      const vehiculosConDatosFinancieros = valoracionesEconomicas.filter((v: any) => v.precio_compra && v.precio_compra > 0).length
       const promedioValorVehiculo = vehiculosConDatosFinancieros > 0 ? valorTotalParqueVehiculos / vehiculosConDatosFinancieros : 0
 
       // Inversión total promedio (incluye mantenimientos, averías, mejoras, etc)
       const inversionTotalPromedio = vehiculosConDatosFinancieros > 0
-        ? valoracionesEconomicas.reduce((sum, v) => sum + (v.inversion_total || 0), 0) / vehiculosConDatosFinancieros
+        ? valoracionesEconomicas.reduce((sum: any, v: any) => sum + (v.inversion_total || 0), 0) / vehiculosConDatosFinancieros
         : 0
 
       // Top 5 vehículos más caros
       // SOLUCIÓN: Si vehiculos[] está vacío, crear objetos sintéticos desde valoracionesEconomicas
       const vehiculosConPrecio = valoracionesEconomicas
-        .filter(v => v.precio_compra && v.precio_compra > 0)
-        .map(v => {
+        .filter((v: any) => v.precio_compra && v.precio_compra > 0)
+        .map((v: any) => {
           // Intentar buscar en vehiculos_registrados
           let vehiculo = vehiculos.find(vh => vh.id === v.vehiculo_id)
 
@@ -826,7 +826,7 @@ export default function AdminAnalyticsPage() {
 
           return { vehiculo, precio: v.precio_compra }
         })
-        .filter(item => item.vehiculo)
+        .filter((item: any) => item.vehiculo)
 
       const vehiculosMasCaros = vehiculosConPrecio
         .sort((a, b) => (b.precio || 0) - (a.precio || 0))
@@ -840,7 +840,7 @@ export default function AdminAnalyticsPage() {
       // IMPORTANTE: Esto NO es datos scrapeados, son las valoraciones que la IA ha hecho para usuarios
 
       // Crear lista de vehículos valorados con su info completa
-      const vehiculosValoradosConInfo = valoracionesIA.map(via => {
+      const vehiculosValoradosConInfo = valoracionesIA.map((via: any) => {
         const vehiculo = vehiculos.find(v => v.id === via.vehiculo_id)
         return {
           ...via,
@@ -852,7 +852,7 @@ export default function AdminAnalyticsPage() {
 
       const totalDatosMercado = vehiculosValoradosConInfo.length
       const precioPromedioMercado = totalDatosMercado > 0
-        ? vehiculosValoradosConInfo.reduce((sum, v) => sum + (v.precio_objetivo || 0), 0) / totalDatosMercado
+        ? vehiculosValoradosConInfo.reduce((sum: any, v: any) => sum + (v.precio_objetivo || 0), 0) / totalDatosMercado
         : 0
 
       // Marcas más populares en valoraciones IA
@@ -888,11 +888,11 @@ export default function AdminAnalyticsPage() {
         .slice(0, 10)
 
       // Top 5 más caros y baratos del MERCADO IA (según valoraciones realizadas)
-      const vehiculosConPrecioMercado = vehiculosValoradosConInfo.filter(v => v.precio_objetivo && v.precio_objetivo > 0)
+      const vehiculosConPrecioMercado = vehiculosValoradosConInfo.filter((v: any) => v.precio_objetivo && v.precio_objetivo > 0)
       const vehiculosMasCarosMercado = vehiculosConPrecioMercado
         .sort((a, b) => (b.precio_objetivo || 0) - (a.precio_objetivo || 0))
         .slice(0, 5)
-        .map(v => ({
+        .map((v: any) => ({
           marca: v.marca,
           modelo: v.modelo,
           año: v.año,
@@ -902,7 +902,7 @@ export default function AdminAnalyticsPage() {
       const vehiculosMasBaratosMercado = vehiculosConPrecioMercado
         .sort((a, b) => (a.precio_objetivo || 0) - (b.precio_objetivo || 0))
         .slice(0, 5)
-        .map(v => ({
+        .map((v: any) => ({
           marca: v.marca,
           modelo: v.modelo,
           año: v.año,
@@ -913,20 +913,20 @@ export default function AdminAnalyticsPage() {
       // Usar valoracionesIA (de la tabla valoracion_ia_informes) en lugar de valoracionesEconomicas
       const vehiculosValorados = valoracionesIA.length
       const valorPromedioEstimado = vehiculosValorados > 0
-        ? valoracionesIA.reduce((sum, v) => sum + (v.precio_objetivo || 0), 0) / vehiculosValorados
+        ? valoracionesIA.reduce((sum: any, v: any) => sum + (v.precio_objetivo || 0), 0) / vehiculosValorados
         : 0
 
       // Vehículos en venta (buscar en valoraciones económicas si tienen campo en_venta)
-      const vehiculosEnVenta = valoracionesEconomicas.filter(v => v.en_venta).length
+      const vehiculosEnVenta = valoracionesEconomicas.filter((v: any) => v.en_venta).length
       const precioPromedioVenta = vehiculosEnVenta > 0
         ? valoracionesEconomicas
-            .filter(v => v.en_venta)
-            .reduce((sum, v) => sum + (v.precio_venta_deseado || 0), 0) / vehiculosEnVenta
+            .filter((v: any) => v.en_venta)
+            .reduce((sum: any, v: any) => sum + (v.precio_venta_deseado || 0), 0) / vehiculosEnVenta
         : 0
 
       // Ganancia proyectada (diferencia entre precio objetivo IA y precio compra)
       const vehiculosConValoracionYCompra = valoracionesIA
-        .map(via => {
+        .map((via: any) => {
           const valoracionEco = valoracionesEconomicas.find(ve => ve.vehiculo_id === via.vehiculo_id)
           if (valoracionEco && valoracionEco.precio_compra && via.precio_objetivo) {
             return via.precio_objetivo - valoracionEco.precio_compra
@@ -936,7 +936,7 @@ export default function AdminAnalyticsPage() {
         .filter((v): v is number => v !== null)
 
       const gananciaPromedioProyectada = vehiculosConValoracionYCompra.length > 0
-        ? vehiculosConValoracionYCompra.reduce((sum, v) => sum + v, 0) / vehiculosConValoracionYCompra.length
+        ? vehiculosConValoracionYCompra.reduce((sum: any, v: any) => sum + v, 0) / vehiculosConValoracionYCompra.length
         : 0
 
       // ========== DISTRIBUCIONES ==========
@@ -950,8 +950,8 @@ export default function AdminAnalyticsPage() {
         { min: 100000, max: Infinity, label: '> 100k' }
       ]
 
-      const distribucionPreciosCompra = rangosPrecios.map(rango => {
-        const count = valoracionesEconomicas.filter(v =>
+      const distribucionPreciosCompra = rangosPrecios.map((rango: any) => {
+        const count = valoracionesEconomicas.filter((v: any) =>
           v.precio_compra &&
           v.precio_compra >= rango.min &&
           v.precio_compra < rango.max
@@ -985,10 +985,10 @@ export default function AdminAnalyticsPage() {
       const kilometrosActuales = Array.from(ultimosKilometrajesPorVehiculo.values())
 
       const distribucionKilometraje = [
-        { rango: '< 50k km', count: kilometrosActuales.filter(km => km < 50000).length },
-        { rango: '50k-100k km', count: kilometrosActuales.filter(km => km >= 50000 && km < 100000).length },
-        { rango: '100k-150k km', count: kilometrosActuales.filter(km => km >= 100000 && km < 150000).length },
-        { rango: '> 150k km', count: kilometrosActuales.filter(km => km >= 150000).length }
+        { rango: '< 50k km', count: kilometrosActuales.filter((km: any) => km < 50000).length },
+        { rango: '50k-100k km', count: kilometrosActuales.filter((km: any) => km >= 50000 && km < 100000).length },
+        { rango: '100k-150k km', count: kilometrosActuales.filter((km: any) => km >= 100000 && km < 150000).length },
+        { rango: '> 150k km', count: kilometrosActuales.filter((km: any) => km >= 150000).length }
       ]
 
       console.log(`✅ Vehículos: ${totalVehiculosRegistrados} total, ${vehiculosConDatosFinancieros} con datos financieros`)
@@ -1039,7 +1039,7 @@ export default function AdminAnalyticsPage() {
         actividadesPorUsuario.set(item.user_id, (actividadesPorUsuario.get(item.user_id) || 0) + 1)
       })
 
-      const usuariosRecurrentes = Array.from(actividadesPorUsuario.values()).filter(count => count > 1).length
+      const usuariosRecurrentes = Array.from(actividadesPorUsuario.values()).filter((count: any) => count > 1).length
       const usuariosNuevos = totalUsers - usuariosRecurrentes
 
       // Tasa de conversión (% de usuarios que realizan al menos 1 acción)
@@ -1154,26 +1154,26 @@ export default function AdminAnalyticsPage() {
       })
 
       // ========== TOP 10 ÁREAS CON MEJOR RATING ==========
-      const areasConRating = areas?.filter(a => a.google_rating !== null) || []
+      const areasConRating = areas?.filter((a: any) => a.google_rating !== null) || []
       const top10 = areasConRating
         .sort((a, b) => (b.google_rating || 0) - (a.google_rating || 0))
         .slice(0, 10)
 
       // Promedio de rating
-      const sumRatings = areasConRating.reduce((sum, a) => sum + (a.google_rating || 0), 0)
+      const sumRatings = areasConRating.reduce((sum: any, a: any) => sum + (a.google_rating || 0), 0)
       const promedioRating = areasConRating.length > 0 ? sumRatings / areasConRating.length : 0
 
       // ========== ÁREAS CON DESCRIPCIÓN E IMÁGENES ==========
       const DESCRIPCION_MIN_LENGTH = 200
       const PLACEHOLDER_TEXT = 'Área encontrada mediante búsqueda en Google Maps'
 
-      const areasConDescripcion = areas?.filter(a =>
+      const areasConDescripcion = areas?.filter((a: any) =>
         a.descripcion &&
         a.descripcion.length >= DESCRIPCION_MIN_LENGTH &&
         !a.descripcion.includes(PLACEHOLDER_TEXT)
       ).length || 0
 
-      const areasConImagenes = areas?.filter(a =>
+      const areasConImagenes = areas?.filter((a: any) =>
         a.foto_principal || (a.fotos_urls && Array.isArray(a.fotos_urls) && a.fotos_urls.length > 0)
       ).length || 0
 
@@ -1185,7 +1185,7 @@ export default function AdminAnalyticsPage() {
         const fechaMes = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)
         const mesNombre = fechaMes.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
 
-        const nuevasAreasMes = areas?.filter(a => {
+        const nuevasAreasMes = areas?.filter((a: any) => {
           if (!a.created_at) return false
           const fechaCreacion = new Date(a.created_at)
           return fechaCreacion.getFullYear() === fechaMes.getFullYear() &&
@@ -1208,7 +1208,7 @@ export default function AdminAnalyticsPage() {
           .slice(0, 10),
         areasGratis: distribucionPrecios.gratis,
         areasDePago: distribucionPrecios.bajo + distribucionPrecios.medio + distribucionPrecios.alto,
-        areasVerificadas: areas?.filter(a => a.verificado).length || 0,
+        areasVerificadas: areas?.filter((a: any) => a.verificado).length || 0,
         areasConDescripcion,
         areasConImagenes,
         areasConServicios: Object.entries(serviciosCount)
@@ -1241,7 +1241,7 @@ export default function AdminAnalyticsPage() {
         rutaMasLarga,
         rutaMasCorta,
         rutasPorNumeroPuntos,
-        distanciaPorMes: rutasPorMes.map(m => ({ mes: m.mes, distancia: m.distancia })),
+        distanciaPorMes: rutasPorMes.map((m: any) => ({ mes: m.mes, distancia: m.distancia })),
         distribucionDistancias,
         usuariosConMasRutas,
         promedioRutasPorUsuario,
@@ -1867,7 +1867,7 @@ export default function AdminAnalyticsPage() {
             <div className="p-6">
               <div className="flex items-end justify-between gap-2 h-80">
                 {analytics.crecimientoUsuariosMensual.map((mes, index) => {
-                  const maxNuevos = Math.max(...analytics.crecimientoUsuariosMensual.map(m => m.nuevos), 1)
+                  const maxNuevos = Math.max(...analytics.crecimientoUsuariosMensual.map((m: any) => m.nuevos), 1)
                   const altura = (mes.nuevos / maxNuevos) * 100
                   return (
                     <div key={index} className="flex-1 flex flex-col items-center gap-2">
@@ -1889,7 +1889,7 @@ export default function AdminAnalyticsPage() {
               <div className="mt-6 pt-6 border-t border-gray-200 text-center">
                 <p className="text-sm text-gray-600">
                   Total nuevos (12 meses): <span className="font-bold text-violet-600">
-                    {analytics.crecimientoUsuariosMensual.reduce((sum, m) => sum + m.nuevos, 0).toLocaleString()}
+                    {analytics.crecimientoUsuariosMensual.reduce((sum: any, m: any) => sum + m.nuevos, 0).toLocaleString()}
                   </span> usuarios
                 </p>
               </div>
@@ -2094,7 +2094,7 @@ export default function AdminAnalyticsPage() {
           <div className="p-6">
             <div className="flex items-end justify-between gap-4 h-64">
               {analytics.crecimientoMensual.map((mes, index) => {
-                const maxNuevas = Math.max(...analytics.crecimientoMensual.map(m => m.nuevas))
+                const maxNuevas = Math.max(...analytics.crecimientoMensual.map((m: any) => m.nuevas))
                 const alturaPorcentaje = maxNuevas > 0 ? (mes.nuevas / maxNuevas) * 100 : 0
 
                 return (
@@ -2114,7 +2114,7 @@ export default function AdminAnalyticsPage() {
             <div className="mt-6 pt-6 border-t border-gray-200 text-center">
               <p className="text-sm text-gray-600">
                 Total últimos 6 meses: <span className="font-bold text-gray-900">
-                  {analytics.crecimientoMensual.reduce((sum, m) => sum + m.nuevas, 0).toLocaleString()}
+                  {analytics.crecimientoMensual.reduce((sum: any, m: any) => sum + m.nuevas, 0).toLocaleString()}
                 </span> nuevas áreas
               </p>
             </div>
@@ -2146,7 +2146,7 @@ export default function AdminAnalyticsPage() {
             <div className="p-6">
               <div className="flex items-end justify-between gap-1 h-64">
                 {analytics.rutasPorDia.map((dia, index) => {
-                  const maxCount = Math.max(...analytics.rutasPorDia.map(d => d.count), 1)
+                  const maxCount = Math.max(...analytics.rutasPorDia.map((d: any) => d.count), 1)
                   const altura = (dia.count / maxCount) * 100
                   return (
                     <div key={index} className="flex-1 flex flex-col items-center gap-1">
@@ -2170,11 +2170,11 @@ export default function AdminAnalyticsPage() {
               <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
                 <p className="text-sm text-gray-600">
                   Total últimos 30 días: <span className="font-bold text-indigo-600">
-                    {analytics.rutasPorDia.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
+                    {analytics.rutasPorDia.reduce((sum: any, d: any) => sum + d.count, 0).toLocaleString()}
                   </span> rutas
                 </p>
                 <p className="text-xs text-gray-500">
-                  Promedio diario: {(analytics.rutasPorDia.reduce((sum, d) => sum + d.count, 0) / 30).toFixed(1)}
+                  Promedio diario: {(analytics.rutasPorDia.reduce((sum: any, d: any) => sum + d.count, 0) / 30).toFixed(1)}
                 </p>
               </div>
             </div>
@@ -2189,7 +2189,7 @@ export default function AdminAnalyticsPage() {
             <div className="p-6">
               <div className="flex items-end justify-between gap-1 h-64">
                 {analytics.visitasPorDia.map((dia, index) => {
-                  const maxCount = Math.max(...analytics.visitasPorDia.map(d => d.count), 1)
+                  const maxCount = Math.max(...analytics.visitasPorDia.map((d: any) => d.count), 1)
                   const altura = (dia.count / maxCount) * 100
                   return (
                     <div key={index} className="flex-1 flex flex-col items-center gap-1">
@@ -2213,11 +2213,11 @@ export default function AdminAnalyticsPage() {
               <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
                 <p className="text-sm text-gray-600">
                   Total últimos 30 días: <span className="font-bold text-green-600">
-                    {analytics.visitasPorDia.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
+                    {analytics.visitasPorDia.reduce((sum: any, d: any) => sum + d.count, 0).toLocaleString()}
                   </span> visitas
                 </p>
                 <p className="text-xs text-gray-500">
-                  Promedio diario: {(analytics.visitasPorDia.reduce((sum, d) => sum + d.count, 0) / 30).toFixed(1)}
+                  Promedio diario: {(analytics.visitasPorDia.reduce((sum: any, d: any) => sum + d.count, 0) / 30).toFixed(1)}
                 </p>
               </div>
             </div>
@@ -2232,7 +2232,7 @@ export default function AdminAnalyticsPage() {
             <div className="p-6">
               <div className="flex items-end justify-between gap-1 h-64">
                 {analytics.interaccionesIAPorDia.map((dia, index) => {
-                  const maxCount = Math.max(...analytics.interaccionesIAPorDia.map(d => d.count), 1)
+                  const maxCount = Math.max(...analytics.interaccionesIAPorDia.map((d: any) => d.count), 1)
                   const altura = (dia.count / maxCount) * 100
                   return (
                     <div key={index} className="flex-1 flex flex-col items-center gap-1">
@@ -2256,11 +2256,11 @@ export default function AdminAnalyticsPage() {
               <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
                 <p className="text-sm text-gray-600">
                   Total últimos 30 días: <span className="font-bold text-purple-600">
-                    {analytics.interaccionesIAPorDia.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
+                    {analytics.interaccionesIAPorDia.reduce((sum: any, d: any) => sum + d.count, 0).toLocaleString()}
                   </span> mensajes
                 </p>
                 <p className="text-xs text-gray-500">
-                  Promedio diario: {(analytics.interaccionesIAPorDia.reduce((sum, d) => sum + d.count, 0) / 30).toFixed(1)}
+                  Promedio diario: {(analytics.interaccionesIAPorDia.reduce((sum: any, d: any) => sum + d.count, 0) / 30).toFixed(1)}
                 </p>
               </div>
             </div>
@@ -2275,7 +2275,7 @@ export default function AdminAnalyticsPage() {
             <div className="p-6">
               <div className="flex items-end justify-between gap-2 h-64">
                 {analytics.rutasPorMes.map((mes, index) => {
-                  const maxCount = Math.max(...analytics.rutasPorMes.map(m => m.count), 1)
+                  const maxCount = Math.max(...analytics.rutasPorMes.map((m: any) => m.count), 1)
                   const altura = (mes.count / maxCount) * 100
                   return (
                     <div key={index} className="flex-1 flex flex-col items-center gap-2">
@@ -2297,14 +2297,14 @@ export default function AdminAnalyticsPage() {
                 <div>
                   <p className="text-sm text-gray-600">
                     Total rutas (12 meses): <span className="font-bold text-indigo-600">
-                      {analytics.rutasPorMes.reduce((sum, m) => sum + m.count, 0).toLocaleString()}
+                      {analytics.rutasPorMes.reduce((sum: any, m: any) => sum + m.count, 0).toLocaleString()}
                     </span>
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">
                     Total distancia: <span className="font-bold text-teal-600">
-                      {analytics.rutasPorMes.reduce((sum, m) => sum + m.distancia, 0).toLocaleString()} km
+                      {analytics.rutasPorMes.reduce((sum: any, m: any) => sum + m.distancia, 0).toLocaleString()} km
                     </span>
                   </p>
                 </div>
@@ -2909,7 +2909,7 @@ export default function AdminAnalyticsPage() {
                 <div className="p-6">
                   <div className="space-y-3">
                     {analytics.distribucionKilometraje.map((rango, index) => {
-                      const total = analytics.distribucionKilometraje.reduce((sum, r) => sum + r.count, 0) || 1
+                      const total = analytics.distribucionKilometraje.reduce((sum: any, r: any) => sum + r.count, 0) || 1
                       const porcentaje = (rango.count / total) * 100
                       return (
                         <div key={index} className="group">
@@ -2940,7 +2940,7 @@ export default function AdminAnalyticsPage() {
               <div className="p-6">
                 <div className="flex items-end justify-between gap-2 h-80">
                   {analytics.vehiculosPorMes.map((mes, index) => {
-                    const maxCount = Math.max(...analytics.vehiculosPorMes.map(m => m.count), 1)
+                    const maxCount = Math.max(...analytics.vehiculosPorMes.map((m: any) => m.count), 1)
                     const altura = (mes.count / maxCount) * 100
                     return (
                       <div key={index} className="flex-1 flex flex-col items-center gap-2">
@@ -2962,7 +2962,7 @@ export default function AdminAnalyticsPage() {
                 <div className="mt-6 pt-6 border-t border-gray-200 text-center">
                   <p className="text-sm text-gray-600">
                     Total registrados (12 meses): <span className="font-bold text-red-600">
-                      {analytics.vehiculosPorMes.reduce((sum, m) => sum + m.count, 0).toLocaleString()}
+                      {analytics.vehiculosPorMes.reduce((sum: any, m: any) => sum + m.count, 0).toLocaleString()}
                     </span> vehículos
                   </p>
                 </div>
