@@ -2,17 +2,11 @@ import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/database.types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Singleton instance
-let client: SupabaseClient<Database> | undefined;
-
+// NO usar singleton - crear instancia nueva cada vez
+// Esto permite que Supabase lea las cookies actualizadas después de OAuth
 export function createClient() {
-  // Si ya existe una instancia en el navegador, reutilizarla
-  if (client) {
-    return client;
-  }
-
-  // Crear nueva instancia solo si no existe
-  client = createBrowserClient<Database>(
+  // Siempre crear nueva instancia para leer cookies frescas
+  const client = createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
