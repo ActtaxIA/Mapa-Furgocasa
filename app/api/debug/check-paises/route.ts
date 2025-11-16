@@ -39,7 +39,7 @@ export async function GET() {
     }))
 
     // Verificar problemas
-    const problemasEspacios = data.filter(a => a.pais && (a.pais !== a.pais.trim()))
+    const problemasEspacios = data.filter((a: any) => a.pais && (a.pais !== a.pais.trim()))
     const paisesUnicos = Object.keys(porPais).sort()
 
     return NextResponse.json({
