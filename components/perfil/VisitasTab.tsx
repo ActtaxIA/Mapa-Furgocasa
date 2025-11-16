@@ -32,8 +32,8 @@ export function VisitasTab({ userId }: Props) {
       const supabase = createClient()
       
       // Primero obtener las visitas
-      const { data: visitasData, error: visitasError } = await supabase
-        .from('visitas')
+      const { data: visitasData, error: visitasError } = await (supabase as any)
+          .from('visitas')
         .select('*')
         .eq('user_id', userId)
         .order('fecha_visita', { ascending: false })
@@ -51,8 +51,8 @@ export function VisitasTab({ userId }: Props) {
 
       // Obtener las áreas relacionadas
       const areaIds = visitasData.map(v => v.area_id)
-      const { data: areasData, error: areasError } = await supabase
-        .from('areas')
+      const { data: areasData, error: areasError } = await (supabase as any)
+          .from('areas')
         .select('*')
         .in('id', areaIds)
 
@@ -84,8 +84,8 @@ export function VisitasTab({ userId }: Props) {
     setDeleting(visitaId)
     try {
       const supabase = createClient()
-      const { error } = await supabase
-        .from('visitas')
+      const { error } = await (supabase as any)
+          .from('visitas')
         .delete()
         .eq('id', visitaId)
 

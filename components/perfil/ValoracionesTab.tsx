@@ -29,8 +29,8 @@ export function ValoracionesTab({ userId }: Props) {
       const supabase = createClient()
       
       // Primero obtener las valoraciones
-      const { data: valoracionesData, error: valoracionesError } = await supabase
-        .from('valoraciones')
+      const { data: valoracionesData, error: valoracionesError } = await (supabase as any)
+          .from('valoraciones')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
@@ -48,8 +48,8 @@ export function ValoracionesTab({ userId }: Props) {
 
       // Obtener las áreas relacionadas
       const areaIds = valoracionesData.map(v => v.area_id)
-      const { data: areasData, error: areasError } = await supabase
-        .from('areas')
+      const { data: areasData, error: areasError } = await (supabase as any)
+          .from('areas')
         .select('*')
         .in('id', areaIds)
 
@@ -81,8 +81,8 @@ export function ValoracionesTab({ userId }: Props) {
     setDeleting(valoracionId)
     try {
       const supabase = createClient()
-      const { error } = await supabase
-        .from('valoraciones')
+      const { error } = await (supabase as any)
+          .from('valoraciones')
         .delete()
         .eq('id', valoracionId)
 

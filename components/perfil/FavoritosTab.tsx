@@ -29,8 +29,8 @@ export function FavoritosTab({ userId }: Props) {
       const supabase = createClient()
       
       // Primero obtener los favoritos
-      const { data: favoritosData, error: favoritosError } = await supabase
-        .from('favoritos')
+      const { data: favoritosData, error: favoritosError } = await (supabase as any)
+          .from('favoritos')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
@@ -48,8 +48,8 @@ export function FavoritosTab({ userId }: Props) {
 
       // Obtener las áreas relacionadas
       const areaIds = favoritosData.map(f => f.area_id)
-      const { data: areasData, error: areasError } = await supabase
-        .from('areas')
+      const { data: areasData, error: areasError } = await (supabase as any)
+          .from('areas')
         .select('*')
         .in('id', areaIds)
 
@@ -81,8 +81,8 @@ export function FavoritosTab({ userId }: Props) {
     setRemoving(favoritoId)
     try {
       const supabase = createClient()
-      const { error } = await supabase
-        .from('favoritos')
+      const { error } = await (supabase as any)
+          .from('favoritos')
         .delete()
         .eq('id', favoritoId)
 

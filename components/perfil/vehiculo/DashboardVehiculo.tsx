@@ -57,16 +57,16 @@ export function DashboardVehiculo({ vehiculo, onTabChange }: Props) {
       const en30Dias = new Date()
       en30Dias.setDate(hoy.getDate() + 30)
 
-      const { data: alertasMantenimiento } = await supabase
-        .from('mantenimientos')
+      const { data: alertasMantenimiento } = await (supabase as any)
+          .from('mantenimientos')
         .select('tipo, proximo_mantenimiento, kilometraje_proximo')
         .eq('vehiculo_id', vehiculo.id)
         .not('proximo_mantenimiento', 'is', null)
         .lte('proximo_mantenimiento', en30Dias.toISOString())
         .order('proximo_mantenimiento')
 
-      const { data: alertasDocumentos } = await supabase
-        .from('vehiculo_documentos')
+      const { data: alertasDocumentos } = await (supabase as any)
+          .from('vehiculo_documentos')
         .select('tipo, nombre, fecha_caducidad')
         .eq('vehiculo_id', vehiculo.id)
         .not('fecha_caducidad', 'is', null)

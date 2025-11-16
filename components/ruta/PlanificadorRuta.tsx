@@ -665,7 +665,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
           return
         }
 
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('areas')
           .select('*')
           .eq('activo', true)
@@ -1042,8 +1042,8 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
 
     try{
       const supabase = createClient()
-      const { data: ruta, error } = await supabase
-        .from('rutas')
+      const { data: ruta, error } = await (supabase as any)
+          .from('rutas')
         .select('*')
         .eq('id', rutaId)
         .single()
@@ -1400,8 +1400,8 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         }
       }
 
-      const { error } = await supabase
-        .from('rutas')
+      const { error } = await (supabase as any)
+          .from('rutas')
         .insert(rutaData)
 
       if (error) throw error

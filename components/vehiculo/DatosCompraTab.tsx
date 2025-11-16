@@ -104,8 +104,8 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
   const loadData = async () => {
     try {
       const supabase = createClient()
-      const { data, error } = await supabase
-        .from('vehiculo_valoracion_economica')
+      const { data, error } = await (supabase as any)
+          .from('vehiculo_valoracion_economica')
         .select('*')
         .eq('vehiculo_id', vehiculoId)
         .maybeSingle()
@@ -209,13 +209,13 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
       let result
       if (existingData) {
         // Update
-        result = await supabase
+        result = await (supabase as any)
           .from('vehiculo_valoracion_economica')
           .update(dataToSave)
           .eq('id', existingData.id)
       } else {
         // Insert
-        result = await supabase
+        result = await (supabase as any)
           .from('vehiculo_valoracion_economica')
           .insert(dataToSave)
       }

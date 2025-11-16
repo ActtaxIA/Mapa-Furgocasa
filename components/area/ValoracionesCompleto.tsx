@@ -56,8 +56,8 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
     try {
       const supabase = createClient()
       
-      const { error } = await supabase
-        .from('visitas')
+      const { error } = await (supabase as any)
+          .from('visitas')
         .insert({
           user_id: user.id,
           area_id: areaId,
@@ -107,8 +107,8 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
     try {
       const supabase = createClient()
       
-      const { data, error } = await supabase
-        .from('valoraciones')
+      const { data, error } = await (supabase as any)
+          .from('valoraciones')
         .insert({
           user_id: user.id,
           area_id: areaId,
@@ -120,8 +120,8 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
       if (error) throw error
 
       // Recargar valoraciones
-      const { data: newValoraciones } = await supabase
-        .from('valoraciones')
+      const { data: newValoraciones } = await (supabase as any)
+          .from('valoraciones')
         .select('*')
         .eq('area_id', areaId)
         .order('created_at', { ascending: false })

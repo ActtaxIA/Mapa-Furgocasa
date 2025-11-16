@@ -30,8 +30,8 @@ export function RutasTab({ userId }: Props) {
   const loadRutas = async () => {
     try {
       const supabase = createClient()
-      const { data, error } = await supabase
-        .from('rutas')
+      const { data, error } = await (supabase as any)
+          .from('rutas')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
@@ -51,8 +51,8 @@ export function RutasTab({ userId }: Props) {
     setDeleting(rutaId)
     try {
       const supabase = createClient()
-      const { error } = await supabase
-        .from('rutas')
+      const { error } = await (supabase as any)
+          .from('rutas')
         .delete()
         .eq('id', rutaId)
 
@@ -70,8 +70,8 @@ export function RutasTab({ userId }: Props) {
     setToggling(rutaId)
     try {
       const supabase = createClient()
-      const { error } = await supabase
-        .from('rutas')
+      const { error } = await (supabase as any)
+          .from('rutas')
         .update({ favorito: !currentFavorito })
         .eq('id', rutaId)
 

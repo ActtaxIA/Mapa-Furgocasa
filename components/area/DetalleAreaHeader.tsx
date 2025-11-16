@@ -33,8 +33,8 @@ export function DetalleAreaHeader({ area }: Props) {
       if (!session?.user) return
       setUser(session.user)
 
-      const { data } = await supabase
-        .from('favoritos')
+      const { data } = await (supabase as any)
+          .from('favoritos')
         .select('id')
         .eq('user_id', session.user.id)
         .eq('area_id', area.id)
@@ -57,7 +57,7 @@ export function DetalleAreaHeader({ area }: Props) {
       const supabase = createClient()
 
       if (isFavorite) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('favoritos')
           .delete()
           .eq('user_id', user.id)
@@ -67,7 +67,7 @@ export function DetalleAreaHeader({ area }: Props) {
         setIsFavorite(false)
         showToast('❌ Quitado de favoritos', 'info')
       } else {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('favoritos')
           .insert({ user_id: user.id, area_id: area.id })
 
