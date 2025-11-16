@@ -28,11 +28,11 @@ export default function MisAutocaravanasPage() {
   const loadUnreadCount = async (userId: string) => {
     try {
       const supabase = createClient()
-      const { data, error } = await supabase
-        .rpc('obtener_reportes_usuario', { usuario_uuid: userId } as any) as { data: any[] | null, error: any }
+      const result: any = await supabase
+        .rpc('obtener_reportes_usuario', { usuario_uuid: userId })
 
-      if (!error && data) {
-        const noLeidos = data.filter((reporte: any) => !reporte.leido).length
+      if (!result.error && result.data) {
+        const noLeidos = result.data.filter((reporte: any) => !reporte.leido).length
         setUnreadCount(noLeidos)
       }
     } catch (error) {
