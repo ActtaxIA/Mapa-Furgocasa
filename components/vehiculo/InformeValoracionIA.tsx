@@ -85,7 +85,8 @@ export default function InformeValoracionIA({
       )
 
       if (!response.ok) {
-        throw new Error('Error al eliminar la valoración')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Error al eliminar la valoración')
       }
 
       // Cerrar confirmación y notificar al padre
@@ -94,9 +95,9 @@ export default function InformeValoracionIA({
         onValoracionEliminada()
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error eliminando valoración:', error)
-      alert('Error al eliminar la valoración. Por favor intenta de nuevo.')
+      alert(`Error al eliminar la valoración: ${error.message}`)
     } finally {
       setEliminando(null)
     }
