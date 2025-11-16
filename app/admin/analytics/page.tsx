@@ -384,7 +384,7 @@ export default function AdminAnalyticsPage() {
       const usuariosUnicos = Object.keys(rutasPorUsuario).length
       const promedioRutasPorUsuario = usuariosUnicos > 0 ? totalRutas / usuariosUnicos : 0
 
-      const distanciaPorUsuario = rutas?.reduce((acc: any, r) => {
+      const distanciaPorUsuario = rutas?.reduce((acc: any, r: any) => {
         if (r.user_id) acc[r.user_id] = (acc[r.user_id] || 0) + (r.distancia_km || 0)
         return acc
       }, {}) || {}
@@ -599,7 +599,7 @@ export default function AdminAnalyticsPage() {
       console.log(`✅ IA: ${interaccionesIAHoy} interacciones hoy, ${interaccionesIAEstaSemana} esta semana`)
 
       // ========== TOP ÁREAS MÁS VISITADAS ==========
-      const areasPorVisitas = visitas?.reduce((acc: any, visita) => {
+      const areasPorVisitas = visitas?.reduce((acc: any, visita: any) => {
         const areaId = visita.area_id
         acc[areaId] = (acc[areaId] || 0) + 1
         return acc
@@ -615,7 +615,7 @@ export default function AdminAnalyticsPage() {
         .slice(0, 10)
 
       // ========== TOP ÁREAS MÁS VALORADAS ==========
-      const areasPorValoraciones = valoraciones?.reduce((acc: any, valoracion) => {
+      const areasPorValoraciones = valoraciones?.reduce((acc: any, valoracion: any) => {
         const areaId = valoracion.area_id
         if (!acc[areaId]) {
           acc[areaId] = { count: 0, sumRating: 0 }
@@ -639,7 +639,7 @@ export default function AdminAnalyticsPage() {
         .slice(0, 10)
 
       // ========== TOP ÁREAS EN MÁS FAVORITOS ==========
-      const areasPorFavoritos = favoritos?.reduce((acc: any, favorito) => {
+      const areasPorFavoritos = favoritos?.reduce((acc: any, favorito: any) => {
         const areaId = favorito.area_id
         acc[areaId] = (acc[areaId] || 0) + 1
         return acc
@@ -856,7 +856,7 @@ export default function AdminAnalyticsPage() {
         : 0
 
       // Marcas más populares en valoraciones IA
-      const marcasPorCount = vehiculosValoradosConInfo.reduce((acc: any, v) => {
+      const marcasPorCount = vehiculosValoradosConInfo.reduce((acc: any, v: any) => {
         if (v.marca && v.marca !== 'N/A') acc[v.marca] = (acc[v.marca] || 0) + 1
         return acc
       }, {})
@@ -871,7 +871,7 @@ export default function AdminAnalyticsPage() {
         .slice(0, 10)
 
       // Modelos más populares en valoraciones IA (marca + modelo)
-      const modelosPorCount = vehiculosValoradosConInfo.reduce((acc: any, v) => {
+      const modelosPorCount = vehiculosValoradosConInfo.reduce((acc: any, v: any) => {
         if (v.marca && v.marca !== 'N/A' && v.modelo && v.modelo !== 'N/A') {
           const key = `${v.marca}|${v.modelo}`
           acc[key] = (acc[key] || 0) + 1
@@ -1081,7 +1081,7 @@ export default function AdminAnalyticsPage() {
       console.log('✅ Métricas de comportamiento calculadas')
 
       // ========== ESTADÍSTICAS POR PAÍS ==========
-      const areasPorPais = areas?.reduce((acc: any, area) => {
+      const areasPorPais = areas?.reduce((acc: any, area: any) => {
         const pais = area.pais || 'Sin país'
         acc[pais] = (acc[pais] || 0) + 1
         return acc
@@ -1097,7 +1097,7 @@ export default function AdminAnalyticsPage() {
         .sort((a, b) => b.count - a.count)
 
       // ========== ESTADÍSTICAS POR COMUNIDAD/REGIÓN ==========
-      const areasPorComunidad = areas?.reduce((acc: any, area) => {
+      const areasPorComunidad = areas?.reduce((acc: any, area: any) => {
         if (area.comunidad_autonoma) {
           const key = `${area.comunidad_autonoma}|${area.pais}`
           acc[key] = (acc[key] || 0) + 1
@@ -1115,7 +1115,7 @@ export default function AdminAnalyticsPage() {
         .slice(0, 15)
 
       // ========== ESTADÍSTICAS POR PROVINCIA ==========
-      const areasPorProvincia = areas?.reduce((acc: any, area) => {
+      const areasPorProvincia = areas?.reduce((acc: any, area: any) => {
         const provincia = area.provincia || 'Sin provincia'
         acc[provincia] = (acc[provincia] || 0) + 1
         return acc
