@@ -319,11 +319,12 @@ export default function InformeValoracionIA({
                         {index + 1}. {comp.titulo}
                       </h4>
                       <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                        comp.relevancia >= 0.8 ? 'bg-green-100 text-green-800' :
-                        comp.relevancia >= 0.6 ? 'bg-yellow-100 text-yellow-800' :
+                        comp.relevancia >= 80 ? 'bg-green-100 text-green-800' :
+                        comp.relevancia >= 60 ? 'bg-yellow-100 text-yellow-800' :
+                        comp.relevancia >= 40 ? 'bg-orange-100 text-orange-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {(comp.relevancia * 100).toFixed(0)}% relevancia
+                        {comp.relevancia ? `${comp.relevancia}% relevancia` : 'Relevancia no calculada'}
                       </span>
                     </div>
 
