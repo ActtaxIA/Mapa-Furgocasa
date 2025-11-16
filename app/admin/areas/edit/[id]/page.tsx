@@ -19,12 +19,12 @@ import {
 import type { Area } from '@/types/database.types'
 
 const GooglePlacesPicker = dynamic(
-  () => import('@/components/admin/GooglePlacesPicker').then((mod: any) => mod.default),
+  () => import('@/components/admin/GooglePlacesPicker'),
   {
-  ssr: false,
-  loading: () => <div className="text-center py-8">Cargando mapa...</div>
+    ssr: false,
+    loading: () => <div className="text-center py-8">Cargando mapa...</div>
   }
-)
+) as any
 
 const SERVICIOS_DISPONIBLES = [
   { id: 'agua', label: '💧 Agua' },
