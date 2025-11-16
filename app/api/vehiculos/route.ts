@@ -23,7 +23,7 @@ export async function GET() {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    // Obtener vehículos del usuario con estado de venta
+    // Obtener vehículos del usuario con datos económicos completos
     const { data: vehiculos, error } = await supabase
       .from("vehiculos_registrados")
       .select(
@@ -32,7 +32,10 @@ export async function GET() {
         vehiculo_valoracion_economica (
           vendido,
           fecha_venta,
-          precio_venta_final
+          precio_venta_final,
+          precio_compra,
+          fecha_compra,
+          kilometros_compra
         )
       `
       )
@@ -48,10 +51,14 @@ export async function GET() {
       );
     }
 
-    // Transformar los datos para incluir el campo vendido directamente
+    // Transformar los datos para incluir datos económicos directamente
     const vehiculosTransformados = (vehiculos || []).map((v: any) => ({
       ...v,
       vendido: v.vehiculo_valoracion_economica?.vendido || false,
+      precio_compra: v.vehiculo_valoracion_economica?.precio_compra || null,
+      fecha_compra: v.vehiculo_valoracion_economica?.fecha_compra || null,
+      kilometros_compra:
+        v.vehiculo_valoracion_economica?.kilometros_compra || null,
     }));
 
     return NextResponse.json({ vehiculos: vehiculosTransformados });
