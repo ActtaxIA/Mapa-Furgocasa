@@ -129,8 +129,7 @@ async function fixCountries() {
   let hasMore = true
 
   while (hasMore) {
-    const { data: areas, error } = await supabase
-      .from('areas')
+    const { data: areas, error } = await (supabase as any).from('areas')
       .select('id, nombre, pais, provincia, ciudad, latitud, longitud')
       .not('latitud', 'is', null)
       .not('longitud', 'is', null)
@@ -242,7 +241,7 @@ async function fixCountries() {
 
   // 4. Mostrar cambios por país
   const changesByCountry: Record<string, number> = {}
-  changes.forEach(change => {
+  changes.forEach((change: any) => {
     const key = `${change.oldCountry} → ${change.newCountry}`
     changesByCountry[key] = (changesByCountry[key] || 0) + 1
   })
@@ -276,8 +275,7 @@ async function fixCountries() {
           updateData.ciudad = change.newCity
         }
 
-        const { error: updateError } = await supabase
-          .from('areas')
+        const { error: updateError } = await (supabase as any).from('areas')
           .update(updateData)
           .eq('id', change.area.id)
 

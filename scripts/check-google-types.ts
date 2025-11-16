@@ -12,19 +12,16 @@ async function checkGoogleTypes() {
   console.log('🔍 Verificando google_types en áreas...\n')
 
   // Total de áreas
-  const { count: total } = await supabase
-    .from('areas')
+  const { count: total } = await (supabase as any).from('areas')
     .select('*', { count: 'exact', head: true })
 
   // Áreas con google_types
-  const { count: conTypes } = await supabase
-    .from('areas')
+  const { count: conTypes } = await (supabase as any).from('areas')
     .select('*', { count: 'exact', head: true })
     .not('google_types', 'is', null)
 
   // Áreas sin google_types
-  const { count: sinTypes } = await supabase
-    .from('areas')
+  const { count: sinTypes } = await (supabase as any).from('areas')
     .select('*', { count: 'exact', head: true })
     .is('google_types', null)
 
@@ -35,8 +32,7 @@ async function checkGoogleTypes() {
   console.log()
 
   // Muestra de áreas
-  const { data: muestra } = await supabase
-    .from('areas')
+  const { data: muestra } = await (supabase as any).from('areas')
     .select('nombre, google_place_id, google_types')
     .limit(5)
 

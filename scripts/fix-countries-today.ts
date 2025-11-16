@@ -161,8 +161,7 @@ async function fixCountriesToday() {
   let hasMore = true;
 
   while (hasMore) {
-    const { data: areas, error } = await supabase
-      .from("areas")
+    const { data: areas, error } = await (supabase as any).from("areas")
       .select(
         "id, nombre, pais, provincia, ciudad, latitud, longitud, created_at"
       )
@@ -358,8 +357,7 @@ async function fixCountriesToday() {
           updateData.ciudad = change.newCity;
         }
 
-        const { error: updateError } = await supabase
-          .from("areas")
+        const { error: updateError } = await (supabase as any).from("areas")
           .update(updateData)
           .eq("id", change.area.id);
 

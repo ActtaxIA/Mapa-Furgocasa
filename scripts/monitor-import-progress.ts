@@ -48,8 +48,7 @@ async function getAreaStats(): Promise<{
   ultimasAreas: any[];
 }> {
   // Total de áreas
-  const { count: total } = await supabase
-    .from("areas")
+  const { count: total } = await (supabase as any).from("areas")
     .select("*", { count: "exact", head: true })
     .eq("activo", true);
 
@@ -78,8 +77,7 @@ async function getAreaStats(): Promise<{
   const porPais: AreasPorPais[] = [];
 
   for (const pais of paisesLATAM) {
-    const { data, error } = await supabase
-      .from("areas")
+    const { data, error } = await (supabase as any).from("areas")
       .select("created_at")
       .eq("activo", true)
       .eq("pais", pais)
@@ -87,8 +85,7 @@ async function getAreaStats(): Promise<{
       .limit(1);
 
     if (!error && data && data.length > 0) {
-      const { count } = await supabase
-        .from("areas")
+      const { count } = await (supabase as any).from("areas")
         .select("*", { count: "exact", head: true })
         .eq("activo", true)
         .eq("pais", pais);
@@ -104,8 +101,7 @@ async function getAreaStats(): Promise<{
   }
 
   // Últimas 10 áreas creadas
-  const { data: ultimasAreas } = await supabase
-    .from("areas")
+  const { data: ultimasAreas } = await (supabase as any).from("areas")
     .select("nombre, pais, ciudad, created_at")
     .eq("activo", true)
     .order("created_at", { ascending: false })

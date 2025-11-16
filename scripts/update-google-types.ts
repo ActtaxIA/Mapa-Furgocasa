@@ -144,8 +144,7 @@ async function updateGoogleTypes() {
   let hasMore = true
 
   while (hasMore) {
-    const { data: batch, error } = await supabase
-      .from('areas')
+    const { data: batch, error } = await (supabase as any).from('areas')
       .select('id, nombre, google_place_id, google_types')
       .not('google_place_id', 'is', null)
       .range(offset, offset + 999) // Supabase límite de 1000
@@ -164,8 +163,8 @@ async function updateGoogleTypes() {
     }
   }
 
-  const areasToUpdate = allAreas.filter(a => !a.google_types || a.google_types.length === 0)
-  const areasAlreadyUpdated = allAreas.filter(a => a.google_types && a.google_types.length > 0)
+  const areasToUpdate = allAreas.filter((a: any) => !a.google_types || a.google_types.length === 0)
+  const areasAlreadyUpdated = allAreas.filter((a: any) => a.google_types && a.google_types.length > 0)
 
   console.log()
   console.log('📈 RESUMEN:')
@@ -230,8 +229,7 @@ async function updateGoogleTypes() {
 
         if (types && types.length > 0) {
           // Actualizar en BD
-          const { error: updateError } = await supabase
-            .from('areas')
+          const { error: updateError } = await (supabase as any).from('areas')
             .update({
               google_types: types,
               updated_at: new Date().toISOString()

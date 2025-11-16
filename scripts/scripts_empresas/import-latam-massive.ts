@@ -293,8 +293,7 @@ async function cargarAreasExistentes() {
   let hasMore = true;
 
   while (hasMore) {
-    const { data: areas, error } = await supabase
-      .from("areas")
+    const { data: areas, error } = await (supabase as any).from("areas")
       .select(
         "id, nombre, slug, pais, provincia, ciudad, latitud, longitud, direccion, google_place_id"
       )
@@ -739,7 +738,7 @@ async function importArea(place: PlaceResult, pais: string): Promise<boolean> {
       servicios: {},
     };
 
-    const { error } = await supabase.from("areas").insert([newArea]);
+    const { error } = await (supabase as any).from("areas").insert([newArea]);
 
     if (error) {
       console.error(`❌ Error insertando ${place.name}:`, error.message);
