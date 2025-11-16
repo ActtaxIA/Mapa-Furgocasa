@@ -102,8 +102,7 @@ export async function searchAreas(params: BusquedaAreasParams): Promise<AreaResu
       const radio = params.ubicacion.radio_km || 50
       
       // Llamar a la función PostgreSQL areas_cerca
-      const { data: areasGeo, error: errorGeo } = await supabase
-        .rpc('areas_cerca', {
+      const { data: areasGeo, error: errorGeo } = await (supabase as any).rpc('areas_cerca', {
           lat_usuario: params.ubicacion.lat,
           lng_usuario: params.ubicacion.lng,
           radio_km: radio
@@ -157,8 +156,7 @@ export async function searchAreas(params: BusquedaAreasParams): Promise<AreaResu
     // CASO 2: Búsqueda por nombre de ciudad/provincia/país
     console.log('📍 Búsqueda por nombre de ubicación')
     
-    let query = supabase
-      .from('areas')
+    let query = (supabase as any).from('areas')
       .select(`
         id, nombre, slug, ciudad, provincia, pais, 
         latitud, longitud, precio_noche, 
@@ -242,8 +240,7 @@ export async function getAreaDetails(areaId: string): Promise<AreaDetallada | nu
   console.log('📋 [getAreaDetails] Consultando área:', areaId)
   
   try {
-    const { data, error } = await supabase
-      .from('areas')
+    const { data, error } = await (supabase as any).from('areas')
       .select('*')
       .eq('id', areaId)
       .single()
@@ -280,8 +277,7 @@ export async function getAreasByCountry(pais: string, limit: number = 10): Promi
   console.log('🌍 [getAreasByCountry] Buscando en:', pais, `(límite: ${limit})`)
   
   try {
-    const { data, error } = await supabase
-      .from('areas')
+    const { data, error } = await (supabase as any).from('areas')
       .select(`
         id, nombre, slug, ciudad, provincia, pais, 
         latitud, longitud, precio_noche, 
@@ -320,8 +316,7 @@ export async function getAreasPopulares(limit: number = 10): Promise<AreaResumen
   console.log('⭐ [getAreasPopulares] Obteniendo top', limit)
   
   try {
-    const { data, error } = await supabase
-      .from('areas')
+    const { data, error } = await (supabase as any).from('areas')
       .select(`
         id, nombre, slug, ciudad, provincia, pais, 
         latitud, longitud, precio_noche, 
@@ -362,8 +357,7 @@ export async function buscarAreasPorNombre(nombre: string, limit: number = 5): P
   console.log('🔎 [buscarAreasPorNombre] Buscando:', nombre)
   
   try {
-    const { data, error } = await supabase
-      .from('areas')
+    const { data, error } = await (supabase as any).from('areas')
       .select(`
         id, nombre, slug, ciudad, provincia, pais, 
         latitud, longitud, precio_noche, 
@@ -448,8 +442,7 @@ export function formatAreaParaChat(area: AreaResumen): string {
 export async function contarAreas(params: BusquedaAreasParams): Promise<number> {
   const supabase = getSupabaseClient()
   
-  let query = supabase
-    .from('areas')
+  let query = (supabase as any).from('areas')
     .select('id', { count: 'exact', head: true })
     .eq('activo', true)
   

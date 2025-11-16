@@ -470,8 +470,7 @@ export async function POST(req: NextRequest) {
       
       // 3. HISTORIAL: Cargar mensajes previos de la conversación
       conversacionId
-        ? supabase
-            .from('chatbot_mensajes')
+        ? (supabase as any).from('chatbot_mensajes')
             .select('rol, contenido')
             .eq('conversacion_id', conversacionId)
             .order('created_at', { ascending: true })

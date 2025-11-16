@@ -44,8 +44,7 @@ export function DashboardVehiculo({ vehiculo, onTabChange }: Props) {
       const supabase = createClient()
 
       // Cargar resumen económico
-      const { data: resumenData } = await supabase
-        .rpc('obtener_resumen_economico_vehiculo', { p_vehiculo_id: vehiculo.id })
+      const { data: resumenData } = await (supabase as any).rpc('obtener_resumen_economico_vehiculo', { p_vehiculo_id: vehiculo.id })
         .single()
 
       if (resumenData) {

@@ -24,8 +24,7 @@ export function Navbar() {
   const loadUnreadReports = async (userId: string) => {
     try {
       const supabase = createClient();
-      const { data, error } = await supabase
-        .rpc('obtener_reportes_usuario', { usuario_uuid: userId });
+      const { data, error } = await (supabase as any).rpc('obtener_reportes_usuario', { usuario_uuid: userId });
 
       if (!error && data) {
         const noLeidos = data.filter((reporte: any) => !reporte.leido).length;
