@@ -667,8 +667,8 @@ export default function ConfiguracionPage() {
                   {editedConfig.config_value.prompts
                     .sort((a: any, b: any) => a.order - b.order)
                     .map((prompt: any, index: any) => {
-                      const colors = PROMPT_COLORS[prompt.role]
-                      const label = PROMPT_LABELS[prompt.role]
+                      const colors = PROMPT_COLORS[prompt.role as keyof typeof PROMPT_COLORS]
+                      const label = PROMPT_LABELS[prompt.role as keyof typeof PROMPT_LABELS]
 
                       return (
                         <div
@@ -916,8 +916,8 @@ export default function ConfiguracionPage() {
                     {editedChatbotConfig.prompts.prompts
                       .sort((a: any, b: any) => a.order - b.order)
                       .map((prompt: any, index: any) => {
-                        const colors = PROMPT_COLORS[prompt.role]
-                        const label = PROMPT_LABELS[prompt.role]
+                        const colors = PROMPT_COLORS[prompt.role as keyof typeof PROMPT_COLORS]
+                        const label = PROMPT_LABELS[prompt.role as keyof typeof PROMPT_LABELS]
 
                         return (
                           <div
