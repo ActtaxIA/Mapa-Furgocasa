@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
               path: '/',
               sameSite: 'lax',
               secure: true,
-              httpOnly: true,
+              httpOnly: false, // FALSE para que JavaScript pueda leer las cookies
               maxAge: options.maxAge || 31536000,
             })
 
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
               path: '/',
               sameSite: 'lax',
               secure: true,
-              httpOnly: true,
+              httpOnly: false, // FALSE para que JavaScript pueda leer las cookies
               maxAge: options.maxAge || 31536000,
             })
           },
