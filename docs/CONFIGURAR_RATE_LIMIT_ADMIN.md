@@ -121,4 +121,3 @@ Ahora el usuario verá un mensaje claro en español en lugar del error técnico 
 - [Supabase Auth Rate Limiting Docs](https://supabase.com/docs/guides/auth/auth-rate-limits)
 - [Dashboard de Supabase](https://supabase.com/dashboard)
 - [Configuración actual del proyecto](https://supabase.com/dashboard/project/mgbipnfbbwzvegsjrzob)
-

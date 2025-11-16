@@ -730,7 +730,9 @@ export default function VehiculoPage() {
                       {kilometrajeActual && (
                         <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium bg-orange-100 text-orange-800 border border-orange-200">
                           <TruckIcon className="w-3 h-3 sm:w-4 sm:h-4" />
-                          <span className="tabular-nums">{kilometrajeActual.toLocaleString()} km</span>
+                          <span className="tabular-nums">
+                            {kilometrajeActual.toLocaleString()} km
+                          </span>
                         </span>
                       )}
                     </div>
@@ -895,9 +897,7 @@ export default function VehiculoPage() {
                       <span className="hidden xs:inline">
                         {saving ? "Guardando..." : "Guardar"}
                       </span>
-                      <span className="xs:hidden">
-                        {saving ? "..." : "✓"}
-                      </span>
+                      <span className="xs:hidden">{saving ? "..." : "✓"}</span>
                     </button>
                     <button
                       onClick={handleCancelEdit}

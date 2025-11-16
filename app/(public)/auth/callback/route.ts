@@ -12,13 +12,13 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const cookieStore = await cookies()
-    
+
     // SIEMPRE redirigir a producción
     const redirectUrl = new URL(next, 'https://www.mapafurgocasa.com')
-    
+
     // Crear respuesta ANTES para poder establecer cookies
     const response = NextResponse.redirect(redirectUrl)
-    
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
               httpOnly: true,
               maxAge: options.maxAge || 31536000,
             })
-            
+
             // También establecer en la respuesta
             response.cookies.set({
               name,
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
               path: '/',
               maxAge: 0,
             })
-            
+
             response.cookies.set({
               name,
               value: '',
@@ -72,14 +72,14 @@ export async function GET(request: NextRequest) {
         },
       }
     )
-    
+
     const { error } = await supabase.auth.exchangeCodeForSession(code)
-    
+
     if (!error) {
       console.log('✅ OAuth exitoso')
       return response
     }
-    
+
     console.error('❌ Error OAuth:', error)
   }
 

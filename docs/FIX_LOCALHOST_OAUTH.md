@@ -186,4 +186,3 @@ En las credenciales OAuth de Google:
 3. Variables de entorno en Amplify
 
 Una vez arreglado Supabase Dashboard, debería funcionar inmediatamente.
-
