@@ -74,6 +74,23 @@ export default function InformeValoracionIA({
   }
 
   const handleEliminarValoracion = async (valoracionId: string) => {
+    // Verificar si es la valoración más reciente (actual)
+    const valoracionesOrdenadas = [...todasLasValoraciones].sort(
+      (a, b) => new Date(b.fecha_valoracion).getTime() - new Date(a.fecha_valoracion).getTime()
+    )
+    const valoracionMasReciente = valoracionesOrdenadas[0]
+    
+    if (valoracionId === valoracionMasReciente?.id) {
+      // Es la valoración actual, mostrar mensaje informativo
+      alert(
+        '⚠️ No es posible borrar la valoración actual.\n\n' +
+        'Para eliminar esta valoración, primero debe generar una nueva valoración. ' +
+        'Una vez creada la nueva, podrá eliminar esta.'
+      )
+      setConfirmDelete(null)
+      return
+    }
+
     try {
       setEliminando(valoracionId)
       
@@ -542,15 +559,24 @@ export default function InformeValoracionIA({
                               <span className={`px-2 py-1 rounded text-xs font-semibold ${getNivelConfianzaColor(val.nivel_confianza)}`}>
                                 {val.nivel_confianza}
                               </span>
-                              <button
-                                onClick={() => setConfirmDelete(val.id)}
-                                className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
-                                title="Eliminar valoración"
-                              >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                              </button>
+                              {!esMasReciente && (
+                                <button
+                                  onClick={() => setConfirmDelete(val.id)}
+                                  className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                  title="Eliminar valoración"
+                                >
+                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              )}
+                              {esMasReciente && (
+                                <div className="p-1 text-gray-400" title="No se puede eliminar la valoración actual. Genera una nueva para poder eliminar esta.">
+                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                  </svg>
+                                </div>
+                              )}
                             </div>
                           </div>
 
