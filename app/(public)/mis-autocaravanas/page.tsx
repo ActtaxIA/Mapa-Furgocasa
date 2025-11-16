@@ -29,7 +29,7 @@ export default function MisAutocaravanasPage() {
     try {
       const supabase = createClient()
       const { data, error } = await supabase
-        .rpc('obtener_reportes_usuario', { usuario_uuid: userId })
+        .rpc('obtener_reportes_usuario', { usuario_uuid: userId } as any)
 
       if (!error && data) {
         const noLeidos = data.filter((reporte: any) => !reporte.leido).length
