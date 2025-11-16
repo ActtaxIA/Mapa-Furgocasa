@@ -146,20 +146,43 @@ export async function POST(
 
       let comparablesInternos = []
 
-      // Agregar valoraciones IA de otros vehículos
+      // Agregar valoraciones IA de otros vehículos (solo la más reciente por vehículo)
       if (valoracionesSimilares && valoracionesSimilares.length > 0) {
-        comparablesInternos.push(...valoracionesSimilares.map(v => ({
+        // Deduplicar: quedarnos solo con la valoración más reciente de cada vehículo
+        const valoracionesPorVehiculo = new Map<string, any>()
+        
+        for (const valoracion of valoracionesSimilares) {
+          const vehiculoId = valoracion.vehiculo_id
+          const existente = valoracionesPorVehiculo.get(vehiculoId)
+          
+          // Si no existe o esta es más reciente, reemplazar
+          if (!existente || new Date(valoracion.fecha_valoracion) > new Date(existente.fecha_valoracion)) {
+            valoracionesPorVehiculo.set(vehiculoId, valoracion)
+          }
+        }
+        
+        // Convertir a array y solo usar precio_objetivo (el más realista)
+        comparablesInternos.push(...Array.from(valoracionesPorVehiculo.values()).map(v => ({
           titulo: `Valoración IA similar`,
-          precio: v.precio_objetivo || v.precio_base_mercado,
+          precio: v.precio_objetivo, // Solo precio objetivo, no salida ni mínimo
           link: null,
           fuente: 'BD Interna - Valoraciones IA',
           fecha: v.fecha_valoracion
         })))
       }
 
-      // Agregar precios de compra de usuarios
+      // Agregar precios de compra de usuarios (deduplicar por vehículo)
       if (datosCompra && datosCompra.length > 0) {
-        comparablesInternos.push(...datosCompra.map(d => ({
+        // Deduplicar: un vehículo solo se compra una vez (precio de compra único)
+        const comprasPorVehiculo = new Map<string, any>()
+        
+        for (const compra of datosCompra) {
+          if (!comprasPorVehiculo.has(compra.vehiculo_id)) {
+            comprasPorVehiculo.set(compra.vehiculo_id, compra)
+          }
+        }
+        
+        comparablesInternos.push(...Array.from(comprasPorVehiculo.values()).map(d => ({
           titulo: `Vehículo similar comprado`,
           precio: d.precio_compra,
           link: null,
