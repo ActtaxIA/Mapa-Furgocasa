@@ -453,7 +453,7 @@ export default function VehiculoPage() {
         `Color: ${vehiculo?.color || "No especificado"}`,
       ];
 
-      datosVehiculo.forEach((dato) => {
+      datosVehiculo.forEach((dato: any) => {
         pdf.text(dato, margin, yPos);
         yPos += 6;
       });
@@ -936,7 +936,7 @@ export default function VehiculoPage() {
             }}
           >
             <div className="flex border-b border-gray-200 min-w-max">
-              {tabs.map((tab) => {
+              {tabs.map((tab: any) => {
                 const Icon = tab.icon;
                 const shortLabels: Record<string, string> = {
                   Resumen: "Resumen",
@@ -1121,7 +1121,7 @@ export default function VehiculoPage() {
                 </div>
               ) : valoracionesIA.length > 0 ? (
                 <div className="space-y-6">
-                  {valoracionesIA.map((informe) => (
+                  {valoracionesIA.map((informe: any) => (
                     <InformeValoracionIA
                       key={informe.id}
                       informe={informe}

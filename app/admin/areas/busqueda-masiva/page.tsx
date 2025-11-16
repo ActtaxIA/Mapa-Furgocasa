@@ -1282,7 +1282,7 @@ export default function BusquedaMasivaPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {mapResults.map((place) => (
+                    {mapResults.map((place: any) => (
                       <tr
                         key={place.place_id}
                         className={`${
@@ -1417,7 +1417,7 @@ export default function BusquedaMasivaPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {results.map((place) => (
+                    {results.map((place: any) => (
                       <tr
                         key={place.place_id}
                         className={`${

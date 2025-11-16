@@ -377,7 +377,7 @@ export default function AdminAnalyticsPage() {
       }, {}) || {}
 
       const usuariosConMasRutas = Object.entries(rutasPorUsuario)
-        .map(([userId, count]) => ({ userId, count: count as number }))
+        .map(([userId, count]: [string, any]) => ({ userId, count: count as number }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 10)
 
@@ -606,7 +606,7 @@ export default function AdminAnalyticsPage() {
       }, {}) || {}
 
       const areasMasVisitadas = Object.entries(areasPorVisitas)
-        .map(([areaId, count]) => {
+        .map(([areaId, count]: [string, any]) => {
           const area = areas?.find(a => a.id === areaId)
           return { area, visitas: count as number }
         })
@@ -646,7 +646,7 @@ export default function AdminAnalyticsPage() {
       }, {}) || {}
 
       const areasEnMasFavoritos = Object.entries(areasPorFavoritos)
-        .map(([areaId, count]) => {
+        .map(([areaId, count]: [string, any]) => {
           const area = areas?.find(a => a.id === areaId)
           return { area, favoritos: count as number }
         })
@@ -862,7 +862,7 @@ export default function AdminAnalyticsPage() {
       }, {})
 
       const marcasMasPopulares = Object.entries(marcasPorCount)
-        .map(([marca, count]) => ({
+        .map(([marca, count]: [string, any]) => ({
           marca,
           count: count as number,
           porcentaje: totalDatosMercado > 0 ? ((count as number) / totalDatosMercado) * 100 : 0
@@ -880,7 +880,7 @@ export default function AdminAnalyticsPage() {
       }, {})
 
       const modelosMasPopulares = Object.entries(modelosPorCount)
-        .map(([key, count]) => {
+        .map(([key, count]: [string, any]) => {
           const [marca, modelo] = (key as string).split('|')
           return { marca, modelo, count: count as number }
         })
@@ -1089,7 +1089,7 @@ export default function AdminAnalyticsPage() {
 
       const totalPaises = Object.keys(areasPorPais).length
       const areasPorPaisArray = Object.entries(areasPorPais || {})
-        .map(([pais, count]) => ({
+        .map(([pais, count]: [string, any]) => ({
           pais,
           count: count as number,
           porcentaje: ((count as number) / areas.length) * 100
@@ -1107,7 +1107,7 @@ export default function AdminAnalyticsPage() {
 
       const totalComunidades = Object.keys(areasPorComunidad).length
       const areasPorComunidadArray = Object.entries(areasPorComunidad || {})
-        .map(([key, count]) => {
+        .map(([key, count]: [string, any]) => {
           const [comunidad, pais] = key.split('|')
           return { comunidad, pais, count: count as number }
         })
@@ -1203,7 +1203,7 @@ export default function AdminAnalyticsPage() {
         areasPorPais: areasPorPaisArray,
         areasPorComunidad: areasPorComunidadArray,
         areasPorProvincia: Object.entries(areasPorProvincia || {})
-          .map(([provincia, count]) => ({ provincia, count: count as number }))
+          .map(([provincia, count]: [string, any]) => ({ provincia, count: count as number }))
           .sort((a, b) => b.count - a.count)
           .slice(0, 10),
         areasGratis: distribucionPrecios.gratis,
@@ -1212,7 +1212,7 @@ export default function AdminAnalyticsPage() {
         areasConDescripcion,
         areasConImagenes,
         areasConServicios: Object.entries(serviciosCount)
-          .map(([servicio, count]) => ({ servicio, count: count as number }))
+          .map(([servicio, count]: [string, any]) => ({ servicio, count: count as number }))
           .sort((a, b) => b.count - a.count)
           .slice(0, 7),
         // Métricas de rutas
@@ -2026,7 +2026,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="p-6">
               <div className="grid grid-cols-2 gap-4">
-                {analytics.distribucionPrecios.map((item) => (
+                {analytics.distribucionPrecios.map((item: any) => (
                   <div key={item.rango} className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-lg p-4 border border-sky-200">
                     <p className="text-sm font-medium text-gray-600 mb-2">{item.rango}</p>
                     <p className="text-3xl font-bold text-sky-600">{item.count}</p>

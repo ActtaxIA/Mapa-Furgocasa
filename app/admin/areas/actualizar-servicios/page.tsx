@@ -766,7 +766,7 @@ Responde con JSON con esta estructura exacta:
               exitosas: exitosas,
               errores: prev.errores,
               serviciosPromedio: exitosas > 0 ? totalServ / exitosas : 0,
-              tiempoPromedio: nuevosTiempos.reduce((a, b) => a + b, 0) / nuevosTiempos.length,
+              tiempoPromedio: nuevosTiempos.reduce((a: any, b: any) => a + b, 0) / nuevosTiempos.length,
               tiempos: nuevosTiempos
             }
           })
@@ -1067,7 +1067,7 @@ Responde con JSON con esta estructura exacta:
               {/* Lista de Áreas Procesadas */}
               <div className="p-6 bg-gray-50 overflow-y-auto max-h-96">
                 <div className="space-y-3">
-                  {areas.filter(a => a.seleccionada).map((area) => (
+                  {areas.filter(a => a.seleccionada).map((area: any) => (
                     <div 
                       key={area.id}
                       className={`p-4 rounded-lg border-2 transition-all ${

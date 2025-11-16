@@ -99,12 +99,14 @@ export default function AdminVehiculosPage() {
 
       const total_vehiculos = vehiculos?.length || 0;
       const vehiculos_mes_actual =
-        vehiculos?.filter((v: any) => new Date(v.created_at) >= inicioMes).length ||
-        0;
+        vehiculos?.filter((v: any) => new Date(v.created_at) >= inicioMes)
+          .length || 0;
 
       const valor_total_parque =
-        valoracionesEco?.reduce((sum: any, v: any) => sum + (v.precio_compra || 0), 0) ||
-        0;
+        valoracionesEco?.reduce(
+          (sum: any, v: any) => sum + (v.precio_compra || 0),
+          0
+        ) || 0;
 
       const total_reportes_accidentes = reportes?.length || 0;
       const reportes_pendientes =
@@ -127,7 +129,8 @@ export default function AdminVehiculosPage() {
         vehiculos
           ?.filter((v: any) => vehiculosConDatos.has(v.id))
           .map((v: any) => v.user_id)
-          .filter((v: any, i: any, arr: any) => arr.indexOf(v) === i).length || 0;
+          .filter((v: any, i: any, arr: any) => arr.indexOf(v) === i).length ||
+        0;
 
       setMetricas({
         total_vehiculos,
@@ -185,8 +188,11 @@ export default function AdminVehiculosPage() {
       }
 
       // Cargar datos económicos
-      const { data: valoracionesEconomicas, error: valEcoError } =
-        await (supabase as any).from("vehiculo_valoracion_economica").select("*");
+      const { data: valoracionesEconomicas, error: valEcoError } = await (
+        supabase as any
+      )
+        .from("vehiculo_valoracion_economica")
+        .select("*");
 
       if (valEcoError) {
         console.error("Error cargando valoraciones económicas:", valEcoError);

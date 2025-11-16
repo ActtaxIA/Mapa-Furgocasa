@@ -1123,7 +1123,7 @@ export default function ReporteAccidentePage() {
                             <button
                               type="button"
                               onClick={() => {
-                                const nuevasFotos = Array.from(formData.fotos).filter((_, i) => i !== idx)
+                                const nuevasFotos = Array.from(formData.fotos).filter((_: any, i: any) => i !== idx)
                                 setFormData({ ...formData, fotos: nuevasFotos })
                               }}
                               className="text-red-600 hover:text-red-800 hover:bg-red-100 p-1.5 rounded transition-colors"

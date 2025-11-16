@@ -387,7 +387,7 @@ export default function FAQsPage() {
         {/* Categorías */}
         <div className="max-w-4xl mx-auto px-4 mt-8">
           <div className="flex flex-wrap gap-2 justify-center">
-            {categorias.map((cat) => (
+            {categorias.map((cat: any) => (
               <button
                 key={cat.id}
                 onClick={() => {

@@ -537,7 +537,7 @@ export async function POST(
       console.log(`   ✅ Comparables de SerpAPI: ${totalComparablesAntes}`)
       console.log(`   ✅ Comparables de BD interna: ${comparablesInternos.length}`)
       console.log(`   ✅ Total comparables finales (después de deduplicación): ${comparables.length}`)
-      console.log(`   📊 Relevancia promedio: ${comparables.length > 0 ? Math.round(comparables.reduce((sum, c) => sum + (c.relevancia || 0), 0) / comparables.length) : 0}%`)
+      console.log(`   📊 Relevancia promedio: ${comparables.length > 0 ? Math.round(comparables.reduce((sum: any, c: any) => sum + (c.relevancia || 0), 0) / comparables.length) : 0}%`)
 
       // Log de muestra de comparables para debug
       if (comparables.length > 0) {
@@ -766,7 +766,7 @@ export async function POST(
     console.log(`   📊 Con km: ${comparablesLimpios.filter(c => c.kilometros).length}/${comparablesLimpios.length}`)
 
     const precioBaseMercado = comparablesLimpios.length > 0
-      ? comparablesLimpios.reduce((sum, c) => sum + (c.precio || 0), 0) / comparablesLimpios.filter(c => c.precio).length
+      ? comparablesLimpios.reduce((sum: any, c: any) => sum + (c.precio || 0), 0) / comparablesLimpios.filter(c => c.precio).length
       : null
 
     // Calcular variación de valor (positivo = revalorización, negativo = depreciación)

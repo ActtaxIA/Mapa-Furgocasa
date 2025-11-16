@@ -97,7 +97,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // URLs dinámicas de áreas
   const areaPages: MetadataRoute.Sitemap = areas
-    ? areas.map((area) => ({
+    ? areas.map((area: any) => ({
         url: `${baseUrl}/area/${area.slug}`,
         lastModified: area.updated_at ? new Date(area.updated_at) : new Date(),
         changeFrequency: 'weekly' as const,

@@ -933,7 +933,7 @@ export default function AdminAreasPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {areasEnPagina.map((area) => {
+                {areasEnPagina.map((area: any) => {
                   const serviciosActivos = area.servicios && typeof area.servicios === 'object'
                     ? Object.entries(area.servicios)
                         .filter(([_, value]) => value === true)

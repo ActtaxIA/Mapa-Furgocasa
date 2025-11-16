@@ -816,7 +816,7 @@ export default function EditAreaPage() {
         onConfirm={() => {
           if (deleteImageModal.index !== null) {
             console.log('🗑️ Eliminando imagen #' + (deleteImageModal.index + 1))
-            const fotos = [...(area.fotos_urls as string[] || [])].filter((_, i) => i !== deleteImageModal.index)
+            const fotos = [...(area.fotos_urls as string[] || [])].filter((_: any, i: any) => i !== deleteImageModal.index)
             setArea({ 
               ...area, 
               fotos_urls: fotos,
