@@ -208,6 +208,12 @@ export async function POST(
 
         for (const valoracion of valoracionesSimilares) {
           const vehiculoId = valoracion.vehiculo_id
+          
+          // FIX: Manejar JOIN que puede venir como objeto o array
+          const vehiculoData = Array.isArray(valoracion.vehiculos_registrados) 
+            ? valoracion.vehiculos_registrados[0] 
+            : valoracion.vehiculos_registrados
+
           const existente = vehiculosUnicos.get(vehiculoId)
 
           // Si no existe o esta valoración es más reciente, actualizar
@@ -217,19 +223,26 @@ export async function POST(
               precio: valoracion.precio_objetivo,
               fecha: valoracion.fecha_valoracion,
               vehiculo_id: vehiculoId,
-              año: valoracion.vehiculos_registrados?.año || null,
-              marca: valoracion.vehiculos_registrados?.marca || null,
-              modelo: valoracion.vehiculos_registrados?.modelo || null,
-              kilometros: kmPorVehiculo.get(vehiculoId) || null // MEJORA: Obtener km real
+              año: vehiculoData?.año || null,
+              marca: vehiculoData?.marca || null,
+              modelo: vehiculoData?.modelo || null,
+              kilometros: kmPorVehiculo.get(vehiculoId) || null
             })
           }
         }
+        
+        console.log(`   ✅ Valoraciones IA procesadas: ${valoracionesSimilares.length} → Vehículos únicos: ${vehiculosUnicos.size}`)
       }
 
       // 2. Agregar compras SOLO si el vehículo NO tiene valoración IA
       if (datosCompra && datosCompra.length > 0) {
         for (const compra of datosCompra) {
           const vehiculoId = compra.vehiculo_id
+
+          // FIX: Manejar JOIN que puede venir como objeto o array
+          const vehiculoDataCompra = Array.isArray(compra.vehiculos_registrados) 
+            ? compra.vehiculos_registrados[0] 
+            : compra.vehiculos_registrados
 
           // Solo agregar si este vehículo no tiene ya una valoración IA
           if (!vehiculosUnicos.has(vehiculoId)) {
@@ -238,13 +251,15 @@ export async function POST(
               precio: compra.precio_compra,
               fecha: compra.fecha_compra,
               vehiculo_id: vehiculoId,
-              año: compra.vehiculos_registrados?.año || null,
-              marca: compra.vehiculos_registrados?.marca || null,
-              modelo: compra.vehiculos_registrados?.modelo || null,
+              año: vehiculoDataCompra?.año || null,
+              marca: vehiculoDataCompra?.marca || null,
+              modelo: vehiculoDataCompra?.modelo || null,
               kilometros: compra.kilometros_compra || null
             })
           }
         }
+        
+        console.log(`   ✅ Compras procesadas: ${datosCompra.length} → Vehículos únicos totales: ${vehiculosUnicos.size}`)
       }
 
       // 3. FUNCIONES DE ANÁLISIS DE COMPARABLES
@@ -341,6 +356,7 @@ export async function POST(
           link: null,
           fuente: v.tipo === 'valoracion_ia' ? 'BD Interna - Valoraciones IA' : 'BD Interna - Compras Usuarios',
           fecha: v.fecha,
+          vehiculo_id: v.vehiculo_id, // FIX: Incluir vehiculo_id para deduplicación
           relevancia: 0 // Se calculará después
         }
 
@@ -461,6 +477,40 @@ export async function POST(
       // Combinar todos los comparables
       comparables = [...comparables, ...comparablesInternos]
 
+      // DEDUPLICACIÓN FINAL: Eliminar duplicados exactos por vehiculo_id + precio + año
+      const comparablesUnicosFinal = new Map<string, any>()
+      const claveComparable = (c: any) => {
+        // Crear clave única: vehiculo_id (si existe) o título + precio + año
+        if (c.vehiculo_id) {
+          return `vehiculo_${c.vehiculo_id}`
+        }
+        return `${c.titulo}_${c.precio}_${c.año || 'sin_año'}`
+      }
+
+      for (const comp of comparables) {
+        const clave = claveComparable(comp)
+        const existente = comparablesUnicosFinal.get(clave)
+        
+        // Si no existe o este tiene mayor relevancia, reemplazar
+        if (!existente || (comp.relevancia || 0) > (existente.relevancia || 0)) {
+          comparablesUnicosFinal.set(clave, comp)
+        }
+      }
+
+      comparables = Array.from(comparablesUnicosFinal.values())
+      console.log(`   🔄 Deduplicación final: ${comparables.length} comparables únicos`)
+
+      // Validar y corregir relevancia NaN
+      comparables = comparables.map(c => {
+        if (isNaN(c.relevancia) || c.relevancia === null || c.relevancia === undefined) {
+          console.warn(`   ⚠️  Comparable sin relevancia: ${c.titulo}, recalculando...`)
+          c.relevancia = calcularRelevancia(c)
+        }
+        // Asegurar que relevancia es número válido entre 0-100
+        c.relevancia = Math.max(0, Math.min(100, Math.round(c.relevancia || 0)))
+        return c
+      })
+
       // Ordenar todos por relevancia DESC
       comparables.sort((a, b) => {
         if (a.relevancia !== b.relevancia) {
@@ -474,8 +524,16 @@ export async function POST(
 
       console.log(`   ✅ Comparables de SerpAPI: ${totalComparablesAntes}`)
       console.log(`   ✅ Comparables de BD interna: ${comparablesInternos.length}`)
-      console.log(`   ✅ Total comparables finales: ${comparables.length}`)
+      console.log(`   ✅ Total comparables finales (después de deduplicación): ${comparables.length}`)
       console.log(`   📊 Relevancia promedio: ${comparables.length > 0 ? Math.round(comparables.reduce((sum, c) => sum + (c.relevancia || 0), 0) / comparables.length) : 0}%`)
+      
+      // Log de muestra de comparables para debug
+      if (comparables.length > 0) {
+        console.log(`   📋 Muestra de comparables (primeros 3):`)
+        comparables.slice(0, 3).forEach((c, i) => {
+          console.log(`      ${i + 1}. ${c.titulo} - Precio: ${c.precio}€ - Año: ${c.año || 'N/A'} - Km: ${c.kilometros || 'N/A'} - Relevancia: ${c.relevancia}%`)
+        })
+      }
 
       // Validación final de comparables mínimos
       if (comparables.length < 3) {
@@ -659,8 +717,34 @@ export async function POST(
     console.log(`\n💾 [PASO 7/7] Guardando en base de datos...`)
 
     // Calcular precio base de mercado (promedio de comparables)
-    const precioBaseMercado = comparables.length > 0
-      ? comparables.reduce((sum, c) => sum + (c.precio || 0), 0) / comparables.filter(c => c.precio).length
+    // LIMPIEZA FINAL: Asegurar que todos los comparables tienen estructura válida antes de guardar
+    const comparablesLimpios = comparables.map(c => {
+      return {
+        titulo: c.titulo || 'Comparable sin título',
+        precio: c.precio || null,
+        año: c.año || null,
+        kilometros: c.kilometros || null,
+        link: c.link || c.url || null, // Compatibilidad con ambos campos
+        url: c.url || c.link || null, // Mantener ambos para compatibilidad
+        fuente: c.fuente || 'Fuente desconocida',
+        fecha: c.fecha || null,
+        descripcion: c.descripcion || null,
+        relevancia: typeof c.relevancia === 'number' && !isNaN(c.relevancia) 
+          ? Math.max(0, Math.min(100, Math.round(c.relevancia))) 
+          : 0,
+        // No incluir vehiculo_id en el JSON guardado (solo para deduplicación interna)
+      }
+    })
+
+    console.log(`\n🧹 Limpieza final de comparables:`)
+    console.log(`   ✅ Comparables antes de limpiar: ${comparables.length}`)
+    console.log(`   ✅ Comparables después de limpiar: ${comparablesLimpios.length}`)
+    console.log(`   📊 Relevancias válidas: ${comparablesLimpios.filter(c => c.relevancia > 0).length}/${comparablesLimpios.length}`)
+    console.log(`   📊 Con año: ${comparablesLimpios.filter(c => c.año).length}/${comparablesLimpios.length}`)
+    console.log(`   📊 Con km: ${comparablesLimpios.filter(c => c.kilometros).length}/${comparablesLimpios.length}`)
+
+    const precioBaseMercado = comparablesLimpios.length > 0
+      ? comparablesLimpios.reduce((sum, c) => sum + (c.precio || 0), 0) / comparablesLimpios.filter(c => c.precio).length
       : null
 
     // Calcular variación de valor (positivo = revalorización, negativo = depreciación)
@@ -687,9 +771,9 @@ export async function POST(
         precio_minimo: precioMinimo,
         informe_texto: informeTexto,
         informe_html: null,
-        comparables_json: comparables,
-        num_comparables: comparables.length,
-        nivel_confianza: comparables.length >= 5 ? 'Alta' : comparables.length >= 3 ? 'Media' : comparables.length >= 1 ? 'Baja' : 'Estimativa',
+        comparables_json: comparablesLimpios, // Usar comparables limpios
+        num_comparables: comparablesLimpios.length,
+        nivel_confianza: comparablesLimpios.length >= 5 ? 'Alta' : comparablesLimpios.length >= 3 ? 'Media' : comparablesLimpios.length >= 1 ? 'Baja' : 'Estimativa',
         precio_base_mercado: precioBaseMercado,
         depreciacion_aplicada: variacionValor
       })
