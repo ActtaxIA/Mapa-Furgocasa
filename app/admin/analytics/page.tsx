@@ -663,10 +663,10 @@ export default function AdminAnalyticsPage() {
       // Un usuario activo es aquel que tiene al menos una interacción (visita, valoración, favorito, ruta)
       const usuariosConActividad = new Set<string>()
 
-      visitas?.forEach(v => {if (v.user_id) usuariosConActividad.add(v.user_id)})
-      valoraciones?.forEach(v => {if (v.user_id) usuariosConActividad.add(v.user_id)})
-      favoritos?.forEach(f => {if (f.user_id) usuariosConActividad.add(f.user_id)})
-      rutas?.forEach(r => {if (r.user_id) usuariosConActividad.add(r.user_id)})
+      visitas?.forEach((v: any) => {if (v.user_id) usuariosConActividad.add(v.user_id)})
+      valoraciones?.forEach((v: any) => {if (v.user_id) usuariosConActividad.add(v.user_id)})
+      favoritos?.forEach((f: any) => {if (f.user_id) usuariosConActividad.add(f.user_id)})
+      rutas?.forEach((r: any) => {if (r.user_id) usuariosConActividad.add(r.user_id)})
 
       // Usuarios activos por período
       const usuariosActivosHoySet = new Set<string>()
@@ -1123,9 +1123,9 @@ export default function AdminAnalyticsPage() {
 
       // ========== SERVICIOS MÁS COMUNES ==========
       const serviciosCount: any = {}
-      areas?.forEach(area => {
+      areas?.forEach((area: any) => {
         if (area.servicios && typeof area.servicios === 'object') {
-          Object.entries(area.servicios).forEach(([key, value]) => {
+          Object.entries(area.servicios).forEach(([key, value]: [string, any]) => {
             if (value === true) {
               serviciosCount[key] = (serviciosCount[key] || 0) + 1
             }
