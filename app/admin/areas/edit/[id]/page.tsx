@@ -19,7 +19,7 @@ import {
 import type { Area } from '@/types/database.types'
 
 const GooglePlacesPicker = dynamic(
-  () => import('@/components/admin/GooglePlacesPicker').then((mod) => mod.default),
+  () => import('@/components/admin/GooglePlacesPicker').then((mod: any) => mod.default),
   {
   ssr: false,
   loading: () => <div className="text-center py-8">Cargando mapa...</div>
