@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
     if (code) {
       const cookieStore = await cookies()
       
-      // Determinar la URL base correcta
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mapafurgocasa.com'
+      // SIEMPRE usar producción
+      const baseUrl = 'https://www.mapafurgocasa.com'
       const redirectUrl = new URL(next, baseUrl)
       
       console.log('   Redirect URL:', redirectUrl.toString())
@@ -112,13 +112,11 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('❌ No hay código o error en el proceso')
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mapafurgocasa.com'
-    return NextResponse.redirect(new URL('/auth/login?error=no_code', baseUrl))
+    return NextResponse.redirect(new URL('/auth/login?error=no_code', 'https://www.mapafurgocasa.com'))
     
   } catch (error) {
     console.error('❌ [OAuth Callback] Error general:', error)
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mapafurgocasa.com'
-    return NextResponse.redirect(new URL('/auth/login?error=server_error', baseUrl))
+    return NextResponse.redirect(new URL('/auth/login?error=server_error', 'https://www.mapafurgocasa.com'))
   }
 }
 

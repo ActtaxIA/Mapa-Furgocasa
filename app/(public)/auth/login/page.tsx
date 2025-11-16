@@ -46,13 +46,11 @@ export default function LoginPage() {
     try {
       const supabase = createClient()
 
-      // Determinar URL de callback (producción o desarrollo)
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mapafurgocasa.com'
-      const redirectUrl = `${siteUrl}/auth/callback?next=/mapa`
+      // SIEMPRE redirigir a producción
+      const redirectUrl = 'https://www.mapafurgocasa.com/auth/callback?next=/mapa'
 
       // Debug en consola para verificar
       console.log('🔐 OAuth redirectTo:', redirectUrl)
-      console.log('🌍 Site URL:', siteUrl)
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
