@@ -73,6 +73,9 @@ export default function VehiculoPage() {
   const [loadingValoracion, setLoadingValoracion] = useState(false);
   const [generandoValoracion, setGenerandoValoracion] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [kilometrajeActual, setKilometrajeActual] = useState<number | null>(null);
+  const [nuevoKilometraje, setNuevoKilometraje] = useState("");
+  const [actualizandoKm, setActualizandoKm] = useState(false);
 
   // Detectar parámetro tab en la URL
   useEffect(() => {
@@ -102,10 +105,11 @@ export default function VehiculoPage() {
     loadData();
   }, [vehiculoId]);
 
-  // Cargar valoraciones IA cuando se active esa tab
+  // Cargar valoraciones IA y kilometraje cuando se active esa tab
   useEffect(() => {
     if (activeTab === "valoracion-ia" && vehiculoId) {
       loadValoracionesIA();
+      loadKilometrajeActual();
     }
   }, [activeTab, vehiculoId]);
 
@@ -255,6 +259,90 @@ export default function VehiculoPage() {
       console.error("Error:", error);
     } finally {
       setLoadingValoracion(false);
+    }
+  };
+
+  const loadKilometrajeActual = async () => {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("vehiculo_kilometraje")
+        .select("kilometros")
+        .eq("vehiculo_id", vehiculoId)
+        .order("fecha", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (data) {
+        setKilometrajeActual(data.kilometros);
+      } else {
+        setKilometrajeActual(null);
+      }
+    } catch (error) {
+      console.error("Error cargando kilometraje:", error);
+    }
+  };
+
+  const handleActualizarKilometraje = async () => {
+    const kmNuevo = parseInt(nuevoKilometraje);
+
+    if (!kmNuevo || isNaN(kmNuevo) || kmNuevo <= 0) {
+      setToast({
+        message: "❌ Por favor ingresa un kilometraje válido",
+        type: "error",
+      });
+      return;
+    }
+
+    if (kilometrajeActual && kmNuevo <= kilometrajeActual) {
+      setToast({
+        message: `❌ El nuevo kilometraje (${kmNuevo.toLocaleString()} km) debe ser mayor que el actual (${kilometrajeActual.toLocaleString()} km)`,
+        type: "error",
+      });
+      return;
+    }
+
+    setActualizandoKm(true);
+    try {
+      const supabase = createClient();
+
+      // Insertar nuevo registro de kilometraje
+      const { error: kmError } = await supabase
+        .from("vehiculo_kilometraje")
+        .insert({
+          vehiculo_id: vehiculoId,
+          user_id: user.id,
+          kilometros: kmNuevo,
+          fecha: new Date().toISOString(),
+        });
+
+      if (kmError) throw kmError;
+
+      // Actualizar ficha técnica si existe
+      const { error: fichaError } = await supabase
+        .from("vehiculo_ficha_tecnica")
+        .update({ kilometros_actuales: kmNuevo })
+        .eq("vehiculo_id", vehiculoId);
+
+      // No fallar si no existe la ficha
+      if (fichaError) {
+        console.warn("No se pudo actualizar ficha técnica:", fichaError);
+      }
+
+      setKilometrajeActual(kmNuevo);
+      setNuevoKilometraje("");
+      setToast({
+        message: `✅ Kilometraje actualizado a ${kmNuevo.toLocaleString()} km`,
+        type: "success",
+      });
+    } catch (error: any) {
+      console.error("Error actualizando kilometraje:", error);
+      setToast({
+        message: `❌ Error: ${error.message}`,
+        type: "error",
+      });
+    } finally {
+      setActualizandoKm(false);
     }
   };
 
@@ -923,42 +1011,86 @@ export default function VehiculoPage() {
                       <li>✓ Informe profesional detallado</li>
                     </ul>
                   </div>
-                  <button
-                    onClick={handleGenerarValoracion}
-                    disabled={generandoValoracion}
-                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  >
-                    {generandoValoracion ? (
-                      <>
-                        <svg
-                          className="animate-spin h-5 w-5"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
+                  
+                  <div className="flex flex-col gap-3">
+                    {/* Actualizar kilometraje */}
+                    <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                      <div className="flex items-center gap-2 mb-2">
+                        <TruckIcon className="w-5 h-5 text-orange-600" />
+                        <span className="text-sm font-semibold text-gray-900">
+                          Kilometraje Actual
+                        </span>
+                      </div>
+                      {kilometrajeActual ? (
+                        <p className="text-xs text-gray-600 mb-2">
+                          Último: <span className="font-semibold text-orange-600">{kilometrajeActual.toLocaleString()} km</span>
+                        </p>
+                      ) : (
+                        <p className="text-xs text-gray-500 mb-2">
+                          Sin registros
+                        </p>
+                      )}
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          value={nuevoKilometraje}
+                          onChange={(e) => setNuevoKilometraje(e.target.value)}
+                          placeholder="Nuevo km"
+                          className="w-32 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                          disabled={actualizandoKm}
+                        />
+                        <button
+                          onClick={handleActualizarKilometraje}
+                          disabled={actualizandoKm || !nuevoKilometraje}
+                          className="px-3 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Actualizar kilometraje del vehículo"
                         >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        Generando...
-                      </>
-                    ) : (
-                      <>
-                        <SparklesIconSolid className="w-5 h-5" />
-                        Generar Valoración
-                      </>
-                    )}
-                  </button>
+                          {actualizandoKm ? "..." : "Actualizar"}
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2">
+                        ⚠️ Solo valores mayores al actual
+                      </p>
+                    </div>
+
+                    {/* Botón generar valoración */}
+                    <button
+                      onClick={handleGenerarValoracion}
+                      disabled={generandoValoracion}
+                      className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {generandoValoracion ? (
+                        <>
+                          <svg
+                            className="animate-spin h-5 w-5"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Generando...
+                        </>
+                      ) : (
+                        <>
+                          <SparklesIconSolid className="w-5 h-5" />
+                          Generar Valoración
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 
