@@ -86,14 +86,14 @@ export default function PerfilPage() {
         .eq('user_id', userId)
 
       // Obtener valoraciones y calcular promedio
-      const { data: valoraciones } = await supabase
+      const { data: valoraciones } = await (supabase as any)
         .from('valoraciones')
         .select('rating')
         .eq('user_id', userId)
 
       const totalValoraciones = valoraciones?.length || 0
       const promedioRating = totalValoraciones > 0 && valoraciones
-        ? valoraciones.reduce((sum, v) => sum + v.rating, 0) / totalValoraciones
+        ? valoraciones.reduce((sum: number, v: any) => sum + v.rating, 0) / totalValoraciones
         : 0
 
       // Obtener favoritos
