@@ -170,9 +170,9 @@ export async function POST(request: NextRequest) {
     imagenesUnicas.sort((a: any, b: any) => a.prioridad - b.prioridad)
 
     console.log(`📊 [IMAGES] Total imágenes encontradas: ${imagenesUnicas.length}`)
-    console.log(`  - Web oficial: ${imagenesUnicas.filter(i => i.fuente === 'Web Oficial').length}`)
-    console.log(`  - Park4night: ${imagenesUnicas.filter(i => i.fuente === 'Park4night').length}`)
-    console.log(`  - Google Images: ${imagenesUnicas.filter(i => i.fuente === 'Google Images').length}`)
+    console.log(`  - Web oficial: ${imagenesUnicas.filter((i: any) => i.fuente === 'Web Oficial').length}`)
+    console.log(`  - Park4night: ${imagenesUnicas.filter((i: any) => i.fuente === 'Park4night').length}`)
+    console.log(`  - Google Images: ${imagenesUnicas.filter((i: any) => i.fuente === 'Google Images').length}`)
 
     if (imagenesUnicas.length === 0) {
       console.log('⚠️ [IMAGES] No se encontraron imágenes')
@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
 
     // Guardar las mejores 7 imágenes en la BD
     const foto_principal = imagenesUnicas[0]?.url || null
-    const fotos_urls = imagenesUnicas.slice(0, 7).map(img => img.url)
+    const fotos_urls = imagenesUnicas.slice(0, 7).map((img: any) => img.url)
 
     console.log('💾 [IMAGES] Actualizando base de datos...')
     const { error: updateError } = await (supabase as any)
@@ -297,12 +297,12 @@ function esImagenValida(url: string): boolean {
 
   // ACEPTAR: Solo extensiones de fotos reales
   const extensionesValidas = ['.jpg', '.jpeg', '.png', '.webp']
-  return extensionesValidas.some(ext => urlLower.includes(ext))
+  return extensionesValidas.some((ext: any) => urlLower.includes(ext))
 }
 
 function eliminarDuplicados(imagenes: Array<any>): Array<any> {
   const urlsVistas = new Set<string>()
-  return imagenes.filter(img => {
+  return imagenes.filter((img: any) => {
     if (urlsVistas.has(img.url)) {
       return false
     }

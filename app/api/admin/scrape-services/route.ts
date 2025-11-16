@@ -365,7 +365,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Contar servicios detectados
-    const totalServicios = Object.values(serviciosFinales).filter(v => v === true).length
+    const totalServicios = Object.values(serviciosFinales).filter((v: any) => v === true).length
     const serviciosEncontrados = Object.entries(serviciosFinales)
       .filter(([_, value]) => value === true)
       .map(([key]) => key)

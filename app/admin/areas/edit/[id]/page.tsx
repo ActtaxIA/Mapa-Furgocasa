@@ -425,7 +425,7 @@ export default function EditAreaPage() {
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                       required
                     >
-                      {paises.map(p => (
+                      {paises.map((p: any) => (
                         <option key={p} value={p}>{p}</option>
                       ))}
                       <option value="__custom__">➕ Otro país...</option>
@@ -593,7 +593,7 @@ export default function EditAreaPage() {
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Servicios Disponibles</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {SERVICIOS_DISPONIBLES.map(servicio => (
+              {SERVICIOS_DISPONIBLES.map((servicio: any) => (
                 <label
                   key={servicio.id}
                   className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-sky-500 transition-colors"

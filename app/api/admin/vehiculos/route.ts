@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 
     console.log(`✅ Vehículos: ${vehiculos?.length || 0}`)
     if (vehiculos && vehiculos.length > 0) {
-      console.log('📋 Primeros IDs de vehículos:', vehiculos.slice(0, 3).map(v => v.id))
+      console.log('📋 Primeros IDs de vehículos:', vehiculos.slice(0, 3).map((v: any) => v.id))
     } else {
       console.log('⚠️ La tabla vehiculos_registrados está VACÍA o no se puede acceder')
       console.log('⚠️ Service Key length:', supabaseServiceKey?.length)
@@ -72,8 +72,8 @@ export async function GET(request: NextRequest) {
     }
     console.log(`✅ Valoraciones: ${valoracionesEconomicas?.length || 0}`)
     if (valoracionesEconomicas && valoracionesEconomicas.length > 0) {
-      console.log('💰 Primeros vehiculo_id en valoraciones:', valoracionesEconomicas.slice(0, 3).map(v => v.vehiculo_id))
-      console.log('💰 Precios:', valoracionesEconomicas.slice(0, 3).map(v => v.precio_compra))
+      console.log('💰 Primeros vehiculo_id en valoraciones:', valoracionesEconomicas.slice(0, 3).map((v: any) => v.vehiculo_id))
+      console.log('💰 Precios:', valoracionesEconomicas.slice(0, 3).map((v: any) => v.precio_compra))
     }
 
     // Obtener fichas técnicas

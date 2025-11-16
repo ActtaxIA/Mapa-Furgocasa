@@ -244,7 +244,7 @@ export async function POST(request: NextRequest) {
     )
 
     console.log(`✅ Detalles obtenidos para ${resultsWithDetails.length} lugares`)
-    const withWebsite = resultsWithDetails.filter(r => r.website).length
+    const withWebsite = resultsWithDetails.filter((r: any) => r.website).length
     console.log(`🌐 ${withWebsite} lugares tienen website`)
 
     return NextResponse.json({

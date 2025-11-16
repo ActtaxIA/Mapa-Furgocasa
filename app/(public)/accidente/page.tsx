@@ -1089,9 +1089,9 @@ export default function ReporteAccidentePage() {
 
                       // Validar tamaño
                       const maxSize = 10 * 1024 * 1024; // 10MB
-                      const fotosGrandes = files.filter(f => f.size > maxSize);
+                      const fotosGrandes = files.filter((f: any) => f.size > maxSize);
                       if (fotosGrandes.length > 0) {
-                        const nombresFotos = fotosGrandes.map(f => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`).join(', ');
+                        const nombresFotos = fotosGrandes.map((f: any) => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`).join(', ');
                         setMessage({
                           type: 'error',
                           text: `Estas fotos exceden 10 MB: ${nombresFotos}`

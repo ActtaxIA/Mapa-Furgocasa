@@ -312,14 +312,14 @@ export default function AdminAreasPage() {
       setSelectedAreas(new Set())
       setSelectAll(false)
     } else {
-      const allIds = new Set(areasEnPagina.map(a => a.id))
+      const allIds = new Set(areasEnPagina.map((a: any) => a.id))
       setSelectedAreas(allIds)
       setSelectAll(true)
     }
   }
 
   const selectAllFiltered = () => {
-    const allIds = new Set(areasFiltradas.map(a => a.id))
+    const allIds = new Set(areasFiltradas.map((a: any) => a.id))
     setSelectedAreas(allIds)
     setSelectAll(true)
   }
@@ -455,11 +455,11 @@ export default function AdminAreasPage() {
   }
 
   // Obtener lista única de países y tipos
-  const paisesUnicos = Array.from(new Set(areas.map(a => a.pais).filter(Boolean))).sort()
-  const tiposUnicos = Array.from(new Set(areas.map(a => a.tipo_area).filter(Boolean))).sort()
+  const paisesUnicos = Array.from(new Set(areas.map((a: any) => a.pais).filter(Boolean))).sort()
+  const tiposUnicos = Array.from(new Set(areas.map((a: any) => a.tipo_area).filter(Boolean))).sort()
 
   // Filtrar y ordenar
-  let areasFiltradas = areas.filter(area => {
+  let areasFiltradas = areas.filter((area: any) => {
     const matchBusqueda = area.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
                          area.ciudad?.toLowerCase().includes(busqueda.toLowerCase()) ||
                          area.provincia?.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -533,7 +533,7 @@ export default function AdminAreasPage() {
   // Función para exportar a CSV
   const exportToCSV = () => {
     const headers = ['Nombre', 'Ciudad', 'Provincia', 'País', 'Tipo', 'Precio', 'Verificado', 'Activo', 'Servicios']
-    const rows = areasFiltradas.map(area => {
+    const rows = areasFiltradas.map((area: any) => {
       const servicios = area.servicios && typeof area.servicios === 'object'
         ? Object.entries(area.servicios)
             .filter(([_, value]) => value === true)
@@ -555,8 +555,8 @@ export default function AdminAreasPage() {
     })
 
     const csvContent = [
-      headers.map(h => `"${h}"`).join(','),
-      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      headers.map((h: any) => `"${h}"`).join(','),
+      ...rows.map((row: any) => row.map((cell: any) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
     ].join('\n')
 
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
@@ -569,7 +569,7 @@ export default function AdminAreasPage() {
   // Función para exportar a Excel (formato XLSX real)
   const exportToExcel = () => {
     const headers = ['Nombre', 'Ciudad', 'Provincia', 'País', 'Tipo', 'Precio', 'Verificado', 'Activo', 'Servicios']
-    const rows = areasFiltradas.map(area => {
+    const rows = areasFiltradas.map((area: any) => {
       const servicios = area.servicios && typeof area.servicios === 'object'
         ? Object.entries(area.servicios)
             .filter(([_, value]) => value === true)
@@ -602,7 +602,7 @@ export default function AdminAreasPage() {
     const colWidths = headers.map((_: any, colIndex: any) => {
       const maxLength = Math.max(
         headers[colIndex].length,
-        ...rows.map(row => String(row[colIndex] ?? '').length)
+        ...rows.map((row: any) => String(row[colIndex] ?? '').length)
       )
       return { wch: Math.min(maxLength + 2, 50) } // Máximo 50 caracteres de ancho
     })
@@ -706,7 +706,7 @@ export default function AdminAreasPage() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               >
                 <option value="all">Todos los países</option>
-                {paisesUnicos.map(pais => (
+                {paisesUnicos.map((pais: any) => (
                   <option key={pais} value={pais}>{pais}</option>
                 ))}
               </select>
@@ -720,7 +720,7 @@ export default function AdminAreasPage() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               >
                 <option value="all">Todos los tipos</option>
-                {tiposUnicos.map(tipo => (
+                {tiposUnicos.map((tipo: any) => (
                   <option key={tipo} value={tipo}>{tipo}</option>
                 ))}
               </select>
@@ -938,7 +938,7 @@ export default function AdminAreasPage() {
                     ? Object.entries(area.servicios)
                         .filter(([_, value]) => value === true)
                         .map(([key]) => key)
-                        .filter(s => ['Agua', 'Electricidad', 'WC', 'Duchas', 'Vaciado Químico', 'Vaciado Aguas Grises', 'Oferta de Restauración'].includes(s))
+                        .filter((s: any) => ['Agua', 'Electricidad', 'WC', 'Duchas', 'Vaciado Químico', 'Vaciado Aguas Grises', 'Oferta de Restauración'].includes(s))
                     : []
 
                   return (

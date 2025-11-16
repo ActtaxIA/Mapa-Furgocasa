@@ -32,7 +32,7 @@ export async function GET() {
     })
 
     // Crear resumen
-    const resumen = Object.keys(porPais).sort().map(pais => ({
+    const resumen = Object.keys(porPais).sort().map((pais: any) => ({
       pais,
       count: porPais[pais].length,
       ejemplos: porPais[pais].slice(0, 3)

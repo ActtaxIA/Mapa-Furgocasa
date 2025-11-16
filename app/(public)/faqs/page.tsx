@@ -344,7 +344,7 @@ export default function FAQsPage() {
   const [preguntaAbierta, setPreguntaAbierta] = useState<number | null>(null)
   const [busqueda, setBusqueda] = useState('')
 
-  const faqsFiltrados = faqs.filter(faq => {
+  const faqsFiltrados = faqs.filter((faq: any) => {
     const matchCategoria = faq.categoria === categoriaActiva
     const matchBusqueda = busqueda === '' ||
       faq.pregunta.toLowerCase().includes(busqueda.toLowerCase()) ||

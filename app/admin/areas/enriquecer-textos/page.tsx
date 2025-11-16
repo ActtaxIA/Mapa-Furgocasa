@@ -27,7 +27,7 @@ export default function EnriquecerTextosPage() {
   } | null>(null)
 
   // Extraer países únicos de las áreas cargadas
-  const PAISES = ['Todos', ...Array.from(new Set(areas.map(a => a.pais).filter(Boolean))).sort()]
+  const PAISES = ['Todos', ...Array.from(new Set(areas.map((a: any) => a.pais).filter(Boolean))).sort()]
 
   useEffect(() => {
     loadAreas()
@@ -86,8 +86,8 @@ export default function EnriquecerTextosPage() {
       }
 
       console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
-      console.log('🌍 Países únicos encontrados:', [...new Set(allAreas.map(a => a.pais).filter(Boolean))])
-      console.log('📝 Áreas sin descripción:', allAreas.filter(a => !a.descripcion || a.descripcion.trim().length < 50).length)
+      console.log('🌍 Países únicos encontrados:', [...new Set(allAreas.map((a: any) => a.pais).filter(Boolean))])
+      console.log('📝 Áreas sin descripción:', allAreas.filter((a: any) => !a.descripcion || a.descripcion.trim().length < 50).length)
       setAreas(allAreas)
     } catch (error) {
       console.error('Error cargando áreas:', error)
@@ -108,7 +108,7 @@ export default function EnriquecerTextosPage() {
 
     // Filtrar por búsqueda mejorada: buscar en nombre, ciudad, dirección, provincia y país
     if (searchTerm) {
-      filtered = filtered.filter(area =>
+      filtered = filtered.filter((area: any) =>
         area.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         area.ciudad?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         area.direccion?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -121,10 +121,10 @@ export default function EnriquecerTextosPage() {
     // Filtrar por país
     if (selectedPais !== 'Todos') {
       const beforePais = filtered.length
-      filtered = filtered.filter(area => area.pais === selectedPais)
+      filtered = filtered.filter((area: any) => area.pais === selectedPais)
       console.log(`  ✅ Después de país (${selectedPais}):`, filtered.length, 'de', beforePais)
       if (filtered.length === 0 && beforePais > 0) {
-        console.log('  ⚠️ Países únicos en las áreas filtradas:', [...new Set(areas.map(a => a.pais))])
+        console.log('  ⚠️ Países únicos en las áreas filtradas:', [...new Set(areas.map((a: any) => a.pais))])
       }
     }
 
@@ -134,7 +134,7 @@ export default function EnriquecerTextosPage() {
     
     if (soloSinTexto) {
       const beforeSinTexto = filtered.length
-      filtered = filtered.filter(area => {
+      filtered = filtered.filter((area: any) => {
         if (!area.descripcion) return true // Sin descripción
         const desc = area.descripcion.trim()
         
@@ -238,7 +238,7 @@ export default function EnriquecerTextosPage() {
   ]
 
   const handleSelectAll = () => {
-    const idsVisibles = filteredAreas.map(a => a.id)
+    const idsVisibles = filteredAreas.map((a: any) => a.id)
     setSelectedIds(idsVisibles)
   }
 
@@ -248,7 +248,7 @@ export default function EnriquecerTextosPage() {
 
   const toggleSelection = (id: string) => {
     if (selectedIds.includes(id)) {
-      setSelectedIds(selectedIds.filter(sid => sid !== id))
+      setSelectedIds(selectedIds.filter((sid: any) => sid !== id))
     } else {
       setSelectedIds([...selectedIds, id])
     }
@@ -570,7 +570,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
       '',
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
       `✓ Completado: ${successCount} éxitos, ${failCount} fallos`,
-      ...(errors.length > 0 ? ['', '⚠️ Errores encontrados:', ...errors.map(e => `  • ${e}`)] : []),
+      ...(errors.length > 0 ? ['', '⚠️ Errores encontrados:', ...errors.map((e: any) => `  • ${e}`)] : []),
       '',
       'Recargando áreas...'
     ])
@@ -694,7 +694,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
                 onChange={(e) => setSelectedPais(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
-                {PAISES.map(pais => (
+                {PAISES.map((pais: any) => (
                   <option key={pais} value={pais}>{pais}</option>
                 ))}
               </select>
@@ -770,7 +770,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
                     <p className="text-purple-100 text-sm">Generando descripciones detalladas...</p>
                   </div>
                   <div className="text-2xl font-bold">
-                    {Math.round((selectedIds.findIndex(id => areas.find((a: any) => a.id === id && !processLog.find((log: any) => log.includes(a.nombre)))) / selectedIds.length) * 100)}%
+                    {Math.round((selectedIds.findIndex((id: any) => areas.find((a: any) => a.id === id && !processLog.find((log: any) => log.includes(a.nombre)))) / selectedIds.length) * 100)}%
                   </div>
                 </div>
               </div>
@@ -780,7 +780,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
                 <div 
                   className="bg-gradient-to-r from-purple-500 to-pink-500 h-full transition-all duration-300"
                   style={{ 
-                    width: `${(processLog.filter(l => l.includes('✓') || l.includes('✗')).length / selectedIds.length) * 100}%` 
+                    width: `${(processLog.filter((l: any) => l.includes('✓') || l.includes('✗')).length / selectedIds.length) * 100}%` 
                   }}
                 ></div>
               </div>
@@ -815,13 +815,13 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold text-purple-600">
-                      {processLog.filter(l => l.includes('✓')).length}
+                      {processLog.filter((l: any) => l.includes('✓')).length}
                     </div>
                     <div className="text-xs text-gray-600">Exitosas</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-red-600">
-                      {processLog.filter(l => l.includes('✗')).length}
+                      {processLog.filter((l: any) => l.includes('✗')).length}
                     </div>
                     <div className="text-xs text-gray-600">Errores</div>
                   </div>

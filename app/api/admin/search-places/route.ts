@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // Agregar términos relacionados si no están presentes
     const keywords = ['autocaravana', 'camping', 'area', 'camper', 'motorhome', 'rv']
-    const hasKeyword = keywords.some(keyword => query.toLowerCase().includes(keyword))
+    const hasKeyword = keywords.some((keyword: any) => query.toLowerCase().includes(keyword))
 
     if (hasKeyword) {
       // Si tiene una keyword, añadimos variaciones
@@ -272,7 +272,7 @@ export async function POST(request: NextRequest) {
     )
 
     console.log(`✅ Detalles obtenidos para ${resultsWithDetails.length} lugares`)
-    const withWebsite = resultsWithDetails.filter(r => r.website).length
+    const withWebsite = resultsWithDetails.filter((r: any) => r.website).length
     console.log(`🌐 ${withWebsite} lugares tienen website`)
 
     const results = resultsWithDetails

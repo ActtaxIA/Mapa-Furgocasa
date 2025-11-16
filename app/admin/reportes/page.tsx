@@ -112,7 +112,7 @@ export default function AdminReportesPage() {
     }
   }
 
-  const reportesFiltrados = reportes.filter(r => {
+  const reportesFiltrados = reportes.filter((r: any) => {
     if (filtro === 'pendientes') return !r.cerrado
     if (filtro === 'cerrados') return r.cerrado
     return true
@@ -362,7 +362,7 @@ export default function AdminReportesPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Pendientes ({reportes.filter(r => !r.cerrado).length})
+              Pendientes ({reportes.filter((r: any) => !r.cerrado).length})
             </button>
             <button
               onClick={() => setFiltro('cerrados')}
@@ -372,7 +372,7 @@ export default function AdminReportesPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Cerrados ({reportes.filter(r => r.cerrado).length})
+              Cerrados ({reportes.filter((r: any) => r.cerrado).length})
             </button>
           </div>
         </div>

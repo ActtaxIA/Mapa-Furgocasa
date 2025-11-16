@@ -269,7 +269,7 @@ export default function MapaPage() {
 
   // Filtrar áreas según los filtros aplicados
   const areasFiltradas = useMemo(() => {
-    return areas.filter(area => {
+    return areas.filter((area: any) => {
       // Filtro de búsqueda
       if (filtros.busqueda) {
         const busqueda = filtros.busqueda.toLowerCase()

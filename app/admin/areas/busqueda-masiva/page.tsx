@@ -114,13 +114,13 @@ const normalizeText = (value?: string | null): string => {
 const tokenize = (value?: string | null): string[] => {
   return normalizeText(value)
     .split(' ')
-    .filter(token => token.length > 2 && !COMMON_WORDS.has(token))
+    .filter((token: any) => token.length > 2 && !COMMON_WORDS.has(token))
 }
 
 const getTokenOverlapScore = (tokensA: string[], tokensB: string[]): number => {
   if (tokensA.length === 0 || tokensB.length === 0) return 0
   const setB = new Set(tokensB)
-  const shared = tokensA.filter(token => setB.has(token)).length
+  const shared = tokensA.filter((token: any) => setB.has(token)).length
   return shared / Math.max(tokensA.length, tokensB.length)
 }
 
@@ -566,7 +566,7 @@ export default function BusquedaMasivaPage() {
 
     try {
       const supabase = createClient()
-      const selectedResults = results.filter(r => selectedPlaces.has(r.place_id))
+      const selectedResults = results.filter((r: any) => selectedPlaces.has(r.place_id))
 
       let successCount = 0
       let errorCount = 0
@@ -580,7 +580,7 @@ export default function BusquedaMasivaPage() {
           let pais = ''
 
           // Intentar extraer de la dirección formateada
-          const addressParts = place.formatted_address.split(',').map(p => p.trim())
+          const addressParts = place.formatted_address.split(',').map((p: any) => p.trim())
 
           // Detectar el país desde la dirección (última parte normalmente es el país)
           if (addressParts.length > 0) {
@@ -762,7 +762,7 @@ export default function BusquedaMasivaPage() {
       setSelectedPlaces(new Set())
 
       // Actualizar estado de resultados
-      const updatedResults = results.map(place => ({
+      const updatedResults = results.map((place: any) => ({
         ...place,
         exists_in_db: selectedPlaces.has(place.place_id) ? true : place.exists_in_db
       }))
@@ -801,7 +801,7 @@ export default function BusquedaMasivaPage() {
 
     try {
       const supabase = createClient()
-      const selectedResults = mapResults.filter(r => mapSelectedPlaces.has(r.place_id))
+      const selectedResults = mapResults.filter((r: any) => mapSelectedPlaces.has(r.place_id))
 
       let successCount = 0
       let errorCount = 0
@@ -815,7 +815,7 @@ export default function BusquedaMasivaPage() {
           let pais = ''
 
           // Intentar extraer de la dirección formateada
-          const addressParts = place.formatted_address.split(',').map(p => p.trim())
+          const addressParts = place.formatted_address.split(',').map((p: any) => p.trim())
 
           // Detectar el país desde la dirección (última parte normalmente es el país)
           if (addressParts.length > 0) {
@@ -993,7 +993,7 @@ export default function BusquedaMasivaPage() {
       setMapSelectedPlaces(new Set())
 
       // Actualizar estado de resultados
-      const updatedResults = mapResults.map(place => ({
+      const updatedResults = mapResults.map((place: any) => ({
         ...place,
         exists_in_db: mapSelectedPlaces.has(place.place_id) ? true : place.exists_in_db
       }))
@@ -1022,9 +1022,9 @@ export default function BusquedaMasivaPage() {
   }
 
   const selectedCount = selectedPlaces.size
-  const newPlacesCount = results.filter(p => !p.exists_in_db).length
+  const newPlacesCount = results.filter((p: any) => !p.exists_in_db).length
   const mapSelectedCount = mapSelectedPlaces.size
-  const mapNewPlacesCount = mapResults.filter(p => !p.exists_in_db).length
+  const mapNewPlacesCount = mapResults.filter((p: any) => !p.exists_in_db).length
 
   return (
     <div className="min-h-screen bg-gray-50">

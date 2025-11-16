@@ -26,14 +26,14 @@ export async function POST(request: NextRequest) {
       console.error('Variables disponibles:', {
         SERPAPI_KEY: !!process.env.SERPAPI_KEY,
         NEXT_PUBLIC_SERPAPI_KEY_ADMIN: !!process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN,
-        allEnvKeys: Object.keys(process.env).filter(k => k.includes('SERP'))
+        allEnvKeys: Object.keys(process.env).filter((k: any) => k.includes('SERP'))
       })
       return NextResponse.json({
         error: 'SERPAPI_KEY no configurada',
         details: 'Configura SERPAPI_KEY o NEXT_PUBLIC_SERPAPI_KEY_ADMIN en las variables de entorno de AWS',
         debug: {
           hasKey: !!serpApiKey,
-          envKeys: Object.keys(process.env).filter(k => k.includes('SERP'))
+          envKeys: Object.keys(process.env).filter((k: any) => k.includes('SERP'))
         }
       }, { status: 500 })
     }

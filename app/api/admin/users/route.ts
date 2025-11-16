@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Formatear datos para el cliente
-    const formattedUsers = users.map(user => ({
+    const formattedUsers = users.map((user: any) => ({
       id: user.id,
       email: user.email,
       created_at: user.created_at,

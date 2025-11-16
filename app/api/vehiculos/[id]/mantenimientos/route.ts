@@ -8,7 +8,7 @@ interface RouteParams {
 // Helper: Normalizar valores numéricos (DECIMAL de PostgreSQL viene como string en JSON)
 function normalizeNumericFields(data: any): any {
   if (Array.isArray(data)) {
-    return data.map(item => normalizeNumericFields(item))
+    return data.map((item: any) => normalizeNumericFields(item))
   }
   
   if (data && typeof data === 'object') {

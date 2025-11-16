@@ -280,7 +280,7 @@ export default function ConfiguracionPage() {
       ...editedChatbotConfig,
       prompts: {
         ...editedChatbotConfig.prompts,
-        prompts: editedChatbotConfig.prompts.prompts.map(p =>
+        prompts: editedChatbotConfig.prompts.prompts.map((p: any) =>
           p.id === promptId ? { ...p, [field]: value } : p
         )
       }
@@ -291,7 +291,7 @@ export default function ConfiguracionPage() {
     if (!editedChatbotConfig || !editedChatbotConfig.prompts) return
 
     const updatedPrompts = editedChatbotConfig.prompts.prompts
-      .filter(p => p.id !== promptId)
+      .filter((p: any) => p.id !== promptId)
       .map((p: any, index: any) => ({ ...p, order: index + 1 }))
 
     setEditedChatbotConfig({
@@ -344,7 +344,7 @@ export default function ConfiguracionPage() {
 
     updateConfigValue(
       'prompts',
-      editedConfig.config_value.prompts.filter(p => p.id !== promptId)
+      editedConfig.config_value.prompts.filter((p: any) => p.id !== promptId)
     )
   }
 
@@ -353,7 +353,7 @@ export default function ConfiguracionPage() {
 
     updateConfigValue(
       'prompts',
-      editedConfig.config_value.prompts.map(p =>
+      editedConfig.config_value.prompts.map((p: any) =>
         p.id === promptId ? { ...p, [field]: value } : p
       )
     )

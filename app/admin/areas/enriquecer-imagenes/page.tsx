@@ -187,7 +187,7 @@ export default function EnriquecerImagenesPage() {
 
       // 5. Guardar en BD
       const foto_principal = imagenesUnicas[0]?.url || null
-      const fotos_urls = imagenesUnicas.slice(0, 7).map(img => img.url)
+      const fotos_urls = imagenesUnicas.slice(0, 7).map((img: any) => img.url)
 
       console.log('💾 Actualizando base de datos...')
       const { error: updateError } = await (supabase as any)
@@ -228,12 +228,12 @@ export default function EnriquecerImagenesPage() {
     ]
     
     const urlLower = url.toLowerCase()
-    return !blacklist.some(term => urlLower.includes(term))
+    return !blacklist.some((term: any) => urlLower.includes(term))
   }
 
   const eliminarDuplicados = (imagenes: Array<{url: string, fuente: string, titulo?: string, prioridad: number}>) => {
     const urlsVistas = new Set<string>()
-    return imagenes.filter(img => {
+    return imagenes.filter((img: any) => {
       if (urlsVistas.has(img.url)) {
         return false
       }
@@ -302,9 +302,9 @@ export default function EnriquecerImagenesPage() {
     }, 500)
   }
 
-  const paises = Array.from(new Set(areas.map(a => a.pais).filter((p): p is string => p !== null))).sort()
+  const paises = Array.from(new Set(areas.map((a: any) => a.pais).filter((p): p is string => p !== null))).sort()
 
-  const areasFiltradas = areas.filter(area => {
+  const areasFiltradas = areas.filter((area: any) => {
     // Búsqueda mejorada: buscar en nombre, ciudad, dirección, provincia y país
     const matchSearch = searchTerm === '' || 
       area.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -331,7 +331,7 @@ export default function EnriquecerImagenesPage() {
           checked={selectedIds.includes(area.id)}
           onChange={() => {
             if (selectedIds.includes(area.id)) {
-              setSelectedIds(selectedIds.filter(id => id !== area.id))
+              setSelectedIds(selectedIds.filter((id: any) => id !== area.id))
             } else {
               setSelectedIds([...selectedIds, area.id])
             }
@@ -395,7 +395,7 @@ export default function EnriquecerImagenesPage() {
   ]
 
   // Filtrar áreas sin foto_principal
-  const areasSinImagenes = areasFiltradas.filter(a => !a.foto_principal)
+  const areasSinImagenes = areasFiltradas.filter((a: any) => !a.foto_principal)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -442,7 +442,7 @@ export default function EnriquecerImagenesPage() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">Todos los países</option>
-                {paises.map(pais => (
+                {paises.map((pais: any) => (
                   <option key={pais} value={pais}>{pais}</option>
                 ))}
               </select>
@@ -451,7 +451,7 @@ export default function EnriquecerImagenesPage() {
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setSelectedIds(areasSinImagenes.map(a => a.id))}
+              onClick={() => setSelectedIds(areasSinImagenes.map((a: any) => a.id))}
               className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
             >
               Seleccionar sin imágenes ({areasSinImagenes.length})

@@ -343,11 +343,11 @@ export async function POST(
       // 4. Convertir a array y crear comparables con información completa
       // SEGURIDAD: Filtrar explícitamente el vehículo actual (aunque SQL ya lo hace)
       const vehiculosDeduplicados = Array.from(vehiculosUnicos.values())
-        .filter(v => v.vehiculo_id !== params.id) // Excluir el vehículo actual
+        .filter((v: any) => v.vehiculo_id !== params.id) // Excluir el vehículo actual
 
       console.log(`   🔒 Validación: Vehículos después de excluir el actual: ${vehiculosDeduplicados.length}`)
 
-      let comparablesConRelevancia = vehiculosDeduplicados.map(v => {
+      let comparablesConRelevancia = vehiculosDeduplicados.map((v: any) => {
         const titulo = v.marca && v.modelo
           ? `${v.marca} ${v.modelo} - España`
           : (v.tipo === 'valoracion_ia' ? 'Valoración IA similar' : 'Vehículo similar comprado')
@@ -402,7 +402,7 @@ export async function POST(
 
       // Agregar datos de mercado scrapeados (con relevancia y filtrado)
       if (datosMercado && datosMercado.length > 0) {
-        const comparablesMercado = datosMercado.map(d => {
+        const comparablesMercado = datosMercado.map((d: any) => {
           const comparable = {
             titulo: `${d.marca || ''} ${d.modelo || ''} - ${d.pais || 'España'}`.trim(),
             precio: d.precio,
@@ -446,7 +446,7 @@ export async function POST(
       // Procesar comparables externos (SerpAPI) con relevancia y filtrado
       const totalComparablesAntes = comparables.length
       if (comparables.length > 0) {
-        const comparablesExternosProcesados = comparables.map(c => {
+        const comparablesExternosProcesados = comparables.map((c: any) => {
           const comparable = {
             ...c,
             vehiculo_id: c.vehiculo_id || null, // Asegurar que tenga vehiculo_id (null si es externo)
@@ -513,7 +513,7 @@ export async function POST(
       console.log(`   🔄 Deduplicación final: ${comparables.length} comparables únicos`)
 
       // Validar y corregir relevancia NaN
-      comparables = comparables.map(c => {
+      comparables = comparables.map((c: any) => {
         if (isNaN(c.relevancia) || c.relevancia === null || c.relevancia === undefined) {
           console.warn(`   ⚠️  Comparable sin relevancia: ${c.titulo}, recalculando...`)
           c.relevancia = calcularRelevancia(c)
@@ -732,7 +732,7 @@ export async function POST(
     // LIMPIEZA FINAL: Asegurar que todos los comparables tienen estructura válida antes de guardar
     // SEGURIDAD FINAL: Filtrar cualquier comparable que sea el vehículo actual (triple verificación)
     const comparablesLimpios = comparables
-      .filter(c => {
+      .filter((c: any) => {
         // Excluir el vehículo actual por vehiculo_id
         if (c.vehiculo_id === params.id) {
           console.warn(`   ⚠️  BLOQUEADO EN LIMPIEZA: Comparable del vehículo actual detectado y eliminado`)
@@ -740,7 +740,7 @@ export async function POST(
         }
         return true
       })
-      .map(c => {
+      .map((c: any) => {
         return {
           titulo: c.titulo || 'Comparable sin título',
           precio: c.precio || null,
@@ -761,12 +761,12 @@ export async function POST(
     console.log(`\n🧹 Limpieza final de comparables:`)
     console.log(`   ✅ Comparables antes de limpiar: ${comparables.length}`)
     console.log(`   ✅ Comparables después de limpiar: ${comparablesLimpios.length}`)
-    console.log(`   📊 Relevancias válidas: ${comparablesLimpios.filter(c => c.relevancia > 0).length}/${comparablesLimpios.length}`)
-    console.log(`   📊 Con año: ${comparablesLimpios.filter(c => c.año).length}/${comparablesLimpios.length}`)
-    console.log(`   📊 Con km: ${comparablesLimpios.filter(c => c.kilometros).length}/${comparablesLimpios.length}`)
+    console.log(`   📊 Relevancias válidas: ${comparablesLimpios.filter((c: any) => c.relevancia > 0).length}/${comparablesLimpios.length}`)
+    console.log(`   📊 Con año: ${comparablesLimpios.filter((c: any) => c.año).length}/${comparablesLimpios.length}`)
+    console.log(`   📊 Con km: ${comparablesLimpios.filter((c: any) => c.kilometros).length}/${comparablesLimpios.length}`)
 
     const precioBaseMercado = comparablesLimpios.length > 0
-      ? comparablesLimpios.reduce((sum: any, c: any) => sum + (c.precio || 0), 0) / comparablesLimpios.filter(c => c.precio).length
+      ? comparablesLimpios.reduce((sum: any, c: any) => sum + (c.precio || 0), 0) / comparablesLimpios.filter((c: any) => c.precio).length
       : null
 
     // Calcular variación de valor (positivo = revalorización, negativo = depreciación)
@@ -814,7 +814,7 @@ export async function POST(
     if (comparablesLimpios.length > 0) {
       console.log(`\n📊 Guardando ${comparablesLimpios.length} comparables en datos_mercado_autocaravanas...`)
 
-      const comparablesParaGuardar = comparablesLimpios.map(c => ({
+      const comparablesParaGuardar = comparablesLimpios.map((c: any) => ({
         marca: vehiculo.marca || null,
         modelo: vehiculo.modelo || null,
         año: vehiculo.año || null,

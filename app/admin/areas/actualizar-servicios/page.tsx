@@ -110,7 +110,7 @@ export default function ActualizarServiciosPage() {
       // 2. CACHÉ: Verificar si se actualizó recientemente (últimas 24 horas)
       const horasDesdeUpdate = (Date.now() - new Date(area.updated_at || 0).getTime()) / (1000 * 60 * 60)
       if (horasDesdeUpdate < 24 && area.servicios && Object.keys(area.servicios).length > 0) {
-        const serviciosActuales = Object.values(area.servicios).filter(v => v === true).length
+        const serviciosActuales = Object.values(area.servicios).filter((v: any) => v === true).length
         if (serviciosActuales > 0) {
           console.log(`⏭️  Área actualizada hace ${horasDesdeUpdate.toFixed(1)} horas, usando caché`)
           console.log(`   Servicios en caché: ${serviciosActuales}`)
@@ -349,7 +349,7 @@ Responde con JSON con esta estructura exacta:
       }
 
       const tiempoProcesamiento = ((Date.now() - startTime) / 1000).toFixed(1)
-      const totalServiciosDetectados = Object.values(serviciosFinales).filter(v => v === true).length
+      const totalServiciosDetectados = Object.values(serviciosFinales).filter((v: any) => v === true).length
       
       console.log('✅ Servicios actualizados exitosamente!')
       console.log(`   📊 ${totalServiciosDetectados} servicios detectados`)
@@ -508,7 +508,7 @@ Responde con JSON con esta estructura exacta:
 
       console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
 
-      const areasConEstado: AreaConCambios[] = allAreas.map(area => ({
+      const areasConEstado: AreaConCambios[] = allAreas.map((area: any) => ({
         ...area,
         seleccionada: false,
         procesando: false,
@@ -519,7 +519,7 @@ Responde con JSON con esta estructura exacta:
       setAreas(areasConEstado)
 
       // Extraer países únicos
-      const paisesUnicos = [...new Set(allAreas.map(a => a.pais).filter(Boolean))] as string[]
+      const paisesUnicos = [...new Set(allAreas.map((a: any) => a.pais).filter(Boolean))] as string[]
       setPaises(paisesUnicos.sort())
 
     } catch (error) {
@@ -531,7 +531,7 @@ Responde con JSON con esta estructura exacta:
 
   // Ya no necesitamos filtros de comunidad ni provincia
 
-  const areasFiltradas = areas.filter(area => {
+  const areasFiltradas = areas.filter((area: any) => {
     // Búsqueda mejorada: buscar en nombre, ciudad, dirección, provincia y país
     const matchBusqueda = busqueda === '' || 
       area.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -662,21 +662,21 @@ Responde con JSON con esta estructura exacta:
   ]
 
   const toggleSeleccion = (id: string) => {
-    setAreas(prev => prev.map(area => 
+    setAreas(prev => prev.map((area: any) => 
       area.id === id ? { ...area, seleccionada: !area.seleccionada } : area
     ))
   }
 
   const seleccionarTodas = () => {
-    const idsVisibles = new Set(areasFiltradas.map(a => a.id))
-    setAreas(prev => prev.map(area => ({
+    const idsVisibles = new Set(areasFiltradas.map((a: any) => a.id))
+    setAreas(prev => prev.map((area: any) => ({
       ...area,
       seleccionada: idsVisibles.has(area.id) ? true : area.seleccionada
     })))
   }
 
   const deseleccionarTodas = () => {
-    setAreas(prev => prev.map(area => ({ ...area, seleccionada: false })))
+    setAreas(prev => prev.map((area: any) => ({ ...area, seleccionada: false })))
   }
 
   const procesarAreas = async () => {
@@ -690,7 +690,7 @@ Responde con JSON con esta estructura exacta:
       return
     }
 
-    const areasSeleccionadas = areas.filter(a => a.seleccionada)
+    const areasSeleccionadas = areas.filter((a: any) => a.seleccionada)
     
     if (areasSeleccionadas.length === 0) {
       alert('Por favor, selecciona al menos un área')
@@ -733,7 +733,7 @@ Responde con JSON con esta estructura exacta:
       const area = areasSeleccionadas[i]
       const tiempoAreaInicio = Date.now()
       
-      setAreas(prev => prev.map(a => 
+      setAreas(prev => prev.map((a: any) => 
         a.id === area.id ? { ...a, procesando: true } : a
       ))
 
@@ -742,10 +742,10 @@ Responde con JSON con esta estructura exacta:
         const servicios = await analizarServiciosArea(area.id)
         
         if (servicios) {
-          const totalServicios = Object.values(servicios).filter(v => v === true).length
+          const totalServicios = Object.values(servicios).filter((v: any) => v === true).length
           const tiempoArea = (Date.now() - tiempoAreaInicio) / 1000
           
-          setAreas(prev => prev.map(a => 
+          setAreas(prev => prev.map((a: any) => 
             a.id === area.id ? {
               ...a,
               procesando: false,
@@ -774,7 +774,7 @@ Responde con JSON con esta estructura exacta:
           throw new Error('No se pudieron analizar los servicios')
         }
       } catch (error: any) {
-        setAreas(prev => prev.map(a => 
+        setAreas(prev => prev.map((a: any) => 
           a.id === area.id ? {
             ...a,
             procesando: false,
@@ -840,7 +840,7 @@ Responde con JSON con esta estructura exacta:
     )
   }
 
-  const areasSeleccionadas = areas.filter(a => a.seleccionada).length
+  const areasSeleccionadas = areas.filter((a: any) => a.seleccionada).length
 
   if (loading) {
     return (
@@ -964,7 +964,7 @@ Responde con JSON con esta estructura exacta:
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               >
                 <option value="todos">Todos los países</option>
-                {paises.map(pais => (
+                {paises.map((pais: any) => (
                   <option key={pais} value={pais}>{pais}</option>
                 ))}
               </select>
@@ -1067,7 +1067,7 @@ Responde con JSON con esta estructura exacta:
               {/* Lista de Áreas Procesadas */}
               <div className="p-6 bg-gray-50 overflow-y-auto max-h-96">
                 <div className="space-y-3">
-                  {areas.filter(a => a.seleccionada).map((area: any) => (
+                  {areas.filter((a: any) => a.seleccionada).map((area: any) => (
                     <div 
                       key={area.id}
                       className={`p-4 rounded-lg border-2 transition-all ${
@@ -1116,7 +1116,7 @@ Responde con JSON con esta estructura exacta:
                                   {key}
                                 </span>
                               ))}
-                            {Object.values(area.serviciosNuevos).every(v => v === false) && (
+                            {Object.values(area.serviciosNuevos).every((v: any) => v === false) && (
                               <span className="text-xs text-gray-500 italic">
                                 No se detectaron servicios con evidencia suficiente
                               </span>
@@ -1134,13 +1134,13 @@ Responde con JSON con esta estructura exacta:
                 <div className="grid grid-cols-3 gap-4 text-center mb-4">
                   <div>
                     <div className="text-2xl font-bold text-green-600">
-                      {areas.filter(a => a.procesada && !a.error).length}
+                      {areas.filter((a: any) => a.procesada && !a.error).length}
                     </div>
                     <div className="text-xs text-gray-600">Exitosas</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-red-600">
-                      {areas.filter(a => a.error).length}
+                      {areas.filter((a: any) => a.error).length}
                     </div>
                     <div className="text-xs text-gray-600">Errores</div>
                   </div>

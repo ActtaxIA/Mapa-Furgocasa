@@ -43,14 +43,14 @@ function getSupabaseClient() {
   console.log('  - NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl ? '✅ Encontrada' : '❌ FALTA')
   console.log('  - SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅ Encontrada' : '❌ FALTA')
   console.log('  - NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY ? '✅ Encontrada' : '❌ FALTA')
-  console.log('  - Variables con SUPABASE:', Object.keys(process.env).filter(k => k.includes('SUPABASE')))
+  console.log('  - Variables con SUPABASE:', Object.keys(process.env).filter((k: any) => k.includes('SUPABASE')))
   console.log('  - TODAS las variables:', Object.keys(process.env).sort())
   
   if (!supabaseUrl || !serviceRoleKey) {
     console.error('❌ Supabase URL:', supabaseUrl ? '✅' : '❌ FALTA')
     console.error('❌ Service Role Key:', serviceRoleKey ? '✅' : '❌ FALTA')
     // Incluir diagnóstico en el mensaje de error para que llegue al cliente
-    const supabaseEnvKeys = Object.keys(process.env).filter(k => k.includes('SUPABASE'))
+    const supabaseEnvKeys = Object.keys(process.env).filter((k: any) => k.includes('SUPABASE'))
     throw new Error(
       `Missing Supabase credentials | keys_seen=${JSON.stringify(supabaseEnvKeys)} | has_url=${!!supabaseUrl} | has_service_role=${!!serviceRoleKey}`
     )
@@ -64,7 +64,7 @@ function getSupabaseClient() {
 function getOpenAIClient() {
   const apiKey = process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY_ADMIN
   if (!apiKey) {
-    console.error('❌ Variables OpenAI disponibles:', Object.keys(process.env).filter(k => k.includes('OPENAI')))
+    console.error('❌ Variables OpenAI disponibles:', Object.keys(process.env).filter((k: any) => k.includes('OPENAI')))
     throw new Error('OPENAI_API_KEY no está configurada')
   }
   return new OpenAI({ apiKey })
@@ -361,7 +361,7 @@ export async function POST(req: NextRequest) {
     if (!apiKey) {
       const allEnvVars = Object.keys(process.env)
       logger.error('OPENAI_API_KEY no configurada', null, { 
-        openaiVars: allEnvVars.filter(k => k.includes('OPENAI'))
+        openaiVars: allEnvVars.filter((k: any) => k.includes('OPENAI'))
       })
       return NextResponse.json(
         { 
@@ -534,12 +534,12 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
         content: systemPromptEnriquecido 
       },
       // Añadir historial previo
-      ...historialPrevio.map(h => ({
+      ...historialPrevio.map((h: any) => ({
         role: h.rol as 'user' | 'assistant',
         content: h.contenido
       })),
       // Añadir nuevos mensajes
-      ...messages.map(m => ({
+      ...messages.map((m: any) => ({
         role: m.role as 'user' | 'assistant' | 'system',
         content: m.content
       }))
@@ -678,7 +678,7 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
             function_call_name: functionName,
             function_call_args: functionArgs,
             function_call_result: functionResult,
-            areas_mencionadas: areasEncontradas?.map(a => a.id) || []
+            areas_mencionadas: areasEncontradas?.map((a: any) => a.id) || []
           })
         
         if (insertError) {
@@ -834,7 +834,7 @@ export async function GET() {
   
   // Obtener TODAS las variables de entorno disponibles
   const allEnvKeys = Object.keys(process.env)
-  const envVars = allEnvKeys.filter(k => k.includes('OPENAI') || k.includes('SUPABASE') || k.includes('GOOGLE'))
+  const envVars = allEnvKeys.filter((k: any) => k.includes('OPENAI') || k.includes('SUPABASE') || k.includes('GOOGLE'))
   
   logger.debug('GET /api/chatbot - Verificando variables', {
     hasOpenAI,
@@ -868,7 +868,7 @@ export async function GET() {
     endpoints: {
       POST: '/api/chatbot - Enviar mensaje al chatbot'
     },
-    functions: AVAILABLE_FUNCTIONS.map(f => ({
+    functions: AVAILABLE_FUNCTIONS.map((f: any) => ({
       name: f.name,
       description: f.description
     }))

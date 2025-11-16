@@ -90,7 +90,7 @@ export default function AdminUsersPage() {
     }
   }
 
-  const usuariosFiltrados = users.filter(user => {
+  const usuariosFiltrados = users.filter((user: any) => {
     const matchAdmin = filtroAdmin === 'all' ||
                       (filtroAdmin === 'admin' && user.user_metadata?.is_admin) ||
                       (filtroAdmin === 'user' && !user.user_metadata?.is_admin)
@@ -390,7 +390,7 @@ export default function AdminUsersPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Administradores</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {users.filter(u => u.user_metadata?.is_admin).length}
+                  {users.filter((u: any) => u.user_metadata?.is_admin).length}
                 </p>
               </div>
             </div>
@@ -404,7 +404,7 @@ export default function AdminUsersPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Confirmados</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {users.filter(u => u.confirmed_at).length}
+                  {users.filter((u: any) => u.confirmed_at).length}
                 </p>
               </div>
             </div>
