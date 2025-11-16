@@ -24,7 +24,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const supabase = await createClient()
 
-  const { data: area } = await supabase
+  const { data: area } = await (supabase as any)
     .from('areas')
     .select('*')
     .eq('slug', params.slug)
@@ -52,7 +52,7 @@ export default async function AreaPage({ params }: PageProps) {
   const supabase = await createClient()
 
   // Obtener datos del área
-  const { data: area, error } = await supabase
+  const { data: area, error } = await (supabase as any)
     .from('areas')
     .select('*')
     .eq('slug', params.slug)
@@ -64,7 +64,7 @@ export default async function AreaPage({ params }: PageProps) {
   }
 
   // Obtener valoraciones del área
-  const { data: valoraciones } = await supabase
+  const { data: valoraciones } = await (supabase as any)
     .from('valoraciones')
     .select('*')
     .eq('area_id', area.id)
@@ -72,7 +72,7 @@ export default async function AreaPage({ params }: PageProps) {
     .limit(10)
 
   // Obtener áreas relacionadas (misma provincia)
-  const { data: areasRelacionadas } = await supabase
+  const { data: areasRelacionadas } = await (supabase as any)
     .from('areas')
     .select('id, nombre, slug, ciudad, provincia, tipo_area, precio_noche, foto_principal, google_rating')
     .eq('provincia', area.provincia)

@@ -12,7 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let hasMore = true
 
   while (hasMore) {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('areas')
       .select('slug, updated_at')
       .eq('activo', true)

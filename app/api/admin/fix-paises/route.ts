@@ -17,7 +17,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
     }
 
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('rol')
       .eq('id', user.id)
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     }
 
     // Obtener todas las áreas
-    const { data: areas, error } = await supabase
+    const { data: areas, error } = await (supabase as any)
       .from('areas')
       .select('id, nombre, pais, provincia, ciudad, codigo_postal')
       .eq('activo', true)
@@ -102,7 +102,7 @@ export async function GET(request: Request) {
     if (fix) {
       for (const problema of problemas) {
         if (problema.tipo === 'espacios_extra' || problema.tipo === 'pais_incorrecto') {
-          const { error: updateError } = await supabase
+          const { error: updateError } = await (supabase as any)
             .from('areas')
             .update({ pais: problema.paisCorrecto.replace(/"/g, '') })
             .eq('id', problema.id)

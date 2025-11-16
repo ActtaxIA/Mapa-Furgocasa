@@ -24,7 +24,7 @@ export async function GET() {
     }
 
     // Obtener vehículos del usuario con datos económicos completos
-    const { data: vehiculos, error } = await supabase
+    const { data: vehiculos, error } = await (supabase as any)
       .from("vehiculos_registrados")
       .select(
         `
@@ -146,7 +146,7 @@ export async function POST(request: Request) {
     }
 
     // Verificar si ya existe la matrícula para este usuario
-    const { data: existente, error: checkError } = await supabase
+    const { data: existente, error: checkError } = await (supabase as any)
       .from("vehiculos_registrados")
       .select("id")
       .eq("user_id", user.id)
@@ -214,7 +214,7 @@ export async function POST(request: Request) {
     }
 
     // Insertar vehículo
-    const { data: nuevoVehiculo, error: insertError } = await supabase
+    const { data: nuevoVehiculo, error: insertError } = await (supabase as any)
       .from("vehiculos_registrados")
       .insert({
         user_id: user.id,
@@ -281,7 +281,7 @@ export async function DELETE(request: Request) {
     }
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: checkError } = await supabase
+    const { data: vehiculo, error: checkError } = await (supabase as any)
       .from("vehiculos_registrados")
       .select("id")
       .eq("id", vehiculo_id)
@@ -296,7 +296,7 @@ export async function DELETE(request: Request) {
     }
 
     // Desactivar vehículo (no eliminamos físicamente)
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await (supabase as any)
       .from("vehiculos_registrados")
       .update({ activo: false })
       .eq("id", vehiculo_id)

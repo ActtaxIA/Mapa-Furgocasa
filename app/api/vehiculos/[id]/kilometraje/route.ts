@@ -17,7 +17,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
     }
 
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('user_id')
       .eq('id', vehiculoId)
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
     }
 
-    const { data: kilometraje, error } = await supabase
+    const { data: kilometraje, error } = await (supabase as any)
       .from('vehiculo_kilometraje')
       .select('*')
       .eq('vehiculo_id', vehiculoId)
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
     }
 
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('user_id')
       .eq('id', vehiculoId)
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
     }
 
-    const { data: kilometrajeData, error } = await supabase
+    const { data: kilometrajeData, error } = await (supabase as any)
       .from('vehiculo_kilometraje')
       .insert({
         vehiculo_id: vehiculoId,

@@ -28,7 +28,7 @@ export default function HomePage() {
     const loadTotalAreas = async () => {
       try {
         const supabase = createClient()
-        const { count, error } = await supabase
+        const { count, error } = await (supabase as any)
           .from('areas')
           .select('*', { count: 'exact', head: true })
           .eq('activo', true)

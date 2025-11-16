@@ -210,7 +210,7 @@ export default function AdminAnalyticsPage() {
       console.log('📦 Cargando todas las áreas para analytics (con paginación)...')
 
       while (hasMore) {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('areas')
           .select('*')
           .range(page * pageSize, (page + 1) * pageSize - 1)
@@ -249,18 +249,18 @@ export default function AdminAnalyticsPage() {
 
       // Obtener métricas de RUTAS
       console.log('🗺️ Obteniendo métricas de rutas...')
-      const { data: rutas, error: rutasError } = await supabase
+      const { data: rutas, error: rutasError } = await (supabase as any)
         .from('rutas')
         .select('*')
 
       const totalRutas = rutas?.length || 0
-      const distanciaTotal = rutas?.reduce((sum, r) => sum + (r.distancia_km || 0), 0) || 0
+      const distanciaTotal = rutas?.reduce((sum: number, r: any) => sum + (r.distancia_km || 0), 0) || 0
       console.log(`✅ ${totalRutas} rutas, ${distanciaTotal.toFixed(0)} km totales`)
 
       // Obtener métricas de CHATBOT
       // Los mensajes se trackean en user_interactions con event_type = 'chatbot_message'
       console.log('🤖 Obteniendo métricas de chatbot desde user_interactions...')
-      const { data: mensajes, error: mensajesError } = await supabase
+      const { data: mensajes, error: mensajesError } = await (supabase as any)
         .from('user_interactions')
         .select('id, created_at, user_id, timestamp, event_data')
         .eq('event_type', 'chatbot_message')
@@ -397,7 +397,7 @@ export default function AdminAnalyticsPage() {
 
       // ========== MÉTRICAS DE VISITAS TEMPORALES ==========
       console.log('👁️ Obteniendo visitas registradas...')
-      const { data: visitas, error: errorVisitas } = await supabase
+      const { data: visitas, error: errorVisitas } = await (supabase as any)
         .from('visitas')
         .select('id, created_at, area_id, user_id, fecha_visita')
 
@@ -453,7 +453,7 @@ export default function AdminAnalyticsPage() {
       console.log(`✅ Visitas: ${visitasHoy} hoy, ${visitasEstaSemana} esta semana, ${visitasEsteMes} este mes`)
 
       // ========== MÉTRICAS DE VALORACIONES TEMPORALES ==========
-      const { data: valoraciones } = await supabase
+      const { data: valoraciones } = await (supabase as any)
         .from('valoraciones')
         .select('id, created_at, rating, area_id, user_id')
 
@@ -490,7 +490,7 @@ export default function AdminAnalyticsPage() {
       console.log(`✅ Valoraciones: ${valoracionesHoy} hoy, ${valoracionesEstaSemana} esta semana, ${valoracionesEsteMes} este mes`)
 
       // ========== MÉTRICAS DE FAVORITOS TEMPORALES ==========
-      const { data: favoritos } = await supabase
+      const { data: favoritos } = await (supabase as any)
         .from('favoritos')
         .select('id, created_at, area_id, user_id')
 
@@ -722,7 +722,7 @@ export default function AdminAnalyticsPage() {
 
       try {
         // Consultar directamente con el cliente (igual que admin/vehiculos)
-        const { data: vehiculosData, error: vehiculosError } = await supabase
+        const { data: vehiculosData, error: vehiculosError } = await (supabase as any)
           .from('vehiculos_registrados')
           .select('id, created_at, user_id, marca, modelo, matricula, año, tipo_vehiculo')
 
@@ -734,21 +734,21 @@ export default function AdminAnalyticsPage() {
         }
 
         // Obtener valoraciones económicas
-        const { data: valEcoData, error: valEcoError } = await supabase
+        const { data: valEcoData, error: valEcoError } = await (supabase as any)
           .from('vehiculo_valoracion_economica')
           .select('*')
 
         if (!valEcoError) valoracionesEconomicas = valEcoData || []
 
         // Obtener fichas técnicas
-        const { data: fichasData, error: fichasError } = await supabase
+        const { data: fichasData, error: fichasError } = await (supabase as any)
           .from('vehiculo_ficha_tecnica')
           .select('*')
 
         if (!fichasError) fichasTecnicas = fichasData || []
 
         // Obtener registros de kilometraje
-        const { data: kmData, error: kmError } = await supabase
+        const { data: kmData, error: kmError } = await (supabase as any)
           .from('vehiculo_kilometraje')
           .select('*')
           .order('fecha', { ascending: false })
@@ -756,14 +756,14 @@ export default function AdminAnalyticsPage() {
         if (!kmError) registrosKilometraje = kmData || []
 
         // Obtener datos de mercado IA
-        const { data: mercadoData, error: mercadoError } = await supabase
+        const { data: mercadoData, error: mercadoError } = await (supabase as any)
           .from('datos_mercado_autocaravanas')
           .select('*')
 
         if (!mercadoError) datosMercado = mercadoData || []
 
         // Obtener valoraciones IA
-        const { data: valoracionesIAData, error: valoracionesIAError } = await supabase
+        const { data: valoracionesIAData, error: valoracionesIAError } = await (supabase as any)
           .from('valoracion_ia_informes')
           .select('*')
 

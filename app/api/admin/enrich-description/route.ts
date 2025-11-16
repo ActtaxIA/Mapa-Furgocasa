@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     // Obtener el área de la base de datos
     console.log('🔍 [ENRICH] Buscando área en base de datos...')
-    const { data: area, error: areaError } = await supabase
+    const { data: area, error: areaError } = await (supabase as any)
       .from('areas')
       .select('*')
       .eq('id', areaId)
@@ -193,7 +193,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
     }
 
     // Obtener configuración del agente desde la BD
-    const { data: configData } = await supabase
+    const { data: configData } = await (supabase as any)
       .from('ia_config')
       .select('config_value')
       .eq('config_key', 'enrich_description')
@@ -327,7 +327,7 @@ Escribe un texto completo, bien redactado y natural. NO uses listas de puntos, e
 
     // Actualizar en la base de datos
     console.log('💾 [ENRICH] Guardando en base de datos...')
-    const { error: updateError } = await supabase
+    const { error: updateError } = await (supabase as any)
       .from('areas')
       .update({
         descripcion: descripcionGenerada,

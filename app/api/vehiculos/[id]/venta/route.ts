@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('user_id')
       .eq('id', vehiculoId)
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Obtener datos de valoración económica
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('vehiculo_valoracion_economica')
       .select('*')
       .eq('vehiculo_id', vehiculoId)
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('user_id')
       .eq('id', vehiculoId)
@@ -161,7 +161,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     // Obtener datos existentes de valoración económica para calcular rentabilidad
-    const { data: existingData, error: fetchError } = await supabase
+    const { data: existingData, error: fetchError } = await (supabase as any)
       .from('vehiculo_valoracion_economica')
       .select('*')
       .eq('vehiculo_id', vehiculoId)
@@ -235,7 +235,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       // Actualizar registro existente
       // IMPORTANTE: Usar el ID del registro, NO vehiculo_id (igual que DatosCompraTab)
       console.log('🔄 [Venta API] Actualizando registro existente:', existingData.id)
-      const { data: updatedData, error: updateError } = await supabase
+      const { data: updatedData, error: updateError } = await (supabase as any)
         .from('vehiculo_valoracion_economica')
         .update(dataToSave)
         .eq('id', existingData.id)
@@ -246,7 +246,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     } else {
       // Crear nuevo registro
       console.log('➕ [Venta API] Creando nuevo registro')
-      const { data: insertedData, error: insertError } = await supabase
+      const { data: insertedData, error: insertError } = await (supabase as any)
         .from('vehiculo_valoracion_economica')
         .insert({
           vehiculo_id: vehiculoId,
@@ -318,7 +318,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('user_id')
       .eq('id', vehiculoId)
@@ -334,7 +334,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const { en_venta, precio_venta_deseado } = body
 
     // Verificar si existe el registro
-    const { data: existingData } = await supabase
+    const { data: existingData } = await (supabase as any)
       .from('vehiculo_valoracion_economica')
       .select('id')
       .eq('vehiculo_id', vehiculoId)
@@ -344,7 +344,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     if (existingData) {
       // Actualizar registro existente
-      result = await supabase
+      result = await (supabase as any)
         .from('vehiculo_valoracion_economica')
         .update({
           en_venta,
@@ -357,7 +357,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         .single()
     } else {
       // Crear nuevo registro
-      result = await supabase
+      result = await (supabase as any)
         .from('vehiculo_valoracion_economica')
         .insert({
           vehiculo_id: vehiculoId,

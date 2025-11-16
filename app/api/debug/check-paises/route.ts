@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const supabase = await createClient()
     
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('areas')
       .select('id, nombre, pais, ciudad, provincia')
       .eq('activo', true)

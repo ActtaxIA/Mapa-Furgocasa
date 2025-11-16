@@ -15,7 +15,7 @@ export async function GET(
     }
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('id, marca, modelo, año')
       .eq('id', params.id)

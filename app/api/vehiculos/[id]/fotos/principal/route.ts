@@ -37,7 +37,7 @@ export async function PUT(
     }
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('user_id, foto_url, fotos_adicionales')
       .eq('id', vehiculoId)
@@ -76,7 +76,7 @@ export async function PUT(
     }
 
     // Actualizar en la base de datos
-    const { error: updateError } = await supabase
+    const { error: updateError } = await (supabase as any)
       .from('vehiculos_registrados')
       .update({
         foto_url: fotoUrl,

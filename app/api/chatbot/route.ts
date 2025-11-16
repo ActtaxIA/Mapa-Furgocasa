@@ -249,34 +249,34 @@ async function getEstadisticasBD(supabase: any): Promise<EstadisticasBD> {
     async () => {
       try {
         // Total de áreas activas
-        const { count: totalAreas } = await supabase
+        const { count: totalAreas } = await (supabase as any)
           .from('areas')
           .select('id', { count: 'exact', head: true })
           .eq('activo', true)
         
         // Contar países únicos
-        const { data: paises } = await supabase
+        const { data: paises } = await (supabase as any)
           .from('areas')
           .select('pais')
           .eq('activo', true)
         const paisesUnicos = new Set(paises?.map((a: any) => a.pais).filter(Boolean))
         
         // Contar ciudades únicas
-        const { data: ciudades } = await supabase
+        const { data: ciudades } = await (supabase as any)
           .from('areas')
           .select('ciudad')
           .eq('activo', true)
         const ciudadesUnicas = new Set(ciudades?.map((a: any) => a.ciudad).filter(Boolean))
         
         // Áreas en Europa (aproximación por países principales)
-        const { count: areasEuropa } = await supabase
+        const { count: areasEuropa } = await (supabase as any)
           .from('areas')
           .select('id', { count: 'exact', head: true })
           .eq('activo', true)
           .in('pais', ['España', 'Francia', 'Portugal', 'Italia', 'Alemania'])
         
         // Áreas en LATAM (aproximación)
-        const { count: areasLatam } = await supabase
+        const { count: areasLatam } = await (supabase as any)
           .from('areas')
           .select('id', { count: 'exact', head: true })
           .eq('activo', true)
@@ -395,7 +395,7 @@ export async function POST(req: NextRequest) {
       console.log('🆕 Creando nueva conversación...')
       const sesionId = userId || `anon_${Date.now()}`
       
-      const { data: nuevaConv, error: convError } = await supabase
+      const { data: nuevaConv, error: convError } = await (supabase as any)
         .from('chatbot_conversaciones')
         .insert({
           user_id: userId,
@@ -420,7 +420,7 @@ export async function POST(req: NextRequest) {
       const lastUserMessage = messages[messages.length - 1]
       if (lastUserMessage.role === 'user') {
         console.log('💾 Guardando mensaje del usuario...')
-        await supabase.from('chatbot_mensajes').insert({
+        await (supabase as any).from('chatbot_mensajes').insert({
           conversacion_id: conversacionId,
           rol: 'user',
           contenido: lastUserMessage.content
@@ -430,7 +430,7 @@ export async function POST(req: NextRequest) {
     
     // Cargar configuración del chatbot
     console.log('⚙️ Cargando configuración del chatbot...')
-    const { data: config, error: configError } = await supabase
+    const { data: config, error: configError } = await (supabase as any)
       .from('chatbot_config')
       .select('*')
       .eq('nombre', 'asistente_principal')
@@ -666,7 +666,7 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
       if (conversacionId) {
         console.log('💾 Guardando mensaje en BD...')
         
-        const { error: insertError } = await supabase
+        const { error: insertError } = await (supabase as any)
           .from('chatbot_mensajes')
           .insert({
             conversacion_id: conversacionId,
@@ -688,13 +688,13 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
         }
         
         // Actualizar conversación
-        const { data: conversacion } = await supabase
+        const { data: conversacion } = await (supabase as any)
           .from('chatbot_conversaciones')
           .select('total_mensajes')
           .eq('id', conversacionId)
           .single()
         
-        await supabase
+        await (supabase as any)
           .from('chatbot_conversaciones')
           .update({
             ultimo_mensaje_at: new Date().toISOString(),
@@ -704,7 +704,7 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
       }
       
       // Analytics
-      await supabase.from('chatbot_analytics').insert({
+      await (supabase as any).from('chatbot_analytics').insert({
         conversacion_id: conversacionId,
         evento: 'function_call',
         categoria: 'busqueda',
@@ -735,7 +735,7 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
     
     // Guardar mensaje
     if (conversacionId) {
-      await supabase
+      await (supabase as any)
         .from('chatbot_mensajes')
         .insert({
           conversacion_id: conversacionId,
@@ -746,13 +746,13 @@ Usa estas estadísticas cuando el usuario pregunte "cuántas áreas hay", "dónd
           temperatura_usada: config.temperature
         })
       
-      const { data: conversacionFinal } = await supabase
+      const { data: conversacionFinal } = await (supabase as any)
         .from('chatbot_conversaciones')
         .select('total_mensajes')
         .eq('id', conversacionId)
         .single()
       
-      await supabase
+      await (supabase as any)
         .from('chatbot_conversaciones')
         .update({
           ultimo_mensaje_at: new Date().toISOString(),

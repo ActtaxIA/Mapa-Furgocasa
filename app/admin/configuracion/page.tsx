@@ -67,7 +67,7 @@ export default function ConfiguracionPage() {
       const serpApiKey = process.env.NEXT_PUBLIC_SERPAPI_KEY_ADMIN
 
       // Check Supabase
-      const { data, error } = await supabase.from('areas').select('id').limit(1)
+      const { data, error } = await (supabase as any).from('areas').select('id').limit(1)
       const supabaseOk = !error && !!data
 
       // Check Chatbot API (servidor)
@@ -127,7 +127,7 @@ export default function ConfiguracionPage() {
       setLoading(true)
 
       // Cargar configs de IA normales
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('ia_config')
         .select('*')
         .order('config_key')
@@ -137,7 +137,7 @@ export default function ConfiguracionPage() {
       setConfigs(data || [])
 
       // Cargar config del chatbot
-      const { data: chatbotData, error: chatbotError } = await supabase
+      const { data: chatbotData, error: chatbotError } = await (supabase as any)
         .from('chatbot_config')
         .select('*')
         .eq('nombre', 'asistente_principal')
@@ -192,7 +192,7 @@ export default function ConfiguracionPage() {
           updateData.prompts = editedChatbotConfig.prompts
         }
 
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('chatbot_config')
           .update(updateData)
           .eq('id', editedChatbotConfig.id)
@@ -200,7 +200,7 @@ export default function ConfiguracionPage() {
         if (error) throw error
       } else if (editedConfig) {
         // Guardar configuración normal
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('ia_config')
           .update({
             config_value: editedConfig.config_value,

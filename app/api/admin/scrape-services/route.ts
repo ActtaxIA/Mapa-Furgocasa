@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Obtener el área de la base de datos
-    const { data: area, error: areaError } = await supabase
+    const { data: area, error: areaError } = await (supabase as any)
       .from('areas')
       .select('*')
       .eq('id', areaId)
@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Obtener configuración del agente desde la BD
-    const { data: configData } = await supabase
+    const { data: configData } = await (supabase as any)
       .from('ia_config')
       .select('config_value')
       .eq('config_key', 'scrape_services')
@@ -380,7 +380,7 @@ export async function POST(request: NextRequest) {
 
     // Actualizar en la base de datos
     console.log('💾 [SCRAPE] Actualizando base de datos...')
-    const { error: updateError } = await supabase
+    const { error: updateError } = await (supabase as any)
       .from('areas')
       .update({
         servicios: serviciosFinales,

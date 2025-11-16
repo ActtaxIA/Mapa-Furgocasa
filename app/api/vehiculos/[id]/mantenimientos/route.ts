@@ -49,7 +49,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('user_id')
       .eq('id', vehiculoId)
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Obtener mantenimientos
-    const { data: mantenimientos, error } = await supabase
+    const { data: mantenimientos, error } = await (supabase as any)
       .from('mantenimientos')
       .select('*')
       .eq('vehiculo_id', vehiculoId)
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('user_id')
       .eq('id', vehiculoId)
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     // Crear mantenimiento
-    const { data: mantenimiento, error } = await supabase
+    const { data: mantenimiento, error } = await (supabase as any)
       .from('mantenimientos')
       .insert({
         vehiculo_id: vehiculoId,

@@ -34,7 +34,7 @@ export async function POST(
     // 1. RECOPILAR DATOS DEL VEHÍCULO
     console.log(`\n📥 [PASO 1/7] Recopilando datos del vehículo...`)
 
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('*')
       .eq('id', params.id)
@@ -48,7 +48,7 @@ export async function POST(
 
     console.log(`✅ Vehículo encontrado: ${vehiculo.marca} ${vehiculo.modelo}`)
 
-    const { data: valoracion } = await supabase
+    const { data: valoracion } = await (supabase as any)
       .from('vehiculo_valoracion_economica')
       .select('*')
       .eq('vehiculo_id', params.id)
@@ -56,7 +56,7 @@ export async function POST(
 
     console.log(`   💰 Datos económicos: ${valoracion ? 'Sí (precio: ' + valoracion.precio_compra + '€)' : 'No disponibles'}`)
 
-    const { data: ficha } = await supabase
+    const { data: ficha } = await (supabase as any)
       .from('vehiculo_ficha_tecnica')
       .select('*')
       .eq('vehiculo_id', params.id)
@@ -64,7 +64,7 @@ export async function POST(
 
     console.log(`   📋 Ficha técnica: ${ficha ? 'Sí' : 'No disponible'}`)
 
-    const { data: averias } = await supabase
+    const { data: averias } = await (supabase as any)
       .from('averias')
       .select('*')
       .eq('vehiculo_id', params.id)
@@ -72,7 +72,7 @@ export async function POST(
 
     console.log(`   🔧 Averías graves: ${averias?.length || 0}`)
 
-    const { data: mejoras } = await supabase
+    const { data: mejoras } = await (supabase as any)
       .from('vehiculo_mejoras')
       .select('*')
       .eq('vehiculo_id', params.id)
@@ -107,7 +107,7 @@ export async function POST(
 
     try {
       // Buscar vehículos similares con valoraciones IA (con datos del vehículo)
-      const { data: valoracionesSimilares, error: errorValoraciones } = await supabase
+      const { data: valoracionesSimilares, error: errorValoraciones } = await (supabase as any)
         .from('valoracion_ia_informes')
         .select(`
           precio_objetivo,
@@ -127,7 +127,7 @@ export async function POST(
         .limit(20)
 
       // Buscar datos de compra de usuarios (con datos del vehículo)
-      const { data: datosCompra, error: errorCompra } = await supabase
+      const { data: datosCompra, error: errorCompra } = await (supabase as any)
         .from('vehiculo_valoracion_economica')
         .select(`
           precio_compra,
@@ -146,7 +146,7 @@ export async function POST(
         .limit(20)
 
       // Buscar datos de mercado scrapeados
-      const { data: datosMercado, error: errorMercado } = await supabase
+      const { data: datosMercado, error: errorMercado } = await (supabase as any)
         .from('datos_mercado_autocaravanas')
         .select('*')
         .eq('verificado', true)
@@ -169,7 +169,7 @@ export async function POST(
       if (valoracionesSimilares && valoracionesSimilares.length > 0) {
         // Obtener km actuales de todos los vehículos de una vez
         const vehiculosIds = [...new Set(valoracionesSimilares.map((v: any) => v.vehiculo_id))]
-        const { data: fichasComparables } = await supabase
+        const { data: fichasComparables } = await (supabase as any)
           .from('vehiculo_ficha_tecnica')
           .select('vehiculo_id, kilometros_actuales')
           .in('vehiculo_id', vehiculosIds)
@@ -184,7 +184,7 @@ export async function POST(
 
         // Si no hay en ficha técnica, buscar en kilometraje más reciente
         if (kmPorVehiculo.size < vehiculosIds.length) {
-          const { data: kmRegistros } = await supabase
+          const { data: kmRegistros } = await (supabase as any)
             .from('vehiculo_kilometraje')
             .select('vehiculo_id, kilometros')
             .in('vehiculo_id', vehiculosIds)
@@ -561,7 +561,7 @@ export async function POST(
     // 3. OBTENER CONFIGURACIÓN DEL AGENTE DESDE LA BD
     console.log(`\n⚙️  [PASO 3/7] Cargando configuración del agente IA...`)
 
-    const { data: configData, error: configError } = await supabase
+    const { data: configData, error: configError } = await (supabase as any)
       .from('ia_config')
       .select('config_value')
       .eq('config_key', 'valoracion_vehiculos')
@@ -782,7 +782,7 @@ export async function POST(
     console.log(`   ${variacionValor !== null && variacionValor >= 0 ? '📈' : '📉'} Variación valor: ${variacionValor !== null ? (variacionValor >= 0 ? '+' : '') + variacionValor.toFixed(1) + '%' : 'N/A (no hay precio de compra)'}`)
     console.log(`   🔍 Cálculo: (${precioObjetivo} - ${precioCompraUsuario}) / ${precioCompraUsuario} * 100 = ${variacionValor}`)
 
-    const { data: informeGuardado, error: errorGuardar } = await supabase
+    const { data: informeGuardado, error: errorGuardar } = await (supabase as any)
       .from('valoracion_ia_informes')
       .insert({
         vehiculo_id: params.id,
@@ -836,7 +836,7 @@ export async function POST(
         region: null
       }))
 
-      const { data: mercadoGuardado, error: errorMercado } = await supabase
+      const { data: mercadoGuardado, error: errorMercado } = await (supabase as any)
         .from('datos_mercado_autocaravanas')
         .insert(comparablesParaGuardar)
         .select()
@@ -919,7 +919,7 @@ export async function GET(
     console.log(`👤 Usuario autenticado: ${user.id}`)
     console.log(`📊 Consultando tabla valoracion_ia_informes...`)
 
-    const { data: informes, error } = await supabase
+    const { data: informes, error } = await (supabase as any)
       .from('valoracion_ia_informes')
       .select('*')
       .eq('vehiculo_id', params.id)
@@ -988,7 +988,7 @@ export async function DELETE(
     console.log(`   🗑️ Valoración ID: ${valoracionId}`)
 
     // 3. Verificar que la valoración pertenece al usuario y al vehículo
-    const { data: valoracion, error: checkError } = await supabase
+    const { data: valoracion, error: checkError } = await (supabase as any)
       .from('valoracion_ia_informes')
       .select('id, vehiculo_id, user_id')
       .eq('id', valoracionId)
@@ -1005,7 +1005,7 @@ export async function DELETE(
     }
 
     // 4. Eliminar la valoración
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await (supabase as any)
       .from('valoracion_ia_informes')
       .delete()
       .eq('id', valoracionId)

@@ -50,7 +50,7 @@ export async function POST(
     console.log('🚗 Vehículo ID:', vehiculoId)
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('user_id, qr_code_id, fotos_adicionales')
       .eq('id', vehiculoId)
@@ -99,7 +99,7 @@ export async function POST(
     try {
       const nuevasFotos = [...fotosAdicionales, foto_url]
 
-      const { error: updateError } = await supabase
+      const { error: updateError } = await (supabase as any)
         .from('vehiculos_registrados')
         .update({ fotos_adicionales: nuevasFotos })
         .eq('id', vehiculoId)
@@ -169,7 +169,7 @@ export async function DELETE(
     }
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('user_id, foto_url, fotos_adicionales')
       .eq('id', vehiculoId)
@@ -213,7 +213,7 @@ export async function DELETE(
     // Actualizar la base de datos
     if (esFotoPrincipal) {
       // Eliminar foto principal
-      await supabase
+      await (supabase as any)
         .from('vehiculos_registrados')
         .update({ foto_url: null })
         .eq('id', vehiculoId)
@@ -222,7 +222,7 @@ export async function DELETE(
       const fotosAdicionales = vehiculo.fotos_adicionales || []
       const nuevasFotos = fotosAdicionales.filter((url: string) => url !== fotoUrl)
 
-      await supabase
+      await (supabase as any)
         .from('vehiculos_registrados')
         .update({ fotos_adicionales: nuevasFotos })
         .eq('id', vehiculoId)

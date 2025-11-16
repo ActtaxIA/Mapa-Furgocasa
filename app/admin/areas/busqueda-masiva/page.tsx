@@ -284,7 +284,7 @@ export default function BusquedaMasivaPage() {
     try {
       console.log('🔄 Cargando áreas existentes para verificación de duplicados...')
       const supabase = createClient()
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('areas')
         .select('id, nombre, slug, google_place_id, latitud, longitud, direccion, ciudad, provincia')
 
@@ -663,7 +663,7 @@ export default function BusquedaMasivaPage() {
           let slug = generateSlug(finalName)
 
           // Verificar si ya existe el slug
-          let { data: existingSlug } = await supabase
+          let { data: existingSlug } = await (supabase as any)
             .from('areas')
             .select('id')
             .eq('slug', slug)
@@ -677,7 +677,7 @@ export default function BusquedaMasivaPage() {
               console.log(`🔄 Nombre duplicado detectado. Renombrado: "${place.name}" → "${finalName}"`)
 
               // Verificar de nuevo si el nuevo slug también existe
-              const { data: existingSlugWithCity } = await supabase
+              const { data: existingSlugWithCity } = await (supabase as any)
                 .from('areas')
                 .select('id')
                 .eq('slug', slug)
@@ -690,7 +690,7 @@ export default function BusquedaMasivaPage() {
                 let uniqueName = `${finalName} ${counter}`
 
                 while (counter < 100) {
-                  const { data: exists } = await supabase
+                  const { data: exists } = await (supabase as any)
                     .from('areas')
                     .select('id')
                     .eq('slug', uniqueSlug)
@@ -740,7 +740,7 @@ export default function BusquedaMasivaPage() {
             servicios: {}
           }
 
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('areas')
             .insert([newArea])
 
@@ -898,7 +898,7 @@ export default function BusquedaMasivaPage() {
           let slug = generateSlug(finalName)
 
           // Verificar si ya existe el slug
-          let { data: existingSlug } = await supabase
+          let { data: existingSlug } = await (supabase as any)
             .from('areas')
             .select('id')
             .eq('slug', slug)
@@ -910,7 +910,7 @@ export default function BusquedaMasivaPage() {
               slug = generateSlug(finalName)
               console.log(`🔄 Nombre duplicado detectado. Renombrado: "${place.name}" → "${finalName}"`)
 
-              const { data: existingSlugWithCity } = await supabase
+              const { data: existingSlugWithCity } = await (supabase as any)
                 .from('areas')
                 .select('id')
                 .eq('slug', slug)
@@ -922,7 +922,7 @@ export default function BusquedaMasivaPage() {
                 let uniqueName = `${finalName} ${counter}`
 
                 while (counter < 100) {
-                  const { data: exists } = await supabase
+                  const { data: exists } = await (supabase as any)
                     .from('areas')
                     .select('id')
                     .eq('slug', uniqueSlug)
@@ -971,7 +971,7 @@ export default function BusquedaMasivaPage() {
             servicios: {}
           }
 
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('areas')
             .insert([newArea])
 

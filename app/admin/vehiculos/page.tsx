@@ -73,23 +73,23 @@ export default function AdminVehiculosPage() {
       const supabase = createClient();
 
       // Cargar vehículos
-      const { data: vehiculos, error: vehiculosError } = await supabase
+      const { data: vehiculos, error: vehiculosError } = await (supabase as any)
         .from("vehiculos_registrados")
         .select("*")
         .eq("activo", true);
 
       // Cargar datos económicos
-      const { data: valoracionesEco } = await supabase
+      const { data: valoracionesEco } = await (supabase as any)
         .from("vehiculo_valoracion_economica")
         .select("precio_compra, vehiculo_id");
 
       // Cargar reportes
-      const { data: reportes } = await supabase
+      const { data: reportes } = await (supabase as any)
         .from("reportes_accidentes")
         .select("id, cerrado");
 
       // Cargar datos de mercado
-      const { data: datosMercado } = await supabase
+      const { data: datosMercado } = await (supabase as any)
         .from("datos_mercado_autocaravanas")
         .select("id, verificado");
 
@@ -173,7 +173,7 @@ export default function AdminVehiculosPage() {
       console.log("🚐 Cargando vehículos directamente desde las tablas...");
 
       // Cargar vehículos registrados
-      const { data: vehiculos, error: vehiculosError } = await supabase
+      const { data: vehiculos, error: vehiculosError } = await (supabase as any)
         .from("vehiculos_registrados")
         .select("*")
         .eq("activo", true);
@@ -186,14 +186,14 @@ export default function AdminVehiculosPage() {
 
       // Cargar datos económicos
       const { data: valoracionesEconomicas, error: valEcoError } =
-        await supabase.from("vehiculo_valoracion_economica").select("*");
+        await (supabase as any).from("vehiculo_valoracion_economica").select("*");
 
       if (valEcoError) {
         console.error("Error cargando valoraciones económicas:", valEcoError);
       }
 
       // Cargar mantenimientos
-      const { data: mantenimientos, error: mantError } = await supabase
+      const { data: mantenimientos, error: mantError } = await (supabase as any)
         .from("mantenimientos")
         .select("*");
 
@@ -202,7 +202,7 @@ export default function AdminVehiculosPage() {
       }
 
       // Cargar averías
-      const { data: averias, error: averiasError } = await supabase
+      const { data: averias, error: averiasError } = await (supabase as any)
         .from("averias")
         .select("*");
 
@@ -211,7 +211,7 @@ export default function AdminVehiculosPage() {
       }
 
       // Cargar reportes de accidentes
-      const { data: reportes, error: reportesError } = await supabase
+      const { data: reportes, error: reportesError } = await (supabase as any)
         .from("reportes_accidentes")
         .select("*");
 

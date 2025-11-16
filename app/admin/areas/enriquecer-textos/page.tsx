@@ -64,7 +64,7 @@ export default function EnriquecerTextosPage() {
       console.log('📦 Cargando todas las áreas (con paginación)...')
 
       while (hasMore) {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('areas')
           .select('*')
           .eq('activo', true)
@@ -261,7 +261,7 @@ export default function EnriquecerTextosPage() {
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
       
       // Obtener datos frescos de Supabase
-      const { data: area, error: areaError } = await supabase
+      const { data: area, error: areaError } = await (supabase as any)
         .from('areas')
         .select('*')
         .eq('id', areaId)
@@ -386,7 +386,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
       }
 
       // 3. Obtener configuración del agente desde la BD
-      const { data: configData } = await supabase
+      const { data: configData } = await (supabase as any)
         .from('ia_config')
         .select('config_value')
         .eq('config_key', 'enrich_description')
@@ -453,7 +453,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
 
       // 5. Guardar en la base de datos
       console.log('💾 [ENRICH] Guardando en base de datos...')
-      const { error: updateError } = await supabase
+      const { error: updateError } = await (supabase as any)
         .from('areas')
         .update({
           descripcion: descripcionGenerada,

@@ -24,12 +24,12 @@ export async function GET(request: NextRequest) {
     const configKey = searchParams.get('key')
 
     const { data, error} = configKey
-      ? await supabase
+      ? await (supabase as any)
           .from('ia_config')
           .select('*')
           .eq('config_key', configKey)
           .single()
-      : await supabase
+      : await (supabase as any)
           .from('ia_config')
           .select('*')
 
@@ -59,7 +59,7 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('ia_config')
       .update({
         config_value: configValue,
@@ -266,7 +266,7 @@ Escribe en párrafos separados por líneas en blanco. Texto fluido y natural.`,
       )
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('ia_config')
       .update({
         config_value: defaultValue,

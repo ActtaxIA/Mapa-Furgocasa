@@ -67,7 +67,7 @@ export default function MapaPage() {
 
         // Cargar en lotes de 1000 (OPTIMIZADO: solo campos necesarios)
         while (hasMore) {
-          const { data, error } = await supabase
+          const { data, error } = await (supabase as any)
             .from('areas')
             .select('id, nombre, slug, latitud, longitud, ciudad, provincia, pais, tipo_area, precio_noche, foto_principal, servicios, plazas_totales, acceso_24h, barrera_altura')
             .eq('activo', true)

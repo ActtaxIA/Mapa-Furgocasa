@@ -33,7 +33,7 @@ export default function EnriquecerImagenesPage() {
       console.log('📦 Cargando todas las áreas (con paginación)...')
 
       while (hasMore) {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('areas')
           .select('*')
           .order('created_at', { ascending: false })
@@ -67,7 +67,7 @@ export default function EnriquecerImagenesPage() {
       console.log('🖼️ [IMAGES] Buscando imágenes para área:', areaId)
       
       // 1. Obtener datos del área
-      const { data: area, error: areaError } = await supabase
+      const { data: area, error: areaError } = await (supabase as any)
         .from('areas')
         .select('*')
         .eq('id', areaId)
@@ -190,7 +190,7 @@ export default function EnriquecerImagenesPage() {
       const fotos_urls = imagenesUnicas.slice(0, 7).map(img => img.url)
 
       console.log('💾 Actualizando base de datos...')
-      const { error: updateError } = await supabase
+      const { error: updateError } = await (supabase as any)
         .from('areas')
         .update({
           foto_principal: foto_principal,

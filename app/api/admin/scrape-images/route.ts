@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     // Obtener el área de la base de datos
     console.log('🔍 [IMAGES] Buscando área en base de datos...')
-    const { data: area, error: areaError } = await supabase
+    const { data: area, error: areaError } = await (supabase as any)
       .from('areas')
       .select('*')
       .eq('id', areaId)
@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
     const fotos_urls = imagenesUnicas.slice(0, 7).map(img => img.url)
 
     console.log('💾 [IMAGES] Actualizando base de datos...')
-    const { error: updateError } = await supabase
+    const { error: updateError } = await (supabase as any)
       .from('areas')
       .update({
         foto_principal: foto_principal,

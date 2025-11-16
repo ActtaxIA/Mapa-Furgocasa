@@ -96,7 +96,7 @@ export default function ActualizarServiciosPage() {
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
       
       // 1. Obtener datos del área con updated_at
-      const { data: area, error: areaError } = await supabase
+      const { data: area, error: areaError } = await (supabase as any)
         .from('areas')
         .select('*')
         .eq('id', areaId)
@@ -207,7 +207,7 @@ export default function ActualizarServiciosPage() {
       console.log(`📊 Total información recopilada: ${textoParaAnalizar.length} caracteres`)
 
       // 4. Obtener configuración del agente
-      const { data: configData } = await supabase
+      const { data: configData } = await (supabase as any)
         .from('ia_config')
         .select('config_value')
         .eq('config_key', 'scrape_services')
@@ -335,7 +335,7 @@ Responde con JSON con esta estructura exacta:
 
       // 9. Actualizar en la base de datos
       console.log('💾 Actualizando base de datos...')
-      const { error: updateError } = await supabase
+      const { error: updateError } = await (supabase as any)
         .from('areas')
         .update({
           servicios: serviciosFinales,
@@ -485,7 +485,7 @@ Responde con JSON con esta estructura exacta:
       console.log('📦 Cargando todas las áreas (con paginación)...')
 
       while (hasMore) {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('areas')
           .select('*')
           .eq('activo', true)

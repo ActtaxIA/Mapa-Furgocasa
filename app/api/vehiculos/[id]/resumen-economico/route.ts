@@ -57,7 +57,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('user_id')
       .eq('id', vehiculoId)
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Obtener datos de valoración económica
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('vehiculo_valoracion_economica')
       .select('*')
       .eq('vehiculo_id', vehiculoId)

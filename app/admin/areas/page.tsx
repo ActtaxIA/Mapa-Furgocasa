@@ -143,7 +143,7 @@ export default function AdminAreasPage() {
       console.log('📦 Cargando todas las áreas (con paginación)...')
 
       while (hasMore) {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('areas')
           .select('*')
           .order('created_at', { ascending: false })
@@ -178,7 +178,7 @@ export default function AdminAreasPage() {
   const toggleVerificado = async (id: string, currentValue: boolean) => {
     try {
       const supabase = createClient()
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('areas')
         .update({ verificado: !currentValue })
         .eq('id', id)
@@ -193,7 +193,7 @@ export default function AdminAreasPage() {
   const toggleActivo = async (id: string, currentValue: boolean) => {
     try {
       const supabase = createClient()
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('areas')
         .update({ activo: !currentValue })
         .eq('id', id)
@@ -226,20 +226,20 @@ export default function AdminAreasPage() {
 
       // Eliminar registros relacionados primero (pueden no existir, ignorar errores)
       console.log('  📝 Eliminando valoraciones...')
-      const { error: errorVal } = await supabase.from('valoraciones').delete().eq('area_id', areaId)
+      const { error: errorVal } = await (supabase as any).from('valoraciones').delete().eq('area_id', areaId)
       if (errorVal) console.log('  ⚠️ Error eliminando valoraciones (puede ser que no existan):', errorVal.message)
 
       console.log('  ⭐ Eliminando favoritos...')
-      const { error: errorFav } = await supabase.from('favoritos').delete().eq('area_id', areaId)
+      const { error: errorFav } = await (supabase as any).from('favoritos').delete().eq('area_id', areaId)
       if (errorFav) console.log('  ⚠️ Error eliminando favoritos (puede ser que no existan):', errorFav.message)
 
       console.log('  👀 Eliminando visitas...')
-      const { error: errorVis } = await supabase.from('visitas').delete().eq('area_id', areaId)
+      const { error: errorVis } = await (supabase as any).from('visitas').delete().eq('area_id', areaId)
       if (errorVis) console.log('  ⚠️ Error eliminando visitas (puede ser que no existan):', errorVis.message)
 
       // Eliminar el área
       console.log('  🗑️ Eliminando área principal...')
-      const { data: deletedData, error } = await supabase
+      const { data: deletedData, error } = await (supabase as any)
         .from('areas')
         .delete()
         .eq('id', areaId)
@@ -348,12 +348,12 @@ export default function AdminAreasPage() {
       for (const areaId of areasToDelete) {
         try {
           // Eliminar registros relacionados
-          await supabase.from('valoraciones').delete().eq('area_id', areaId)
-          await supabase.from('favoritos').delete().eq('area_id', areaId)
-          await supabase.from('visitas').delete().eq('area_id', areaId)
+          await (supabase as any).from('valoraciones').delete().eq('area_id', areaId)
+          await (supabase as any).from('favoritos').delete().eq('area_id', areaId)
+          await (supabase as any).from('visitas').delete().eq('area_id', areaId)
 
           // Eliminar área
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('areas')
             .delete()
             .eq('id', areaId)
@@ -395,7 +395,7 @@ export default function AdminAreasPage() {
 
     try {
       const supabase = createClient()
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('areas')
         .update({ activo: newState })
         .in('id', Array.from(selectedAreas))
@@ -427,7 +427,7 @@ export default function AdminAreasPage() {
 
     try {
       const supabase = createClient()
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('areas')
         .update({ verificado: newState })
         .in('id', Array.from(selectedAreas))

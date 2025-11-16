@@ -16,7 +16,7 @@ export async function GET(
     }
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('id')
       .eq('id', params.id)
@@ -28,7 +28,7 @@ export async function GET(
     }
 
     // Obtener histórico de precios
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('historico_precios_usuario')
       .select('*')
       .eq('vehiculo_id', params.id)
@@ -63,7 +63,7 @@ export async function POST(
     const { valor_estimado, kilometros, fuente, notas } = body
 
     // Verificar que el vehículo pertenece al usuario
-    const { data: vehiculo, error: vehiculoError } = await supabase
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('id')
       .eq('id', params.id)
@@ -75,7 +75,7 @@ export async function POST(
     }
 
     // Guardar en histórico
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('historico_precios_usuario')
       .insert({
         vehiculo_id: params.id,

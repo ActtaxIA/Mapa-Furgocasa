@@ -98,7 +98,7 @@ export default function EditAreaPage() {
   const loadArea = async () => {
     try {
       const supabase = createClient()
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('areas')
         .select('*')
         .eq('id', params.id)
@@ -142,7 +142,7 @@ export default function EditAreaPage() {
         foto_principal: area.foto_principal
       })
       
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('areas')
         .update({
           ...area,

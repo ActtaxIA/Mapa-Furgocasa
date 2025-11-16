@@ -30,7 +30,7 @@ export async function PATCH(
     const { leido, cerrado, notas_propietario } = body
 
     // Verificar que el reporte pertenece a un vehículo del usuario
-    const { data: reporte, error: checkError } = await supabase
+    const { data: reporte, error: checkError } = await (supabase as any)
       .from('reportes_accidentes')
       .select(`
         id,
@@ -64,7 +64,7 @@ export async function PATCH(
 
     // Actualizar reporte
     console.log('Intentando actualizar reporte:', reporte_id, 'con datos:', updateData);
-    const { data: reporteActualizado, error: updateError } = await supabase
+    const { data: reporteActualizado, error: updateError } = await (supabase as any)
       .from('reportes_accidentes')
       .update(updateData)
       .eq('id', reporte_id)

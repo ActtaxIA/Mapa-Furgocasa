@@ -98,7 +98,7 @@ export default function NewAreaPage() {
       const slug = area.slug || generateSlug(area.nombre)
       
       // Verificar que el slug no exista
-      const { data: existingArea } = await supabase
+      const { data: existingArea } = await (supabase as any)
         .from('areas')
         .select('id')
         .eq('slug', slug)
@@ -110,7 +110,7 @@ export default function NewAreaPage() {
         return
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('areas')
         .insert([{
           ...area,

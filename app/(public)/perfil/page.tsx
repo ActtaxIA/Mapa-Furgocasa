@@ -80,7 +80,7 @@ export default function PerfilPage() {
       const supabase = createClient()
 
       // Obtener visitas
-      const { count: visitasCount } = await supabase
+      const { count: visitasCount } = await (supabase as any)
         .from('visitas')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', userId)
@@ -97,13 +97,13 @@ export default function PerfilPage() {
         : 0
 
       // Obtener favoritos
-      const { count: favoritosCount } = await supabase
+      const { count: favoritosCount } = await (supabase as any)
         .from('favoritos')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', userId)
 
       // Obtener rutas
-      const { count: rutasCount } = await supabase
+      const { count: rutasCount } = await (supabase as any)
         .from('rutas')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', userId)
