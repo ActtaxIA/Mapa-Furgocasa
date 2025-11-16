@@ -25,8 +25,7 @@ export function usePaisesDisponibles() {
         let hasMore = true
 
         while (hasMore) {
-          const { data, error } = await supabase
-            .from('areas')
+          const { data, error } = await (supabase as any).from('areas')
             .select('pais')
             .not('pais', 'is', null)
             .range(page * pageSize, (page + 1) * pageSize - 1)
@@ -34,7 +33,7 @@ export function usePaisesDisponibles() {
           if (error) throw error
 
           if (data && data.length > 0) {
-            allPaises.push(...data.map(a => a.pais?.trim()).filter(Boolean) as string[])
+            allPaises.push(...data.map((a: any) => a.pais?.trim()).filter(Boolean) as string[])
             page++
             if (data.length < pageSize) {
               hasMore = false
