@@ -19,6 +19,10 @@ export interface VehiculoRegistrado {
   activo: boolean;
   verificado: boolean;
   vendido?: boolean; // Estado de venta del vehículo
+  // Datos económicos (desde vehiculo_valoracion_economica)
+  precio_compra?: number;
+  fecha_compra?: string;
+  kilometros_compra?: number;
   created_at: string;
   updated_at: string;
 }
