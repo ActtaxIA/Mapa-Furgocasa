@@ -2,17 +2,10 @@ import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/database.types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Singleton instance
-let client: SupabaseClient<Database> | undefined;
-
+// NO usar singleton - Supabase SSR ya maneja el caché internamente
+// Crear nueva instancia cada vez para asegurar que lee cookies frescas
 export function createClient() {
-  // Si ya existe una instancia, reutilizarla
-  if (client) {
-    return client;
-  }
-
-  // Crear nueva instancia
-  client = createBrowserClient<Database>(
+  return createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -80,7 +73,5 @@ export function createClient() {
         },
       },
     }
-  );
-
-  return client;
+  )
 }
