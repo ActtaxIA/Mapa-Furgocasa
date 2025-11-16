@@ -25,11 +25,18 @@ export default function LoginPage() {
         password,
       })
 
-      if (error) throw error
+      if (error) {
+        // Manejo especial para rate limiting
+        if (error.message?.includes('rate limit') || error.message?.includes('too many')) {
+          throw new Error('Has intentado iniciar sesión demasiadas veces. Por favor, espera unos minutos e inténtalo de nuevo.')
+        }
+        throw error
+      }
 
       // Redirigir al mapa después del login
       window.location.href = '/mapa'
     } catch (error: any) {
+      console.error('Error de login:', error)
       setError(error.message || 'Error al iniciar sesión')
       setLoading(false)
     }
