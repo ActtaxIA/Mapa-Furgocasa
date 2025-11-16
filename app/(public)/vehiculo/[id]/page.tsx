@@ -696,50 +696,51 @@ export default function VehiculoPage() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
 
-      <main className="flex-grow max-w-7xl mx-auto w-full px-4 lg:px-6 py-8">
+      <main className="flex-grow max-w-7xl mx-auto w-full px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <Link
             href="/mis-autocaravanas"
-            className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 mb-4"
+            className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 mb-3 sm:mb-4 text-sm sm:text-base"
           >
-            <ArrowLeftIcon className="w-5 h-5" />
-            Volver a Mis Autocaravanas
+            <ArrowLeftIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden xs:inline">Volver a Mis Autocaravanas</span>
+            <span className="xs:hidden">Volver</span>
           </Link>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-4 flex-1">
-                <div className="p-3 bg-primary-100 rounded-lg flex-shrink-0">
-                  <TruckIcon className="w-8 h-8 text-primary-600" />
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 border border-gray-200">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+              <div className="flex items-start gap-3 sm:gap-4 flex-1">
+                <div className="p-2 sm:p-3 bg-primary-100 rounded-lg flex-shrink-0">
+                  <TruckIcon className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600" />
                 </div>
 
                 {!isEditing ? (
                   // Modo Vista
-                  <div className="flex-1">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                  <div className="flex-1 min-w-0">
+                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 truncate">
                       {vehiculo.matricula}
                     </h1>
-                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2">
                       {vehiculo.tipo_vehiculo && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800 border border-primary-200">
+                        <span className="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium bg-primary-100 text-primary-800 border border-primary-200">
                           {vehiculo.tipo_vehiculo}
                         </span>
                       )}
                       {kilometrajeActual && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800 border border-orange-200">
-                          <TruckIcon className="w-4 h-4" />
-                          {kilometrajeActual.toLocaleString()} km
+                        <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium bg-orange-100 text-orange-800 border border-orange-200">
+                          <TruckIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span className="tabular-nums">{kilometrajeActual.toLocaleString()} km</span>
                         </span>
                       )}
-                      <p className="text-gray-600">
-                        {vehiculo.marca || "Sin marca"}{" "}
-                        {vehiculo.modelo || "Sin modelo"}
-                        {vehiculo.chasis && ` • Chasis: ${vehiculo.chasis}`}
-                        {vehiculo.año && ` • ${vehiculo.año}`}
-                        {vehiculo.color && ` • ${vehiculo.color}`}
-                      </p>
                     </div>
+                    <p className="text-xs sm:text-sm lg:text-base text-gray-600 mt-2 line-clamp-2">
+                      {vehiculo.marca || "Sin marca"}{" "}
+                      {vehiculo.modelo || "Sin modelo"}
+                      {vehiculo.chasis && ` • Chasis: ${vehiculo.chasis}`}
+                      {vehiculo.año && ` • ${vehiculo.año}`}
+                      {vehiculo.color && ` • ${vehiculo.color}`}
+                    </p>
                   </div>
                 ) : (
                   // Modo Edición
@@ -874,34 +875,38 @@ export default function VehiculoPage() {
               </div>
 
               {/* Botones de Acción */}
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="flex gap-2">
                 {!isEditing ? (
                   <button
                     onClick={handleEditClick}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                    className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-primary-600 text-white text-sm sm:text-base rounded-lg hover:bg-primary-700 transition-colors touch-manipulation"
                   >
-                    <PencilIcon className="w-5 h-5" />
-                    <span className="hidden sm:inline">Editar</span>
+                    <PencilIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="hidden xs:inline">Editar</span>
                   </button>
                 ) : (
                   <>
                     <button
                       onClick={handleSaveEdit}
                       disabled={saving}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-green-600 text-white text-sm sm:text-base rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 touch-manipulation"
                     >
-                      <CheckIcon className="w-5 h-5" />
-                      <span className="hidden sm:inline">
+                      <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="hidden xs:inline">
                         {saving ? "Guardando..." : "Guardar"}
+                      </span>
+                      <span className="xs:hidden">
+                        {saving ? "..." : "✓"}
                       </span>
                     </button>
                     <button
                       onClick={handleCancelEdit}
                       disabled={saving}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-gray-500 text-white text-sm sm:text-base rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50 touch-manipulation"
                     >
-                      <XMarkIcon className="w-5 h-5" />
-                      <span className="hidden sm:inline">Cancelar</span>
+                      <XMarkIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="hidden xs:inline">Cancelar</span>
+                      <span className="xs:hidden">×</span>
                     </button>
                   </>
                 )}
@@ -922,9 +927,9 @@ export default function VehiculoPage() {
         </div>
 
         {/* Tabs Navigation */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 mb-6 overflow-hidden">
+        <div className="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 mb-4 sm:mb-6 overflow-hidden">
           <div
-            className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0"
+            className="overflow-x-auto"
             style={{
               scrollbarWidth: "thin",
               scrollbarColor: "#cbd5e1 #f1f5f9",
@@ -948,13 +953,13 @@ export default function VehiculoPage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as TabType)}
-                    className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 font-medium transition-colors whitespace-nowrap text-xs sm:text-base min-w-[70px] sm:min-w-0 touch-manipulation ${
+                    className={`flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 px-2.5 sm:px-4 lg:px-6 py-2.5 sm:py-3 lg:py-4 font-medium transition-colors whitespace-nowrap text-[10px] xs:text-xs sm:text-sm lg:text-base min-w-[60px] xs:min-w-[70px] sm:min-w-0 touch-manipulation ${
                       activeTab === tab.id
                         ? "border-b-2 border-primary-600 text-primary-600 bg-primary-50"
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100"
                     }`}
                   >
-                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <Icon className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                     <span className="hidden sm:inline">{tab.label}</span>
                     <span className="sm:hidden text-center leading-tight font-semibold">
                       {shortLabels[tab.label] || tab.label}
@@ -967,7 +972,7 @@ export default function VehiculoPage() {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+        <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 border border-gray-200">
           {activeTab === "resumen" && (
             <ResumenEconomicoTab vehiculoId={vehiculoId} />
           )}
