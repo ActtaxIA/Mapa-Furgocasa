@@ -99,35 +99,35 @@ export default function AdminVehiculosPage() {
 
       const total_vehiculos = vehiculos?.length || 0;
       const vehiculos_mes_actual =
-        vehiculos?.filter((v) => new Date(v.created_at) >= inicioMes).length ||
+        vehiculos?.filter((v: any) => new Date(v.created_at) >= inicioMes).length ||
         0;
 
       const valor_total_parque =
-        valoracionesEco?.reduce((sum, v) => sum + (v.precio_compra || 0), 0) ||
+        valoracionesEco?.reduce((sum: any, v: any) => sum + (v.precio_compra || 0), 0) ||
         0;
 
       const total_reportes_accidentes = reportes?.length || 0;
       const reportes_pendientes =
-        reportes?.filter((r) => !r.cerrado).length || 0;
+        reportes?.filter((r: any) => !r.cerrado).length || 0;
 
       const datos_mercado_verificados =
-        datosMercado?.filter((d) => d.verificado).length || 0;
+        datosMercado?.filter((d: any) => d.verificado).length || 0;
       const datos_mercado_pendientes =
-        datosMercado?.filter((d) => !d.verificado).length || 0;
+        datosMercado?.filter((d: any) => !d.verificado).length || 0;
 
       // Contar usuarios únicos con vehículos
-      const usuariosUnicos = new Set(vehiculos?.map((v) => v.user_id));
+      const usuariosUnicos = new Set(vehiculos?.map((v: any) => v.user_id));
       const usuarios_con_vehiculos = usuariosUnicos.size;
 
       // Usuarios compartiendo datos (con datos económicos)
       const vehiculosConDatos = new Set(
-        valoracionesEco?.map((v) => v.vehiculo_id)
+        valoracionesEco?.map((v: any) => v.vehiculo_id)
       );
       const usuarios_compartiendo_datos =
         vehiculos
-          ?.filter((v) => vehiculosConDatos.has(v.id))
-          .map((v) => v.user_id)
-          .filter((v, i, arr) => arr.indexOf(v) === i).length || 0;
+          ?.filter((v: any) => vehiculosConDatos.has(v.id))
+          .map((v: any) => v.user_id)
+          .filter((v: any, i: any, arr: any) => arr.indexOf(v) === i).length || 0;
 
       setMetricas({
         total_vehiculos,
@@ -268,31 +268,31 @@ export default function AdminVehiculosPage() {
 
         // Calcular mantenimientos
         const mantVehiculo =
-          mantenimientos?.filter((m) => m.vehiculo_id === v.id) || [];
+          mantenimientos?.filter((m: any) => m.vehiculo_id === v.id) || [];
         const costoMant = mantVehiculo.reduce(
-          (sum, m) => sum + (m.coste || 0),
+          (sum: any, m: any) => sum + (m.coste || 0),
           0
         );
         grupo.coste_mantenimiento_anual += costoMant;
 
         // Calcular averías
         const averiasVehiculo =
-          averias?.filter((a) => a.vehiculo_id === v.id) || [];
+          averias?.filter((a: any) => a.vehiculo_id === v.id) || [];
         const costoAverias = averiasVehiculo.reduce(
-          (sum, a) => sum + (a.coste_total || 0),
+          (sum: any, a: any) => sum + (a.coste_total || 0),
           0
         );
         grupo.coste_averias_total += costoAverias;
 
         // Contar reportes de accidentes
         const reportesVehiculo =
-          reportes?.filter((r) => r.vehiculo_afectado_id === v.id) || [];
+          reportes?.filter((r: any) => r.vehiculo_afectado_id === v.id) || [];
         grupo.num_reportes_accidentes += reportesVehiculo.length;
       });
 
       // Calcular promedios
       const analisisArray: AnalisisMarcaModelo[] = [];
-      agrupados.forEach((grupo) => {
+      agrupados.forEach((grupo: any) => {
         grupo.año_promedio =
           grupo.año_promedio > 0
             ? Math.round(grupo.año_promedio / grupo.cantidad)
