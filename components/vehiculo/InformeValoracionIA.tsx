@@ -202,11 +202,11 @@ export default function InformeValoracionIA({
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 bg-white">
-        <div className="flex gap-1 px-6">
+      <div className="border-b border-gray-200 bg-white overflow-x-auto">
+        <div className="flex gap-1 px-4 md:px-6 min-w-max">
           <button
             onClick={() => setSeccionActiva('informe')}
-            className={`px-4 py-3 font-semibold text-sm transition-all ${
+            className={`px-3 md:px-4 py-3 font-semibold text-xs md:text-sm transition-all whitespace-nowrap ${
               seccionActiva === 'informe'
                 ? 'border-b-2 border-blue-600 text-blue-600'
                 : 'text-gray-600 hover:text-gray-900'
@@ -216,7 +216,7 @@ export default function InformeValoracionIA({
           </button>
           <button
             onClick={() => setSeccionActiva('comparables')}
-            className={`px-4 py-3 font-semibold text-sm transition-all ${
+            className={`px-3 md:px-4 py-3 font-semibold text-xs md:text-sm transition-all whitespace-nowrap ${
               seccionActiva === 'comparables'
                 ? 'border-b-2 border-blue-600 text-blue-600'
                 : 'text-gray-600 hover:text-gray-900'
@@ -226,7 +226,7 @@ export default function InformeValoracionIA({
           </button>
           <button
             onClick={() => setSeccionActiva('datos')}
-            className={`px-4 py-3 font-semibold text-sm transition-all ${
+            className={`px-3 md:px-4 py-3 font-semibold text-xs md:text-sm transition-all whitespace-nowrap ${
               seccionActiva === 'datos'
                 ? 'border-b-2 border-blue-600 text-blue-600'
                 : 'text-gray-600 hover:text-gray-900'
@@ -236,7 +236,7 @@ export default function InformeValoracionIA({
           </button>
           <button
             onClick={() => setSeccionActiva('historico')}
-            className={`px-4 py-3 font-semibold text-sm transition-all ${
+            className={`px-3 md:px-4 py-3 font-semibold text-xs md:text-sm transition-all whitespace-nowrap ${
               seccionActiva === 'historico'
                 ? 'border-b-2 border-blue-600 text-blue-600'
                 : 'text-gray-600 hover:text-gray-900'
