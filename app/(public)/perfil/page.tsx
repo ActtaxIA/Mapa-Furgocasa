@@ -109,7 +109,7 @@ export default function PerfilPage() {
         .eq('user_id', userId)
 
       // Obtener reportes no leídos
-      const { data: reportesNoLeidosData } = await supabase
+      const { data: reportesNoLeidosData } = await (supabase as any)
         .rpc('contar_reportes_no_leidos', { usuario_uuid: userId })
 
       setStats({
@@ -171,7 +171,7 @@ export default function PerfilPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
