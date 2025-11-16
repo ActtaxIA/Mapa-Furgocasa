@@ -500,7 +500,7 @@ export async function POST(
 
         const clave = claveComparable(comp)
         const existente = comparablesUnicosFinal.get(clave)
-        
+
         // Si no existe o este tiene mayor relevancia, reemplazar
         if (!existente || (comp.relevancia || 0) > (existente.relevancia || 0)) {
           comparablesUnicosFinal.set(clave, comp)
@@ -749,8 +749,8 @@ export async function POST(
           fuente: c.fuente || 'Fuente desconocida',
           fecha: c.fecha || null,
           descripcion: c.descripcion || null,
-          relevancia: typeof c.relevancia === 'number' && !isNaN(c.relevancia) 
-            ? Math.max(0, Math.min(100, Math.round(c.relevancia))) 
+          relevancia: typeof c.relevancia === 'number' && !isNaN(c.relevancia)
+            ? Math.max(0, Math.min(100, Math.round(c.relevancia)))
             : 0,
           // No incluir vehiculo_id en el JSON guardado (solo para deduplicación interna)
         }
@@ -808,10 +808,11 @@ export async function POST(
     console.log(`   ✅ Informe guardado con ID: ${informeGuardado.id}`)
 
     // 8. GUARDAR COMPARABLES EN TABLA DE MERCADO (si hay)
-    if (comparables.length > 0) {
-      console.log(`\n📊 Guardando ${comparables.length} comparables en datos_mercado_autocaravanas...`)
+    // IMPORTANTE: Usar comparablesLimpios (ya filtrados y sin el vehículo actual)
+    if (comparablesLimpios.length > 0) {
+      console.log(`\n📊 Guardando ${comparablesLimpios.length} comparables en datos_mercado_autocaravanas...`)
 
-      const comparablesParaGuardar = comparables.map(c => ({
+      const comparablesParaGuardar = comparablesLimpios.map(c => ({
         marca: vehiculo.marca || null,
         modelo: vehiculo.modelo || null,
         año: vehiculo.año || null,
