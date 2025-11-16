@@ -208,10 +208,10 @@ export async function POST(
 
         for (const valoracion of valoracionesSimilares) {
           const vehiculoId = valoracion.vehiculo_id
-          
+
           // FIX: Manejar JOIN que puede venir como objeto o array
-          const vehiculoData = Array.isArray(valoracion.vehiculos_registrados) 
-            ? valoracion.vehiculos_registrados[0] 
+          const vehiculoData = Array.isArray(valoracion.vehiculos_registrados)
+            ? valoracion.vehiculos_registrados[0]
             : valoracion.vehiculos_registrados
 
           const existente = vehiculosUnicos.get(vehiculoId)
@@ -230,7 +230,7 @@ export async function POST(
             })
           }
         }
-        
+
         console.log(`   ✅ Valoraciones IA procesadas: ${valoracionesSimilares.length} → Vehículos únicos: ${vehiculosUnicos.size}`)
       }
 
@@ -240,8 +240,8 @@ export async function POST(
           const vehiculoId = compra.vehiculo_id
 
           // FIX: Manejar JOIN que puede venir como objeto o array
-          const vehiculoDataCompra = Array.isArray(compra.vehiculos_registrados) 
-            ? compra.vehiculos_registrados[0] 
+          const vehiculoDataCompra = Array.isArray(compra.vehiculos_registrados)
+            ? compra.vehiculos_registrados[0]
             : compra.vehiculos_registrados
 
           // Solo agregar si este vehículo no tiene ya una valoración IA
@@ -258,7 +258,7 @@ export async function POST(
             })
           }
         }
-        
+
         console.log(`   ✅ Compras procesadas: ${datosCompra.length} → Vehículos únicos totales: ${vehiculosUnicos.size}`)
       }
 
@@ -341,7 +341,11 @@ export async function POST(
       }
 
       // 4. Convertir a array y crear comparables con información completa
+      // SEGURIDAD: Filtrar explícitamente el vehículo actual (aunque SQL ya lo hace)
       const vehiculosDeduplicados = Array.from(vehiculosUnicos.values())
+        .filter(v => v.vehiculo_id !== params.id) // Excluir el vehículo actual
+
+      console.log(`   🔒 Validación: Vehículos después de excluir el actual: ${vehiculosDeduplicados.length}`)
 
       let comparablesConRelevancia = vehiculosDeduplicados.map(v => {
         const titulo = v.marca && v.modelo
@@ -488,6 +492,12 @@ export async function POST(
       }
 
       for (const comp of comparables) {
+        // SEGURIDAD: Excluir explícitamente el vehículo actual (aunque SQL ya lo hace)
+        if (comp.vehiculo_id === params.id) {
+          console.warn(`   ⚠️  BLOQUEADO: Intento de incluir el vehículo actual como comparable (ID: ${params.id})`)
+          continue
+        }
+
         const clave = claveComparable(comp)
         const existente = comparablesUnicosFinal.get(clave)
         
@@ -526,7 +536,7 @@ export async function POST(
       console.log(`   ✅ Comparables de BD interna: ${comparablesInternos.length}`)
       console.log(`   ✅ Total comparables finales (después de deduplicación): ${comparables.length}`)
       console.log(`   📊 Relevancia promedio: ${comparables.length > 0 ? Math.round(comparables.reduce((sum, c) => sum + (c.relevancia || 0), 0) / comparables.length) : 0}%`)
-      
+
       // Log de muestra de comparables para debug
       if (comparables.length > 0) {
         console.log(`   📋 Muestra de comparables (primeros 3):`)
@@ -718,23 +728,33 @@ export async function POST(
 
     // Calcular precio base de mercado (promedio de comparables)
     // LIMPIEZA FINAL: Asegurar que todos los comparables tienen estructura válida antes de guardar
-    const comparablesLimpios = comparables.map(c => {
-      return {
-        titulo: c.titulo || 'Comparable sin título',
-        precio: c.precio || null,
-        año: c.año || null,
-        kilometros: c.kilometros || null,
-        link: c.link || c.url || null, // Compatibilidad con ambos campos
-        url: c.url || c.link || null, // Mantener ambos para compatibilidad
-        fuente: c.fuente || 'Fuente desconocida',
-        fecha: c.fecha || null,
-        descripcion: c.descripcion || null,
-        relevancia: typeof c.relevancia === 'number' && !isNaN(c.relevancia) 
-          ? Math.max(0, Math.min(100, Math.round(c.relevancia))) 
-          : 0,
-        // No incluir vehiculo_id en el JSON guardado (solo para deduplicación interna)
-      }
-    })
+    // SEGURIDAD FINAL: Filtrar cualquier comparable que sea el vehículo actual (triple verificación)
+    const comparablesLimpios = comparables
+      .filter(c => {
+        // Excluir el vehículo actual por vehiculo_id
+        if (c.vehiculo_id === params.id) {
+          console.warn(`   ⚠️  BLOQUEADO EN LIMPIEZA: Comparable del vehículo actual detectado y eliminado`)
+          return false
+        }
+        return true
+      })
+      .map(c => {
+        return {
+          titulo: c.titulo || 'Comparable sin título',
+          precio: c.precio || null,
+          año: c.año || null,
+          kilometros: c.kilometros || null,
+          link: c.link || c.url || null, // Compatibilidad con ambos campos
+          url: c.url || c.link || null, // Mantener ambos para compatibilidad
+          fuente: c.fuente || 'Fuente desconocida',
+          fecha: c.fecha || null,
+          descripcion: c.descripcion || null,
+          relevancia: typeof c.relevancia === 'number' && !isNaN(c.relevancia) 
+            ? Math.max(0, Math.min(100, Math.round(c.relevancia))) 
+            : 0,
+          // No incluir vehiculo_id en el JSON guardado (solo para deduplicación interna)
+        }
+      })
 
     console.log(`\n🧹 Limpieza final de comparables:`)
     console.log(`   ✅ Comparables antes de limpiar: ${comparables.length}`)
