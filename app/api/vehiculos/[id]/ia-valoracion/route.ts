@@ -168,7 +168,7 @@ export async function POST(
       // MEJORA: Obtener km actuales de los vehículos de valoraciones IA
       if (valoracionesSimilares && valoracionesSimilares.length > 0) {
         // Obtener km actuales de todos los vehículos de una vez
-        const vehiculosIds = [...new Set(valoracionesSimilares.map(v => v.vehiculo_id))]
+        const vehiculosIds = [...new Set(valoracionesSimilares.map((v: any) => v.vehiculo_id))]
         const { data: fichasComparables } = await supabase
           .from('vehiculo_ficha_tecnica')
           .select('vehiculo_id, kilometros_actuales')
