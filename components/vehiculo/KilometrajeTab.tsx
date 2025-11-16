@@ -181,12 +181,12 @@ export default function KilometrajeTab({ vehiculoId }: Props) {
 
     const ultimoRegistro = registros[0]
     const consumosMedios = registros
-      .filter(r => r.consumo_medio)
-      .map(r => r.consumo_medio!)
+      .filter((r: any) => r.consumo_medio)
+      .map((r: any) => r.consumo_medio!)
 
     const costes = registros
-      .filter(r => r.coste_total_combustible)
-      .map(r => r.coste_total_combustible!)
+      .filter((r: any) => r.coste_total_combustible)
+      .map((r: any) => r.coste_total_combustible!)
 
     return {
       kilometrajeActual: ultimoRegistro.kilometraje,

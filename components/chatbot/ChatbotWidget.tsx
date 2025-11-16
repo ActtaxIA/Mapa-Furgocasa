@@ -139,7 +139,7 @@ export default function ChatbotWidget() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: messages.concat(userMessage).map(m => ({ 
+          messages: messages.concat(userMessage).map((m: any) => ({ 
             role: m.rol, 
             content: m.contenido 
           })),

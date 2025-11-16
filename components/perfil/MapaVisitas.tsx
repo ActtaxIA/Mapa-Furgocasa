@@ -69,7 +69,7 @@ export default function MapaVisitas({ visitas }: Props) {
         }
 
         // Limpiar marcadores anteriores
-        markersRef.current.forEach(marker => marker.setMap(null))
+        markersRef.current.forEach((marker: any) => marker.setMap(null))
         markersRef.current = []
 
         // Crear bounds para ajustar la vista
@@ -141,7 +141,7 @@ export default function MapaVisitas({ visitas }: Props) {
 
     return () => {
       // Limpiar marcadores al desmontar
-      markersRef.current.forEach(marker => marker.setMap(null))
+      markersRef.current.forEach((marker: any) => marker.setMap(null))
       markersRef.current = []
     }
   }, [visitas])

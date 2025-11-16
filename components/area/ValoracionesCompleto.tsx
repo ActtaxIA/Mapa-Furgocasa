@@ -152,8 +152,8 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
     ? (valoraciones.reduce((sum, v) => sum + v.rating, 0) / totalValoraciones).toFixed(1)
     : '0.0'
 
-  const ratingCounts = [5, 4, 3, 2, 1].map(stars => 
-    valoraciones.filter(v => v.rating === stars).length
+  const ratingCounts = [5, 4, 3, 2, 1].map((stars: any) => 
+    valoraciones.filter((v: any) => v.rating === stars).length
   )
 
   return (

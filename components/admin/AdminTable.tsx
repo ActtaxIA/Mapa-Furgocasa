@@ -54,8 +54,8 @@ export function AdminTable<T extends Record<string, any>>({
     if (!searchTerm) return data
 
     const searchLower = searchTerm.toLowerCase()
-    return data.filter(item => {
-      return columns.some(col => {
+    return data.filter((item: any) => {
+      return columns.some((col: any) => {
         if (col.searchable === false) return false
         const value = item[col.key]
         if (value == null) return false
@@ -114,7 +114,7 @@ export function AdminTable<T extends Record<string, any>>({
   }
 
   const handleSort = (columnKey: string) => {
-    const column = columns.find(col => col.key === columnKey)
+    const column = columns.find((col: any) => col.key === columnKey)
     if (!column || column.sortable === false) return
 
     if (sortColumn === columnKey) {
@@ -133,10 +133,10 @@ export function AdminTable<T extends Record<string, any>>({
 
   // Exportar a CSV
   const exportToCSV = () => {
-    const headers = columns.map(col => col.title).join(',')
-    const rows = sortedData.map(item => {
+    const headers = columns.map((col: any) => col.title).join(',')
+    const rows = sortedData.map((item: any) => {
       return columns
-        .map(col => {
+        .map((col: any) => {
           const value = col.exportValue
             ? col.exportValue(item)
             : item[col.key]
@@ -159,11 +159,11 @@ export function AdminTable<T extends Record<string, any>>({
   // Exportar a Excel (formato XLSX real)
   const exportToExcel = () => {
     // Crear la cabecera
-    const headers = columns.map(col => col.title)
+    const headers = columns.map((col: any) => col.title)
     
     // Crear las filas de datos
-    const rows = sortedData.map(item => {
-      return columns.map(col => {
+    const rows = sortedData.map((item: any) => {
+      return columns.map((col: any) => {
         const value = col.exportValue
           ? col.exportValue(item)
           : item[col.key]
@@ -183,7 +183,7 @@ export function AdminTable<T extends Record<string, any>>({
     const colWidths = headers.map((_, colIndex) => {
       const maxLength = Math.max(
         headers[colIndex].length,
-        ...rows.map(row => String(row[colIndex] ?? '').length)
+        ...rows.map((row: any) => String(row[colIndex] ?? '').length)
       )
       return { wch: Math.min(maxLength + 2, 50) } // Máximo 50 caracteres de ancho
     })
@@ -245,7 +245,7 @@ export function AdminTable<T extends Record<string, any>>({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              {columns.map(column => (
+              {columns.map((column: any) => (
                 <th
                   key={column.key}
                   className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
@@ -279,7 +279,7 @@ export function AdminTable<T extends Record<string, any>>({
             ) : (
               paginatedData.map((item, index) => (
                 <tr key={index} className="hover:bg-gray-50">
-                  {columns.map(column => (
+                  {columns.map((column: any) => (
                     <td key={column.key} className="px-6 py-4 whitespace-nowrap">
                       {column.render ? column.render(item) : (
                         <span className="text-sm text-gray-900">{String(item[column.key] ?? '')}</span>

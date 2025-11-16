@@ -61,9 +61,9 @@ export function GaleriaFotosTab({ vehiculoId, fotoUrl, fotosAdicionales }: Props
     }
 
     // Validar tamaño de cada foto (10MB)
-    const fotosGrandes = files.filter(f => f.size > 10 * 1024 * 1024)
+    const fotosGrandes = files.filter((f: any) => f.size > 10 * 1024 * 1024)
     if (fotosGrandes.length > 0) {
-      const nombres = fotosGrandes.map(f => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`).join(', ')
+      const nombres = fotosGrandes.map((f: any) => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`).join(', ')
       setToast({ message: `Estas fotos exceden 10 MB: ${nombres}`, type: 'error' })
       e.target.value = ''
       return

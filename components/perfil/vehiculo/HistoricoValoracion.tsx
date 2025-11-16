@@ -108,7 +108,7 @@ export default function HistoricoValoracion({ vehiculoId }: Props) {
   }
 
   const prepararDatosGrafico = () => {
-    return historico.map(item => ({
+    return historico.map((item: any) => ({
       fecha: new Date(item.fecha_valoracion).toLocaleDateString('es-ES', {
         month: 'short',
         year: 'numeric'

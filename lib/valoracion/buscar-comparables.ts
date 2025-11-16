@@ -62,7 +62,7 @@ export async function buscarComparables(
   
   // Eliminar duplicados por URL
   const uniqueComparables = Array.from(
-    new Map(comparables.map(c => [c.url, c])).values()
+    new Map(comparables.map((c: any) => [c.url, c])).values()
   )
   
   // Ordenar por relevancia

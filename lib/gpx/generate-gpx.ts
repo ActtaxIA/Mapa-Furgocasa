@@ -100,7 +100,7 @@ export function generateGPX(rutaData: GPXRouteData): string {
     }))
   } else {
     // Si no hay geometría, usar solo los waypoints
-    trackPoints = waypoints.map(wp => ({
+    trackPoints = waypoints.map((wp: any) => ({
       lat: wp.lat,
       lng: wp.lng,
       type: 'routepoint'
@@ -129,7 +129,7 @@ export function generateGPX(rutaData: GPXRouteData): string {
 `
 
   // Añadir waypoints (puntos de interés)
-  waypoints.forEach(wp => {
+  waypoints.forEach((wp: any) => {
     gpx += `  <wpt lat="${wp.lat}" lon="${wp.lng}">
     <name>${escapeXML(wp.name || 'Punto')}</name>
     ${wp.description ? `<desc>${escapeXML(wp.description)}</desc>` : ''}
@@ -148,7 +148,7 @@ export function generateGPX(rutaData: GPXRouteData): string {
 `
 
   // Añadir todos los puntos del track
-  trackPoints.forEach(point => {
+  trackPoints.forEach((point: any) => {
     gpx += `      <trkpt lat="${point.lat}" lon="${point.lng}">
         <time>${timestamp}</time>
       </trkpt>
@@ -165,7 +165,7 @@ export function generateGPX(rutaData: GPXRouteData): string {
     ${descripcion ? `<desc>${descripcion}</desc>` : ''}
 `
 
-  waypoints.forEach(wp => {
+  waypoints.forEach((wp: any) => {
     gpx += `    <rtept lat="${wp.lat}" lon="${wp.lng}">
       <name>${escapeXML(wp.name || 'Punto')}</name>
       ${wp.description ? `<desc>${escapeXML(wp.description)}</desc>` : ''}

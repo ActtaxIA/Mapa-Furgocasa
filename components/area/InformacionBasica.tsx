@@ -14,7 +14,7 @@ export function InformacionBasica({ area }: Props) {
         <div className="text-gray-700 mb-6 leading-relaxed space-y-4">
           {area.descripcion
             .split(/\r?\n\r?\n/)
-            .filter(p => p.trim().length > 0)
+            .filter((p: any) => p.trim().length > 0)
             .map((parrafo, index) => (
               <p key={index} className="text-justify">{parrafo.trim()}</p>
             ))}

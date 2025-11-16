@@ -749,7 +749,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
       }
 
       // Log detallado para debugging
-      const paisesCubiertos = [...new Set(areasCercanas.map(a => a.pais))].sort()
+      const paisesCubiertos = [...new Set(areasCercanas.map((a: any) => a.pais))].sort()
       console.log(`✅ Encontradas ${areasCercanas.length} áreas en un radio de ${radio}km`)
       console.log(`🌍 Países cubiertos: ${paisesCubiertos.join(', ')}`)
 
@@ -1026,8 +1026,8 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
 
     if (over && active.id !== over.id) {
       setWaypoints((items) => {
-        const oldIndex = items.findIndex(item => (item.id || `waypoint-${items.indexOf(item)}`) === active.id)
-        const newIndex = items.findIndex(item => (item.id || `waypoint-${items.indexOf(item)}`) === over.id)
+        const oldIndex = items.findIndex((item: any) => (item.id || `waypoint-${items.indexOf(item)}`) === active.id)
+        const newIndex = items.findIndex((item: any) => (item.id || `waypoint-${items.indexOf(item)}`) === over.id)
 
         return arrayMove(items, oldIndex, newIndex)
       })
@@ -1328,7 +1328,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
         distancia_km: distanciaTotal / 1000,
         duracion_minutos: Math.round(duracionTotal / 60),
         // Guardar áreas encontradas para evitar búsquedas repetidas
-        areas_encontradas: areasEnRuta.length > 0 ? areasEnRuta.map(area => ({
+        areas_encontradas: areasEnRuta.length > 0 ? areasEnRuta.map((area: any) => ({
           id: area.id,
           nombre: area.nombre,
           latitud: area.latitud,

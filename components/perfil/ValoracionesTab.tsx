@@ -47,7 +47,7 @@ export function ValoracionesTab({ userId }: Props) {
       }
 
       // Obtener las áreas relacionadas
-      const areaIds = valoracionesData.map(v => v.area_id)
+      const areaIds = valoracionesData.map((v: any) => v.area_id)
       const { data: areasData, error: areasError } = await (supabase as any)
           .from('areas')
         .select('*')
@@ -59,13 +59,13 @@ export function ValoracionesTab({ userId }: Props) {
       }
 
       // Combinar valoraciones con sus áreas
-      const valoracionesConAreas = valoracionesData.map(valoracion => {
-        const area = areasData?.find(a => a.id === valoracion.area_id)
+      const valoracionesConAreas = valoracionesData.map((valoracion: any) => {
+        const area = areasData?.find((a: any) => a.id === valoracion.area_id)
         return {
           ...valoracion,
           area: area || null
         }
-      }).filter(v => v.area !== null) as ValoracionConArea[]
+      }).filter((v: any) => v.area !== null) as ValoracionConArea[]
 
       setValoraciones(valoracionesConAreas)
     } catch (error) {
@@ -87,7 +87,7 @@ export function ValoracionesTab({ userId }: Props) {
         .eq('id', valoracionId)
 
       if (error) throw error
-      setValoraciones(valoraciones.filter(v => v.id !== valoracionId))
+      setValoraciones(valoraciones.filter((v: any) => v.id !== valoracionId))
     } catch (error) {
       console.error('Error eliminando valoración:', error)
       alert('Error al eliminar la valoración')

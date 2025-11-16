@@ -47,7 +47,7 @@ export function FavoritosTab({ userId }: Props) {
       }
 
       // Obtener las áreas relacionadas
-      const areaIds = favoritosData.map(f => f.area_id)
+      const areaIds = favoritosData.map((f: any) => f.area_id)
       const { data: areasData, error: areasError } = await (supabase as any)
           .from('areas')
         .select('*')
@@ -59,13 +59,13 @@ export function FavoritosTab({ userId }: Props) {
       }
 
       // Combinar favoritos con sus áreas
-      const favoritosConAreas = favoritosData.map(favorito => {
-        const area = areasData?.find(a => a.id === favorito.area_id)
+      const favoritosConAreas = favoritosData.map((favorito: any) => {
+        const area = areasData?.find((a: any) => a.id === favorito.area_id)
         return {
           ...favorito,
           area: area || null
         }
-      }).filter(f => f.area !== null) as FavoritoConArea[]
+      }).filter((f: any) => f.area !== null) as FavoritoConArea[]
 
       setFavoritos(favoritosConAreas)
     } catch (error) {
@@ -87,7 +87,7 @@ export function FavoritosTab({ userId }: Props) {
         .eq('id', favoritoId)
 
       if (error) throw error
-      setFavoritos(favoritos.filter(f => f.id !== favoritoId))
+      setFavoritos(favoritos.filter((f: any) => f.id !== favoritoId))
     } catch (error) {
       console.error('Error eliminando favorito:', error)
       alert('Error al eliminar favorito')

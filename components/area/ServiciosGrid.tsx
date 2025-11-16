@@ -34,7 +34,7 @@ export function ServiciosGrid({ servicios }: Props) {
 
       {/* Grid de servicios */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {serviciosConfig.map(({ key, label, icon, color }) => {
+        {serviciosConfig.map(({  key, label, icon, color  }: any) => {
           const disponible = servicios[key as keyof Servicios]
           
           return (

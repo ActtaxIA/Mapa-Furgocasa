@@ -221,7 +221,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
         markerClustererRef.current.clearMarkers()
         markerClustererRef.current = null
       }
-      markersRef.current.forEach(marker => marker.setMap(null))
+      markersRef.current.forEach((marker: any) => marker.setMap(null))
       markersRef.current = []
     }
   }, [map, areas, onAreaClick])
@@ -231,7 +231,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
     if (!map || !areaSeleccionada || !infoWindowRef.current) return
 
     // Buscar el marcador correspondiente
-    const markerIndex = areas.findIndex(a => a.id === areaSeleccionada.id)
+    const markerIndex = areas.findIndex((a: any) => a.id === areaSeleccionada.id)
     if (markerIndex !== -1 && markersRef.current[markerIndex]) {
       const marker = markersRef.current[markerIndex]
       
@@ -462,7 +462,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
                 <span style="font-size: 12px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px;">Servicios Disponibles</span>
               </div>
               <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                ${mostrarServicios.map(s => `
+                ${mostrarServicios.map((s: any) => `
                   <div style="display: flex; align-items: center; font-size: 11px; color: #6B7280;">
                     <span style="font-size: 16px; margin-right: 4px;">${s.icon}</span>
                     <span>${s.label}</span>

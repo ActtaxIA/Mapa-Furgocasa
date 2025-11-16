@@ -73,8 +73,8 @@ export function DashboardVehiculo({ vehiculo, onTabChange }: Props) {
         .order('fecha_caducidad')
 
       const alertas = [
-        ...(alertasMantenimiento || []).map(a => ({ ...a, tipo_alerta: 'mantenimiento' })),
-        ...(alertasDocumentos || []).map(a => ({ ...a, tipo_alerta: 'documento' }))
+        ...(alertasMantenimiento || []).map((a: any) => ({ ...a, tipo_alerta: 'mantenimiento' })),
+        ...(alertasDocumentos || []).map((a: any) => ({ ...a, tipo_alerta: 'documento' }))
       ]
 
       setProximasAlertas(alertas)

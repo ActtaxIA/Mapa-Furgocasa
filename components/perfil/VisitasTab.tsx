@@ -50,7 +50,7 @@ export function VisitasTab({ userId }: Props) {
       }
 
       // Obtener las áreas relacionadas
-      const areaIds = visitasData.map(v => v.area_id)
+      const areaIds = visitasData.map((v: any) => v.area_id)
       const { data: areasData, error: areasError } = await (supabase as any)
           .from('areas')
         .select('*')
@@ -62,13 +62,13 @@ export function VisitasTab({ userId }: Props) {
       }
 
       // Combinar visitas con sus áreas
-      const visitasConAreas = visitasData.map(visita => {
-        const area = areasData?.find(a => a.id === visita.area_id)
+      const visitasConAreas = visitasData.map((visita: any) => {
+        const area = areasData?.find((a: any) => a.id === visita.area_id)
         return {
           ...visita,
           area: area || null
         }
-      }).filter(v => v.area !== null) as VisitaConArea[]
+      }).filter((v: any) => v.area !== null) as VisitaConArea[]
 
       setVisitas(visitasConAreas)
     } catch (error) {
@@ -90,7 +90,7 @@ export function VisitasTab({ userId }: Props) {
         .eq('id', visitaId)
 
       if (error) throw error
-      setVisitas(visitas.filter(v => v.id !== visitaId))
+      setVisitas(visitas.filter((v: any) => v.id !== visitaId))
     } catch (error) {
       console.error('Error eliminando visita:', error)
       alert('Error al eliminar la visita')

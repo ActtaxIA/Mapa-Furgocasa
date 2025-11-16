@@ -13,7 +13,7 @@ function getSupabaseClient() {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
 
   if (!supabaseUrl || !serviceRoleKey) {
-    const keysSeen = Object.keys(process.env).filter(k => k.includes('SUPABASE'))
+    const keysSeen = Object.keys(process.env).filter((k: any) => k.includes('SUPABASE'))
     throw new Error(`Missing Supabase credentials (functions.ts) | has_url=${!!supabaseUrl} | has_service_role=${!!serviceRoleKey} | keys_seen=${JSON.stringify(keysSeen)}`)
   }
 
@@ -122,7 +122,7 @@ export async function searchAreas(params: BusquedaAreasParams): Promise<AreaResu
       if (params.servicios && params.servicios.length > 0) {
         console.log('🔧 Filtrando por servicios:', params.servicios)
         filtered = filtered.filter((area: any) => 
-          params.servicios!.every(servicio => 
+          params.servicios!.every((servicio: any) => 
             area.servicios && area.servicios[servicio] === true
           )
         )
@@ -186,7 +186,7 @@ export async function searchAreas(params: BusquedaAreasParams): Promise<AreaResu
     // Filtro por servicios
     if (params.servicios && params.servicios.length > 0) {
       console.log('🔧 Filtrando por servicios:', params.servicios)
-      params.servicios.forEach(servicio => {
+      params.servicios.forEach((servicio: any) => {
         query = query.eq(`servicios->>${servicio}`, true)
       })
     }
@@ -451,7 +451,7 @@ export async function contarAreas(params: BusquedaAreasParams): Promise<number> 
   }
   
   if (params.servicios && params.servicios.length > 0) {
-    params.servicios.forEach(servicio => {
+    params.servicios.forEach((servicio: any) => {
       query = query.eq(`servicios->>${servicio}`, true)
     })
   }

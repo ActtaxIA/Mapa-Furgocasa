@@ -101,7 +101,7 @@ export function MapaInteractivoAdmin({
     if (!google) return
 
     // Limpiar marcadores anteriores
-    markersRef.current.forEach(marker => marker.setMap(null))
+    markersRef.current.forEach((marker: any) => marker.setMap(null))
     markersRef.current = []
 
     if (searchResults.length === 0) return
@@ -109,7 +109,7 @@ export function MapaInteractivoAdmin({
     const bounds = new google.maps.LatLngBounds()
 
     // Añadir marcadores para cada resultado
-    searchResults.forEach(place => {
+    searchResults.forEach((place: any) => {
       const position = {
         lat: place.geometry.location.lat,
         lng: place.geometry.location.lng

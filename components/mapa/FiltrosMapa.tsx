@@ -60,14 +60,14 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
 
   const handleServicioToggle = (servicio: string) => {
     const nuevos = filtros.servicios.includes(servicio)
-      ? filtros.servicios.filter(s => s !== servicio)
+      ? filtros.servicios.filter((s: any) => s !== servicio)
       : [...filtros.servicios, servicio]
     onFiltrosChange({ ...filtros, servicios: nuevos })
   }
 
   const handleCaracteristicaToggle = (caracteristica: string) => {
     const nuevas = filtros.caracteristicas.includes(caracteristica)
-      ? filtros.caracteristicas.filter(c => c !== caracteristica)
+      ? filtros.caracteristicas.filter((c: any) => c !== caracteristica)
       : [...filtros.caracteristicas, caracteristica]
     onFiltrosChange({ ...filtros, caracteristicas: nuevas })
   }
@@ -151,7 +151,7 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
             Servicios
           </label>
           <div className="space-y-0.5">
-            {SERVICIOS.map(servicio => (
+            {SERVICIOS.map((servicio: any) => (
               <label key={servicio.id} className="flex items-center cursor-pointer hover:bg-gray-50 py-1 px-1.5 rounded transition-colors">
                 <input
                   type="checkbox"
@@ -171,7 +171,7 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
             Precio
           </label>
           <div className="space-y-0.5">
-            {PRECIOS.map(precio => (
+            {PRECIOS.map((precio: any) => (
               <label key={precio.value} className="flex items-center cursor-pointer hover:bg-gray-50 py-1 px-1.5 rounded transition-colors">
                 <input
                   type="radio"
@@ -193,7 +193,7 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
             Características
           </label>
           <div className="space-y-0.5">
-            {CARACTERISTICAS.map(caracteristica => (
+            {CARACTERISTICAS.map((caracteristica: any) => (
               <label key={caracteristica.id} className="flex items-center cursor-pointer hover:bg-gray-50 py-1 px-1.5 rounded transition-colors">
                 <input
                   type="checkbox"

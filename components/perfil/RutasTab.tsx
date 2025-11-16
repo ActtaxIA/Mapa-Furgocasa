@@ -57,7 +57,7 @@ export function RutasTab({ userId }: Props) {
         .eq('id', rutaId)
 
       if (error) throw error
-      setRutas(rutas.filter(r => r.id !== rutaId))
+      setRutas(rutas.filter((r: any) => r.id !== rutaId))
     } catch (error) {
       console.error('Error eliminando ruta:', error)
       alert('Error al eliminar la ruta')
@@ -76,7 +76,7 @@ export function RutasTab({ userId }: Props) {
         .eq('id', rutaId)
 
       if (error) throw error
-      setRutas(rutas.map(r => 
+      setRutas(rutas.map((r: any) => 
         r.id === rutaId ? { ...r, favorito: !currentFavorito } : r
       ))
     } catch (error) {

@@ -80,7 +80,7 @@ export async function invalidateCache(keys: string | string[]): Promise<void> {
   const keyArray = Array.isArray(keys) ? keys : [keys]
   
   try {
-    await Promise.all(keyArray.map(key => redis!.del(key)))
+    await Promise.all(keyArray.map((key: any) => redis!.del(key)))
     console.log(`✅ [CACHE] Invalidadas ${keyArray.length} clave(s)`)
   } catch (error) {
     console.error('❌ [CACHE] Error invalidando:', error)

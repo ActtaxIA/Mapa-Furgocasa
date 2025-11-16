@@ -20,8 +20,8 @@ export function Valoraciones({ areaId, valoraciones }: Props) {
     : '0.0'
 
   // Contar ratings por estrella
-  const ratingCounts = [5, 4, 3, 2, 1].map(stars => 
-    valoraciones.filter(v => v.rating === stars).length
+  const ratingCounts = [5, 4, 3, 2, 1].map((stars: any) => 
+    valoraciones.filter((v: any) => v.rating === stars).length
   )
 
   return (
