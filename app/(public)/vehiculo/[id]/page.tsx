@@ -73,7 +73,9 @@ export default function VehiculoPage() {
   const [loadingValoracion, setLoadingValoracion] = useState(false);
   const [generandoValoracion, setGenerandoValoracion] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [kilometrajeActual, setKilometrajeActual] = useState<number | null>(null);
+  const [kilometrajeActual, setKilometrajeActual] = useState<number | null>(
+    null
+  );
   const [nuevoKilometraje, setNuevoKilometraje] = useState("");
   const [actualizandoKm, setActualizandoKm] = useState(false);
 
@@ -151,6 +153,9 @@ export default function VehiculoPage() {
         año: vehiculoData.año?.toString() || "",
         color: vehiculoData.color || "",
       });
+
+      // Cargar kilometraje actual
+      await loadKilometrajeActual();
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -721,6 +726,12 @@ export default function VehiculoPage() {
                           {vehiculo.tipo_vehiculo}
                         </span>
                       )}
+                      {kilometrajeActual && (
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800 border border-orange-200">
+                          <TruckIcon className="w-4 h-4" />
+                          {kilometrajeActual.toLocaleString()} km
+                        </span>
+                      )}
                       <p className="text-gray-600">
                         {vehiculo.marca || "Sin marca"}{" "}
                         {vehiculo.modelo || "Sin modelo"}
@@ -1011,7 +1022,7 @@ export default function VehiculoPage() {
                       <li>✓ Informe profesional detallado</li>
                     </ul>
                   </div>
-                  
+
                   <div className="flex flex-col gap-3">
                     {/* Actualizar kilometraje */}
                     <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
@@ -1023,7 +1034,10 @@ export default function VehiculoPage() {
                       </div>
                       {kilometrajeActual ? (
                         <p className="text-xs text-gray-600 mb-2">
-                          Último: <span className="font-semibold text-orange-600">{kilometrajeActual.toLocaleString()} km</span>
+                          Último:{" "}
+                          <span className="font-semibold text-orange-600">
+                            {kilometrajeActual.toLocaleString()} km
+                          </span>
                         </p>
                       ) : (
                         <p className="text-xs text-gray-500 mb-2">
