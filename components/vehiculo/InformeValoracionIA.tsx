@@ -85,8 +85,15 @@ export default function InformeValoracionIA({
       )
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Error al eliminar la valoración')
+        let errorMsg = 'Error al eliminar la valoración'
+        try {
+          const errorData = await response.json()
+          errorMsg = errorData.error || errorData.detalle || errorMsg
+        } catch (e) {
+          // Si no se puede parsear JSON, usar mensaje por defecto
+          errorMsg = `Error ${response.status}: ${response.statusText}`
+        }
+        throw new Error(errorMsg)
       }
 
       // Cerrar confirmación y notificar al padre
@@ -97,7 +104,7 @@ export default function InformeValoracionIA({
 
     } catch (error: any) {
       console.error('Error eliminando valoración:', error)
-      alert(`Error al eliminar la valoración: ${error.message}`)
+      alert(`Error: ${error.message}`)
     } finally {
       setEliminando(null)
     }
@@ -386,8 +393,8 @@ export default function InformeValoracionIA({
               {/* Métrica: Variación de Valor (Revalorización o Depreciación) */}
               {informe.depreciacion_aplicada !== null ? (
                 <div className={`bg-gradient-to-br rounded-lg p-4 border-2 ${
-                  informe.depreciacion_aplicada >= 0 
-                    ? 'from-green-50 to-emerald-50 border-green-300' 
+                  informe.depreciacion_aplicada >= 0
+                    ? 'from-green-50 to-emerald-50 border-green-300'
                     : 'from-red-50 to-orange-50 border-red-300'
                 }`}>
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">
@@ -500,8 +507,8 @@ export default function InformeValoracionIA({
                       <div key={val.id} className="relative pl-20 pb-8">
                         {/* Círculo indicador */}
                         <div className={`absolute left-5 w-6 h-6 rounded-full border-4 ${
-                          esMasReciente 
-                            ? 'bg-blue-600 border-blue-200 ring-4 ring-blue-100' 
+                          esMasReciente
+                            ? 'bg-blue-600 border-blue-200 ring-4 ring-blue-100'
                             : 'bg-white border-gray-300'
                         }`}>
                           {esMasReciente && (
@@ -513,8 +520,8 @@ export default function InformeValoracionIA({
 
                         {/* Contenido */}
                         <div className={`rounded-lg border-2 p-4 ${
-                          esMasReciente 
-                            ? 'bg-blue-50 border-blue-400 shadow-md' 
+                          esMasReciente
+                            ? 'bg-blue-50 border-blue-400 shadow-md'
                             : 'bg-white border-gray-200'
                         }`}>
                           <div className="flex items-start justify-between mb-3">
@@ -570,7 +577,7 @@ export default function InformeValoracionIA({
 
                           {val.num_comparables > 0 && (
                             <div className="mt-3 text-xs text-gray-600">
-                              📊 {val.num_comparables} comparables • 
+                              📊 {val.num_comparables} comparables •
                               {val.precio_base_mercado && ` Mercado: ${formatearPrecio(val.precio_base_mercado)}`}
                               {val.depreciacion_aplicada !== null && (
                                 <span className={val.depreciacion_aplicada >= 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>
