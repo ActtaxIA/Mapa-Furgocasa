@@ -1,124 +1,133 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Navbar } from '@/components/layout/Navbar'
-import { AdminTable, AdminTableColumn } from '@/components/admin/AdminTable'
-import Link from 'next/link'
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Navbar } from "@/components/layout/Navbar";
+import { AdminTable, AdminTableColumn } from "@/components/admin/AdminTable";
+import Link from "next/link";
 import {
   TruckIcon,
   ArrowLeftIcon,
   ChartBarIcon,
   CurrencyEuroIcon,
   WrenchScrewdriverIcon,
-  ExclamationTriangleIcon
-} from '@heroicons/react/24/outline'
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 
 interface AnalisisMarcaModelo {
-  marca: string
-  modelo: string
-  cantidad: number
-  año_promedio: number
-  km_promedio: number
-  precio_compra_promedio: number
-  valor_actual_promedio: number
-  depreciacion_media: number
-  coste_mantenimiento_anual: number
-  coste_averias_total: number
-  num_reportes_accidentes: number
+  marca: string;
+  modelo: string;
+  cantidad: number;
+  año_promedio: number;
+  km_promedio: number;
+  precio_compra_promedio: number;
+  valor_actual_promedio: number;
+  depreciacion_media: number;
+  coste_mantenimiento_anual: number;
+  coste_averias_total: number;
+  num_reportes_accidentes: number;
 }
 
 interface DashboardMetricas {
-  total_vehiculos: number
-  vehiculos_mes_actual: number
-  valor_total_parque: number
-  total_reportes_accidentes: number
-  reportes_pendientes: number
-  datos_mercado_verificados: number
-  datos_mercado_pendientes: number
-  usuarios_con_vehiculos: number
-  usuarios_compartiendo_datos: number
+  total_vehiculos: number;
+  vehiculos_mes_actual: number;
+  valor_total_parque: number;
+  total_reportes_accidentes: number;
+  reportes_pendientes: number;
+  datos_mercado_verificados: number;
+  datos_mercado_pendientes: number;
+  usuarios_con_vehiculos: number;
+  usuarios_compartiendo_datos: number;
 }
 
 export default function AdminVehiculosPage() {
-  const [loading, setLoading] = useState(true)
-  const [metricas, setMetricas] = useState<DashboardMetricas | null>(null)
-  const [analisis, setAnalisis] = useState<AnalisisMarcaModelo[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
+  const [loading, setLoading] = useState(true);
+  const [metricas, setMetricas] = useState<DashboardMetricas | null>(null);
+  const [analisis, setAnalisis] = useState<AnalisisMarcaModelo[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    checkAdminAndLoad()
-  }, [])
+    checkAdminAndLoad();
+  }, []);
 
   const checkAdminAndLoad = async () => {
-    const supabase = createClient()
-    const { data: { session } } = await supabase.auth.getSession()
+    const supabase = createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
     if (!session?.user || !session.user.user_metadata?.is_admin) {
-      router.push('/mapa')
-      return
+      router.push("/mapa");
+      return;
     }
 
-    await Promise.all([
-      loadMetricas(),
-      loadAnalisis()
-    ])
+    await Promise.all([loadMetricas(), loadAnalisis()]);
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const loadMetricas = async () => {
     try {
-      const supabase = createClient()
+      const supabase = createClient();
 
       // Cargar vehículos
       const { data: vehiculos, error: vehiculosError } = await supabase
-        .from('vehiculos_registrados')
-        .select('*')
-        .eq('activo', true)
+        .from("vehiculos_registrados")
+        .select("*")
+        .eq("activo", true);
 
       // Cargar datos económicos
       const { data: valoracionesEco } = await supabase
-        .from('vehiculo_valoracion_economica')
-        .select('precio_compra, vehiculo_id')
+        .from("vehiculo_valoracion_economica")
+        .select("precio_compra, vehiculo_id");
 
       // Cargar reportes
       const { data: reportes } = await supabase
-        .from('reportes_accidentes')
-        .select('id, cerrado')
+        .from("reportes_accidentes")
+        .select("id, cerrado");
 
       // Cargar datos de mercado
       const { data: datosMercado } = await supabase
-        .from('datos_mercado_autocaravanas')
-        .select('id, verificado')
+        .from("datos_mercado_autocaravanas")
+        .select("id, verificado");
 
       // Calcular métricas
-      const ahora = new Date()
-      const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1)
+      const ahora = new Date();
+      const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
 
-      const total_vehiculos = vehiculos?.length || 0
-      const vehiculos_mes_actual = vehiculos?.filter(v => new Date(v.created_at) >= inicioMes).length || 0
+      const total_vehiculos = vehiculos?.length || 0;
+      const vehiculos_mes_actual =
+        vehiculos?.filter((v) => new Date(v.created_at) >= inicioMes).length ||
+        0;
 
-      const valor_total_parque = valoracionesEco?.reduce((sum, v) => sum + (v.precio_compra || 0), 0) || 0
+      const valor_total_parque =
+        valoracionesEco?.reduce((sum, v) => sum + (v.precio_compra || 0), 0) ||
+        0;
 
-      const total_reportes_accidentes = reportes?.length || 0
-      const reportes_pendientes = reportes?.filter(r => !r.cerrado).length || 0
+      const total_reportes_accidentes = reportes?.length || 0;
+      const reportes_pendientes =
+        reportes?.filter((r) => !r.cerrado).length || 0;
 
-      const datos_mercado_verificados = datosMercado?.filter(d => d.verificado).length || 0
-      const datos_mercado_pendientes = datosMercado?.filter(d => !d.verificado).length || 0
+      const datos_mercado_verificados =
+        datosMercado?.filter((d) => d.verificado).length || 0;
+      const datos_mercado_pendientes =
+        datosMercado?.filter((d) => !d.verificado).length || 0;
 
       // Contar usuarios únicos con vehículos
-      const usuariosUnicos = new Set(vehiculos?.map(v => v.user_id))
-      const usuarios_con_vehiculos = usuariosUnicos.size
+      const usuariosUnicos = new Set(vehiculos?.map((v) => v.user_id));
+      const usuarios_con_vehiculos = usuariosUnicos.size;
 
       // Usuarios compartiendo datos (con datos económicos)
-      const vehiculosConDatos = new Set(valoracionesEco?.map(v => v.vehiculo_id))
-      const usuarios_compartiendo_datos = vehiculos?.filter(v => vehiculosConDatos.has(v.id))
-        .map(v => v.user_id)
-        .filter((v, i, arr) => arr.indexOf(v) === i)
-        .length || 0
+      const vehiculosConDatos = new Set(
+        valoracionesEco?.map((v) => v.vehiculo_id)
+      );
+      const usuarios_compartiendo_datos =
+        vehiculos
+          ?.filter((v) => vehiculosConDatos.has(v.id))
+          .map((v) => v.user_id)
+          .filter((v, i, arr) => arr.indexOf(v) === i).length || 0;
 
       setMetricas({
         total_vehiculos,
@@ -129,17 +138,19 @@ export default function AdminVehiculosPage() {
         datos_mercado_verificados,
         datos_mercado_pendientes,
         usuarios_con_vehiculos,
-        usuarios_compartiendo_datos
-      })
+        usuarios_compartiendo_datos,
+      });
 
-      console.log('✅ Métricas calculadas:', {
+      console.log("✅ Métricas calculadas:", {
         total_vehiculos,
         valor_total_parque,
-        usuarios_con_vehiculos
-      })
+        usuarios_con_vehiculos,
+      });
     } catch (error: any) {
-      console.error('Error cargando métricas:', error)
-      setError(`Error: ${error.message || 'Error desconocido al cargar métricas'}`)
+      console.error("Error cargando métricas:", error);
+      setError(
+        `Error: ${error.message || "Error desconocido al cargar métricas"}`
+      );
       // Establecer valores por defecto si hay error
       setMetricas({
         total_vehiculos: 0,
@@ -150,74 +161,73 @@ export default function AdminVehiculosPage() {
         datos_mercado_verificados: 0,
         datos_mercado_pendientes: 0,
         usuarios_con_vehiculos: 0,
-        usuarios_compartiendo_datos: 0
-      })
+        usuarios_compartiendo_datos: 0,
+      });
     }
-  }
+  };
 
   const loadAnalisis = async () => {
     try {
-      const supabase = createClient()
+      const supabase = createClient();
 
-      console.log('🚐 Cargando vehículos directamente desde las tablas...')
+      console.log("🚐 Cargando vehículos directamente desde las tablas...");
 
       // Cargar vehículos registrados
       const { data: vehiculos, error: vehiculosError } = await supabase
-        .from('vehiculos_registrados')
-        .select('*')
-        .eq('activo', true)
+        .from("vehiculos_registrados")
+        .select("*")
+        .eq("activo", true);
 
       if (vehiculosError) {
-        console.error('Error cargando vehículos:', vehiculosError)
-        setError(`Error cargando vehículos: ${vehiculosError.message}`)
-        return
+        console.error("Error cargando vehículos:", vehiculosError);
+        setError(`Error cargando vehículos: ${vehiculosError.message}`);
+        return;
       }
 
       // Cargar datos económicos
-      const { data: valoracionesEconomicas, error: valEcoError } = await supabase
-        .from('vehiculo_valoracion_economica')
-        .select('*')
+      const { data: valoracionesEconomicas, error: valEcoError } =
+        await supabase.from("vehiculo_valoracion_economica").select("*");
 
       if (valEcoError) {
-        console.error('Error cargando valoraciones económicas:', valEcoError)
+        console.error("Error cargando valoraciones económicas:", valEcoError);
       }
 
       // Cargar mantenimientos
       const { data: mantenimientos, error: mantError } = await supabase
-        .from('mantenimientos')
-        .select('*')
+        .from("mantenimientos")
+        .select("*");
 
       if (mantError) {
-        console.error('Error cargando mantenimientos:', mantError)
+        console.error("Error cargando mantenimientos:", mantError);
       }
 
       // Cargar averías
       const { data: averias, error: averiasError } = await supabase
-        .from('averias')
-        .select('*')
+        .from("averias")
+        .select("*");
 
       if (averiasError) {
-        console.error('Error cargando averías:', averiasError)
+        console.error("Error cargando averías:", averiasError);
       }
 
       // Cargar reportes de accidentes
       const { data: reportes, error: reportesError } = await supabase
-        .from('reportes_accidentes')
-        .select('*')
+        .from("reportes_accidentes")
+        .select("*");
 
       if (reportesError) {
-        console.error('Error cargando reportes:', reportesError)
+        console.error("Error cargando reportes:", reportesError);
       }
 
-      console.log(`✅ ${vehiculos?.length || 0} vehículos cargados`)
+      console.log(`✅ ${vehiculos?.length || 0} vehículos cargados`);
 
       // Agrupar por marca y modelo
-      const agrupados = new Map<string, AnalisisMarcaModelo>()
+      const agrupados = new Map<string, AnalisisMarcaModelo>();
 
       vehiculos?.forEach((v: any) => {
-        const marca = v.marca || 'Sin marca'
-        const modelo = v.modelo || 'Sin modelo'
-        const key = `${marca}-${modelo}`
+        const marca = v.marca || "Sin marca";
+        const modelo = v.modelo || "Sin modelo";
+        const key = `${marca}-${modelo}`;
 
         if (!agrupados.has(key)) {
           agrupados.set(key, {
@@ -231,192 +241,237 @@ export default function AdminVehiculosPage() {
             depreciacion_media: 0,
             coste_mantenimiento_anual: 0,
             coste_averias_total: 0,
-            num_reportes_accidentes: 0
-          })
+            num_reportes_accidentes: 0,
+          });
         }
 
-        const grupo = agrupados.get(key)!
-        grupo.cantidad++
+        const grupo = agrupados.get(key)!;
+        grupo.cantidad++;
 
         // Sumar años
         if (v.año) {
-          grupo.año_promedio += v.año
+          grupo.año_promedio += v.año;
         }
 
         // Buscar datos económicos de este vehículo
-        const valEco = valoracionesEconomicas?.find(ve => ve.vehiculo_id === v.id)
+        const valEco = valoracionesEconomicas?.find(
+          (ve) => ve.vehiculo_id === v.id
+        );
         if (valEco) {
           if (valEco.precio_compra) {
-            grupo.precio_compra_promedio += valEco.precio_compra
+            grupo.precio_compra_promedio += valEco.precio_compra;
           }
           if (valEco.kilometros_compra) {
-            grupo.km_promedio += valEco.kilometros_compra
+            grupo.km_promedio += valEco.kilometros_compra;
           }
         }
 
         // Calcular mantenimientos
-        const mantVehiculo = mantenimientos?.filter(m => m.vehiculo_id === v.id) || []
-        const costoMant = mantVehiculo.reduce((sum, m) => sum + (m.coste || 0), 0)
-        grupo.coste_mantenimiento_anual += costoMant
+        const mantVehiculo =
+          mantenimientos?.filter((m) => m.vehiculo_id === v.id) || [];
+        const costoMant = mantVehiculo.reduce(
+          (sum, m) => sum + (m.coste || 0),
+          0
+        );
+        grupo.coste_mantenimiento_anual += costoMant;
 
         // Calcular averías
-        const averiasVehiculo = averias?.filter(a => a.vehiculo_id === v.id) || []
-        const costoAverias = averiasVehiculo.reduce((sum, a) => sum + (a.coste_total || 0), 0)
-        grupo.coste_averias_total += costoAverias
+        const averiasVehiculo =
+          averias?.filter((a) => a.vehiculo_id === v.id) || [];
+        const costoAverias = averiasVehiculo.reduce(
+          (sum, a) => sum + (a.coste_total || 0),
+          0
+        );
+        grupo.coste_averias_total += costoAverias;
 
         // Contar reportes de accidentes
-        const reportesVehiculo = reportes?.filter(r => r.vehiculo_afectado_id === v.id) || []
-        grupo.num_reportes_accidentes += reportesVehiculo.length
-      })
+        const reportesVehiculo =
+          reportes?.filter((r) => r.vehiculo_afectado_id === v.id) || [];
+        grupo.num_reportes_accidentes += reportesVehiculo.length;
+      });
 
       // Calcular promedios
-      const analisisArray: AnalisisMarcaModelo[] = []
+      const analisisArray: AnalisisMarcaModelo[] = [];
       agrupados.forEach((grupo) => {
-        grupo.año_promedio = grupo.año_promedio > 0 ? Math.round(grupo.año_promedio / grupo.cantidad) : 0
-        grupo.km_promedio = grupo.km_promedio > 0 ? Math.round(grupo.km_promedio / grupo.cantidad) : 0
-        grupo.precio_compra_promedio = grupo.precio_compra_promedio > 0 ? Math.round(grupo.precio_compra_promedio / grupo.cantidad) : 0
-        grupo.coste_mantenimiento_anual = grupo.coste_mantenimiento_anual > 0 ? Math.round(grupo.coste_mantenimiento_anual / grupo.cantidad) : 0
-        grupo.coste_averias_total = Math.round(grupo.coste_averias_total / grupo.cantidad)
+        grupo.año_promedio =
+          grupo.año_promedio > 0
+            ? Math.round(grupo.año_promedio / grupo.cantidad)
+            : 0;
+        grupo.km_promedio =
+          grupo.km_promedio > 0
+            ? Math.round(grupo.km_promedio / grupo.cantidad)
+            : 0;
+        grupo.precio_compra_promedio =
+          grupo.precio_compra_promedio > 0
+            ? Math.round(grupo.precio_compra_promedio / grupo.cantidad)
+            : 0;
+        grupo.coste_mantenimiento_anual =
+          grupo.coste_mantenimiento_anual > 0
+            ? Math.round(grupo.coste_mantenimiento_anual / grupo.cantidad)
+            : 0;
+        grupo.coste_averias_total = Math.round(
+          grupo.coste_averias_total / grupo.cantidad
+        );
 
         // Calcular depreciación (simplificado)
-        if (grupo.precio_compra_promedio > 0 && grupo.valor_actual_promedio > 0) {
-          grupo.depreciacion_media = ((grupo.precio_compra_promedio - grupo.valor_actual_promedio) / grupo.precio_compra_promedio) * 100
+        if (
+          grupo.precio_compra_promedio > 0 &&
+          grupo.valor_actual_promedio > 0
+        ) {
+          grupo.depreciacion_media =
+            ((grupo.precio_compra_promedio - grupo.valor_actual_promedio) /
+              grupo.precio_compra_promedio) *
+            100;
         }
 
-        analisisArray.push(grupo)
-      })
+        analisisArray.push(grupo);
+      });
 
-      console.log(`✅ ${analisisArray.length} grupos de marca/modelo`)
-      setAnalisis(analisisArray)
-      setError(null)
+      console.log(`✅ ${analisisArray.length} grupos de marca/modelo`);
+      setAnalisis(analisisArray);
+      setError(null);
     } catch (error: any) {
-      console.error('Error cargando análisis:', error)
-      setError(`Error: ${error.message || 'Error desconocido al cargar vehículos'}`)
-      setAnalisis([])
+      console.error("Error cargando análisis:", error);
+      setError(
+        `Error: ${error.message || "Error desconocido al cargar vehículos"}`
+      );
+      setAnalisis([]);
     }
-  }
+  };
 
   // Definir columnas para AdminTable
   const columns: AdminTableColumn<AnalisisMarcaModelo>[] = [
     {
-      key: 'marca',
-      title: 'Marca',
+      key: "marca",
+      title: "Marca",
       sortable: true,
       searchable: true,
       render: (item) => (
         <div className="flex items-center">
           <TruckIcon className="w-5 h-5 text-gray-400 mr-2" />
           <div>
-            <div className="text-sm font-medium text-gray-900">{item.marca}</div>
+            <div className="text-sm font-medium text-gray-900">
+              {item.marca}
+            </div>
             <div className="text-sm text-gray-500">{item.modelo}</div>
           </div>
         </div>
       ),
-      exportValue: (item) => `${item.marca} ${item.modelo}`
+      exportValue: (item) => `${item.marca} ${item.modelo}`,
     },
     {
-      key: 'cantidad',
-      title: 'Cantidad',
+      key: "cantidad",
+      title: "Cantidad",
       sortable: true,
       render: (item) => (
         <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
           {item.cantidad}
         </span>
-      )
+      ),
     },
     {
-      key: 'año_promedio',
-      title: 'Año Prom.',
+      key: "año_promedio",
+      title: "Año Prom.",
       sortable: true,
       render: (item) => (
-        <span className="text-sm text-gray-900">{formatNumber(item.año_promedio)}</span>
-      )
+        <span className="text-sm text-gray-900">
+          {formatNumber(item.año_promedio)}
+        </span>
+      ),
     },
     {
-      key: 'km_promedio',
-      title: 'Km Prom.',
+      key: "km_promedio",
+      title: "Km Prom.",
       sortable: true,
       render: (item) => (
-        <span className="text-sm text-gray-900">{formatNumber(item.km_promedio)} km</span>
-      )
+        <span className="text-sm text-gray-900">
+          {formatNumber(item.km_promedio)} km
+        </span>
+      ),
     },
     {
-      key: 'precio_compra_promedio',
-      title: 'Precio Compra',
+      key: "precio_compra_promedio",
+      title: "Precio Compra",
       sortable: true,
       render: (item) => (
-        <span className="text-sm text-gray-900">{formatCurrency(item.precio_compra_promedio)}</span>
-      )
+        <span className="text-sm text-gray-900">
+          {formatCurrency(item.precio_compra_promedio)}
+        </span>
+      ),
     },
     {
-      key: 'valor_actual_promedio',
-      title: 'Valor Actual',
+      key: "valor_actual_promedio",
+      title: "Valor Actual",
       sortable: true,
       render: (item) => (
-        <span className="text-sm font-medium text-green-600">{formatCurrency(item.valor_actual_promedio)}</span>
-      )
+        <span className="text-sm font-medium text-green-600">
+          {formatCurrency(item.valor_actual_promedio)}
+        </span>
+      ),
     },
     {
-      key: 'depreciacion_media',
-      title: 'Depreciación',
+      key: "depreciacion_media",
+      title: "Depreciación",
       sortable: true,
-      render: (item) => (
+      render: (item) =>
         item.depreciacion_media !== null ? (
-          <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-            item.depreciacion_media > 25
-              ? 'bg-red-100 text-red-800'  // Pérdida alta (>25%)
-              : item.depreciacion_media > 10
-              ? 'bg-orange-100 text-orange-800'  // Pérdida media (10-25%)
-              : item.depreciacion_media > 0
-              ? 'bg-yellow-100 text-yellow-800'  // Pérdida baja (0-10%)
-              : 'bg-gray-100 text-gray-600'  // Sin datos o 0%
-          }`}>
+          <span
+            className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+              item.depreciacion_media > 25
+                ? "bg-red-100 text-red-800" // Pérdida alta (>25%)
+                : item.depreciacion_media > 10
+                ? "bg-orange-100 text-orange-800" // Pérdida media (10-25%)
+                : item.depreciacion_media > 0
+                ? "bg-yellow-100 text-yellow-800" // Pérdida baja (0-10%)
+                : "bg-gray-100 text-gray-600" // Sin datos o 0%
+            }`}
+          >
             -{formatNumber(item.depreciacion_media)}%
           </span>
         ) : (
           <span className="text-gray-400">N/A</span>
-        )
-      )
+        ),
     },
     {
-      key: 'coste_mantenimiento_anual',
-      title: 'Mant./Año',
+      key: "coste_mantenimiento_anual",
+      title: "Mant./Año",
       sortable: true,
       render: (item) => (
-        <span className="text-sm text-gray-900">{formatCurrency(item.coste_mantenimiento_anual)}</span>
-      )
+        <span className="text-sm text-gray-900">
+          {formatCurrency(item.coste_mantenimiento_anual)}
+        </span>
+      ),
     },
     {
-      key: 'num_reportes_accidentes',
-      title: 'Accidentes',
+      key: "num_reportes_accidentes",
+      title: "Accidentes",
       sortable: true,
-      render: (item) => (
+      render: (item) =>
         item.num_reportes_accidentes > 0 ? (
           <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
             {item.num_reportes_accidentes}
           </span>
         ) : (
           <span className="text-gray-400">0</span>
-        )
-      )
-    }
-  ]
+        ),
+    },
+  ];
 
   const formatCurrency = (value: number | null) => {
-    if (value === null || value === undefined) return 'N/A'
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR',
-      maximumFractionDigits: 0
-    }).format(value)
-  }
+    if (value === null || value === undefined) return "N/A";
+    return new Intl.NumberFormat("es-ES", {
+      style: "currency",
+      currency: "EUR",
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
 
   const formatNumber = (value: number | null) => {
-    if (value === null || value === undefined) return 'N/A'
-    return new Intl.NumberFormat('es-ES', {
-      maximumFractionDigits: 1
-    }).format(value)
-  }
+    if (value === null || value === undefined) return "N/A";
+    return new Intl.NumberFormat("es-ES", {
+      maximumFractionDigits: 1,
+    }).format(value);
+  };
 
   if (loading) {
     return (
@@ -426,7 +481,7 @@ export default function AdminVehiculosPage() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -461,7 +516,9 @@ export default function AdminVehiculosPage() {
             <div className="flex items-start gap-3">
               <ExclamationTriangleIcon className="w-6 h-6 text-red-600 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold text-red-900 mb-1">Error al cargar datos</h3>
+                <h3 className="font-semibold text-red-900 mb-1">
+                  Error al cargar datos
+                </h3>
                 <p className="text-sm text-red-700">{error}</p>
               </div>
             </div>
@@ -489,7 +546,9 @@ export default function AdminVehiculosPage() {
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Valor Total Parque</p>
+                  <p className="text-sm text-gray-500 mb-1">
+                    Valor Total Parque
+                  </p>
                   <p className="text-2xl font-bold text-green-600">
                     {formatCurrency(metricas.valor_total_parque)}
                   </p>
@@ -543,5 +602,5 @@ export default function AdminVehiculosPage() {
         />
       </div>
     </div>
-  )
+  );
 }

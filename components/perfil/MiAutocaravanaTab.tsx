@@ -14,6 +14,7 @@ import {
   ExclamationTriangleIcon,
   ChartBarIcon,
   TagIcon,
+  CurrencyEuroIcon,
 } from "@heroicons/react/24/outline";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
@@ -783,6 +784,58 @@ export function MiAutocaravanaTab({ userId }: Props) {
                     </p>
                   </div>
                 </div>
+
+                {/* Datos Económicos - Nueva sección */}
+                {(vehiculo.precio_compra ||
+                  vehiculo.fecha_compra ||
+                  vehiculo.kilometros_compra) && (
+                  <div className="flex-shrink-0 w-full lg:w-64">
+                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border-2 border-blue-200">
+                      <h4 className="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                        <CurrencyEuroIcon className="w-4 h-4" />
+                        Datos de Compra
+                      </h4>
+                      <div className="space-y-2 text-sm">
+                        {vehiculo.precio_compra && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Precio:</span>
+                            <span className="font-bold text-blue-900">
+                              {new Intl.NumberFormat("es-ES", {
+                                style: "currency",
+                                currency: "EUR",
+                                maximumFractionDigits: 0,
+                              }).format(vehiculo.precio_compra)}
+                            </span>
+                          </div>
+                        )}
+                        {vehiculo.fecha_compra && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Fecha:</span>
+                            <span className="font-medium text-gray-900">
+                              {new Date(
+                                vehiculo.fecha_compra
+                              ).toLocaleDateString("es-ES", {
+                                month: "short",
+                                year: "numeric",
+                              })}
+                            </span>
+                          </div>
+                        )}
+                        {vehiculo.kilometros_compra && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Km compra:</span>
+                            <span className="font-medium text-gray-900">
+                              {new Intl.NumberFormat("es-ES").format(
+                                vehiculo.kilometros_compra
+                              )}{" "}
+                              km
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* QR Code */}
                 {vehiculo.qr_image_url && (
