@@ -79,7 +79,7 @@ export default function InformeValoracionIA({
       (a, b) => new Date(b.fecha_valoracion).getTime() - new Date(a.fecha_valoracion).getTime()
     )
     const valoracionMasReciente = valoracionesOrdenadas[0]
-    
+
     if (valoracionId === valoracionMasReciente?.id) {
       // Es la valoración actual, mostrar mensaje informativo
       alert(
@@ -93,7 +93,7 @@ export default function InformeValoracionIA({
 
     try {
       setEliminando(valoracionId)
-      
+
       const response = await fetch(
         `/api/vehiculos/${informe.vehiculo_id}/ia-valoracion?valoracion_id=${valoracionId}`,
         {
