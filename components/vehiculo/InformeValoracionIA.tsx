@@ -382,14 +382,20 @@ export default function InformeValoracionIA({
         {seccionActiva === 'datos' && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Métrica: Depreciación */}
+              {/* Métrica: Variación de Valor (Revalorización o Depreciación) */}
               {informe.depreciacion_aplicada !== null ? (
-                <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-4 border border-red-200">
+                <div className={`bg-gradient-to-br rounded-lg p-4 border-2 ${
+                  informe.depreciacion_aplicada >= 0 
+                    ? 'from-green-50 to-emerald-50 border-green-300' 
+                    : 'from-red-50 to-orange-50 border-red-300'
+                }`}>
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                    📉 Depreciación Total
+                    {informe.depreciacion_aplicada >= 0 ? '📈 Revalorización' : '📉 Depreciación'}
                   </h4>
-                  <p className="text-3xl font-bold text-red-600">
-                    {informe.depreciacion_aplicada.toFixed(1)}%
+                  <p className={`text-3xl font-bold ${
+                    informe.depreciacion_aplicada >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {informe.depreciacion_aplicada >= 0 ? '+' : ''}{informe.depreciacion_aplicada.toFixed(1)}%
                   </p>
                   <p className="text-xs text-gray-600 mt-1">
                     Desde precio de compra hasta valor actual
@@ -398,7 +404,7 @@ export default function InformeValoracionIA({
               ) : (
                 <div className="bg-gradient-to-br from-gray-50 to-slate-50 rounded-lg p-4 border border-gray-200">
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                    📉 Depreciación
+                    📊 Variación de Valor
                   </h4>
                   <p className="text-lg font-semibold text-gray-400">
                     No disponible
@@ -565,8 +571,11 @@ export default function InformeValoracionIA({
                             <div className="mt-3 text-xs text-gray-600">
                               📊 {val.num_comparables} comparables • 
                               {val.precio_base_mercado && ` Mercado: ${formatearPrecio(val.precio_base_mercado)}`}
-                              {val.depreciacion_aplicada !== null && val.depreciacion_aplicada > 0 && 
-                                ` • Depreciación: ${val.depreciacion_aplicada.toFixed(1)}%`}
+                              {val.depreciacion_aplicada !== null && (
+                                <span className={val.depreciacion_aplicada >= 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>
+                                  {` • ${val.depreciacion_aplicada >= 0 ? 'Revalorización' : 'Depreciación'}: ${val.depreciacion_aplicada >= 0 ? '+' : ''}${val.depreciacion_aplicada.toFixed(1)}%`}
+                                </span>
+                              )}
                             </div>
                           )}
                         </div>

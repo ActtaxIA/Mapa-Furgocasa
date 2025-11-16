@@ -354,18 +354,18 @@ export async function POST(
       ? comparables.reduce((sum, c) => sum + (c.precio || 0), 0) / comparables.filter(c => c.precio).length
       : null
 
-    // Calcular depreciación aplicada (desde precio de compra del usuario hasta precio objetivo IA)
+    // Calcular variación de valor (positivo = revalorización, negativo = depreciación)
     const precioCompraUsuario = valoracion?.precio_compra
-    const depreciacionAplicada = precioCompraUsuario && precioObjetivo
-      ? ((precioCompraUsuario - precioObjetivo) / precioCompraUsuario) * 100
+    const variacionValor = precioCompraUsuario && precioObjetivo
+      ? ((precioObjetivo - precioCompraUsuario) / precioCompraUsuario) * 100
       : null
 
     console.log(`\n📊 Cálculos finales:`)
     console.log(`   💰 Precio base mercado: ${precioBaseMercado ? precioBaseMercado.toFixed(0) + '€' : 'N/A'}`)
     console.log(`   💵 Precio compra usuario: ${precioCompraUsuario ? precioCompraUsuario.toFixed(0) + '€' : 'No especificado'}`)
     console.log(`   🎯 Precio objetivo IA: ${precioObjetivo}€`)
-    console.log(`   📉 Depreciación aplicada: ${depreciacionAplicada !== null ? depreciacionAplicada.toFixed(1) + '%' : 'N/A (no hay precio de compra)'}`)
-    console.log(`   🔍 Cálculo depreciación: (${precioCompraUsuario} - ${precioObjetivo}) / ${precioCompraUsuario} * 100 = ${depreciacionAplicada}`)
+    console.log(`   ${variacionValor !== null && variacionValor >= 0 ? '📈' : '📉'} Variación valor: ${variacionValor !== null ? (variacionValor >= 0 ? '+' : '') + variacionValor.toFixed(1) + '%' : 'N/A (no hay precio de compra)'}`)
+    console.log(`   🔍 Cálculo: (${precioObjetivo} - ${precioCompraUsuario}) / ${precioCompraUsuario} * 100 = ${variacionValor}`)
 
     const { data: informeGuardado, error: errorGuardar } = await supabase
       .from('valoracion_ia_informes')
@@ -382,7 +382,7 @@ export async function POST(
         num_comparables: comparables.length,
         nivel_confianza: comparables.length >= 5 ? 'Alta' : comparables.length >= 3 ? 'Media' : comparables.length >= 1 ? 'Baja' : 'Estimativa',
         precio_base_mercado: precioBaseMercado,
-        depreciacion_aplicada: depreciacionAplicada
+        depreciacion_aplicada: variacionValor
       })
       .select()
       .single()
