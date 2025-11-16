@@ -371,7 +371,7 @@ export default function AdminAnalyticsPage() {
       ]
 
       // Usuarios con más rutas
-      const rutasPorUsuario = rutas?.reduce((acc: any, r) => {
+      const rutasPorUsuario = rutas?.reduce((acc: any, r: any) => {
         if (r.user_id) acc[r.user_id] = (acc[r.user_id] || 0) + 1
         return acc
       }, {}) || {}
