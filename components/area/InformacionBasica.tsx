@@ -15,7 +15,7 @@ export function InformacionBasica({ area }: Props) {
           {area.descripcion
             .split(/\r?\n\r?\n/)
             .filter((p: any) => p.trim().length > 0)
-            .map((parrafo, index) => (
+            .map((parrafo: any, index: any) => (
               <p key={index} className="text-justify">{parrafo.trim()}</p>
             ))}
         </div>

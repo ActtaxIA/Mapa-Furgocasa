@@ -66,7 +66,7 @@ export async function buscarComparables(
   )
   
   // Ordenar por relevancia
-  const sorted = uniqueComparables.sort((a, b) => b.relevancia - a.relevancia)
+  const sorted = uniqueComparables.sort((a: any, b: any) => b.relevancia - a.relevancia)
   
   console.log(`✅ Encontrados ${sorted.length} comparables únicos`)
   

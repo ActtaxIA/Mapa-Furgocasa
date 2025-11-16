@@ -309,7 +309,7 @@ export default function InformeValoracionIA({
                   </div>
                 </div>
 
-                {informe.comparables_json.map((comp, index) => (
+                {informe.comparables_json.map((comp: any, index: any) => (
                   <div
                     key={index}
                     className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
@@ -519,7 +519,7 @@ export default function InformeValoracionIA({
                   {/* Línea vertical */}
                   <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 via-cyan-500 to-blue-300"></div>
 
-                  {todasLasValoraciones.map((val, index) => {
+                  {todasLasValoraciones.map((val: any, index: any) => {
                     const esMasReciente = val.id === informe.id
                     return (
                       <div key={val.id} className="relative pl-20 pb-8">

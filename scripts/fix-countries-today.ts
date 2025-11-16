@@ -306,7 +306,7 @@ async function fixCountriesToday() {
 
   console.log("📋 CAMBIOS POR PAÍS:");
   Object.entries(changesByCountry)
-    .sort((a, b) => b[1] - a[1])
+    .sort((a: any, b: any) => b[1] - a[1])
     .forEach(([change, count]) => {
       console.log(`   ${change}: ${count} área${count > 1 ? "s" : ""}`);
     });
@@ -315,7 +315,7 @@ async function fixCountriesToday() {
   // 5. Mostrar detalle de las áreas a cambiar
   if (changes.length <= 20) {
     console.log("📝 DETALLE DE ÁREAS A CORREGIR:");
-    changes.forEach((change, index) => {
+    changes.forEach((change: any, index: any) => {
       console.log(`\n${index + 1}. ${change.area.nombre}`);
       console.log(`   País:      ${change.oldCountry} → ${change.newCountry}`);
       if (change.newProvince)

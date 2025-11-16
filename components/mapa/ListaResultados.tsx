@@ -87,19 +87,19 @@ export function ListaResultados({ areas, onAreaClick, onClose, userLocation, gps
 
     switch (sortBy) {
       case 'nombre':
-        return areasCopy.sort((a, b) => {
+        return areasCopy.sort((a: any, b: any) => {
           const nombreA = (a.nombre || '').toLowerCase()
           const nombreB = (b.nombre || '').toLowerCase()
           return nombreA.localeCompare(nombreB) * direction
         })
       
       case 'valoracion':
-        return areasCopy.sort((a, b) => {
+        return areasCopy.sort((a: any, b: any) => {
           return ((b.google_rating || 0) - (a.google_rating || 0)) * direction
         })
       
       case 'precio':
-        return areasCopy.sort((a, b) => {
+        return areasCopy.sort((a: any, b: any) => {
           const precioA = a.precio_noche === null ? 0 : a.precio_noche
           const precioB = b.precio_noche === null ? 0 : b.precio_noche
           return (precioA - precioB) * direction
@@ -107,7 +107,7 @@ export function ListaResultados({ areas, onAreaClick, onClose, userLocation, gps
       
       case 'proximidad':
         if (!userLocation) return areasCopy
-        return areasCopy.sort((a, b) => {
+        return areasCopy.sort((a: any, b: any) => {
           if (!a.latitud || !a.longitud) return 1
           if (!b.latitud || !b.longitud) return -1
           const distA = calcularDistancia(userLocation.lat, userLocation.lng, Number(a.latitud), Number(a.longitud))
@@ -285,7 +285,7 @@ export function ListaResultados({ areas, onAreaClick, onClose, userLocation, gps
                     {/* Servicios */}
                     {serviciosDisponibles.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-1">
-                        {serviciosDisponibles.slice(0, 4).map((servicio, idx) => (
+                        {serviciosDisponibles.slice(0, 4).map((servicio: any, idx: any) => (
                           <div
                             key={idx}
                             className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded text-xs"

@@ -144,7 +144,7 @@ function selectBanner(
         const shouldRandomize = (hash % 100) < 30
 
         if (shouldRandomize) {
-          const totalWeight = finalBanners.reduce((sum, b) => sum + (b.weight || 1), 0)
+          const totalWeight = finalBanners.reduce((sum: any, b: any) => sum + (b.weight || 1), 0)
           let random = (hash % 1000) / 1000 * totalWeight
 
           for (const banner of finalBanners) {

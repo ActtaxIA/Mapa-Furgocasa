@@ -66,8 +66,8 @@ export function generateGPX(rutaData: GPXRouteData): string {
   // Añadir paradas intermedias
   if (rutaData.paradas && rutaData.paradas.length > 0) {
     rutaData.paradas
-      .sort((a, b) => a.orden - b.orden)
-      .forEach((parada, index) => {
+      .sort((a: any, b: any) => a.orden - b.orden)
+      .forEach((parada: any, index: any) => {
         waypoints.push({
           lat: parada.latitud,
           lng: parada.longitud,

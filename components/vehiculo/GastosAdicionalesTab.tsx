@@ -192,7 +192,7 @@ export default function GastosAdicionalesTab({ vehiculoId }: Props) {
   }
 
   const calcularTotalGastos = () => {
-    return gastos.reduce((total, gasto) => total + gasto.importe, 0)
+    return gastos.reduce((total: any, gasto: any) => total + gasto.importe, 0)
   }
 
   if (cargando) {

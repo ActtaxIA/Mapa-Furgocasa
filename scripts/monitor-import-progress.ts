@@ -109,7 +109,7 @@ async function getAreaStats(): Promise<{
 
   return {
     total: total || 0,
-    porPais: porPais.sort((a, b) => b.total - a.total),
+    porPais: porPais.sort((a: any, b: any) => b.total - a.total),
     ultimasAreas: ultimasAreas || [],
   };
 }
@@ -197,7 +197,7 @@ async function monitorProgress() {
       if (stats.ultimasAreas.length > 0) {
         console.log("\n🆕 ÚLTIMAS 10 ÁREAS IMPORTADAS:\n");
 
-        stats.ultimasAreas.forEach((area, index) => {
+        stats.ultimasAreas.forEach((area: any, index: any) => {
           const fecha = new Date(area.created_at);
           const hace = Math.floor((Date.now() - fecha.getTime()) / 1000);
           let tiempoStr = "";

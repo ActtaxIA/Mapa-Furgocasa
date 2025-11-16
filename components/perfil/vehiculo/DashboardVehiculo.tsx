@@ -130,7 +130,7 @@ export function DashboardVehiculo({ vehiculo, onTabChange }: Props) {
                 {proximasAlertas.length} {proximasAlertas.length === 1 ? 'alerta próxima' : 'alertas próximas'}
               </h3>
               <div className="mt-2 text-sm text-yellow-700 space-y-1">
-                {proximasAlertas.slice(0, 3).map((alerta, idx) => (
+                {proximasAlertas.slice(0, 3).map((alerta: any, idx: any) => (
                   <p key={idx}>
                     • {alerta.tipo_alerta === 'mantenimiento' ? `Mantenimiento: ${alerta.tipo}` : `Documento: ${alerta.nombre}`}
                     {' '}- {new Date(alerta.proximo_mantenimiento || alerta.fecha_caducidad).toLocaleDateString('es-ES')}

@@ -191,9 +191,9 @@ export default function KilometrajeTab({ vehiculoId }: Props) {
     return {
       kilometrajeActual: ultimoRegistro.kilometraje,
       consumoMedio: consumosMedios.length > 0
-        ? consumosMedios.reduce((a, b) => a + b, 0) / consumosMedios.length
+        ? consumosMedios.reduce((a: any, b: any) => a + b, 0) / consumosMedios.length
         : null,
-      gastoTotalCombustible: costes.reduce((a, b) => a + b, 0)
+      gastoTotalCombustible: costes.reduce((a: any, b: any) => a + b, 0)
     }
   }
 

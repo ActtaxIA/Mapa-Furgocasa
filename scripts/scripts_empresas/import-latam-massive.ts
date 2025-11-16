@@ -809,7 +809,7 @@ async function importLATAMMassive() {
   }
 
   // Ordenar por prioridad
-  paisesAProcesar.sort((a, b) => a.prioridad - b.prioridad);
+  paisesAProcesar.sort((a: any, b: any) => a.prioridad - b.prioridad);
 
   const statsGlobal: ImportStats[] = [];
   let totalBusquedas = 0;
@@ -995,7 +995,7 @@ async function importLATAMMassive() {
     );
   }
 
-  const costoTotal = statsGlobal.reduce((sum, s) => sum + s.costoEstimado, 0);
+  const costoTotal = statsGlobal.reduce((sum: any, s: any) => sum + s.costoEstimado, 0);
   console.log(`\n💰 Costo total estimado:     $${costoTotal.toFixed(2)} USD\n`);
 
   // Tabla por país

@@ -119,7 +119,7 @@ export function ValoracionesTab({ userId }: Props) {
     )
   }
 
-  const promedioRating = valoraciones.reduce((sum, v) => sum + v.rating, 0) / valoraciones.length
+  const promedioRating = valoraciones.reduce((sum: any, v: any) => sum + v.rating, 0) / valoraciones.length
 
   return (
     <div className="space-y-6">

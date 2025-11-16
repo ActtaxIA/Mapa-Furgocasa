@@ -16,7 +16,7 @@ export function Valoraciones({ areaId, valoraciones }: Props) {
   // Calcular estadísticas
   const totalValoraciones = valoraciones.length
   const ratingPromedio = totalValoraciones > 0
-    ? (valoraciones.reduce((sum, v) => sum + v.rating, 0) / totalValoraciones).toFixed(1)
+    ? (valoraciones.reduce((sum: any, v: any) => sum + v.rating, 0) / totalValoraciones).toFixed(1)
     : '0.0'
 
   // Contar ratings por estrella
@@ -52,7 +52,7 @@ export function Valoraciones({ areaId, valoraciones }: Props) {
 
         {/* Distribución de estrellas */}
         <div className="flex-1 space-y-2">
-          {[5, 4, 3, 2, 1].map((stars, index) => (
+          {[5, 4, 3, 2, 1].map((stars: any, index: any) => (
             <div key={stars} className="flex items-center gap-2">
               <span className="text-sm text-gray-600 w-8">{stars}★</span>
               <div className="flex-1 bg-gray-200 rounded-full h-2">
@@ -152,7 +152,7 @@ export function Valoraciones({ areaId, valoraciones }: Props) {
               {/* Fotos de la valoración */}
               {valoracion.fotos && valoracion.fotos.length > 0 && (
                 <div className="mt-3 flex gap-2 overflow-x-auto">
-                  {valoracion.fotos.map((foto, index) => (
+                  {valoracion.fotos.map((foto: any, index: any) => (
                     <div
                       key={index}
                       className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100"

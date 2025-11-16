@@ -55,7 +55,7 @@ export function GaleriaFotos({ fotos, nombre }: Props) {
 
         {/* Grid de fotos */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-          {fotos.map((foto, index) => (
+          {fotos.map((foto: any, index: any) => (
             <button
               key={index}
               onClick={() => openLightbox(index)}
@@ -130,7 +130,7 @@ export function GaleriaFotos({ fotos, nombre }: Props) {
           {fotos.length > 1 && (
             <div className="hidden md:block absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 safe-bottom">
               <div className="flex gap-2 bg-black/50 backdrop-blur-sm rounded-lg p-2 max-w-screen overflow-x-auto">
-                {fotos.map((foto, index) => (
+                {fotos.map((foto: any, index: any) => (
                   <button
                     key={index}
                     onClick={() => setSelectedIndex(index)}

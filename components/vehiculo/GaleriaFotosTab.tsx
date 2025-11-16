@@ -263,7 +263,7 @@ export function GaleriaFotosTab({ vehiculoId, fotoUrl, fotosAdicionales }: Props
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {fotos.map((foto, index) => {
+          {fotos.map((foto: any, index: any) => {
             const esFotoPrincipal = index === 0 && foto === fotoUrl
             return (
               <div

@@ -68,7 +68,7 @@ export function AdminTable<T extends Record<string, any>>({
   const sortedData = useMemo(() => {
     if (!sortColumn) return filteredData
 
-    const sorted = [...filteredData].sort((a, b) => {
+    const sorted = [...filteredData].sort((a: any, b: any) => {
       const aValue = a[sortColumn]
       const bValue = b[sortColumn]
 
@@ -180,7 +180,7 @@ export function AdminTable<T extends Record<string, any>>({
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos')
 
     // Ajustar ancho de columnas automáticamente
-    const colWidths = headers.map((_, colIndex) => {
+    const colWidths = headers.map((_: any, colIndex: any) => {
       const maxLength = Math.max(
         headers[colIndex].length,
         ...rows.map((row: any) => String(row[colIndex] ?? '').length)
@@ -277,7 +277,7 @@ export function AdminTable<T extends Record<string, any>>({
                 </td>
               </tr>
             ) : (
-              paginatedData.map((item, index) => (
+              paginatedData.map((item: any, index: any) => (
                 <tr key={index} className="hover:bg-gray-50">
                   {columns.map((column: any) => (
                     <td key={column.key} className="px-6 py-4 whitespace-nowrap">

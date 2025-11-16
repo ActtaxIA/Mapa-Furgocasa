@@ -1119,7 +1119,7 @@ export function MisReportesTab({ userId, onReporteUpdate }: Props) {
                         </span>
                       </h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {reporte.fotos_urls.map((url, index) => (
+                        {reporte.fotos_urls.map((url: any, index: any) => (
                           <a
                             key={index}
                             href={url}

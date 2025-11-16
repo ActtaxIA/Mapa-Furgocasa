@@ -1011,7 +1011,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
   }
 
   const eliminarPuntoIntermedio = (index: number) => {
-    const nuevosWaypoints = waypoints.filter((_, i) => i !== index)
+    const nuevosWaypoints = waypoints.filter((_: any, i: any) => i !== index)
     setWaypoints(nuevosWaypoints)
   }
 
@@ -1639,7 +1639,7 @@ export default function PlanificadorRuta({ vistaMovil = 'ruta', onRutaCalculada 
                 onDragEnd={handleDragEnd}
               >
                 <SortableContext
-                  items={waypoints.map((wp, i) => wp.id || `waypoint-${i}`)}
+                  items={waypoints.map((wp: any, i: any) => wp.id || `waypoint-${i}`)}
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="space-y-2 max-h-48 overflow-y-auto">

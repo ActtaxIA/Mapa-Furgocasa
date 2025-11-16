@@ -149,7 +149,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
   // Calcular estadísticas
   const totalValoraciones = valoraciones.length
   const ratingPromedio = totalValoraciones > 0
-    ? (valoraciones.reduce((sum, v) => sum + v.rating, 0) / totalValoraciones).toFixed(1)
+    ? (valoraciones.reduce((sum: any, v: any) => sum + v.rating, 0) / totalValoraciones).toFixed(1)
     : '0.0'
 
   const ratingCounts = [5, 4, 3, 2, 1].map((stars: any) => 
@@ -190,7 +190,7 @@ export function ValoracionesCompleto({ areaId, areaNombre, valoraciones: initial
           </div>
 
           <div className="flex-1 space-y-2">
-            {[5, 4, 3, 2, 1].map((stars, index) => (
+            {[5, 4, 3, 2, 1].map((stars: any, index: any) => (
               <div key={stars} className="flex items-center gap-2">
                 <span className="text-sm text-gray-600 w-8">{stars}★</span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2">

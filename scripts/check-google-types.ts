@@ -37,7 +37,7 @@ async function checkGoogleTypes() {
     .limit(5)
 
   console.log('📝 Muestra de 5 áreas:')
-  muestra?.forEach((area, i) => {
+  muestra?.forEach((area: any, i: number) => {
     console.log(`\n${i + 1}. ${area.nombre}`)
     console.log(`   Place ID: ${area.google_place_id || 'NULL'}`)
     console.log(`   Types: ${area.google_types ? JSON.stringify(area.google_types) : 'NULL'}`)

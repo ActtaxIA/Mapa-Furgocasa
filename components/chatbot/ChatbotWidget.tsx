@@ -60,7 +60,7 @@ export default function ChatbotWidget() {
     
     return (
       <span className="whitespace-pre-wrap">
-        {parts.map((part, index) => {
+        {parts.map((part: any, index: any) => {
           const match = part.match(/Ver en Google Maps:\s*(https:\/\/(?:www\.)?google\.com\/maps[^\s)]+)/i);
           
           if (match) {
@@ -326,7 +326,7 @@ export default function ChatbotWidget() {
           
           {/* Mensajes */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-            {messages.map((msg, i) => (
+            {messages.map((msg: any, i: any) => (
               <div key={i} className={`flex ${msg.rol === 'user' ? 'justify-end' : 'justify-start gap-2'}`}>
                 {/* Avatar del Tío Viajero para mensajes del asistente */}
                 {msg.rol === 'assistant' && (

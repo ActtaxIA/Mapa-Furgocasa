@@ -248,7 +248,7 @@ async function fixCountries() {
 
   console.log('📋 CAMBIOS POR PAÍS:')
   Object.entries(changesByCountry)
-    .sort((a, b) => b[1] - a[1])
+    .sort((a: any, b: any) => b[1] - a[1])
     .forEach(([change, count]) => {
       console.log(`   ${change}: ${count} áreas`)
     })

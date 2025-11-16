@@ -195,7 +195,7 @@ async function updateGoogleTypes() {
     // Mostrar muestra de 10 áreas
     console.log('📝 Muestra de áreas a actualizar (primeras 10):')
     console.log('-' .repeat(70))
-    areasToUpdate.slice(0, 10).forEach((area, i) => {
+    areasToUpdate.slice(0, 10).forEach((area: any, i: any) => {
       console.log(`${i + 1}. ${area.nombre}`)
       console.log(`   Place ID: ${area.google_place_id}`)
       console.log()
@@ -299,7 +299,7 @@ async function updateGoogleTypes() {
   if (errors.length > 0) {
     console.log('❌ Errores encontrados:')
     console.log('-' .repeat(70))
-    errors.slice(0, 20).forEach((err, i) => {
+    errors.slice(0, 20).forEach((err: any, i: any) => {
       console.log(`${i + 1}. ${err.area.nombre}`)
       console.log(`   Error: ${err.error}`)
       console.log()
