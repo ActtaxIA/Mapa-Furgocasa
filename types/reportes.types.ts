@@ -23,6 +23,17 @@ export interface VehiculoRegistrado {
   precio_compra?: number;
   fecha_compra?: string;
   kilometros_compra?: number;
+  valor_estimado_actual?: number;
+  inversion_total?: number;
+  financiado?: boolean;
+  pendiente_pago?: number;
+  en_venta?: boolean;
+  precio_venta_deseado?: number;
+  precio_venta_final?: number;
+  fecha_venta?: string;
+  // Kilometraje actual
+  kilometros_actual?: number;
+  fecha_ultimo_km?: string;
   created_at: string;
   updated_at: string;
 }

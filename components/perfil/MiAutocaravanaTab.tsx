@@ -785,55 +785,187 @@ export function MiAutocaravanaTab({ userId }: Props) {
                   </div>
                 </div>
 
-                {/* Datos Económicos - Nueva sección */}
+                {/* Datos Económicos - Sección Mejorada */}
                 {(vehiculo.precio_compra ||
                   vehiculo.fecha_compra ||
-                  vehiculo.kilometros_compra) && (
-                  <div className="flex-shrink-0 w-full lg:w-64">
-                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border-2 border-blue-200">
-                      <h4 className="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
-                        <CurrencyEuroIcon className="w-4 h-4" />
-                        Datos de Compra
-                      </h4>
-                      <div className="space-y-2 text-sm">
-                        {vehiculo.precio_compra && (
+                  vehiculo.kilometros_compra ||
+                  vehiculo.valor_estimado_actual ||
+                  vehiculo.inversion_total ||
+                  vehiculo.kilometros_actual) && (
+                  <div className="flex-shrink-0 w-full lg:w-80 space-y-3">
+                    {/* Datos de Compra */}
+                    {(vehiculo.precio_compra ||
+                      vehiculo.fecha_compra ||
+                      vehiculo.kilometros_compra) && (
+                      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border-2 border-blue-200">
+                        <h4 className="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                          <CurrencyEuroIcon className="w-4 h-4" />
+                          Datos de Compra
+                        </h4>
+                        <div className="space-y-2 text-sm">
+                          {vehiculo.precio_compra && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">Precio:</span>
+                              <span className="font-bold text-blue-900">
+                                {new Intl.NumberFormat("es-ES", {
+                                  style: "currency",
+                                  currency: "EUR",
+                                  maximumFractionDigits: 0,
+                                }).format(vehiculo.precio_compra)}
+                              </span>
+                            </div>
+                          )}
+                          {vehiculo.fecha_compra && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">Fecha:</span>
+                              <span className="font-medium text-gray-900">
+                                {new Date(
+                                  vehiculo.fecha_compra
+                                ).toLocaleDateString("es-ES", {
+                                  month: "short",
+                                  year: "numeric",
+                                })}
+                              </span>
+                            </div>
+                          )}
+                          {vehiculo.kilometros_compra && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">Km compra:</span>
+                              <span className="font-medium text-gray-900">
+                                {new Intl.NumberFormat("es-ES").format(
+                                  vehiculo.kilometros_compra
+                                )}{" "}
+                                km
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Kilometraje Actual */}
+                    {vehiculo.kilometros_actual && (
+                      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border-2 border-purple-200">
+                        <h4 className="text-sm font-semibold text-purple-900 mb-3 flex items-center gap-2">
+                          <TruckIcon className="w-4 h-4" />
+                          Kilometraje Actual
+                        </h4>
+                        <div className="space-y-2 text-sm">
                           <div className="flex justify-between items-center">
-                            <span className="text-gray-600">Precio:</span>
-                            <span className="font-bold text-blue-900">
-                              {new Intl.NumberFormat("es-ES", {
-                                style: "currency",
-                                currency: "EUR",
-                                maximumFractionDigits: 0,
-                              }).format(vehiculo.precio_compra)}
-                            </span>
-                          </div>
-                        )}
-                        {vehiculo.fecha_compra && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">Fecha:</span>
-                            <span className="font-medium text-gray-900">
-                              {new Date(
-                                vehiculo.fecha_compra
-                              ).toLocaleDateString("es-ES", {
-                                month: "short",
-                                year: "numeric",
-                              })}
-                            </span>
-                          </div>
-                        )}
-                        {vehiculo.kilometros_compra && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">Km compra:</span>
-                            <span className="font-medium text-gray-900">
+                            <span className="text-gray-600">Km actuales:</span>
+                            <span className="font-bold text-purple-900 text-lg">
                               {new Intl.NumberFormat("es-ES").format(
-                                vehiculo.kilometros_compra
+                                vehiculo.kilometros_actual
                               )}{" "}
                               km
                             </span>
                           </div>
-                        )}
+                          {vehiculo.kilometros_compra && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">Recorridos:</span>
+                              <span className="font-medium text-gray-900">
+                                {new Intl.NumberFormat("es-ES").format(
+                                  vehiculo.kilometros_actual - vehiculo.kilometros_compra
+                                )}{" "}
+                                km
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    )}
+
+                    {/* Valoración Económica */}
+                    {(vehiculo.valor_estimado_actual || vehiculo.inversion_total) && (
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-200">
+                        <h4 className="text-sm font-semibold text-green-900 mb-3 flex items-center gap-2">
+                          <CurrencyEuroIcon className="w-4 h-4" />
+                          Valoración
+                        </h4>
+                        <div className="space-y-2 text-sm">
+                          {vehiculo.valor_estimado_actual && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">Valor actual:</span>
+                              <span className="font-bold text-green-900">
+                                {new Intl.NumberFormat("es-ES", {
+                                  style: "currency",
+                                  currency: "EUR",
+                                  maximumFractionDigits: 0,
+                                }).format(vehiculo.valor_estimado_actual)}
+                              </span>
+                            </div>
+                          )}
+                          {vehiculo.inversion_total && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">Inversión total:</span>
+                              <span className="font-medium text-gray-900">
+                                {new Intl.NumberFormat("es-ES", {
+                                  style: "currency",
+                                  currency: "EUR",
+                                  maximumFractionDigits: 0,
+                                }).format(vehiculo.inversion_total)}
+                              </span>
+                            </div>
+                          )}
+                          {vehiculo.precio_compra && vehiculo.valor_estimado_actual && (
+                            <div className="flex justify-between items-center pt-2 border-t border-green-300">
+                              <span className="text-gray-600">Depreciación:</span>
+                              <span className={`font-bold ${
+                                vehiculo.valor_estimado_actual < vehiculo.precio_compra
+                                  ? 'text-red-600'
+                                  : 'text-green-600'
+                              }`}>
+                                {((vehiculo.valor_estimado_actual - vehiculo.precio_compra) / vehiculo.precio_compra * 100).toFixed(1)}%
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Financiación */}
+                    {vehiculo.financiado && vehiculo.pendiente_pago && vehiculo.pendiente_pago > 0 && (
+                      <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg p-4 border-2 border-orange-200">
+                        <h4 className="text-sm font-semibold text-orange-900 mb-3 flex items-center gap-2">
+                          <CurrencyEuroIcon className="w-4 h-4" />
+                          Financiación
+                        </h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Pendiente:</span>
+                            <span className="font-bold text-orange-900">
+                              {new Intl.NumberFormat("es-ES", {
+                                style: "currency",
+                                currency: "EUR",
+                                maximumFractionDigits: 0,
+                              }).format(vehiculo.pendiente_pago)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Estado de Venta */}
+                    {vehiculo.en_venta && vehiculo.precio_venta_deseado && (
+                      <div className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-lg p-4 border-2 border-yellow-300">
+                        <h4 className="text-sm font-semibold text-yellow-900 mb-3 flex items-center gap-2">
+                          <TagIcon className="w-4 h-4" />
+                          En Venta
+                        </h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Precio venta:</span>
+                            <span className="font-bold text-yellow-900">
+                              {new Intl.NumberFormat("es-ES", {
+                                style: "currency",
+                                currency: "EUR",
+                                maximumFractionDigits: 0,
+                              }).format(vehiculo.precio_venta_deseado)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
