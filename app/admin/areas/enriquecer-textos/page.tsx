@@ -531,7 +531,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
 
     for (let i = 0; i < selectedIds.length; i++) {
       const areaId = selectedIds[i]
-      const area = areas.find(a => a.id === areaId)
+      const area = areas.find((a: any) => a.id === areaId)
       
       if (!area) continue
 
@@ -770,7 +770,7 @@ INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
                     <p className="text-purple-100 text-sm">Generando descripciones detalladas...</p>
                   </div>
                   <div className="text-2xl font-bold">
-                    {Math.round((selectedIds.findIndex(id => areas.find(a => a.id === id && !processLog.find(log => log.includes(a.nombre)))) / selectedIds.length) * 100)}%
+                    {Math.round((selectedIds.findIndex(id => areas.find((a: any) => a.id === id && !processLog.find((log: any) => log.includes(a.nombre)))) / selectedIds.length) * 100)}%
                   </div>
                 </div>
               </div>

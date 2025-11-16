@@ -73,7 +73,7 @@ const getPrimaryGoogleType = (types: string[] | null): string => {
   
   // Priorizar tipos relevantes
   const priority = ['rv_park', 'campground', 'parking', 'lodging', 'gas_station']
-  const primaryType = types.find(t => priority.includes(t)) || types[0]
+  const primaryType = types.find((t: any) => priority.includes(t)) || types[0]
   
   return formatGoogleType(primaryType)
 }

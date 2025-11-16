@@ -607,7 +607,7 @@ export default function AdminAnalyticsPage() {
 
       const areasMasVisitadas = Object.entries(areasPorVisitas)
         .map(([areaId, count]: [string, any]) => {
-          const area = areas?.find(a => a.id === areaId)
+          const area = areas?.find((a: any) => a.id === areaId)
           return { area, visitas: count as number }
         })
         .filter((item: any) => item.area)
@@ -627,7 +627,7 @@ export default function AdminAnalyticsPage() {
 
       const areasMasValoradas = Object.entries(areasPorValoraciones)
         .map(([areaId, data]: [string, any]) => {
-          const area = areas?.find(a => a.id === areaId)
+          const area = areas?.find((a: any) => a.id === areaId)
           return {
             area,
             valoraciones: data.count,
@@ -647,7 +647,7 @@ export default function AdminAnalyticsPage() {
 
       const areasEnMasFavoritos = Object.entries(areasPorFavoritos)
         .map(([areaId, count]: [string, any]) => {
-          const area = areas?.find(a => a.id === areaId)
+          const area = areas?.find((a: any) => a.id === areaId)
           return { area, favoritos: count as number }
         })
         .filter((item: any) => item.area)
@@ -809,7 +809,7 @@ export default function AdminAnalyticsPage() {
         .filter((v: any) => v.precio_compra && v.precio_compra > 0)
         .map((v: any) => {
           // Intentar buscar en vehiculos_registrados
-          let vehiculo = vehiculos.find(vh => vh.id === v.vehiculo_id)
+          let vehiculo = vehiculos.find((vh: any) => vh.id === v.vehiculo_id)
 
           // Si no existe, crear objeto sintético
           if (!vehiculo && v.vehiculo_id) {
@@ -841,7 +841,7 @@ export default function AdminAnalyticsPage() {
 
       // Crear lista de vehículos valorados con su info completa
       const vehiculosValoradosConInfo = valoracionesIA.map((via: any) => {
-        const vehiculo = vehiculos.find(v => v.id === via.vehiculo_id)
+        const vehiculo = vehiculos.find((v: any) => v.id === via.vehiculo_id)
         return {
           ...via,
           marca: vehiculo?.marca || 'N/A',
@@ -927,7 +927,7 @@ export default function AdminAnalyticsPage() {
       // Ganancia proyectada (diferencia entre precio objetivo IA y precio compra)
       const vehiculosConValoracionYCompra = valoracionesIA
         .map((via: any) => {
-          const valoracionEco = valoracionesEconomicas.find(ve => ve.vehiculo_id === via.vehiculo_id)
+          const valoracionEco = valoracionesEconomicas.find((ve: any) => ve.vehiculo_id === via.vehiculo_id)
           if (valoracionEco && valoracionEco.precio_compra && via.precio_objetivo) {
             return via.precio_objetivo - valoracionEco.precio_compra
           }

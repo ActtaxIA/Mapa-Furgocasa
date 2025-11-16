@@ -264,7 +264,7 @@ export default function EnriquecerImagenesPage() {
 
     for (let i = 0; i < selectedIds.length; i++) {
       const areaId = selectedIds[i]
-      const area = areas.find(a => a.id === areaId)
+      const area = areas.find((a: any) => a.id === areaId)
       
       if (!area) continue
 

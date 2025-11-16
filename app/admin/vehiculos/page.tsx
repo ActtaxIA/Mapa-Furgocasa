@@ -261,7 +261,7 @@ export default function AdminVehiculosPage() {
 
         // Buscar datos económicos de este vehículo
         const valEco = valoracionesEconomicas?.find(
-          (ve) => ve.vehiculo_id === v.id
+          (ve: any) => ve.vehiculo_id === v.id
         );
         if (valEco) {
           if (valEco.precio_compra) {

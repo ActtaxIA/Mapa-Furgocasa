@@ -114,7 +114,7 @@ export default function ConfiguracionPage() {
       }
       setEditedConfig(null)
     } else {
-      const active = configs.find(c => c.config_key === activeTab)
+      const active = configs.find((c: any) => c.config_key === activeTab)
       if (active) {
         setEditedConfig(JSON.parse(JSON.stringify(active)))
       }
