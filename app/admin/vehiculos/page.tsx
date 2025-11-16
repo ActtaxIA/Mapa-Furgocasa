@@ -72,19 +72,71 @@ export default function AdminVehiculosPage() {
   const loadMetricas = async () => {
     try {
       const supabase = createClient()
-      const { data, error } = await supabase.rpc('admin_dashboard_metricas')
 
-      if (error) {
-        console.error('Error en RPC admin_dashboard_metricas:', error)
-        setError(`Error cargando métricas: ${error.message}. Asegúrate de que las funciones SQL estén creadas en Supabase.`)
-        throw error
-      }
+      // Cargar vehículos
+      const { data: vehiculos, error: vehiculosError } = await supabase
+        .from('vehiculos_registrados')
+        .select('*')
+        .eq('activo', true)
 
-      console.log('Métricas cargadas:', data)
+      // Cargar datos económicos
+      const { data: valoracionesEco } = await supabase
+        .from('vehiculo_valoracion_economica')
+        .select('precio_compra, vehiculo_id')
 
-      if (data && data.length > 0) {
-        setMetricas(data[0])
-      }
+      // Cargar reportes
+      const { data: reportes } = await supabase
+        .from('reportes_accidentes')
+        .select('id, cerrado')
+
+      // Cargar datos de mercado
+      const { data: datosMercado } = await supabase
+        .from('datos_mercado_autocaravanas')
+        .select('id, verificado')
+
+      // Calcular métricas
+      const ahora = new Date()
+      const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1)
+
+      const total_vehiculos = vehiculos?.length || 0
+      const vehiculos_mes_actual = vehiculos?.filter(v => new Date(v.created_at) >= inicioMes).length || 0
+
+      const valor_total_parque = valoracionesEco?.reduce((sum, v) => sum + (v.precio_compra || 0), 0) || 0
+
+      const total_reportes_accidentes = reportes?.length || 0
+      const reportes_pendientes = reportes?.filter(r => !r.cerrado).length || 0
+
+      const datos_mercado_verificados = datosMercado?.filter(d => d.verificado).length || 0
+      const datos_mercado_pendientes = datosMercado?.filter(d => !d.verificado).length || 0
+
+      // Contar usuarios únicos con vehículos
+      const usuariosUnicos = new Set(vehiculos?.map(v => v.user_id))
+      const usuarios_con_vehiculos = usuariosUnicos.size
+
+      // Usuarios compartiendo datos (con datos económicos)
+      const vehiculosConDatos = new Set(valoracionesEco?.map(v => v.vehiculo_id))
+      const usuarios_compartiendo_datos = vehiculos?.filter(v => vehiculosConDatos.has(v.id))
+        .map(v => v.user_id)
+        .filter((v, i, arr) => arr.indexOf(v) === i)
+        .length || 0
+
+      setMetricas({
+        total_vehiculos,
+        vehiculos_mes_actual,
+        valor_total_parque,
+        total_reportes_accidentes,
+        reportes_pendientes,
+        datos_mercado_verificados,
+        datos_mercado_pendientes,
+        usuarios_con_vehiculos,
+        usuarios_compartiendo_datos
+      })
+
+      console.log('✅ Métricas calculadas:', {
+        total_vehiculos,
+        valor_total_parque,
+        usuarios_con_vehiculos
+      })
     } catch (error: any) {
       console.error('Error cargando métricas:', error)
       setError(`Error: ${error.message || 'Error desconocido al cargar métricas'}`)
@@ -107,27 +159,136 @@ export default function AdminVehiculosPage() {
     try {
       const supabase = createClient()
 
-      // Primero verificamos si la función existe
-      const { data, error } = await supabase.rpc('admin_analisis_por_marca_modelo')
+      console.log('🚐 Cargando vehículos directamente desde las tablas...')
 
-      if (error) {
-        console.error('Error en RPC admin_analisis_por_marca_modelo:', error)
-        setError(`Error cargando vehículos: ${error.message}. Asegúrate de ejecutar el script SQL actualizado en Supabase.`)
-        throw error
+      // Cargar vehículos registrados
+      const { data: vehiculos, error: vehiculosError } = await supabase
+        .from('vehiculos_registrados')
+        .select('*')
+        .eq('activo', true)
+
+      if (vehiculosError) {
+        console.error('Error cargando vehículos:', vehiculosError)
+        setError(`Error cargando vehículos: ${vehiculosError.message}`)
+        return
       }
 
-      console.log('Análisis cargado:', data)
-      console.log('Número de registros:', data?.length || 0)
+      // Cargar datos económicos
+      const { data: valoracionesEconomicas, error: valEcoError } = await supabase
+        .from('vehiculo_valoracion_economica')
+        .select('*')
 
-      if (data && data.length > 0) {
-        setAnalisis(data)
-        setError(null) // Limpiar error si hay datos
-      } else {
-        // Si no hay datos pero tampoco hay error, puede ser que la función no devuelva resultados
-        console.warn('La función devolvió un array vacío')
-        setAnalisis([])
-        setError('No se encontraron vehículos agrupados por marca/modelo. Verifica que los vehículos tengan marca y modelo definidos.')
+      if (valEcoError) {
+        console.error('Error cargando valoraciones económicas:', valEcoError)
       }
+
+      // Cargar mantenimientos
+      const { data: mantenimientos, error: mantError } = await supabase
+        .from('mantenimientos')
+        .select('*')
+
+      if (mantError) {
+        console.error('Error cargando mantenimientos:', mantError)
+      }
+
+      // Cargar averías
+      const { data: averias, error: averiasError } = await supabase
+        .from('averias')
+        .select('*')
+
+      if (averiasError) {
+        console.error('Error cargando averías:', averiasError)
+      }
+
+      // Cargar reportes de accidentes
+      const { data: reportes, error: reportesError } = await supabase
+        .from('reportes_accidentes')
+        .select('*')
+
+      if (reportesError) {
+        console.error('Error cargando reportes:', reportesError)
+      }
+
+      console.log(`✅ ${vehiculos?.length || 0} vehículos cargados`)
+
+      // Agrupar por marca y modelo
+      const agrupados = new Map<string, AnalisisMarcaModelo>()
+
+      vehiculos?.forEach((v: any) => {
+        const marca = v.marca || 'Sin marca'
+        const modelo = v.modelo || 'Sin modelo'
+        const key = `${marca}-${modelo}`
+
+        if (!agrupados.has(key)) {
+          agrupados.set(key, {
+            marca,
+            modelo,
+            cantidad: 0,
+            año_promedio: 0,
+            km_promedio: 0,
+            precio_compra_promedio: 0,
+            valor_actual_promedio: 0,
+            depreciacion_media: 0,
+            coste_mantenimiento_anual: 0,
+            coste_averias_total: 0,
+            num_reportes_accidentes: 0
+          })
+        }
+
+        const grupo = agrupados.get(key)!
+        grupo.cantidad++
+
+        // Sumar años
+        if (v.año) {
+          grupo.año_promedio += v.año
+        }
+
+        // Buscar datos económicos de este vehículo
+        const valEco = valoracionesEconomicas?.find(ve => ve.vehiculo_id === v.id)
+        if (valEco) {
+          if (valEco.precio_compra) {
+            grupo.precio_compra_promedio += valEco.precio_compra
+          }
+          if (valEco.kilometros_compra) {
+            grupo.km_promedio += valEco.kilometros_compra
+          }
+        }
+
+        // Calcular mantenimientos
+        const mantVehiculo = mantenimientos?.filter(m => m.vehiculo_id === v.id) || []
+        const costoMant = mantVehiculo.reduce((sum, m) => sum + (m.coste || 0), 0)
+        grupo.coste_mantenimiento_anual += costoMant
+
+        // Calcular averías
+        const averiasVehiculo = averias?.filter(a => a.vehiculo_id === v.id) || []
+        const costoAverias = averiasVehiculo.reduce((sum, a) => sum + (a.coste_total || 0), 0)
+        grupo.coste_averias_total += costoAverias
+
+        // Contar reportes de accidentes
+        const reportesVehiculo = reportes?.filter(r => r.vehiculo_afectado_id === v.id) || []
+        grupo.num_reportes_accidentes += reportesVehiculo.length
+      })
+
+      // Calcular promedios
+      const analisisArray: AnalisisMarcaModelo[] = []
+      agrupados.forEach((grupo) => {
+        grupo.año_promedio = grupo.año_promedio > 0 ? Math.round(grupo.año_promedio / grupo.cantidad) : 0
+        grupo.km_promedio = grupo.km_promedio > 0 ? Math.round(grupo.km_promedio / grupo.cantidad) : 0
+        grupo.precio_compra_promedio = grupo.precio_compra_promedio > 0 ? Math.round(grupo.precio_compra_promedio / grupo.cantidad) : 0
+        grupo.coste_mantenimiento_anual = grupo.coste_mantenimiento_anual > 0 ? Math.round(grupo.coste_mantenimiento_anual / grupo.cantidad) : 0
+        grupo.coste_averias_total = Math.round(grupo.coste_averias_total / grupo.cantidad)
+
+        // Calcular depreciación (simplificado)
+        if (grupo.precio_compra_promedio > 0 && grupo.valor_actual_promedio > 0) {
+          grupo.depreciacion_media = ((grupo.precio_compra_promedio - grupo.valor_actual_promedio) / grupo.precio_compra_promedio) * 100
+        }
+
+        analisisArray.push(grupo)
+      })
+
+      console.log(`✅ ${analisisArray.length} grupos de marca/modelo`)
+      setAnalisis(analisisArray)
+      setError(null)
     } catch (error: any) {
       console.error('Error cargando análisis:', error)
       setError(`Error: ${error.message || 'Error desconocido al cargar vehículos'}`)
@@ -302,9 +463,6 @@ export default function AdminVehiculosPage() {
               <div>
                 <h3 className="font-semibold text-red-900 mb-1">Error al cargar datos</h3>
                 <p className="text-sm text-red-700">{error}</p>
-                <p className="text-sm text-red-600 mt-2">
-                  <strong>Solución:</strong> Ejecuta el archivo <code className="bg-red-100 px-2 py-1 rounded">reportes/12_funciones_admin.sql</code> en el Editor SQL de Supabase.
-                </p>
               </div>
             </div>
           </div>

@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
           // Detectar HTTPS para producción
           const isHttps = request.headers.get('x-forwarded-proto') === 'https' ||
                           request.nextUrl.protocol === 'https:'
-          
+
           // Mejorar opciones de cookies para móviles con maxAge explícito
           const cookieOptions = {
             name,

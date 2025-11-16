@@ -60,6 +60,7 @@ export default function VehiculoPage() {
     tipo_vehiculo: "",
     marca: "",
     modelo: "",
+    chasis: "",
     año: "",
     color: "",
   });
@@ -142,6 +143,7 @@ export default function VehiculoPage() {
         tipo_vehiculo: vehiculoData.tipo_vehiculo || "",
         marca: vehiculoData.marca || "",
         modelo: vehiculoData.modelo || "",
+        chasis: vehiculoData.chasis || "",
         año: vehiculoData.año?.toString() || "",
         color: vehiculoData.color || "",
       });
@@ -157,6 +159,7 @@ export default function VehiculoPage() {
       tipo_vehiculo: vehiculo.tipo_vehiculo || "",
       marca: vehiculo.marca || "",
       modelo: vehiculo.modelo || "",
+      chasis: vehiculo.chasis || "",
       año: vehiculo.año?.toString() || "",
       color: vehiculo.color || "",
     });
@@ -169,6 +172,7 @@ export default function VehiculoPage() {
       tipo_vehiculo: vehiculo.tipo_vehiculo || "",
       marca: vehiculo.marca || "",
       modelo: vehiculo.modelo || "",
+      chasis: vehiculo.chasis || "",
       año: vehiculo.año?.toString() || "",
       color: vehiculo.color || "",
     });
@@ -183,6 +187,7 @@ export default function VehiculoPage() {
         tipo_vehiculo: editData.tipo_vehiculo.trim() || null,
         marca: editData.marca.trim() || null,
         modelo: editData.modelo.trim() || null,
+        chasis: editData.chasis?.trim() || null,
         color: editData.color.trim() || null,
       };
 
@@ -631,6 +636,7 @@ export default function VehiculoPage() {
                       <p className="text-gray-600">
                         {vehiculo.marca || "Sin marca"}{" "}
                         {vehiculo.modelo || "Sin modelo"}
+                        {vehiculo.chasis && ` • Chasis: ${vehiculo.chasis}`}
                         {vehiculo.año && ` • ${vehiculo.año}`}
                         {vehiculo.color && ` • ${vehiculo.color}`}
                       </p>
@@ -714,6 +720,21 @@ export default function VehiculoPage() {
                           }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           placeholder="Ej: Ducato, California..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Chasis
+                        </label>
+                        <input
+                          type="text"
+                          value={editData.chasis || ""}
+                          onChange={(e) =>
+                            setEditData({ ...editData, chasis: e.target.value })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          placeholder="Ej: Fiat, Peugeot, Citroën..."
                         />
                       </div>
 
