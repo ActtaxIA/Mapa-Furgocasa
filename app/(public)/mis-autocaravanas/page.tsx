@@ -105,16 +105,16 @@ export default function MisAutocaravanasPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Instrucciones del QR - Solo una vez arriba */}
-        <div className="mb-8 bg-gradient-to-r from-primary-50 to-blue-50 rounded-xl border-2 border-primary-200 shadow-sm p-6">
-          <div className="flex items-start">
-            <QrCodeIcon className="h-8 w-8 text-primary-600 mr-4 flex-shrink-0 mt-1" />
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-primary-900 mb-4">
+        <div className="mb-8 bg-gradient-to-r from-primary-50 to-blue-50 rounded-xl border-2 border-primary-200 shadow-sm p-4 sm:p-6">
+          <div className="flex items-start gap-3 sm:gap-4">
+            <QrCodeIcon className="h-6 w-6 sm:h-8 sm:w-8 text-primary-600 flex-shrink-0 mt-1" />
+            <div className="flex-1 min-w-0">
+              <h2 className="text-lg sm:text-xl font-bold text-primary-900 mb-4">
                 📋 Código QR para Reportes de Accidentes
               </h2>
 
               {/* Instrucciones para el propietario */}
-              <div className="mb-4 p-4 bg-white rounded-lg border border-primary-200">
+              <div className="mb-4 p-3 sm:p-4 bg-white rounded-lg border border-primary-200">
                 <p className="font-semibold text-primary-900 mb-3">
                   🎯 Instrucciones para ti:
                 </p>
@@ -139,23 +139,23 @@ export default function MisAutocaravanasPage() {
               </div>
 
               {/* Frase gancho para testigos */}
-              <div className="p-4 bg-orange-50 rounded-lg border-2 border-orange-200">
-                <p className="font-bold text-orange-900 mb-2 flex items-center">
-                  <span className="text-2xl mr-2">⚠️</span>
+              <div className="p-3 sm:p-4 bg-orange-50 rounded-lg border-2 border-orange-200">
+                <p className="font-bold text-orange-900 mb-2 flex items-center text-sm sm:text-base">
+                  <span className="text-xl sm:text-2xl mr-2">⚠️</span>
                   Mensaje sugerido para el QR impreso:
                 </p>
-                <div className="bg-white p-4 rounded-lg border-2 border-dashed border-orange-300 text-center">
-                  <p className="text-lg font-bold text-gray-900 mb-2">
+                <div className="bg-white p-3 sm:p-4 rounded-lg border-2 border-dashed border-orange-300 text-center">
+                  <p className="text-base sm:text-lg font-bold text-gray-900 mb-2">
                     🚨 ¿Has visto un accidente con este vehículo?
                   </p>
-                  <p className="text-base text-gray-700 mb-2">
+                  <p className="text-sm sm:text-base text-gray-700 mb-2">
                     Escanea este código QR y ayúdanos reportándolo
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs sm:text-sm text-gray-600">
                     Tu testimonio es valioso • Solo toma 2 minutos • Anónimo y seguro
                   </p>
                 </div>
-                <p className="text-xs text-orange-700 mt-3 italic">
+                <p className="text-xs text-orange-700 mt-2 sm:mt-3 italic">
                   💡 <strong>Tip:</strong> Incluye este texto junto al QR cuando lo imprimas para motivar a los testigos
                 </p>
               </div>

@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Navbar } from '@/components/layout/Navbar'
-import { Footer } from '@/components/layout/Footer'
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import {
   ArrowLeftIcon,
   TruckIcon,
@@ -19,455 +19,545 @@ import {
   CheckIcon,
   XMarkIcon,
   PhotoIcon,
-  BanknotesIcon
-} from '@heroicons/react/24/outline'
-import Link from 'next/link'
-import { ResumenEconomicoTab } from '@/components/vehiculo/ResumenEconomicoTab'
-import { DatosCompraTab } from '@/components/vehiculo/DatosCompraTab'
-import MantenimientosTab from '@/components/vehiculo/MantenimientosTab'
-import AveriasTab from '@/components/vehiculo/AveriasTab'
-import MejorasTab from '@/components/vehiculo/MejorasTab'
-import VentaTab from '@/components/vehiculo/VentaTab'
-import GastosAdicionalesTab from '@/components/vehiculo/GastosAdicionalesTab'
-import { GaleriaFotosTab } from '@/components/vehiculo/GaleriaFotosTab'
-import { Toast } from '@/components/ui/Toast'
-import InformeValoracionIA from '@/components/vehiculo/InformeValoracionIA'
-import { SparklesIcon as SparklesIconSolid } from '@heroicons/react/24/solid'
-import { ConfirmModal } from '@/components/ui/ConfirmModal'
+  BanknotesIcon,
+} from "@heroicons/react/24/outline";
+import Link from "next/link";
+import { ResumenEconomicoTab } from "@/components/vehiculo/ResumenEconomicoTab";
+import { DatosCompraTab } from "@/components/vehiculo/DatosCompraTab";
+import MantenimientosTab from "@/components/vehiculo/MantenimientosTab";
+import AveriasTab from "@/components/vehiculo/AveriasTab";
+import MejorasTab from "@/components/vehiculo/MejorasTab";
+import VentaTab from "@/components/vehiculo/VentaTab";
+import GastosAdicionalesTab from "@/components/vehiculo/GastosAdicionalesTab";
+import { GaleriaFotosTab } from "@/components/vehiculo/GaleriaFotosTab";
+import { Toast } from "@/components/ui/Toast";
+import InformeValoracionIA from "@/components/vehiculo/InformeValoracionIA";
+import { SparklesIcon as SparklesIconSolid } from "@heroicons/react/24/solid";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
-type TabType = 'resumen' | 'compra' | 'fotos' | 'mantenimientos' | 'averias' | 'mejoras' | 'gastos' | 'venta' | 'valoracion-ia'
+type TabType =
+  | "resumen"
+  | "compra"
+  | "fotos"
+  | "mantenimientos"
+  | "averias"
+  | "mejoras"
+  | "gastos"
+  | "venta"
+  | "valoracion-ia";
 
 export default function VehiculoPage() {
-  const params = useParams()
-  const router = useRouter()
-  const vehiculoId = params.id as string
+  const params = useParams();
+  const router = useRouter();
+  const vehiculoId = params.id as string;
 
-  const [user, setUser] = useState<any>(null)
-  const [vehiculo, setVehiculo] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<TabType>('resumen')
-  const [isEditing, setIsEditing] = useState(false)
+  const [user, setUser] = useState<any>(null);
+  const [vehiculo, setVehiculo] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabType>("resumen");
+  const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
-    tipo_vehiculo: '',
-    marca: '',
-    modelo: '',
-    año: '',
-    color: ''
-  })
-  const [saving, setSaving] = useState(false)
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null)
-  const [valoracionesIA, setValoracionesIA] = useState<any[]>([])
-  const [loadingValoracion, setLoadingValoracion] = useState(false)
-  const [generandoValoracion, setGenerandoValoracion] = useState(false)
-  const [showConfirmModal, setShowConfirmModal] = useState(false)
+    tipo_vehiculo: "",
+    marca: "",
+    modelo: "",
+    año: "",
+    color: "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error" | "info" | "warning";
+  } | null>(null);
+  const [valoracionesIA, setValoracionesIA] = useState<any[]>([]);
+  const [loadingValoracion, setLoadingValoracion] = useState(false);
+  const [generandoValoracion, setGenerandoValoracion] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // Detectar parámetro tab en la URL
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const searchParams = new URLSearchParams(window.location.search)
-      const tabParam = searchParams.get('tab') as TabType
-      if (tabParam && ['resumen', 'compra', 'fotos', 'mantenimientos', 'averias', 'mejoras', 'gastos', 'venta', 'valoracion-ia'].includes(tabParam)) {
-        setActiveTab(tabParam)
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const tabParam = searchParams.get("tab") as TabType;
+      if (
+        tabParam &&
+        [
+          "resumen",
+          "compra",
+          "fotos",
+          "mantenimientos",
+          "averias",
+          "mejoras",
+          "gastos",
+          "venta",
+          "valoracion-ia",
+        ].includes(tabParam)
+      ) {
+        setActiveTab(tabParam);
       }
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    loadData()
-  }, [vehiculoId])
+    loadData();
+  }, [vehiculoId]);
 
   // Cargar valoraciones IA cuando se active esa tab
   useEffect(() => {
-    if (activeTab === 'valoracion-ia' && vehiculoId) {
-      loadValoracionesIA()
+    if (activeTab === "valoracion-ia" && vehiculoId) {
+      loadValoracionesIA();
     }
-  }, [activeTab, vehiculoId])
+  }, [activeTab, vehiculoId]);
 
   const loadData = async () => {
     try {
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (!session?.user) {
-        router.push('/auth/login')
-        return
+        router.push("/auth/login");
+        return;
       }
 
-      setUser(session.user)
+      setUser(session.user);
 
       // Cargar vehículo
       const { data: vehiculoData, error } = await supabase
-        .from('vehiculos_registrados')
-        .select('*')
-        .eq('id', vehiculoId)
-        .eq('user_id', session.user.id)
-        .single()
+        .from("vehiculos_registrados")
+        .select("*")
+        .eq("id", vehiculoId)
+        .eq("user_id", session.user.id)
+        .single();
 
       if (error || !vehiculoData) {
-        console.error('Error cargando vehículo:', error)
-        router.push('/perfil')
-        return
+        console.error("Error cargando vehículo:", error);
+        router.push("/perfil");
+        return;
       }
 
-      setVehiculo(vehiculoData)
+      setVehiculo(vehiculoData);
       // Inicializar datos de edición
       setEditData({
-        tipo_vehiculo: vehiculoData.tipo_vehiculo || '',
-        marca: vehiculoData.marca || '',
-        modelo: vehiculoData.modelo || '',
-        año: vehiculoData.año?.toString() || '',
-        color: vehiculoData.color || ''
-      })
+        tipo_vehiculo: vehiculoData.tipo_vehiculo || "",
+        marca: vehiculoData.marca || "",
+        modelo: vehiculoData.modelo || "",
+        año: vehiculoData.año?.toString() || "",
+        color: vehiculoData.color || "",
+      });
     } catch (error) {
-      console.error('Error:', error)
+      console.error("Error:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleEditClick = () => {
     setEditData({
-      tipo_vehiculo: vehiculo.tipo_vehiculo || '',
-      marca: vehiculo.marca || '',
-      modelo: vehiculo.modelo || '',
-      año: vehiculo.año?.toString() || '',
-      color: vehiculo.color || ''
-    })
-    setIsEditing(true)
-  }
+      tipo_vehiculo: vehiculo.tipo_vehiculo || "",
+      marca: vehiculo.marca || "",
+      modelo: vehiculo.modelo || "",
+      año: vehiculo.año?.toString() || "",
+      color: vehiculo.color || "",
+    });
+    setIsEditing(true);
+  };
 
   const handleCancelEdit = () => {
-    setIsEditing(false)
+    setIsEditing(false);
     setEditData({
-      tipo_vehiculo: vehiculo.tipo_vehiculo || '',
-      marca: vehiculo.marca || '',
-      modelo: vehiculo.modelo || '',
-      año: vehiculo.año?.toString() || '',
-      color: vehiculo.color || ''
-    })
-  }
+      tipo_vehiculo: vehiculo.tipo_vehiculo || "",
+      marca: vehiculo.marca || "",
+      modelo: vehiculo.modelo || "",
+      año: vehiculo.año?.toString() || "",
+      color: vehiculo.color || "",
+    });
+  };
 
   const handleSaveEdit = async () => {
-    setSaving(true)
+    setSaving(true);
     try {
-      const supabase = createClient()
+      const supabase = createClient();
 
       const updateData: any = {
         tipo_vehiculo: editData.tipo_vehiculo.trim() || null,
         marca: editData.marca.trim() || null,
         modelo: editData.modelo.trim() || null,
         color: editData.color.trim() || null,
-      }
+      };
 
       // Solo añadir año si tiene valor válido
-      if (editData.año && editData.año.trim() !== '') {
-        const añoNum = parseInt(editData.año)
-        if (!isNaN(añoNum) && añoNum >= 1900 && añoNum <= new Date().getFullYear() + 1) {
-          updateData.año = añoNum
+      if (editData.año && editData.año.trim() !== "") {
+        const añoNum = parseInt(editData.año);
+        if (
+          !isNaN(añoNum) &&
+          añoNum >= 1900 &&
+          añoNum <= new Date().getFullYear() + 1
+        ) {
+          updateData.año = añoNum;
         }
       } else {
-        updateData.año = null
+        updateData.año = null;
       }
 
       const { error } = await supabase
-        .from('vehiculos_registrados')
+        .from("vehiculos_registrados")
         .update(updateData)
-        .eq('id', vehiculoId)
-        .eq('user_id', user.id)
+        .eq("id", vehiculoId)
+        .eq("user_id", user.id);
 
       if (error) {
-        console.error('Error actualizando vehículo:', error)
-        setToast({ message: 'Error al actualizar los datos del vehículo', type: 'error' })
-        return
+        console.error("Error actualizando vehículo:", error);
+        setToast({
+          message: "Error al actualizar los datos del vehículo",
+          type: "error",
+        });
+        return;
       }
 
       // Recargar datos
-      await loadData()
-      setIsEditing(false)
-      setToast({ message: '✅ Datos actualizados correctamente', type: 'success' })
+      await loadData();
+      setIsEditing(false);
+      setToast({
+        message: "✅ Datos actualizados correctamente",
+        type: "success",
+      });
     } catch (error) {
-      console.error('Error:', error)
-      setToast({ message: 'Error al actualizar los datos del vehículo', type: 'error' })
+      console.error("Error:", error);
+      setToast({
+        message: "Error al actualizar los datos del vehículo",
+        type: "error",
+      });
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const loadValoracionesIA = async () => {
-    setLoadingValoracion(true)
+    setLoadingValoracion(true);
     try {
-      const response = await fetch(`/api/vehiculos/${vehiculoId}/ia-valoracion`)
-      const data = await response.json()
+      const response = await fetch(
+        `/api/vehiculos/${vehiculoId}/ia-valoracion`
+      );
+      const data = await response.json();
 
       if (response.ok) {
-        setValoracionesIA(data.informes || [])
+        setValoracionesIA(data.informes || []);
       } else {
-        console.error('Error cargando valoraciones IA:', data.error)
+        console.error("Error cargando valoraciones IA:", data.error);
       }
     } catch (error) {
-      console.error('Error:', error)
+      console.error("Error:", error);
     } finally {
-      setLoadingValoracion(false)
+      setLoadingValoracion(false);
     }
-  }
+  };
 
   const handleGenerarValoracion = () => {
-    setShowConfirmModal(true)
-  }
+    setShowConfirmModal(true);
+  };
 
   const confirmarGenerarValoracion = async () => {
-    setShowConfirmModal(false)
-    setGenerandoValoracion(true)
-    setToast({ message: '🤖 Generando valoración con IA... Por favor espera.', type: 'info' })
+    setShowConfirmModal(false);
+    setGenerandoValoracion(true);
+    setToast({
+      message: "🤖 Generando valoración con IA... Por favor espera.",
+      type: "info",
+    });
 
     try {
-      const response = await fetch(`/api/vehiculos/${vehiculoId}/ia-valoracion`, {
-        method: 'POST'
-      })
+      const response = await fetch(
+        `/api/vehiculos/${vehiculoId}/ia-valoracion`,
+        {
+          method: "POST",
+        }
+      );
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (response.ok) {
-        setToast({ message: '✅ ¡Valoración generada con éxito!', type: 'success' })
+        setToast({
+          message: "✅ ¡Valoración generada con éxito!",
+          type: "success",
+        });
         // Recargar las valoraciones
-        await loadValoracionesIA()
+        await loadValoracionesIA();
       } else {
-        setToast({ message: `❌ Error: ${data.error}`, type: 'error' })
+        setToast({ message: `❌ Error: ${data.error}`, type: "error" });
       }
     } catch (error) {
-      console.error('Error:', error)
-      setToast({ message: '❌ Error al generar la valoración', type: 'error' })
+      console.error("Error:", error);
+      setToast({ message: "❌ Error al generar la valoración", type: "error" });
     } finally {
-      setGenerandoValoracion(false)
+      setGenerandoValoracion(false);
     }
-  }
+  };
 
   const descargarValoracionPDF = async (valoracion: any) => {
     try {
-      setToast({ message: "Generando PDF completo...", type: "info" })
+      setToast({ message: "Generando PDF completo...", type: "info" });
 
       // Importar jsPDF dinámicamente
-      const { default: jsPDF } = await import('jspdf')
+      const { default: jsPDF } = await import("jspdf");
       const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      })
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
 
-      const pageWidth = pdf.internal.pageSize.getWidth()
-      const pageHeight = pdf.internal.pageSize.getHeight()
-      const margin = 15
-      let yPos = 20
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 15;
+      let yPos = 20;
 
       // Función para agregar nueva página si es necesario
       const checkPageBreak = (requiredHeight: number) => {
         if (yPos + requiredHeight > pageHeight - 20) {
-          pdf.addPage()
-          yPos = 20
+          pdf.addPage();
+          yPos = 20;
         }
-      }
+      };
 
       // 1. HEADER CON LOGO Y TÍTULO
-      pdf.setFillColor(37, 99, 235) // Azul
-      pdf.rect(0, 0, pageWidth, 40, 'F')
+      pdf.setFillColor(37, 99, 235); // Azul
+      pdf.rect(0, 0, pageWidth, 40, "F");
 
-      pdf.setTextColor(255, 255, 255)
-      pdf.setFontSize(20)
-      pdf.setFont("helvetica", "bold")
-      pdf.text("Informe de Valoración IA", margin, 25)
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(20);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Informe de Valoración IA", margin, 25);
 
-      pdf.setFontSize(12)
-      pdf.setFont("helvetica", "normal")
-      pdf.text(`${vehiculo?.marca || ''} ${vehiculo?.modelo || ''}`, margin, 32)
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(
+        `${vehiculo?.marca || ""} ${vehiculo?.modelo || ""}`,
+        margin,
+        32
+      );
 
-      pdf.setTextColor(0, 0, 0)
-      yPos = 50
+      pdf.setTextColor(0, 0, 0);
+      yPos = 50;
 
       // 2. INFORMACIÓN DEL VEHÍCULO
-      pdf.setFontSize(14)
-      pdf.setFont("helvetica", "bold")
-      pdf.text("Datos del Vehículo", margin, yPos)
-      yPos += 8
+      pdf.setFontSize(14);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Datos del Vehículo", margin, yPos);
+      yPos += 8;
 
-      pdf.setFontSize(10)
-      pdf.setFont("helvetica", "normal")
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
       const datosVehiculo = [
-        `Matrícula: ${vehiculo?.matricula || 'No especificada'}`,
-        `Marca: ${vehiculo?.marca || 'No especificada'}`,
-        `Modelo: ${vehiculo?.modelo || 'No especificado'}`,
-        `Año: ${vehiculo?.ano || 'No especificado'}`,
-        `Tipo: ${vehiculo?.tipo_vehiculo || 'Autocaravana'}`,
-        `Color: ${vehiculo?.color || 'No especificado'}`
-      ]
+        `Matrícula: ${vehiculo?.matricula || "No especificada"}`,
+        `Marca: ${vehiculo?.marca || "No especificada"}`,
+        `Modelo: ${vehiculo?.modelo || "No especificado"}`,
+        `Año: ${vehiculo?.ano || "No especificado"}`,
+        `Tipo: ${vehiculo?.tipo_vehiculo || "Autocaravana"}`,
+        `Color: ${vehiculo?.color || "No especificado"}`,
+      ];
 
       datosVehiculo.forEach((dato) => {
-        pdf.text(dato, margin, yPos)
-        yPos += 6
-      })
+        pdf.text(dato, margin, yPos);
+        yPos += 6;
+      });
 
-      yPos += 5
+      yPos += 5;
 
       // 3. PRECIOS DESTACADOS
-      checkPageBreak(30)
-      pdf.setFontSize(14)
-      pdf.setFont("helvetica", "bold")
-      pdf.text("Precios de Valoración", margin, yPos)
-      yPos += 8
+      checkPageBreak(30);
+      pdf.setFontSize(14);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Precios de Valoración", margin, yPos);
+      yPos += 8;
 
-      pdf.setFontSize(10)
-      pdf.setFont("helvetica", "normal")
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
 
       if (valoracion.precio_salida) {
-        pdf.setFillColor(34, 197, 94) // Verde
-        pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, 'F')
-        pdf.setTextColor(255, 255, 255)
-        pdf.setFont("helvetica", "bold")
-        pdf.text(`Precio de Salida: ${valoracion.precio_salida.toLocaleString('es-ES')}€`, margin + 2, yPos)
-        pdf.setTextColor(0, 0, 0)
-        yPos += 10
+        pdf.setFillColor(34, 197, 94); // Verde
+        pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, "F");
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(
+          `Precio de Salida: ${valoracion.precio_salida.toLocaleString(
+            "es-ES"
+          )}€`,
+          margin + 2,
+          yPos
+        );
+        pdf.setTextColor(0, 0, 0);
+        yPos += 10;
       }
 
       if (valoracion.precio_objetivo) {
-        pdf.setFillColor(59, 130, 246) // Azul
-        pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, 'F')
-        pdf.setTextColor(255, 255, 255)
-        pdf.setFont("helvetica", "bold")
-        pdf.text(`Precio Objetivo: ${valoracion.precio_objetivo.toLocaleString('es-ES')}€`, margin + 2, yPos)
-        pdf.setTextColor(0, 0, 0)
-        yPos += 10
+        pdf.setFillColor(59, 130, 246); // Azul
+        pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, "F");
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(
+          `Precio Objetivo: ${valoracion.precio_objetivo.toLocaleString(
+            "es-ES"
+          )}€`,
+          margin + 2,
+          yPos
+        );
+        pdf.setTextColor(0, 0, 0);
+        yPos += 10;
       }
 
       if (valoracion.precio_minimo) {
-        pdf.setFillColor(249, 115, 22) // Naranja
-        pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, 'F')
-        pdf.setTextColor(255, 255, 255)
-        pdf.setFont("helvetica", "bold")
-        pdf.text(`Precio Mínimo: ${valoracion.precio_minimo.toLocaleString('es-ES')}€`, margin + 2, yPos)
-        pdf.setTextColor(0, 0, 0)
-        yPos += 10
+        pdf.setFillColor(249, 115, 22); // Naranja
+        pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, "F");
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(
+          `Precio Mínimo: ${valoracion.precio_minimo.toLocaleString("es-ES")}€`,
+          margin + 2,
+          yPos
+        );
+        pdf.setTextColor(0, 0, 0);
+        yPos += 10;
       }
 
-      yPos += 5
+      yPos += 5;
 
       // 4. FOTOS DEL VEHÍCULO
-      const supabase = createClient()
-      const todasLasFotos: string[] = []
-      if (vehiculo?.foto_url) todasLasFotos.push(vehiculo.foto_url)
-      if (vehiculo?.fotos_adicionales && Array.isArray(vehiculo.fotos_adicionales)) {
-        todasLasFotos.push(...vehiculo.fotos_adicionales)
+      const supabase = createClient();
+      const todasLasFotos: string[] = [];
+      if (vehiculo?.foto_url) todasLasFotos.push(vehiculo.foto_url);
+      if (
+        vehiculo?.fotos_adicionales &&
+        Array.isArray(vehiculo.fotos_adicionales)
+      ) {
+        todasLasFotos.push(...vehiculo.fotos_adicionales);
       }
 
       if (todasLasFotos.length > 0) {
-        checkPageBreak(50)
-        pdf.setFontSize(14)
-        pdf.setFont("helvetica", "bold")
-        pdf.text("Fotografías del Vehículo", margin, yPos)
-        yPos += 8
+        checkPageBreak(50);
+        pdf.setFontSize(14);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("Fotografías del Vehículo", margin, yPos);
+        yPos += 8;
 
-        for (let i = 0; i < Math.min(todasLasFotos.length, 5); i++) { // Máximo 5 fotos
+        for (let i = 0; i < Math.min(todasLasFotos.length, 5); i++) {
+          // Máximo 5 fotos
           try {
-            const fotoUrl = todasLasFotos[i]
+            const fotoUrl = todasLasFotos[i];
             const { data: fotoData } = await supabase.storage
-              .from('vehiculos')
-              .download(fotoUrl.replace(/^.*\/vehiculos\//, ''))
+              .from("vehiculos")
+              .download(fotoUrl.replace(/^.*\/vehiculos\//, ""));
 
             if (fotoData) {
-              const fotoBlob = await fotoData.arrayBuffer()
-              const fotoBase64 = btoa(String.fromCharCode(...new Uint8Array(fotoBlob)))
+              const fotoBlob = await fotoData.arrayBuffer();
+              const fotoBase64 = btoa(
+                String.fromCharCode(...new Uint8Array(fotoBlob))
+              );
 
               // Procesar imagen para corregir orientación
-              const img = new Image()
-              const fotoCorregidaBase64 = await new Promise<string>((resolve) => {
-                img.onload = () => {
-                  const canvas = document.createElement('canvas')
-                  const ctx = canvas.getContext('2d')
-                  if (ctx) {
-                    canvas.width = img.width
-                    canvas.height = img.height
-                    ctx.drawImage(img, 0, 0)
-                    resolve(canvas.toDataURL('image/jpeg', 0.8))
-                  } else {
-                    resolve(`data:image/jpeg;base64,${fotoBase64}`)
-                  }
+              const img = new Image();
+              const fotoCorregidaBase64 = await new Promise<string>(
+                (resolve) => {
+                  img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+                    if (ctx) {
+                      canvas.width = img.width;
+                      canvas.height = img.height;
+                      ctx.drawImage(img, 0, 0);
+                      resolve(canvas.toDataURL("image/jpeg", 0.8));
+                    } else {
+                      resolve(`data:image/jpeg;base64,${fotoBase64}`);
+                    }
+                  };
+                  img.src = `data:image/jpeg;base64,${fotoBase64}`;
                 }
-                img.src = `data:image/jpeg;base64,${fotoBase64}`
-              })
+              );
 
-              checkPageBreak(60)
-              pdf.setFontSize(9)
-              pdf.setFont("helvetica", "normal")
-              pdf.text(`Fotografía ${i + 1}:`, margin, yPos)
-              yPos += 5
+              checkPageBreak(60);
+              pdf.setFontSize(9);
+              pdf.setFont("helvetica", "normal");
+              pdf.text(`Fotografía ${i + 1}:`, margin, yPos);
+              yPos += 5;
 
-              const maxWidth = pageWidth - 2 * margin
-              const maxHeight = 60
-              const imgWidth = maxWidth
-              const imgHeight = maxHeight
+              const maxWidth = pageWidth - 2 * margin;
+              const maxHeight = 60;
+              const imgWidth = maxWidth;
+              const imgHeight = maxHeight;
 
-              pdf.addImage(fotoCorregidaBase64, 'JPEG', margin, yPos, imgWidth, imgHeight)
-              yPos += imgHeight + 8
+              pdf.addImage(
+                fotoCorregidaBase64,
+                "JPEG",
+                margin,
+                yPos,
+                imgWidth,
+                imgHeight
+              );
+              yPos += imgHeight + 8;
             }
           } catch (error) {
-            console.warn(`Error cargando foto ${i + 1}:`, error)
+            console.warn(`Error cargando foto ${i + 1}:`, error);
           }
         }
       }
 
       // 5. INFORME COMPLETO
-      checkPageBreak(30)
-      pdf.setFontSize(14)
-      pdf.setFont("helvetica", "bold")
-      pdf.text("Informe de Valoración Completo", margin, yPos)
-      yPos += 8
+      checkPageBreak(30);
+      pdf.setFontSize(14);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Informe de Valoración Completo", margin, yPos);
+      yPos += 8;
 
       // Convertir markdown a texto plano para PDF
       const textoPlano = valoracion.informe_texto
-        .replace(/##\s+/g, '\n\n')
-        .replace(/###\s+/g, '\n')
-        .replace(/\*\*(.*?)\*\*/g, '$1')
-        .replace(/\*(.*?)\*/g, '$1')
-        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+        .replace(/##\s+/g, "\n\n")
+        .replace(/###\s+/g, "\n")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/\*(.*?)\*/g, "$1")
+        .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1");
 
-      pdf.setFontSize(9)
-      pdf.setFont("helvetica", "normal")
-      const lines = pdf.splitTextToSize(textoPlano, pageWidth - 2 * margin)
+      pdf.setFontSize(9);
+      pdf.setFont("helvetica", "normal");
+      const lines = pdf.splitTextToSize(textoPlano, pageWidth - 2 * margin);
 
       lines.forEach((line: string) => {
-        checkPageBreak(6)
-        pdf.text(line, margin, yPos)
-        yPos += 6
-      })
+        checkPageBreak(6);
+        pdf.text(line, margin, yPos);
+        yPos += 6;
+      });
 
       // 6. FOOTER
-      const totalPages = pdf.getNumberOfPages()
+      const totalPages = pdf.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
-        pdf.setPage(i)
-        pdf.setFontSize(8)
-        pdf.setTextColor(128, 128, 128)
+        pdf.setPage(i);
+        pdf.setFontSize(8);
+        pdf.setTextColor(128, 128, 128);
         pdf.text(
-          `Página ${i} de ${totalPages} - Generado el ${new Date().toLocaleDateString('es-ES')}`,
+          `Página ${i} de ${totalPages} - Generado el ${new Date().toLocaleDateString(
+            "es-ES"
+          )}`,
           pageWidth / 2,
           pageHeight - 10,
-          { align: 'center' }
-        )
+          { align: "center" }
+        );
         pdf.text(
-          'Mapa Furgocasa - www.mapafurgocasa.com',
+          "Mapa Furgocasa - www.mapafurgocasa.com",
           pageWidth / 2,
           pageHeight - 5,
-          { align: 'center' }
-        )
+          { align: "center" }
+        );
       }
 
       // Descargar PDF
-      const nombreArchivo = `Valoracion_${vehiculo?.matricula || 'vehiculo'}_${new Date().toISOString().split('T')[0]}.pdf`
-      pdf.save(nombreArchivo)
+      const nombreArchivo = `Valoracion_${vehiculo?.matricula || "vehiculo"}_${
+        new Date().toISOString().split("T")[0]
+      }.pdf`;
+      pdf.save(nombreArchivo);
 
-      setToast({ message: "✅ PDF descargado correctamente", type: "success" })
+      setToast({ message: "✅ PDF descargado correctamente", type: "success" });
     } catch (error) {
-      console.error('Error generando PDF:', error)
-      setToast({ message: "Error al generar el PDF", type: "error" })
+      console.error("Error generando PDF:", error);
+      setToast({ message: "Error al generar el PDF", type: "error" });
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -481,24 +571,28 @@ export default function VehiculoPage() {
         </main>
         <Footer />
       </div>
-    )
+    );
   }
 
   if (!vehiculo) {
-    return null
+    return null;
   }
 
   const tabs = [
-    { id: 'resumen', label: 'Resumen', icon: ChartBarIcon },
-    { id: 'compra', label: 'Datos de Compra', icon: CurrencyEuroIcon },
-    { id: 'fotos', label: 'Fotos', icon: PhotoIcon },
-    { id: 'mantenimientos', label: 'Mantenimientos', icon: WrenchScrewdriverIcon },
-    { id: 'averias', label: 'Averías', icon: ExclamationTriangleIcon },
-    { id: 'mejoras', label: 'Mejoras', icon: SparklesIcon },
-    { id: 'gastos', label: 'Gastos Adicionales', icon: BanknotesIcon },
-    { id: 'valoracion-ia', label: 'Valoración IA', icon: SparklesIconSolid },
-    { id: 'venta', label: 'Venta', icon: TagIcon },
-  ]
+    { id: "resumen", label: "Resumen", icon: ChartBarIcon },
+    { id: "compra", label: "Datos de Compra", icon: CurrencyEuroIcon },
+    { id: "fotos", label: "Fotos", icon: PhotoIcon },
+    {
+      id: "mantenimientos",
+      label: "Mantenimientos",
+      icon: WrenchScrewdriverIcon,
+    },
+    { id: "averias", label: "Averías", icon: ExclamationTriangleIcon },
+    { id: "mejoras", label: "Mejoras", icon: SparklesIcon },
+    { id: "gastos", label: "Gastos Adicionales", icon: BanknotesIcon },
+    { id: "valoracion-ia", label: "Valoración IA", icon: SparklesIconSolid },
+    { id: "venta", label: "Venta", icon: TagIcon },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -525,7 +619,9 @@ export default function VehiculoPage() {
                 {!isEditing ? (
                   // Modo Vista
                   <div className="flex-1">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-1">{vehiculo.matricula}</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                      {vehiculo.matricula}
+                    </h1>
                     <div className="flex flex-wrap items-center gap-2 mt-2">
                       {vehiculo.tipo_vehiculo && (
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800 border border-primary-200">
@@ -533,7 +629,8 @@ export default function VehiculoPage() {
                         </span>
                       )}
                       <p className="text-gray-600">
-                        {vehiculo.marca || 'Sin marca'} {vehiculo.modelo || 'Sin modelo'}
+                        {vehiculo.marca || "Sin marca"}{" "}
+                        {vehiculo.modelo || "Sin modelo"}
                         {vehiculo.año && ` • ${vehiculo.año}`}
                         {vehiculo.color && ` • ${vehiculo.color}`}
                       </p>
@@ -545,7 +642,10 @@ export default function VehiculoPage() {
                     {/* Matrícula - NO EDITABLE */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Matrícula <span className="text-xs text-gray-500">(no editable)</span>
+                        Matrícula{" "}
+                        <span className="text-xs text-gray-500">
+                          (no editable)
+                        </span>
                       </label>
                       <div className="text-2xl font-bold text-gray-400 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
                         {vehiculo.matricula}
@@ -559,15 +659,28 @@ export default function VehiculoPage() {
                       </label>
                       <select
                         value={editData.tipo_vehiculo}
-                        onChange={(e) => setEditData({ ...editData, tipo_vehiculo: e.target.value })}
+                        onChange={(e) =>
+                          setEditData({
+                            ...editData,
+                            tipo_vehiculo: e.target.value,
+                          })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         required
                       >
                         <option value="">Selecciona un tipo</option>
-                        <option value="Furgoneta Camper">🚐 Furgoneta Camper</option>
-                        <option value="Autocaravana Perfilada">🚙 Autocaravana Perfilada</option>
-                        <option value="Autocaravana Integral">🚌 Autocaravana Integral</option>
-                        <option value="Autocaravana Capuchina">🏕️ Autocaravana Capuchina</option>
+                        <option value="Furgoneta Camper">
+                          🚐 Furgoneta Camper
+                        </option>
+                        <option value="Autocaravana Perfilada">
+                          🚙 Autocaravana Perfilada
+                        </option>
+                        <option value="Autocaravana Integral">
+                          🚌 Autocaravana Integral
+                        </option>
+                        <option value="Autocaravana Capuchina">
+                          🏕️ Autocaravana Capuchina
+                        </option>
                         <option value="Camper">🚗 Camper</option>
                         <option value="Furgoneta">🚐 Furgoneta</option>
                         <option value="Otro">📦 Otro</option>
@@ -577,33 +690,45 @@ export default function VehiculoPage() {
                     {/* Campos Editables */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Marca</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Marca
+                        </label>
                         <input
                           type="text"
                           value={editData.marca}
-                          onChange={(e) => setEditData({ ...editData, marca: e.target.value })}
+                          onChange={(e) =>
+                            setEditData({ ...editData, marca: e.target.value })
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           placeholder="Ej: Fiat, Volkswagen..."
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Modelo</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Modelo
+                        </label>
                         <input
                           type="text"
                           value={editData.modelo}
-                          onChange={(e) => setEditData({ ...editData, modelo: e.target.value })}
+                          onChange={(e) =>
+                            setEditData({ ...editData, modelo: e.target.value })
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           placeholder="Ej: Ducato, California..."
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Año</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Año
+                        </label>
                         <input
                           type="number"
                           value={editData.año}
-                          onChange={(e) => setEditData({ ...editData, año: e.target.value })}
+                          onChange={(e) =>
+                            setEditData({ ...editData, año: e.target.value })
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           placeholder="Ej: 2020"
                           min="1900"
@@ -612,11 +737,15 @@ export default function VehiculoPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Color
+                        </label>
                         <input
                           type="text"
                           value={editData.color}
-                          onChange={(e) => setEditData({ ...editData, color: e.target.value })}
+                          onChange={(e) =>
+                            setEditData({ ...editData, color: e.target.value })
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           placeholder="Ej: Blanco, Gris..."
                         />
@@ -644,7 +773,9 @@ export default function VehiculoPage() {
                       className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
                     >
                       <CheckIcon className="w-5 h-5" />
-                      <span className="hidden sm:inline">{saving ? 'Guardando...' : 'Guardar'}</span>
+                      <span className="hidden sm:inline">
+                        {saving ? "Guardando..." : "Guardar"}
+                      </span>
                     </button>
                     <button
                       onClick={handleCancelEdit}
@@ -663,7 +794,9 @@ export default function VehiculoPage() {
             {isEditing && (
               <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800">
-                  ℹ️ <strong>Nota:</strong> La matrícula NO se puede modificar. Si necesitas cambiarla, deberás eliminar este vehículo y crear uno nuevo.
+                  ℹ️ <strong>Nota:</strong> La matrícula NO se puede modificar.
+                  Si necesitas cambiarla, deberás eliminar este vehículo y crear
+                  uno nuevo.
                 </p>
               </div>
             )}
@@ -672,36 +805,44 @@ export default function VehiculoPage() {
 
         {/* Tabs Navigation */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 mb-6 overflow-hidden">
-          <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div
+            className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0"
+            style={{
+              scrollbarWidth: "thin",
+              scrollbarColor: "#cbd5e1 #f1f5f9",
+            }}
+          >
             <div className="flex border-b border-gray-200 min-w-max">
               {tabs.map((tab) => {
-                const Icon = tab.icon
+                const Icon = tab.icon;
                 const shortLabels: Record<string, string> = {
-                  'Resumen': 'Resumen',
-                  'Datos de Compra': 'Compra',
-                  'Fotos': 'Fotos',
-                  'Mantenimientos': 'Mant.',
-                  'Averías': 'Averías',
-                  'Mejoras': 'Mejoras',
-                  'Gastos Adicionales': 'Gastos',
-                  'Valoración IA': 'IA',
-                  'Venta': 'Venta'
-                }
+                  Resumen: "Resumen",
+                  "Datos de Compra": "Compra",
+                  Fotos: "Fotos",
+                  Mantenimientos: "Mant.",
+                  Averías: "Averías",
+                  Mejoras: "Mejoras",
+                  "Gastos Adicionales": "Gastos",
+                  "Valoración IA": "IA",
+                  Venta: "Venta",
+                };
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as TabType)}
                     className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 font-medium transition-colors whitespace-nowrap text-xs sm:text-base min-w-[70px] sm:min-w-0 touch-manipulation ${
                       activeTab === tab.id
-                        ? 'border-b-2 border-primary-600 text-primary-600 bg-primary-50'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100'
+                        ? "border-b-2 border-primary-600 text-primary-600 bg-primary-50"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100"
                     }`}
                   >
                     <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                     <span className="hidden sm:inline">{tab.label}</span>
-                    <span className="sm:hidden text-center leading-tight font-semibold">{shortLabels[tab.label] || tab.label}</span>
+                    <span className="sm:hidden text-center leading-tight font-semibold">
+                      {shortLabels[tab.label] || tab.label}
+                    </span>
                   </button>
-                )
+                );
               })}
             </div>
           </div>
@@ -709,11 +850,11 @@ export default function VehiculoPage() {
 
         {/* Tab Content */}
         <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-          {activeTab === 'resumen' && (
+          {activeTab === "resumen" && (
             <ResumenEconomicoTab vehiculoId={vehiculoId} />
           )}
 
-          {activeTab === 'compra' && (
+          {activeTab === "compra" && (
             <DatosCompraTab
               vehiculoId={vehiculoId}
               onDataSaved={() => {
@@ -723,7 +864,7 @@ export default function VehiculoPage() {
             />
           )}
 
-          {activeTab === 'fotos' && (
+          {activeTab === "fotos" && (
             <GaleriaFotosTab
               vehiculoId={vehiculoId}
               fotoUrl={vehiculo.foto_url}
@@ -731,19 +872,15 @@ export default function VehiculoPage() {
             />
           )}
 
-          {activeTab === 'mantenimientos' && (
+          {activeTab === "mantenimientos" && (
             <MantenimientosTab vehiculoId={vehiculoId} />
           )}
 
-          {activeTab === 'averias' && (
-            <AveriasTab vehiculoId={vehiculoId} />
-          )}
+          {activeTab === "averias" && <AveriasTab vehiculoId={vehiculoId} />}
 
-          {activeTab === 'mejoras' && (
-            <MejorasTab vehiculoId={vehiculoId} />
-          )}
+          {activeTab === "mejoras" && <MejorasTab vehiculoId={vehiculoId} />}
 
-          {activeTab === 'valoracion-ia' && (
+          {activeTab === "valoracion-ia" && (
             <div className="space-y-6">
               {/* Botón para generar nueva valoración */}
               <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border border-purple-200">
@@ -754,9 +891,11 @@ export default function VehiculoPage() {
                       Valoración con Inteligencia Artificial
                     </h3>
                     <p className="text-gray-700 mb-4">
-                      Genera un informe profesional de valoración de tu vehículo utilizando IA.
-                      Analizamos datos reales del mercado, el estado de tu vehículo, inversiones realizadas
-                      y te proporcionamos 3 precios estratégicos: de salida, objetivo y mínimo.
+                      Genera un informe profesional de valoración de tu vehículo
+                      utilizando IA. Analizamos datos reales del mercado, el
+                      estado de tu vehículo, inversiones realizadas y te
+                      proporcionamos 3 precios estratégicos: de salida, objetivo
+                      y mínimo.
                     </p>
                     <ul className="text-sm text-gray-600 space-y-1">
                       <li>✓ Búsqueda automática de comparables en internet</li>
@@ -772,9 +911,25 @@ export default function VehiculoPage() {
                   >
                     {generandoValoracion ? (
                       <>
-                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg
+                          className="animate-spin h-5 w-5"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
                         </svg>
                         Generando...
                       </>
@@ -814,7 +969,8 @@ export default function VehiculoPage() {
                     Aún no tienes valoraciones
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Genera tu primera valoración con IA para conocer el valor real de tu vehículo
+                    Genera tu primera valoración con IA para conocer el valor
+                    real de tu vehículo
                   </p>
                   <button
                     onClick={handleGenerarValoracion}
@@ -829,13 +985,11 @@ export default function VehiculoPage() {
             </div>
           )}
 
-          {activeTab === 'gastos' && (
+          {activeTab === "gastos" && (
             <GastosAdicionalesTab vehiculoId={vehiculoId} />
           )}
 
-          {activeTab === 'venta' && (
-            <VentaTab vehiculoId={vehiculoId} />
-          )}
+          {activeTab === "venta" && <VentaTab vehiculoId={vehiculoId} />}
         </div>
       </main>
 
@@ -862,5 +1016,5 @@ export default function VehiculoPage() {
         type="info"
       />
     </div>
-  )
+  );
 }
