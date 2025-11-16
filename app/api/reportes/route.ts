@@ -28,7 +28,7 @@ export async function GET() {
     }
 
     // Usar función de Supabase para obtener reportes con toda la información
-    const { data: reportes, error } = await supabase
+    const { data: reportes, error } = await (supabase as any)
       .rpc('obtener_reportes_usuario', { usuario_uuid: user.id })
 
     if (error) {

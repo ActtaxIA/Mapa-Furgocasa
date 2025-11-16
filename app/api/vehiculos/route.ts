@@ -161,7 +161,7 @@ export async function POST(request: Request) {
     }
 
     // Generar QR ID único usando la función de Supabase
-    const { data: qrData, error: qrError } = await supabase.rpc(
+    const { data: qrData, error: qrError } = await (supabase as any).rpc(
       "generar_qr_id"
     );
 

@@ -27,7 +27,7 @@ export async function GET(
     }
 
     // Llamar a la función SQL de valoración
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .rpc('calcular_valoracion_automatica', {
         p_vehiculo_id: params.id
       })

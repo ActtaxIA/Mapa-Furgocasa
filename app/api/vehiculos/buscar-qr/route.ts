@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     }
 
     // Buscar vehículo usando la función RPC
-    const { data: vehiculoData, error } = await supabase
+    const { data: vehiculoData, error } = await (supabase as any)
       .rpc('buscar_vehiculo_por_qr', { qr_id })
 
     if (error) {

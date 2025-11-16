@@ -81,7 +81,7 @@ export default function AdminReportesPage() {
   const loadMetricas = async () => {
     try {
       const supabase = createClient()
-      const { data, error } = await supabase.rpc('admin_dashboard_metricas')
+      const { data, error } = await (supabase as any).rpc('admin_dashboard_metricas')
       
       if (error) throw error
       
@@ -96,7 +96,7 @@ export default function AdminReportesPage() {
   const loadReportes = async () => {
     try {
       const supabase = createClient()
-      const { data, error } = await supabase.rpc('admin_listado_reportes_accidentes')
+      const { data, error } = await (supabase as any).rpc('admin_listado_reportes_accidentes')
       
       if (error) {
         console.error('Error en RPC admin_listado_reportes_accidentes:', error)
