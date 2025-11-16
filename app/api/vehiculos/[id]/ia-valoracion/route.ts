@@ -208,10 +208,10 @@ export async function POST(
 
         for (const valoracion of valoracionesSimilares as any[]) {
           const vehiculoId = valoracion.vehiculo_id
-          
+
           // FIX: Manejar JOIN que puede venir como objeto o array
-          const vehiculoData = Array.isArray(valoracion.vehiculos_registrados) 
-            ? valoracion.vehiculos_registrados[0] 
+          const vehiculoData = Array.isArray(valoracion.vehiculos_registrados)
+            ? valoracion.vehiculos_registrados[0]
             : valoracion.vehiculos_registrados
 
           const existente = vehiculosUnicos.get(vehiculoId)
@@ -240,8 +240,8 @@ export async function POST(
           const vehiculoId = compra.vehiculo_id
 
           // FIX: Manejar JOIN que puede venir como objeto o array
-          const vehiculoDataCompra = Array.isArray(compra.vehiculos_registrados) 
-            ? compra.vehiculos_registrados[0] 
+          const vehiculoDataCompra = Array.isArray(compra.vehiculos_registrados)
+            ? compra.vehiculos_registrados[0]
             : compra.vehiculos_registrados
 
           // Solo agregar si este vehículo no tiene ya una valoración IA
@@ -412,6 +412,7 @@ export async function POST(
             link: null,
             fuente: d.origen || 'BD Interna - Mercado',
             fecha: d.fecha_transaccion || d.created_at,
+            vehiculo_id: null, // No tiene vehiculo_id asociado
             relevancia: 0
           }
 
@@ -448,6 +449,7 @@ export async function POST(
         const comparablesExternosProcesados = comparables.map(c => {
           const comparable = {
             ...c,
+            vehiculo_id: c.vehiculo_id || null, // Asegurar que tenga vehiculo_id (null si es externo)
             relevancia: 0
           }
 
