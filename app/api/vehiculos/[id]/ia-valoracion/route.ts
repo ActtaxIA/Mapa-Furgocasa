@@ -146,50 +146,64 @@ export async function POST(
 
       let comparablesInternos = []
 
-      // Agregar valoraciones IA de otros vehículos (solo la más reciente por vehículo)
-      if (valoracionesSimilares && valoracionesSimilares.length > 0) {
-        // Deduplicar: quedarnos solo con la valoración más reciente de cada vehículo
-        const valoracionesPorVehiculo = new Map<string, any>()
+      // DEDUPLICACIÓN GLOBAL: Un vehículo = Un comparable
+      // Prioridad: Valoración IA más reciente > Precio de compra
+      console.log(`   🔄 Deduplicando comparables por vehículo...`)
+      console.log(`   📊 Valoraciones IA encontradas: ${valoracionesSimilares?.length || 0}`)
+      console.log(`   📊 Compras encontradas: ${datosCompra?.length || 0}`)
 
+      const vehiculosUnicos = new Map<string, any>()
+
+      // 1. Primero procesar valoraciones IA (más actuales y relevantes)
+      if (valoracionesSimilares && valoracionesSimilares.length > 0) {
         for (const valoracion of valoracionesSimilares) {
           const vehiculoId = valoracion.vehiculo_id
-          const existente = valoracionesPorVehiculo.get(vehiculoId)
+          const existente = vehiculosUnicos.get(vehiculoId)
 
-          // Si no existe o esta es más reciente, reemplazar
-          if (!existente || new Date(valoracion.fecha_valoracion) > new Date(existente.fecha_valoracion)) {
-            valoracionesPorVehiculo.set(vehiculoId, valoracion)
+          // Si no existe o esta valoración es más reciente, actualizar
+          if (!existente || new Date(valoracion.fecha_valoracion) > new Date(existente.fecha)) {
+            vehiculosUnicos.set(vehiculoId, {
+              tipo: 'valoracion_ia',
+              precio: valoracion.precio_objetivo,
+              fecha: valoracion.fecha_valoracion,
+              vehiculo_id: vehiculoId
+            })
           }
         }
-
-        // Convertir a array y solo usar precio_objetivo (el más realista)
-        comparablesInternos.push(...Array.from(valoracionesPorVehiculo.values()).map(v => ({
-          titulo: `Valoración IA similar`,
-          precio: v.precio_objetivo, // Solo precio objetivo, no salida ni mínimo
-          link: null,
-          fuente: 'BD Interna - Valoraciones IA',
-          fecha: v.fecha_valoracion
-        })))
       }
 
-      // Agregar precios de compra de usuarios (deduplicar por vehículo)
+      // 2. Agregar compras SOLO si el vehículo NO tiene valoración IA
       if (datosCompra && datosCompra.length > 0) {
-        // Deduplicar: un vehículo solo se compra una vez (precio de compra único)
-        const comprasPorVehiculo = new Map<string, any>()
-
         for (const compra of datosCompra) {
-          if (!comprasPorVehiculo.has(compra.vehiculo_id)) {
-            comprasPorVehiculo.set(compra.vehiculo_id, compra)
+          const vehiculoId = compra.vehiculo_id
+          
+          // Solo agregar si este vehículo no tiene ya una valoración IA
+          if (!vehiculosUnicos.has(vehiculoId)) {
+            vehiculosUnicos.set(vehiculoId, {
+              tipo: 'compra',
+              precio: compra.precio_compra,
+              fecha: compra.fecha_compra,
+              vehiculo_id: vehiculoId
+            })
           }
         }
-
-        comparablesInternos.push(...Array.from(comprasPorVehiculo.values()).map(d => ({
-          titulo: `Vehículo similar comprado`,
-          precio: d.precio_compra,
-          link: null,
-          fuente: 'BD Interna - Compras Usuarios',
-          fecha: d.fecha_compra
-        })))
       }
+
+      // 3. Convertir a array y limitar a máximo 8 comparables internos
+      const vehiculosDeduplicados = Array.from(vehiculosUnicos.values())
+        .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()) // Más recientes primero
+        .slice(0, 8) // Máximo 8 comparables internos
+
+      console.log(`   ✅ Vehículos únicos después de deduplicación: ${vehiculosDeduplicados.length}`)
+
+      // 4. Crear comparables con títulos apropiados
+      comparablesInternos = vehiculosDeduplicados.map(v => ({
+        titulo: v.tipo === 'valoracion_ia' ? 'Valoración IA similar' : 'Vehículo similar comprado',
+        precio: v.precio,
+        link: null,
+        fuente: v.tipo === 'valoracion_ia' ? 'BD Interna - Valoraciones IA' : 'BD Interna - Compras Usuarios',
+        fecha: v.fecha
+      }))
 
       // Agregar datos de mercado scrapeados
       if (datosMercado && datosMercado.length > 0) {
