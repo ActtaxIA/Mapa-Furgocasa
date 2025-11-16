@@ -422,8 +422,6 @@ export function MiAutocaravanaTab({ userId }: Props) {
                   <option value="Autocaravana Perfilada">🚙 Autocaravana Perfilada</option>
                   <option value="Autocaravana Integral">🚌 Autocaravana Integral</option>
                   <option value="Autocaravana Capuchina">🏕️ Autocaravana Capuchina</option>
-                  <option value="Camper">🚗 Camper</option>
-                  <option value="Furgoneta">🚐 Furgoneta</option>
                   <option value="Otro">📦 Otro</option>
                 </select>
               </div>
