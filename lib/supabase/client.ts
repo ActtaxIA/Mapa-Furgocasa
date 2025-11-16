@@ -2,11 +2,17 @@ import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/database.types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-// NO usar singleton - crear instancia nueva cada vez
-// Esto permite que Supabase lea las cookies actualizadas después de OAuth
+// Singleton instance
+let client: SupabaseClient<Database> | undefined;
+
 export function createClient() {
-  // Siempre crear nueva instancia para leer cookies frescas
-  const client = createBrowserClient<Database>(
+  // Si ya existe una instancia, reutilizarla
+  if (client) {
+    return client;
+  }
+
+  // Crear nueva instancia
+  client = createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -45,18 +51,8 @@ export function createClient() {
           // Agregar Secure en producción (HTTPS) - CRÍTICO para móviles
           if (isProduction) {
             cookieOptions.push("Secure");
-
-            // Añadir dominio para que funcione en subdominios (importante para móviles)
-            if (typeof window !== "undefined") {
-              const hostname = window.location.hostname;
-              // Solo añadir domain si NO es localhost y es el dominio principal
-              if (
-                !hostname.includes("localhost") &&
-                hostname.includes("mapafurgocasa.com")
-              ) {
-                cookieOptions.push(`domain=.mapafurgocasa.com`);
-              }
-            }
+            // NO establecer domain - dejar que el navegador lo maneje automáticamente
+            // Esto evita problemas de cookies entre dominios en móviles
           }
 
           document.cookie = cookieOptions.join("; ");
