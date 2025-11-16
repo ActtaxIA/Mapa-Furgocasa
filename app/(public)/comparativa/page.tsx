@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     siteName: 'Mapa Furgocasa',
     images: [
       {
-        url: 'https://www.mapafurgocasa.com/images/furgocasa/open_graph_comparativa.jpeg',
+        url: 'https://www.mapafurgocasa.com/og-comparativa.jpg',
         width: 1200,
         height: 630,
         alt: 'Mapa Furgocasa vs Park4Night - Comparativa completa',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Mapa Furgocasa vs Park4Night - Alternativa Completa GRATIS',
     description: 'Park4Night solo es mapa. Nosotros: áreas + gestión vehículo + IA + alertas + GPS. 100% GRATIS.',
-    images: ['https://www.mapafurgocasa.com/images/furgocasa/open_graph_comparativa.jpeg'],
+    images: ['https://www.mapafurgocasa.com/og-comparativa.jpg'],
   },
   robots: {
     index: true,
