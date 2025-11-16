@@ -34,16 +34,20 @@ export async function middleware(request: NextRequest) {
           return request.cookies.get(name)?.value
         },
         set(name: string, value: string, options: CookieOptions) {
-          // Mejorar opciones de cookies para móviles
+          // Detectar HTTPS para producción
+          const isHttps = request.headers.get('x-forwarded-proto') === 'https' ||
+                          request.nextUrl.protocol === 'https:'
+          
+          // Mejorar opciones de cookies para móviles con maxAge explícito
           const cookieOptions = {
             name,
             value,
             ...options,
             path: options.path || '/',
             sameSite: (options.sameSite || 'lax') as 'lax' | 'strict' | 'none',
-            secure: request.headers.get('x-forwarded-proto') === 'https' ||
-                    request.nextUrl.protocol === 'https:',
+            secure: isHttps,
             httpOnly: options.httpOnly !== false,
+            maxAge: options.maxAge || 31536000, // 1 año por defecto - CRÍTICO para móviles
           }
 
           request.cookies.set(cookieOptions)
