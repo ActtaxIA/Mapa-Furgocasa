@@ -64,27 +64,34 @@ export async function GET() {
     // Transformar los datos para incluir datos económicos directamente
     const vehiculosTransformados = (vehiculos || []).map((v: any) => {
       // Obtener el último registro de kilometraje
-      const ultimoKm = v.vehiculo_kilometraje && v.vehiculo_kilometraje.length > 0
-        ? v.vehiculo_kilometraje.sort((a: any, b: any) => 
-            new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
-          )[0]
-        : null;
+      const ultimoKm =
+        v.vehiculo_kilometraje && v.vehiculo_kilometraje.length > 0
+          ? v.vehiculo_kilometraje.sort(
+              (a: any, b: any) =>
+                new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+            )[0]
+          : null;
 
       return {
         ...v,
         // Datos de venta
         vendido: v.vehiculo_valoracion_economica?.vendido || false,
         en_venta: v.vehiculo_valoracion_economica?.en_venta || false,
-        precio_venta_deseado: v.vehiculo_valoracion_economica?.precio_venta_deseado || null,
-        precio_venta_final: v.vehiculo_valoracion_economica?.precio_venta_final || null,
+        precio_venta_deseado:
+          v.vehiculo_valoracion_economica?.precio_venta_deseado || null,
+        precio_venta_final:
+          v.vehiculo_valoracion_economica?.precio_venta_final || null,
         fecha_venta: v.vehiculo_valoracion_economica?.fecha_venta || null,
         // Datos de compra
         precio_compra: v.vehiculo_valoracion_economica?.precio_compra || null,
         fecha_compra: v.vehiculo_valoracion_economica?.fecha_compra || null,
-        kilometros_compra: v.vehiculo_valoracion_economica?.kilometros_compra || null,
+        kilometros_compra:
+          v.vehiculo_valoracion_economica?.kilometros_compra || null,
         // Datos económicos adicionales
-        valor_estimado_actual: v.vehiculo_valoracion_economica?.valor_estimado_actual || null,
-        inversion_total: v.vehiculo_valoracion_economica?.inversion_total || null,
+        valor_estimado_actual:
+          v.vehiculo_valoracion_economica?.valor_estimado_actual || null,
+        inversion_total:
+          v.vehiculo_valoracion_economica?.inversion_total || null,
         financiado: v.vehiculo_valoracion_economica?.financiado || false,
         pendiente_pago: v.vehiculo_valoracion_economica?.pendiente_pago || null,
         // Kilometraje actual

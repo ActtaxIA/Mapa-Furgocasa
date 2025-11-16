@@ -978,6 +978,7 @@ export default function VehiculoPage() {
                       vehiculoModelo={vehiculo.modelo}
                       onDescargarPDF={() => descargarValoracionPDF(informe)}
                       todasLasValoraciones={valoracionesIA}
+                      onValoracionEliminada={loadValoracionesIA}
                     />
                   ))}
                 </div>

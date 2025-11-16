@@ -321,17 +321,30 @@ export async function POST(
 
     // 6. EXTRAER PRECIOS DEL INFORME
     console.log(`\n💰 [PASO 6/7] Extrayendo precios del informe...`)
-    const precioSalidaMatch = informeTexto.match(/precio\s+de\s+salida\s+recomendado[:\s]+(\d{1,3}(?:\.\d{3})*)/i)
-    const precioObjetivoMatch = informeTexto.match(/precio\s+objetivo\s+de\s+venta[:\s]+(\d{1,3}(?:\.\d{3})*)/i)
-    const precioMinimoMatch = informeTexto.match(/precio\s+mínimo\s+aceptable[:\s]+(\d{1,3}(?:\.\d{3})*)/i)
+    
+    // Regex mejorado: captura números con puntos o comas como separadores de miles
+    // Ejemplos: "64.000€", "64,000€", "64000€", "64.000 €", "64,000 €"
+    const precioSalidaMatch = informeTexto.match(/precio\s+de\s+salida\s+recomendado[:\s]+(\d{1,3}(?:[.,]\d{3})*)/i)
+    const precioObjetivoMatch = informeTexto.match(/precio\s+objetivo\s+de\s+venta[:\s]+(\d{1,3}(?:[.,]\d{3})*)/i)
+    const precioMinimoMatch = informeTexto.match(/precio\s+mínimo\s+aceptable[:\s]+(\d{1,3}(?:[.,]\d{3})*)/i)
 
-    const precioSalida = precioSalidaMatch ? parseFloat(precioSalidaMatch[1].replace(/\./g, '')) : valoracion?.precio_compra ? valoracion.precio_compra * 1.1 : null
-    const precioObjetivo = precioObjetivoMatch ? parseFloat(precioObjetivoMatch[1].replace(/\./g, '')) : valoracion?.precio_compra || null
-    const precioMinimo = precioMinimoMatch ? parseFloat(precioMinimoMatch[1].replace(/\./g, '')) : valoracion?.precio_compra ? valoracion.precio_compra * 0.9 : null
+    // Función auxiliar para parsear precios eliminando puntos y comas como separadores
+    const parsearPrecio = (precioStr: string): number => {
+      return parseFloat(precioStr.replace(/[.,]/g, ''))
+    }
 
-    console.log(`   💵 Salida: ${precioSalida}€`)
-    console.log(`   🎯 Objetivo: ${precioObjetivo}€`)
-    console.log(`   📉 Mínimo: ${precioMinimo}€`)
+    // Debug: mostrar lo que capturó el regex
+    console.log(`   🔍 Match Salida: "${precioSalidaMatch ? precioSalidaMatch[1] : 'NO MATCH'}"`)
+    console.log(`   🔍 Match Objetivo: "${precioObjetivoMatch ? precioObjetivoMatch[1] : 'NO MATCH'}"`)
+    console.log(`   🔍 Match Mínimo: "${precioMinimoMatch ? precioMinimoMatch[1] : 'NO MATCH'}"`)
+
+    const precioSalida = precioSalidaMatch ? parsearPrecio(precioSalidaMatch[1]) : valoracion?.precio_compra ? valoracion.precio_compra * 1.1 : null
+    const precioObjetivo = precioObjetivoMatch ? parsearPrecio(precioObjetivoMatch[1]) : valoracion?.precio_compra || null
+    const precioMinimo = precioMinimoMatch ? parsearPrecio(precioMinimoMatch[1]) : valoracion?.precio_compra ? valoracion.precio_compra * 0.9 : null
+
+    console.log(`   💵 Salida parseado: ${precioSalida}€`)
+    console.log(`   🎯 Objetivo parseado: ${precioObjetivo}€`)
+    console.log(`   📉 Mínimo parseado: ${precioMinimo}€`)
 
     // 7. GUARDAR EN BASE DE DATOS
     console.log(`\n💾 [PASO 7/7] Guardando en base de datos...`)
@@ -520,6 +533,91 @@ export async function GET(
         error: 'Error obteniendo valoraciones',
         detalle: error.message,
         codigo: error.code
+      },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE: Eliminar una valoración específica del historial
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    console.log(`\n🗑️ [DELETE VALORACION] Iniciando eliminación`)
+    
+    const supabase = createRouteHandlerClient({ cookies })
+    
+    // 1. Verificar autenticación
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      console.error('❌ Usuario no autenticado')
+      return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+    }
+
+    // 2. Obtener el ID de la valoración a eliminar desde query params
+    const { searchParams } = new URL(request.url)
+    const valoracionId = searchParams.get('valoracion_id')
+
+    if (!valoracionId) {
+      return NextResponse.json(
+        { error: 'ID de valoración requerido' },
+        { status: 400 }
+      )
+    }
+
+    console.log(`   📋 Vehículo ID: ${params.id}`)
+    console.log(`   🗑️ Valoración ID: ${valoracionId}`)
+
+    // 3. Verificar que la valoración pertenece al usuario y al vehículo
+    const { data: valoracion, error: checkError } = await supabase
+      .from('valoracion_ia_informes')
+      .select('id, vehiculo_id, user_id')
+      .eq('id', valoracionId)
+      .eq('user_id', user.id)
+      .eq('vehiculo_id', params.id)
+      .single()
+
+    if (checkError || !valoracion) {
+      console.error('❌ Valoración no encontrada o sin permisos')
+      return NextResponse.json(
+        { error: 'Valoración no encontrada o no tienes permisos para eliminarla' },
+        { status: 404 }
+      )
+    }
+
+    // 4. Eliminar la valoración
+    const { error: deleteError } = await supabase
+      .from('valoracion_ia_informes')
+      .delete()
+      .eq('id', valoracionId)
+      .eq('user_id', user.id)
+
+    if (deleteError) {
+      console.error('❌ Error eliminando valoración:', deleteError)
+      return NextResponse.json(
+        { error: 'Error al eliminar la valoración' },
+        { status: 500 }
+      )
+    }
+
+    console.log(`✅ Valoración eliminada correctamente`)
+
+    return NextResponse.json({
+      success: true,
+      message: 'Valoración eliminada correctamente'
+    })
+
+  } catch (error: any) {
+    console.error('\n❌ [DELETE VALORACION] ERROR:', error)
+    console.error('   Mensaje:', error.message)
+
+    return NextResponse.json(
+      {
+        error: 'Error eliminando valoración',
+        detalle: error.message
       },
       { status: 500 }
     )
