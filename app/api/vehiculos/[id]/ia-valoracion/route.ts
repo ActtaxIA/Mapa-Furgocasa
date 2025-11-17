@@ -132,30 +132,14 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
       .eq('id', jobId)
 
     // 2B. BUSCAR COMPARABLES EN NUESTRA BASE DE DATOS
-    console.log(`\n🔍 [PASO 2B/7] Buscando comparables en nuestra BD...`)
+    console.log(`\n🔍 [PASO 2B/7] Buscando comparables REALES en nuestra BD...`)
+    console.log(`   ℹ️  Solo se usarán datos REALES (compras y ventas), NO valoraciones IA previas`)
 
     try {
-      // Buscar vehículos similares con valoraciones IA (con datos del vehículo)
-      const { data: valoracionesSimilares, error: errorValoraciones } = await (supabase as any)
-        .from('valoracion_ia_informes')
-        .select(`
-          precio_objetivo,
-          precio_salida,
-          precio_minimo,
-          precio_base_mercado,
-          fecha_valoracion,
-          vehiculo_id,
-          vehiculos_registrados (
-            año,
-            marca,
-            modelo
-          )
-        `)
-        .neq('vehiculo_id', vehiculoId) // Excluir el vehículo actual
-        .order('fecha_valoracion', { ascending: false })
-        .limit(20)
+      // 🚫 NO usamos valoraciones IA previas como comparables (pueden estar infladas)
+      // ✅ Solo usamos datos REALES de transacciones
 
-      // Buscar datos de compra de usuarios (con datos del vehículo)
+      // 1. Buscar COMPRAS REALES de usuarios
       // IMPORTANTE: Usar pvp_base_particular (precio normalizado con impuesto incluido)
       // en lugar de precio_compra para evitar sesgos por empresas de alquiler exentas
       const { data: datosCompra, error: errorCompra } = await (supabase as any)
@@ -167,6 +151,10 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
           origen_compra,
           fecha_compra,
           kilometros_compra,
+          vendido,
+          precio_venta_final,
+          kilometros_venta,
+          fecha_venta,
           vehiculo_id,
           vehiculos_registrados (
             año,
@@ -177,7 +165,7 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
         .neq('vehiculo_id', vehiculoId)
         .not('pvp_base_particular', 'is', null)
         .order('fecha_compra', { ascending: false })
-        .limit(20)
+        .limit(40) // Aumentado para tener más datos reales
 
       // Buscar datos de mercado scrapeados
       const { data: datosMercado, error: errorMercado } = await (supabase as any)
@@ -190,85 +178,14 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
 
       let comparablesInternos = []
 
-      // DEDUPLICACIÓN GLOBAL: Un vehículo = Un comparable
-      // Prioridad: Valoración IA más reciente > Precio de compra
-      console.log(`   🔄 Deduplicando comparables por vehículo...`)
-      console.log(`   📊 Valoraciones IA encontradas: ${valoracionesSimilares?.length || 0}`)
+      // 🎯 SOLO DATOS REALES: Un vehículo = Un comparable
+      // Prioridad: Venta real > Compra real
+      console.log(`   🔄 Procesando comparables REALES (sin valoraciones IA previas)...`)
       console.log(`   📊 Compras encontradas: ${datosCompra?.length || 0}`)
 
       const vehiculosUnicos = new Map<string, any>()
 
-      // 1. Primero procesar valoraciones IA (más actuales y relevantes)
-      // MEJORA: Obtener km actuales de los vehículos de valoraciones IA
-      if (valoracionesSimilares && valoracionesSimilares.length > 0) {
-        // Obtener km actuales de todos los vehículos de una vez
-        const vehiculosIds = [...new Set(valoracionesSimilares.map((v: any) => v.vehiculo_id))]
-        const { data: fichasComparables } = await (supabase as any)
-          .from('vehiculo_ficha_tecnica')
-          .select('vehiculo_id, kilometros_actuales')
-          .in('vehiculo_id', vehiculosIds)
-
-        // Crear mapa rápido de km por vehículo
-        const kmPorVehiculo = new Map<string, number>()
-        fichasComparables?.forEach((f: any) => {
-          if (f.kilometros_actuales) {
-            kmPorVehiculo.set(f.vehiculo_id, f.kilometros_actuales)
-          }
-        })
-
-        // Si no hay en ficha técnica, buscar en kilometraje más reciente
-        if (kmPorVehiculo.size < vehiculosIds.length) {
-          const { data: kmRegistros } = await (supabase as any)
-            .from('vehiculo_kilometraje')
-            .select('vehiculo_id, kilometros')
-            .in('vehiculo_id', vehiculosIds)
-            .order('fecha', { ascending: false })
-
-          // Agrupar por vehículo y tomar el más reciente
-          const kmPorVehiculoRegistro = new Map<string, number>()
-          kmRegistros?.forEach((k: any) => {
-            if (!kmPorVehiculoRegistro.has(k.vehiculo_id) && k.kilometros) {
-              kmPorVehiculoRegistro.set(k.vehiculo_id, k.kilometros)
-            }
-          })
-
-          // Combinar ambos mapas
-          kmPorVehiculoRegistro.forEach((km: any, id: any) => {
-            if (!kmPorVehiculo.has(id)) {
-              kmPorVehiculo.set(id, km)
-            }
-          })
-        }
-
-        for (const valoracion of valoracionesSimilares as any[]) {
-          const vehiculoIdComp = valoracion.vehiculo_id
-
-          // FIX: Manejar JOIN que puede venir como objeto o array
-          const vehiculoData = Array.isArray(valoracion.vehiculos_registrados)
-            ? valoracion.vehiculos_registrados[0]
-            : valoracion.vehiculos_registrados
-
-          const existente = vehiculosUnicos.get(vehiculoIdComp)
-
-          // Si no existe o esta valoración es más reciente, actualizar
-          if (!existente || new Date(valoracion.fecha_valoracion) > new Date(existente.fecha)) {
-            vehiculosUnicos.set(vehiculoIdComp, {
-              tipo: 'valoracion_ia',
-              precio: valoracion.precio_objetivo,
-              fecha: valoracion.fecha_valoracion,
-              vehiculo_id: vehiculoIdComp,
-              año: vehiculoData?.año || null,
-              marca: vehiculoData?.marca || null,
-              modelo: vehiculoData?.modelo || null,
-              kilometros: kmPorVehiculo.get(vehiculoIdComp) || null
-            })
-          }
-        }
-
-        console.log(`   ✅ Valoraciones IA procesadas: ${valoracionesSimilares.length} → Vehículos únicos: ${vehiculosUnicos.size}`)
-      }
-
-      // 2. Agregar compras SOLO si el vehículo NO tiene valoración IA
+      // 1. Procesar COMPRAS y VENTAS REALES
       if (datosCompra && datosCompra.length > 0) {
         for (const compra of datosCompra as any[]) {
           const vehiculoIdComp = compra.vehiculo_id
@@ -278,24 +195,45 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
             ? compra.vehiculos_registrados[0]
             : compra.vehiculos_registrados
 
-          // Solo agregar si este vehículo no tiene ya una valoración IA
-          if (!vehiculosUnicos.has(vehiculoIdComp)) {
+          // ✅ PRIORIDAD 1: Si está vendido, usar precio_venta_final (dato REAL más actual)
+          if (compra.vendido && compra.precio_venta_final && compra.kilometros_venta) {
+            vehiculosUnicos.set(vehiculoIdComp, {
+              tipo: 'venta_real',
+              precio: compra.precio_venta_final,
+              fecha: compra.fecha_venta || compra.fecha_compra,
+              vehiculo_id: vehiculoIdComp,
+              año: vehiculoDataCompra?.año || null,
+              marca: vehiculoDataCompra?.marca || null,
+              modelo: vehiculoDataCompra?.modelo || null,
+              kilometros: compra.kilometros_venta || null
+            })
+            console.log(`   ✅ VENTA REAL: ${vehiculoDataCompra?.marca} ${vehiculoDataCompra?.modelo} → ${compra.precio_venta_final.toLocaleString()}€ (${compra.kilometros_venta?.toLocaleString()} km)`)
+          } 
+          // ✅ PRIORIDAD 2: Si no está vendido, usar pvp_base_particular (precio normalizado)
+          else {
             // IMPORTANTE: Usar pvp_base_particular en lugar de precio_compra
             // para evitar sesgos por empresas de alquiler exentas del impuesto
             vehiculosUnicos.set(vehiculoIdComp, {
-              tipo: 'compra',
+              tipo: 'compra_real',
               precio: compra.pvp_base_particular || compra.precio_compra,
               fecha: compra.fecha_compra,
               vehiculo_id: vehiculoIdComp,
               año: vehiculoDataCompra?.año || null,
               marca: vehiculoDataCompra?.marca || null,
               modelo: vehiculoDataCompra?.modelo || null,
-              kilometros: compra.kilometros_compra || null
+              kilometros: compra.kilometros_compra || null,
+              origen_compra: compra.origen_compra,
+              precio_incluye_impuesto: compra.precio_incluye_impuesto_matriculacion
             })
           }
         }
 
-        console.log(`   ✅ Compras procesadas: ${datosCompra.length} → Vehículos únicos totales: ${vehiculosUnicos.size}`)
+        console.log(`   ✅ Transacciones REALES procesadas: ${datosCompra.length} → Vehículos únicos: ${vehiculosUnicos.size}`)
+        
+        // Contar ventas vs compras
+        const ventas = Array.from(vehiculosUnicos.values()).filter(v => v.tipo === 'venta_real').length
+        const compras = Array.from(vehiculosUnicos.values()).filter(v => v.tipo === 'compra_real').length
+        console.log(`   📊 Desglose: ${ventas} ventas reales + ${compras} compras reales`)
       }
 
       // 3. FUNCIONES DE ANÁLISIS DE COMPARABLES
@@ -384,9 +322,24 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
       console.log(`   🔒 Validación: Vehículos después de excluir el actual: ${vehiculosDeduplicados.length}`)
 
       let comparablesConRelevancia = vehiculosDeduplicados.map((v: any) => {
-        const titulo = v.marca && v.modelo
+        // Generar título descriptivo según el tipo de dato
+        let titulo = v.marca && v.modelo
           ? `${v.marca} ${v.modelo} - España`
-          : (v.tipo === 'valoracion_ia' ? 'Valoración IA similar' : 'Vehículo similar comprado')
+          : 'Vehículo similar'
+
+        // Identificar fuente según el tipo de transacción
+        let fuente = 'BD Interna'
+        if (v.tipo === 'venta_real') {
+          fuente = 'BD Interna - Venta Real Confirmada'
+          titulo = titulo + ' (Vendido)'
+        } else if (v.tipo === 'compra_real') {
+          // Indicar si el precio fue normalizado por impuesto de matriculación
+          if (v.precio_incluye_impuesto === false && v.origen_compra) {
+            fuente = `BD Interna - Compra ${v.origen_compra === 'empresa_alquiler' ? 'Empresa Alquiler' : 'Particular'} (PVP Normalizado)`
+          } else {
+            fuente = 'BD Interna - Compra Particular'
+          }
+        }
 
         const comparable = {
           titulo,
@@ -394,9 +347,9 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
           año: v.año,
           kilometros: v.kilometros,
           link: null,
-          fuente: v.tipo === 'valoracion_ia' ? 'BD Interna - Valoraciones IA' : 'BD Interna - Compras Usuarios',
+          fuente,
           fecha: v.fecha,
-          vehiculo_id: v.vehiculo_id, // FIX: Incluir vehiculo_id para deduplicación
+          vehiculo_id: v.vehiculo_id, // Incluir vehiculo_id para deduplicación
           relevancia: 0 // Se calculará después
         }
 
