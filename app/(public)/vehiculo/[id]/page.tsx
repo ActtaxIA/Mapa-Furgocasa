@@ -788,8 +788,12 @@ export default function VehiculoPage() {
       const textoPlano = valoracion.informe_texto
         // Eliminar todos los emojis Unicode (no soportados por jsPDF)
         .replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, "")
+        // Procesar títulos markdown (## y ###) ANTES de limpiar # sueltos
         .replace(/##\s+(.+)/g, "\n\n===SECTION===$1")
         .replace(/###\s+(.+)/g, "\n\n---SUBSECTION---$1")
+        // Eliminar # sueltos que quedan (separadores de sección en el informe)
+        .replace(/^#\s*$/gm, "")
+        // Procesar negrita y enlaces
         .replace(/\*\*(.+?)\*\*/g, "***$1***")
         .replace(/\*(.+?)\*/g, "$1")
         .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1");
