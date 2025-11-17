@@ -480,7 +480,7 @@ export default function VehiculoPage() {
 
   const descargarValoracionPDF = async (valoracion: any) => {
     try {
-      setToast({ message: "Generando PDF completo...", type: "info" });
+      setToast({ message: "Generando PDF profesional...", type: "info" });
 
       // Importar jsPDF dinámicamente
       const { default: jsPDF } = await import("jspdf");
@@ -495,6 +495,14 @@ export default function VehiculoPage() {
       const margin = 15;
       let yPos = 20;
 
+      // Colores corporativos Mapa Furgocasa
+      const colorPrimario = [239, 68, 68]; // Rojo corporativo
+      const colorSecundario = [249, 115, 22]; // Naranja
+      const colorAzul = [59, 130, 246]; // Azul
+      const colorVerde = [34, 197, 94]; // Verde
+      const colorGrisClaro = [249, 250, 251];
+      const colorGrisTexto = [107, 114, 128];
+
       // Función para agregar nueva página si es necesario
       const checkPageBreak = (requiredHeight: number) => {
         if (yPos + requiredHeight > pageHeight - 20) {
@@ -503,107 +511,164 @@ export default function VehiculoPage() {
         }
       };
 
-      // 1. HEADER CON LOGO Y TÍTULO
-      pdf.setFillColor(37, 99, 235); // Azul
-      pdf.rect(0, 0, pageWidth, 40, "F");
+      // 1. HEADER CON DISEÑO CORPORATIVO
+      pdf.setFillColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
+      pdf.rect(0, 0, pageWidth, 50, "F");
+
+      // Línea naranja decorativa
+      pdf.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2]);
+      pdf.rect(0, 50, pageWidth, 3, "F");
 
       pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(20);
+      pdf.setFontSize(26);
       pdf.setFont("helvetica", "bold");
-      pdf.text("Informe de Valoración IA", margin, 25);
+      pdf.text("VALORACIÓN INTELIGENTE IA", pageWidth / 2, 22, { align: "center" });
 
-      pdf.setFontSize(12);
+      pdf.setFontSize(14);
       pdf.setFont("helvetica", "normal");
       pdf.text(
         `${vehiculo?.marca || ""} ${vehiculo?.modelo || ""}`,
-        margin,
-        32
+        pageWidth / 2,
+        33,
+        { align: "center" }
       );
 
+      // Añadir logo blanco si está disponible
+      try {
+        const logoUrl = "https://www.mapafurgocasa.com/logo-blanco-500.png";
+        const response = await fetch(logoUrl);
+        const blob = await response.blob();
+        const arrayBuffer = await blob.arrayBuffer();
+        const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+        pdf.addImage(`data:image/png;base64,${base64}`, "PNG", pageWidth / 2 - 10, 38, 20, 8);
+      } catch (error) {
+        console.warn("No se pudo cargar el logo:", error);
+      }
+
       pdf.setTextColor(0, 0, 0);
-      yPos = 50;
+      yPos = 63;
 
-      // 2. INFORMACIÓN DEL VEHÍCULO
-      pdf.setFontSize(14);
+      // 2. INFORMACIÓN DEL VEHÍCULO EN CAJA CON FONDO
+      pdf.setFillColor(colorGrisClaro[0], colorGrisClaro[1], colorGrisClaro[2]);
+      pdf.roundedRect(margin, yPos - 2, pageWidth - 2 * margin, 44, 2, 2, "F");
+      
+      pdf.setFontSize(13);
       pdf.setFont("helvetica", "bold");
-      pdf.text("Datos del Vehículo", margin, yPos);
-      yPos += 8;
-
+      pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
+      pdf.text("📋 DATOS DEL VEHÍCULO", margin + 3, yPos + 5);
+      
+      yPos += 12;
       pdf.setFontSize(10);
       pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(0, 0, 0);
+
       const datosVehiculo = [
-        `Matrícula: ${vehiculo?.matricula || "No especificada"}`,
-        `Marca: ${vehiculo?.marca || "No especificada"}`,
-        `Modelo: ${vehiculo?.modelo || "No especificado"}`,
-        `Año: ${vehiculo?.ano || "No especificado"}`,
-        `Tipo: ${vehiculo?.tipo_vehiculo || "Autocaravana"}`,
-        `Color: ${vehiculo?.color || "No especificado"}`,
+        { label: "Matrícula:", value: vehiculo?.matricula || "No especificada" },
+        { label: "Marca:", value: vehiculo?.marca || "No especificada" },
+        { label: "Modelo:", value: vehiculo?.modelo || "No especificado" },
+        { label: "Año:", value: vehiculo?.ano || "No especificado" },
+        { label: "Tipo:", value: vehiculo?.tipo_vehiculo || "Autocaravana" },
+        { label: "Color:", value: vehiculo?.color || "No especificado" },
       ];
 
       datosVehiculo.forEach((dato: any) => {
-        pdf.text(dato, margin, yPos);
-        yPos += 6;
+        pdf.setFont("helvetica", "bold");
+        pdf.text(dato.label, margin + 5, yPos);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(dato.value, margin + 35, yPos);
+        yPos += 5;
       });
 
-      yPos += 5;
-
-      // 3. PRECIOS DESTACADOS
-      checkPageBreak(30);
-      pdf.setFontSize(14);
-      pdf.setFont("helvetica", "bold");
-      pdf.text("Precios de Valoración", margin, yPos);
       yPos += 8;
 
-      pdf.setFontSize(10);
-      pdf.setFont("helvetica", "normal");
+      // 3. PRECIOS DESTACADOS EN CAJAS PROFESIONALES
+      checkPageBreak(60);
+      pdf.setFontSize(13);
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
+      pdf.text("💰 VALORACIÓN Y PRECIOS RECOMENDADOS", margin, yPos);
+      yPos += 10;
 
+      // Caja de Precio de Salida
       if (valoracion.precio_salida) {
-        pdf.setFillColor(34, 197, 94); // Verde
-        pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, "F");
+        pdf.setFillColor(colorVerde[0], colorVerde[1], colorVerde[2]);
+        pdf.roundedRect(margin, yPos - 2, pageWidth - 2 * margin, 16, 2, 2, "F");
+        
         pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(11);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("🚀 PRECIO DE SALIDA", margin + 3, yPos + 4);
+        
+        pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
         pdf.text(
-          `Precio de Salida: ${valoracion.precio_salida.toLocaleString(
-            "es-ES"
-          )}€`,
-          margin + 2,
-          yPos
+          `${valoracion.precio_salida.toLocaleString("es-ES")}€`,
+          pageWidth - margin - 3,
+          yPos + 4,
+          { align: "right" }
         );
-        pdf.setTextColor(0, 0, 0);
-        yPos += 10;
+        
+        pdf.setFontSize(8);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("Precio inicial para negociación", margin + 3, yPos + 10);
+        
+        yPos += 20;
       }
 
+      // Caja de Precio Objetivo
       if (valoracion.precio_objetivo) {
-        pdf.setFillColor(59, 130, 246); // Azul
-        pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, "F");
+        pdf.setFillColor(colorAzul[0], colorAzul[1], colorAzul[2]);
+        pdf.roundedRect(margin, yPos - 2, pageWidth - 2 * margin, 16, 2, 2, "F");
+        
         pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(11);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("🎯 PRECIO OBJETIVO", margin + 3, yPos + 4);
+        
+        pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
         pdf.text(
-          `Precio Objetivo: ${valoracion.precio_objetivo.toLocaleString(
-            "es-ES"
-          )}€`,
-          margin + 2,
-          yPos
+          `${valoracion.precio_objetivo.toLocaleString("es-ES")}€`,
+          pageWidth - margin - 3,
+          yPos + 4,
+          { align: "right" }
         );
-        pdf.setTextColor(0, 0, 0);
-        yPos += 10;
+        
+        pdf.setFontSize(8);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("Precio realista de venta", margin + 3, yPos + 10);
+        
+        yPos += 20;
       }
 
+      // Caja de Precio Mínimo
       if (valoracion.precio_minimo) {
-        pdf.setFillColor(249, 115, 22); // Naranja
-        pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, "F");
+        pdf.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2]);
+        pdf.roundedRect(margin, yPos - 2, pageWidth - 2 * margin, 16, 2, 2, "F");
+        
         pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(11);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("⚠️ PRECIO MÍNIMO", margin + 3, yPos + 4);
+        
+        pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
         pdf.text(
-          `Precio Mínimo: ${valoracion.precio_minimo.toLocaleString("es-ES")}€`,
-          margin + 2,
-          yPos
+          `${valoracion.precio_minimo.toLocaleString("es-ES")}€`,
+          pageWidth - margin - 3,
+          yPos + 4,
+          { align: "right" }
         );
-        pdf.setTextColor(0, 0, 0);
-        yPos += 10;
+        
+        pdf.setFontSize(8);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("Límite aceptable de negociación", margin + 3, yPos + 10);
+        
+        yPos += 20;
       }
 
       yPos += 5;
+      pdf.setTextColor(0, 0, 0);
 
       // 4. FOTOS DEL VEHÍCULO
       const supabase = createClient();
@@ -617,11 +682,12 @@ export default function VehiculoPage() {
       }
 
       if (todasLasFotos.length > 0) {
-        checkPageBreak(50);
-        pdf.setFontSize(14);
+        checkPageBreak(60);
+        pdf.setFontSize(13);
         pdf.setFont("helvetica", "bold");
-        pdf.text("Fotografías del Vehículo", margin, yPos);
-        yPos += 8;
+        pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
+        pdf.text("📸 FOTOGRAFÍAS DEL VEHÍCULO", margin, yPos);
+        yPos += 10;
 
         for (let i = 0; i < Math.min(todasLasFotos.length, 5); i++) {
           // Máximo 5 fotos
@@ -657,26 +723,31 @@ export default function VehiculoPage() {
                 }
               );
 
-              checkPageBreak(60);
-              pdf.setFontSize(9);
-              pdf.setFont("helvetica", "normal");
-              pdf.text(`Fotografía ${i + 1}:`, margin, yPos);
-              yPos += 5;
-
+              checkPageBreak(70);
+              
+              // Caja con borde para la foto
+              pdf.setDrawColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
+              pdf.setLineWidth(0.5);
               const maxWidth = pageWidth - 2 * margin;
               const maxHeight = 60;
-              const imgWidth = maxWidth;
-              const imgHeight = maxHeight;
+              pdf.rect(margin, yPos - 2, maxWidth, maxHeight + 6, "S");
+              
+              pdf.setFontSize(9);
+              pdf.setFont("helvetica", "bold");
+              pdf.setTextColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
+              pdf.text(`Fotografía ${i + 1}/${Math.min(todasLasFotos.length, 5)}`, margin + 2, yPos + 2);
+              yPos += 5;
 
               pdf.addImage(
                 fotoCorregidaBase64,
                 "JPEG",
-                margin,
+                margin + 1,
                 yPos,
-                imgWidth,
-                imgHeight
+                maxWidth - 2,
+                maxHeight - 2
               );
-              yPos += imgHeight + 8;
+              yPos += maxHeight + 5;
+              pdf.setTextColor(0, 0, 0);
             }
           } catch (error) {
             console.warn(`Error cargando foto ${i + 1}:`, error);
@@ -684,60 +755,166 @@ export default function VehiculoPage() {
         }
       }
 
-      // 5. INFORME COMPLETO
-      checkPageBreak(30);
-      pdf.setFontSize(14);
+      // 5. INFORME COMPLETO CON FORMATO MEJORADO
+      checkPageBreak(40);
+      
+      // Nueva página para el informe
+      pdf.addPage();
+      yPos = 20;
+      
+      // Header de informe
+      pdf.setFillColor(colorGrisClaro[0], colorGrisClaro[1], colorGrisClaro[2]);
+      pdf.rect(0, 0, pageWidth, 35, "F");
+      
+      pdf.setFontSize(18);
       pdf.setFont("helvetica", "bold");
-      pdf.text("Informe de Valoración Completo", margin, yPos);
-      yPos += 8;
+      pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
+      pdf.text("📄 INFORME DE VALORACIÓN COMPLETO", pageWidth / 2, 15, { align: "center" });
+      
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
+      pdf.text(
+        `Generado por IA el ${new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}`,
+        pageWidth / 2,
+        25,
+        { align: "center" }
+      );
+      
+      yPos = 45;
+      pdf.setTextColor(0, 0, 0);
 
-      // Convertir markdown a texto plano para PDF
+      // Procesar el informe con mejor formato
       const textoPlano = valoracion.informe_texto
-        .replace(/##\s+/g, "\n\n")
-        .replace(/###\s+/g, "\n")
-        .replace(/\*\*(.*?)\*\*/g, "$1")
-        .replace(/\*(.*?)\*/g, "$1")
+        .replace(/##\s+(.+)/g, "\n\n===SECTION===$1")
+        .replace(/###\s+(.+)/g, "\n\n---SUBSECTION---$1")
+        .replace(/\*\*(.+?)\*\*/g, "***$1***")
+        .replace(/\*(.+?)\*/g, "$1")
         .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1");
 
-      pdf.setFontSize(9);
-      pdf.setFont("helvetica", "normal");
-      const lines = pdf.splitTextToSize(textoPlano, pageWidth - 2 * margin);
+      const lines = textoPlano.split("\n");
 
       lines.forEach((line: string) => {
-        checkPageBreak(6);
-        pdf.text(line, margin, yPos);
-        yPos += 6;
+        // Sección principal (##)
+        if (line.startsWith("===SECTION===")) {
+          checkPageBreak(15);
+          yPos += 5;
+          const titulo = line.replace("===SECTION===", "").trim();
+          
+          pdf.setFillColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
+          pdf.rect(margin, yPos - 4, pageWidth - 2 * margin, 10, "F");
+          
+          pdf.setFontSize(12);
+          pdf.setFont("helvetica", "bold");
+          pdf.setTextColor(255, 255, 255);
+          pdf.text(titulo, margin + 2, yPos + 2);
+          
+          yPos += 12;
+          pdf.setTextColor(0, 0, 0);
+        }
+        // Subsección (###)
+        else if (line.startsWith("---SUBSECTION---")) {
+          checkPageBreak(10);
+          yPos += 3;
+          const titulo = line.replace("---SUBSECTION---", "").trim();
+          
+          pdf.setFontSize(11);
+          pdf.setFont("helvetica", "bold");
+          pdf.setTextColor(colorAzul[0], colorAzul[1], colorAzul[2]);
+          pdf.text(titulo, margin, yPos);
+          
+          yPos += 7;
+          pdf.setTextColor(0, 0, 0);
+        }
+        // Texto en negrita (**texto**)
+        else if (line.includes("***")) {
+          checkPageBreak(6);
+          pdf.setFontSize(9);
+          pdf.setFont("helvetica", "bold");
+          const textoLimpio = line.replace(/\*\*\*/g, "");
+          const wrapped = pdf.splitTextToSize(textoLimpio, pageWidth - 2 * margin);
+          wrapped.forEach((wLine: string) => {
+            checkPageBreak(6);
+            pdf.text(wLine, margin, yPos);
+            yPos += 5;
+          });
+        }
+        // Línea vacía
+        else if (line.trim() === "") {
+          yPos += 3;
+        }
+        // Texto normal
+        else if (line.trim() !== "") {
+          checkPageBreak(6);
+          pdf.setFontSize(9);
+          pdf.setFont("helvetica", "normal");
+          const wrapped = pdf.splitTextToSize(line.trim(), pageWidth - 2 * margin);
+          wrapped.forEach((wLine: string) => {
+            checkPageBreak(6);
+            pdf.text(wLine, margin, yPos);
+            yPos += 5;
+          });
+        }
       });
 
-      // 6. FOOTER
+      // 6. FOOTER PROFESIONAL EN TODAS LAS PÁGINAS
       const totalPages = pdf.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
+        
+        // Línea decorativa superior del footer
+        pdf.setDrawColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
+        pdf.setLineWidth(0.3);
+        pdf.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
+        
+        // Información del footer
         pdf.setFontSize(8);
-        pdf.setTextColor(128, 128, 128);
+        pdf.setTextColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
+        pdf.setFont("helvetica", "normal");
+        
+        // Izquierda: Fecha
         pdf.text(
-          `Página ${i} de ${totalPages} - Generado el ${new Date().toLocaleDateString(
-            "es-ES"
-          )}`,
+          `Generado: ${new Date().toLocaleDateString("es-ES")}`,
+          margin,
+          pageHeight - 8
+        );
+        
+        // Centro: Nombre empresa
+        pdf.setFont("helvetica", "bold");
+        pdf.text(
+          "Mapa Furgocasa",
           pageWidth / 2,
-          pageHeight - 10,
+          pageHeight - 8,
           { align: "center" }
         );
+        
+        // Derecha: Número de página
+        pdf.setFont("helvetica", "normal");
         pdf.text(
-          "Mapa Furgocasa - www.mapafurgocasa.com",
+          `Página ${i}/${totalPages}`,
+          pageWidth - margin,
+          pageHeight - 8,
+          { align: "right" }
+        );
+        
+        // Web en la parte inferior
+        pdf.setFontSize(7);
+        pdf.setTextColor(colorAzul[0], colorAzul[1], colorAzul[2]);
+        pdf.text(
+          "www.mapafurgocasa.com",
           pageWidth / 2,
-          pageHeight - 5,
+          pageHeight - 4,
           { align: "center" }
         );
       }
 
       // Descargar PDF
-      const nombreArchivo = `Valoracion_${vehiculo?.matricula || "vehiculo"}_${
+      const nombreArchivo = `Valoracion_IA_${vehiculo?.matricula || "vehiculo"}_${
         new Date().toISOString().split("T")[0]
       }.pdf`;
       pdf.save(nombreArchivo);
 
-      setToast({ message: "✅ PDF descargado correctamente", type: "success" });
+      setToast({ message: "✅ PDF profesional descargado correctamente", type: "success" });
     } catch (error) {
       console.error("Error generando PDF:", error);
       setToast({ message: "Error al generar el PDF", type: "error" });
