@@ -653,15 +653,31 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
       ? ((Date.now() - new Date(fechaCompra).getTime()) / (365.25 * 24 * 60 * 60 * 1000)).toFixed(1)
       : null
 
-    const kmActuales = ficha?.kilometros_actuales || null
+    // IMPORTANTE: Buscar kilometraje en múltiples fuentes (ficha, valoracion, vehiculo)
+    const kmActuales = ficha?.kilometros_actuales || valoracion?.kilometros_actual || vehiculo.kilometros_actual || null
     const kmCompra = valoracion?.kilometros_compra || 0
     const kmRecorridos = kmActuales && kmCompra ? kmActuales - kmCompra : null
     const kmPorAño = kmRecorridos && añosAntiguedad ? (kmRecorridos / parseFloat(añosAntiguedad)).toFixed(0) : null
+    
+    console.log(`   📊 Kilometraje detectado:`)
+    console.log(`      - Ficha técnica: ${ficha?.kilometros_actuales || 'N/A'} km`)
+    console.log(`      - Valoración económica: ${valoracion?.kilometros_actual || 'N/A'} km`)
+    console.log(`      - Vehículo registrado: ${vehiculo.kilometros_actual || 'N/A'} km`)
+    console.log(`      ➡️  Usando: ${kmActuales || 'N/A'} km`)
 
     // IMPORTANTE: Usar pvp_base_particular si está disponible (precio normalizado con impuesto incluido)
     const precioReferencia = valoracion?.pvp_base_particular || valoracion?.precio_compra
     const incluyeImpuesto = valoracion?.precio_incluye_impuesto_matriculacion ?? true
     const origenCompra = valoracion?.origen_compra || 'particular'
+    const impuestoEstimado = valoracion?.impuesto_matriculacion_estimado
+    
+    console.log(`   💰 Precios detectados:`)
+    console.log(`      - Precio compra original: ${valoracion?.precio_compra?.toLocaleString() || 'N/A'}€`)
+    console.log(`      - PVP base particular: ${valoracion?.pvp_base_particular?.toLocaleString() || 'N/A'}€`)
+    console.log(`      - Incluye impuesto: ${incluyeImpuesto ? 'Sí' : 'No'}`)
+    console.log(`      - Origen compra: ${origenCompra}`)
+    console.log(`      - Impuesto estimado: ${impuestoEstimado?.toLocaleString() || 'N/A'}€`)
+    console.log(`      ➡️  Usando para valoración: ${precioReferencia?.toLocaleString() || 'N/A'}€`)
     
     const datosEconomicos = `- Precio de compra original: ${valoracion?.precio_compra?.toLocaleString() || 'No especificado'}€
 - PVP equivalente particular (normalizado): ${precioReferencia?.toLocaleString() || 'No especificado'}€${!incluyeImpuesto ? ' ⚠️ (precio original sin impuesto matriculación, normalizado añadiendo ~14.75%)' : ''}

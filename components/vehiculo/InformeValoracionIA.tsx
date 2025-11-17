@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { DatosValoracionTab } from '@/components/valoracion/DatosValoracionTab'
 
 interface Comparable {
   titulo: string
@@ -33,6 +34,7 @@ interface InformeValoracion {
 
 interface Props {
   informe: InformeValoracion
+  vehiculoId: string // Añadido para el nuevo tab
   vehiculoMarca?: string
   vehiculoModelo?: string
   onDescargarPDF?: () => void
@@ -42,6 +44,7 @@ interface Props {
 
 export default function InformeValoracionIA({
   informe,
+  vehiculoId,
   vehiculoMarca = 'Vehículo',
   vehiculoModelo = '',
   onDescargarPDF,
@@ -49,7 +52,7 @@ export default function InformeValoracionIA({
   onValoracionEliminada
 }: Props) {
   const [mostrarComparables, setMostrarComparables] = useState(false)
-  const [seccionActiva, setSeccionActiva] = useState<'informe' | 'comparables' | 'datos' | 'historico'>('informe')
+  const [seccionActiva, setSeccionActiva] = useState<'informe' | 'comparables' | 'datos' | 'valoracion' | 'historico'>('informe')
   const [eliminando, setEliminando] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
@@ -233,6 +236,16 @@ export default function InformeValoracionIA({
             }`}
           >
             📊 Datos Técnicos
+          </button>
+          <button
+            onClick={() => setSeccionActiva('valoracion')}
+            className={`px-3 md:px-4 py-3 font-semibold text-xs md:text-sm transition-all whitespace-nowrap ${
+              seccionActiva === 'valoracion'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            🔍 Datos Valoración
           </button>
           <button
             onClick={() => setSeccionActiva('historico')}
@@ -497,6 +510,11 @@ export default function InformeValoracionIA({
               </ul>
             </div>
           </div>
+        )}
+
+        {/* Tab: Datos Valoración */}
+        {seccionActiva === 'valoracion' && (
+          <DatosValoracionTab vehiculoId={vehiculoId} />
         )}
 
         {/* Tab: Histórico */}

@@ -1199,6 +1199,7 @@ export default function VehiculoPage() {
                     <InformeValoracionIA
                       key={informe.id}
                       informe={informe}
+                      vehiculoId={vehiculoId}
                       vehiculoMarca={vehiculo.marca}
                       vehiculoModelo={vehiculo.modelo}
                       onDescargarPDF={() => descargarValoracionPDF(informe)}
