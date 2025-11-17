@@ -275,6 +275,46 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     console.log('✅ [Venta API] Venta registrada exitosamente:', result.data)
 
+    // 💾 Guardar en datos_mercado_autocaravanas para alimentar comparables futuros
+    try {
+      const { data: vehiculoData } = await (supabase as any)
+        .from('vehiculos_registrados')
+        .select('marca, modelo, ano')
+        .eq('id', vehiculoId)
+        .single()
+      
+      if (vehiculoData) {
+        const { error: errorMercado } = await (supabase as any)
+          .from('datos_mercado_autocaravanas')
+          .insert({
+            marca: vehiculoData.marca,
+            modelo: vehiculoData.modelo,
+            año: vehiculoData.ano,
+            precio: precioNumero,
+            kilometros: dataToSave.kilometros_venta || null,
+            fecha_transaccion: fecha_venta.trim(),
+            verificado: true,
+            estado: dataToSave.estado_venta || 'Vendido',
+            origen: 'Venta Real Usuario',
+            tipo_dato: 'Venta Real Usuario',
+            pais: 'España',
+            tipo_combustible: null,
+            tipo_calefaccion: null,
+            homologacion: null,
+            region: null
+          })
+        
+        if (errorMercado) {
+          console.warn('⚠️ [Venta API] No se pudo guardar en datos_mercado (no crítico):', errorMercado.message)
+        } else {
+          console.log('✅ [Venta API] Venta guardada en datos_mercado_autocaravanas')
+        }
+      }
+    } catch (mercadoError: any) {
+      console.warn('⚠️ [Venta API] Error guardando en datos_mercado:', mercadoError.message)
+      // No bloqueamos la respuesta por error en datos_mercado
+    }
+
     // Añadir cálculos a la respuesta (aunque no se guarden en BD)
     const responseData = {
       ...result.data,

@@ -245,6 +245,46 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
         return
       }
 
+      // 💾 Guardar en datos_mercado_autocaravanas para alimentar comparables futuros
+      try {
+        const { data: vehiculoData } = await (supabase as any)
+          .from('vehiculos_registrados')
+          .select('marca, modelo, ano')
+          .eq('id', vehiculoId)
+          .single()
+        
+        if (vehiculoData && formData.precio_compra && formData.fecha_compra) {
+          const { error: errorMercado } = await (supabase as any)
+            .from('datos_mercado_autocaravanas')
+            .insert({
+              marca: vehiculoData.marca,
+              modelo: vehiculoData.modelo,
+              año: vehiculoData.ano,
+              precio: parseFloat(formData.precio_compra),
+              kilometros: formData.kilometros_compra ? parseInt(formData.kilometros_compra) : null,
+              fecha_transaccion: formData.fecha_compra,
+              verificado: true,
+              estado: formData.estado_general || 'Usado',
+              origen: formData.origen_compra || 'Usuario',
+              tipo_dato: 'Compra Real Usuario',
+              pais: formData.pais_compra || 'España',
+              tipo_combustible: null,
+              tipo_calefaccion: null,
+              homologacion: null,
+              region: null
+            })
+          
+          if (errorMercado) {
+            console.warn('⚠️ No se pudo guardar en datos_mercado (no crítico):', errorMercado.message)
+          } else {
+            console.log('✅ Compra guardada en datos_mercado_autocaravanas')
+          }
+        }
+      } catch (mercadoError) {
+        console.warn('⚠️ Error guardando en datos_mercado:', mercadoError)
+        // No bloqueamos la respuesta por error en datos_mercado
+      }
+
       setMessage({ type: 'success', text: 'Datos guardados correctamente' })
       await loadData()
       if (onDataSaved) onDataSaved()

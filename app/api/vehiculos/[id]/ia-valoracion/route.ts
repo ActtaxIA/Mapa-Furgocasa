@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { buscarComparables } from '@/lib/valoracion/buscar-comparables'
+import { extraerMarcaModelo, validarMarcaModelo } from '@/lib/valoracion/extraer-marca-modelo'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -905,23 +906,42 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
     if (comparablesLimpios.length > 0) {
       console.log(`\n📊 Guardando ${comparablesLimpios.length} comparables en datos_mercado_autocaravanas...`)
 
-      const comparablesParaGuardar = comparablesLimpios.map((c: any) => ({
-        marca: vehiculo.marca || null,
-        modelo: vehiculo.modelo || null,
-        año: vehiculo.año || null,
-        precio: c.precio || null,
-        kilometros: c.kilometros || null,
-        fecha_transaccion: new Date().toISOString().split('T')[0], // Solo fecha, no timestamp
-        verificado: true, // Viene de SerpAPI o BD interna
-        tipo_calefaccion: null,
-        homologacion: null,
-        estado: 'Usado',
-        origen: c.fuente || 'SerpAPI',
-        tipo_combustible: null,
-        tipo_dato: 'Valoración IA',
-        pais: 'España',
-        region: null
-      }))
+      const comparablesParaGuardar = comparablesLimpios.map((c: any) => {
+        // 🔧 FIX: Extraer marca/modelo del título del comparable, NO del vehículo valorado
+        let marcaComparable = vehiculo.marca || 'Desconocido'
+        let modeloComparable = vehiculo.modelo || 'Desconocido'
+        
+        // Si el comparable tiene título (viene de SerpAPI), extraer marca/modelo
+        if (c.titulo && c.titulo.length > 0) {
+          const extraido = extraerMarcaModelo(c.titulo, c.descripcion)
+          
+          if (validarMarcaModelo(extraido.marca, extraido.modelo) && extraido.confianza >= 50) {
+            marcaComparable = extraido.marca
+            modeloComparable = extraido.modelo
+            console.log(`   🔍 Extraído: ${marcaComparable} ${modeloComparable} (confianza: ${extraido.confianza}%) de "${c.titulo.substring(0, 60)}..."`)
+          } else {
+            console.log(`   ⚠️  No se pudo extraer marca/modelo de "${c.titulo.substring(0, 60)}..." (confianza: ${extraido.confianza}%)`)
+          }
+        }
+        
+        return {
+          marca: marcaComparable,
+          modelo: modeloComparable,
+          año: c.año || vehiculo.año || null,
+          precio: c.precio || null,
+          kilometros: c.kilometros || null,
+          fecha_transaccion: new Date().toISOString().split('T')[0], // Solo fecha, no timestamp
+          verificado: true, // Viene de SerpAPI o BD interna
+          tipo_calefaccion: null,
+          homologacion: null,
+          estado: 'Usado',
+          origen: c.fuente || 'SerpAPI',
+          tipo_combustible: null,
+          tipo_dato: 'Valoración IA',
+          pais: 'España',
+          region: null
+        }
+      })
 
       const { data: mercadoGuardado, error: errorMercado } = await (supabase as any)
         .from('datos_mercado_autocaravanas')
