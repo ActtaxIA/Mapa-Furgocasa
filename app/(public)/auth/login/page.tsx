@@ -47,11 +47,14 @@ export default function LoginPage() {
 
     try {
       const supabase = createClient()
+      const redirectBase =
+        process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mapafurgocasa.com'
+      const redirectTo = `${redirectBase}/auth/callback?next=/mapa`
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo,
         },
       })
 
@@ -72,11 +75,12 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <Image
-              src="/logos/logo.png"
+              src="/logo-negro.png"
               alt="FurgoCasa Logo"
-              width={80}
-              height={80}
-              className="rounded-xl shadow-lg"
+              width={160}
+              height={60}
+              className="h-auto w-auto max-w-[200px]"
+              priority
             />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">

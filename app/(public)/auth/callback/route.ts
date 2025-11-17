@@ -4,7 +4,9 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url)
+  const { searchParams } = new URL(request.url)
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mapafurgocasa.com'
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/mapa'
 
@@ -40,10 +42,10 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+      return NextResponse.redirect(`${siteUrl}${next}`)
     }
   }
 
   // Redirigir a login si hay error
-  return NextResponse.redirect(`${origin}/auth/login`)
+  return NextResponse.redirect(`${siteUrl}/auth/login`)
 }
