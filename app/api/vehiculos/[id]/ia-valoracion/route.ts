@@ -658,7 +658,7 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
     const kmCompra = valoracion?.kilometros_compra || 0
     const kmRecorridos = kmActuales && kmCompra ? kmActuales - kmCompra : null
     const kmPorAño = kmRecorridos && añosAntiguedad ? (kmRecorridos / parseFloat(añosAntiguedad)).toFixed(0) : null
-    
+
     console.log(`   📊 Kilometraje detectado:`)
     console.log(`      - Ficha técnica: ${ficha?.kilometros_actuales || 'N/A'} km`)
     console.log(`      - Valoración económica: ${valoracion?.kilometros_actual || 'N/A'} km`)
@@ -670,7 +670,7 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
     const incluyeImpuesto = valoracion?.precio_incluye_impuesto_matriculacion ?? true
     const origenCompra = valoracion?.origen_compra || 'particular'
     const impuestoEstimado = valoracion?.impuesto_matriculacion_estimado
-    
+
     console.log(`   💰 Precios detectados:`)
     console.log(`      - Precio compra original: ${valoracion?.precio_compra?.toLocaleString() || 'N/A'}€`)
     console.log(`      - PVP base particular: ${valoracion?.pvp_base_particular?.toLocaleString() || 'N/A'}€`)
@@ -678,7 +678,7 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
     console.log(`      - Origen compra: ${origenCompra}`)
     console.log(`      - Impuesto estimado: ${impuestoEstimado?.toLocaleString() || 'N/A'}€`)
     console.log(`      ➡️  Usando para valoración: ${precioReferencia?.toLocaleString() || 'N/A'}€`)
-    
+
     const datosEconomicos = `- Precio de compra original: ${valoracion?.precio_compra?.toLocaleString() || 'No especificado'}€
 - PVP equivalente particular (normalizado): ${precioReferencia?.toLocaleString() || 'No especificado'}€${!incluyeImpuesto ? ' ⚠️ (precio original sin impuesto matriculación, normalizado añadiendo ~14.75%)' : ''}
 - Origen/tipo de compra: ${origenCompra}${origenCompra === 'empresa_alquiler' ? ' ⚠️ (exento impuesto matriculación)' : ''}

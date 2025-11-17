@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { 
-  CheckCircleIcon, 
+import {
+  CheckCircleIcon,
   XCircleIcon,
   InformationCircleIcon,
   ChartBarIcon
@@ -126,7 +126,7 @@ export function DatosValoracionTab({ vehiculoId }: Props) {
               📊 Datos Enviados a la IA de Valoración
             </h2>
             <p className="text-sm text-gray-700">
-              Estos son los datos exactos que se envían al agente de Inteligencia Artificial 
+              Estos son los datos exactos que se envían al agente de Inteligencia Artificial
               para generar el informe de valoración. Asegúrate de que estén completos y correctos.
             </p>
           </div>
@@ -140,23 +140,23 @@ export function DatosValoracionTab({ vehiculoId }: Props) {
           Datos del Vehículo
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <InfoRow 
-            label="Matrícula" 
+          <InfoRow
+            label="Matrícula"
             value={datos.vehiculo?.matricula}
             source="vehiculos_registrados"
           />
-          <InfoRow 
-            label="Marca / Modelo" 
+          <InfoRow
+            label="Marca / Modelo"
             value={`${datos.vehiculo?.marca || 'N/A'} ${datos.vehiculo?.modelo || ''}`}
             source="vehiculos_registrados"
           />
-          <InfoRow 
-            label="Año" 
+          <InfoRow
+            label="Año"
             value={datos.vehiculo?.año}
             source="vehiculos_registrados"
           />
-          <InfoRow 
-            label="Chasis" 
+          <InfoRow
+            label="Chasis"
             value={datos.vehiculo?.chasis}
             source="vehiculos_registrados"
           />
@@ -169,17 +169,17 @@ export function DatosValoracionTab({ vehiculoId }: Props) {
           💰 Datos Económicos (Precio)
         </h3>
         <div className="space-y-3">
-          <InfoRow 
-            label="Precio de Compra Original" 
-            value={datos.valoracion?.precio_compra ? 
+          <InfoRow
+            label="Precio de Compra Original"
+            value={datos.valoracion?.precio_compra ?
               new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })
                 .format(datos.valoracion.precio_compra) : null}
             source="vehiculo_valoracion_economica.precio_compra"
           />
-          
-          <InfoRow 
-            label="🎯 PVP Equivalente Particular (NORMALIZADO)" 
-            value={datos.precioReferencia ? 
+
+          <InfoRow
+            label="🎯 PVP Equivalente Particular (NORMALIZADO)"
+            value={datos.precioReferencia ?
               new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })
                 .format(datos.precioReferencia) : null}
             source="vehiculo_valoracion_economica.pvp_base_particular"
@@ -191,26 +191,26 @@ export function DatosValoracionTab({ vehiculoId }: Props) {
               ⚠️ Este es el precio que usa la IA para la valoración
             </p>
             <p className="text-xs text-yellow-800">
-              El PVP normalizado es el precio equivalente que habría pagado un particular (con impuesto de matriculación incluido). 
+              El PVP normalizado es el precio equivalente que habría pagado un particular (con impuesto de matriculación incluido).
               Si es empresa de alquiler, se suma automáticamente el ~14,75%.
             </p>
           </div>
 
-          <InfoRow 
-            label="Origen/Tipo de Compra" 
+          <InfoRow
+            label="Origen/Tipo de Compra"
             value={datos.origenCompra}
             source="vehiculo_valoracion_economica.origen_compra"
           />
 
-          <InfoRow 
-            label="¿Precio incluye impuesto de matriculación?" 
+          <InfoRow
+            label="¿Precio incluye impuesto de matriculación?"
             value={datos.incluyeImpuesto ? '✅ Sí, incluido' : '❌ No incluido'}
             source="vehiculo_valoracion_economica.precio_incluye_impuesto_matriculacion"
           />
 
           {datos.valoracion?.impuesto_matriculacion_estimado && (
-            <InfoRow 
-              label="Impuesto de Matriculación Estimado" 
+            <InfoRow
+              label="Impuesto de Matriculación Estimado"
               value={new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })
                 .format(datos.valoracion.impuesto_matriculacion_estimado)}
               source="vehiculo_valoracion_economica.impuesto_matriculacion_estimado (calculado automáticamente)"
@@ -225,13 +225,13 @@ export function DatosValoracionTab({ vehiculoId }: Props) {
           📅 Datos de Tiempo y Uso
         </h3>
         <div className="space-y-3">
-          <InfoRow 
-            label="Fecha de Compra/Matriculación" 
+          <InfoRow
+            label="Fecha de Compra/Matriculación"
             value={datos.fechaCompra}
             source={datos.valoracion?.fecha_compra ? 'vehiculo_valoracion_economica.fecha_compra' : 'vehiculos_registrados.created_at'}
           />
-          <InfoRow 
-            label="Antigüedad" 
+          <InfoRow
+            label="Antigüedad"
             value={datos.añosAntiguedad ? `${datos.añosAntiguedad} años` : null}
             source="Calculado desde fecha_compra"
           />
@@ -274,27 +274,27 @@ export function DatosValoracionTab({ vehiculoId }: Props) {
             </div>
           </div>
 
-          <InfoRow 
-            label="🎯 Kilometraje Actual (usado por la IA)" 
+          <InfoRow
+            label="🎯 Kilometraje Actual (usado por la IA)"
             value={datos.kmActuales ? `${datos.kmActuales.toLocaleString()} km` : null}
             source="Fallback: ficha_tecnica → valoracion_economica → vehiculo_registrado"
             highlight={true}
           />
 
-          <InfoRow 
-            label="Kilometraje en Compra" 
+          <InfoRow
+            label="Kilometraje en Compra"
             value={datos.kmCompra ? `${datos.kmCompra.toLocaleString()} km` : null}
             source="vehiculo_valoracion_economica.kilometros_compra"
           />
 
-          <InfoRow 
-            label="Kilómetros Recorridos" 
+          <InfoRow
+            label="Kilómetros Recorridos"
             value={datos.kmRecorridos ? `${datos.kmRecorridos.toLocaleString()} km` : null}
             source="Calculado: km_actual - km_compra"
           />
 
-          <InfoRow 
-            label="Promedio Anual" 
+          <InfoRow
+            label="Promedio Anual"
             value={datos.kmPorAño ? `${datos.kmPorAño.toLocaleString()} km/año` : null}
             source="Calculado: km_recorridos / años_antigüedad"
           />
@@ -344,4 +344,3 @@ export function DatosValoracionTab({ vehiculoId }: Props) {
     </div>
   )
 }
-
