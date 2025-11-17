@@ -2,11 +2,12 @@ import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/database.types";
 
 // Variable privada para mantener la instancia única (Singleton Pattern)
-let supabaseInstance: ReturnType<typeof createBrowserClient<Database>> | null = null;
+let supabaseInstance: ReturnType<typeof createBrowserClient<Database>> | null =
+  null;
 
 /**
  * Cliente de Supabase para el navegador (Singleton Pattern)
- * 
+ *
  * IMPORTANTE:
  * - Solo crea UNA instancia por sesión del navegador
  * - Elimina el warning "Multiple GoTrueClient instances detected"

@@ -145,16 +145,18 @@ export default function VehiculoPage() {
       }
 
       setVehiculo(vehiculoData);
-      
+
       // Cargar valoración económica (para saber si está vendido)
       const { data: valoracionData } = await (supabase as any)
         .from("vehiculo_valoracion_economica")
-        .select("vendido, precio_venta_final, fecha_venta, valor_estimado_actual")
+        .select(
+          "vendido, precio_venta_final, fecha_venta, valor_estimado_actual"
+        )
         .eq("vehiculo_id", vehiculoId)
         .maybeSingle();
-      
+
       setValoracionEconomica(valoracionData);
-      
+
       // Inicializar datos de edición
       setEditData({
         tipo_vehiculo: vehiculoData.tipo_vehiculo || "",
@@ -1162,9 +1164,26 @@ export default function VehiculoPage() {
                       <div className="w-full bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800">
                         <strong>✅ Vehículo vendido</strong>
                         <p className="mt-1">
-                          Este vehículo fue vendido{valoracionEconomica.fecha_venta ? ` el ${new Date(valoracionEconomica.fecha_venta).toLocaleDateString('es-ES')}` : ''}.
-                          El valor actual es el precio de venta final: <strong>{valoracionEconomica.precio_venta_final?.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }) || 'No especificado'}</strong>.
-                          <br />No se pueden generar más valoraciones.
+                          Este vehículo fue vendido
+                          {valoracionEconomica.fecha_venta
+                            ? ` el ${new Date(
+                                valoracionEconomica.fecha_venta
+                              ).toLocaleDateString("es-ES")}`
+                            : ""}
+                          . El valor actual es el precio de venta final:{" "}
+                          <strong>
+                            {valoracionEconomica.precio_venta_final?.toLocaleString(
+                              "es-ES",
+                              {
+                                style: "currency",
+                                currency: "EUR",
+                                maximumFractionDigits: 0,
+                              }
+                            ) || "No especificado"}
+                          </strong>
+                          .
+                          <br />
+                          No se pueden generar más valoraciones.
                         </p>
                       </div>
                     ) : (
@@ -1240,16 +1259,33 @@ export default function VehiculoPage() {
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800 max-w-md mx-auto">
                       <strong>✅ Vehículo vendido</strong>
                       <p className="mt-1">
-                        Este vehículo fue vendido{valoracionEconomica.fecha_venta ? ` el ${new Date(valoracionEconomica.fecha_venta).toLocaleDateString('es-ES')}` : ''}.
-                        El valor actual es el precio de venta final: <strong>{valoracionEconomica.precio_venta_final?.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }) || 'No especificado'}</strong>.
-                        <br />No se pueden generar más valoraciones.
+                        Este vehículo fue vendido
+                        {valoracionEconomica.fecha_venta
+                          ? ` el ${new Date(
+                              valoracionEconomica.fecha_venta
+                            ).toLocaleDateString("es-ES")}`
+                          : ""}
+                        . El valor actual es el precio de venta final:{" "}
+                        <strong>
+                          {valoracionEconomica.precio_venta_final?.toLocaleString(
+                            "es-ES",
+                            {
+                              style: "currency",
+                              currency: "EUR",
+                              maximumFractionDigits: 0,
+                            }
+                          ) || "No especificado"}
+                        </strong>
+                        .
+                        <br />
+                        No se pueden generar más valoraciones.
                       </p>
                     </div>
                   ) : (
                     <>
                       <p className="text-gray-600 mb-6">
-                        Genera tu primera valoración con IA para conocer el valor
-                        real de tu vehículo
+                        Genera tu primera valoración con IA para conocer el
+                        valor real de tu vehículo
                       </p>
                       <button
                         onClick={handleGenerarValoracion}

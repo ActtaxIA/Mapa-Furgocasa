@@ -276,16 +276,23 @@ export default function AdminVehiculosPage() {
           if (valEco.precio_compra) {
             grupo.precio_compra_promedio += valEco.precio_compra;
           }
-          
+
           // Obtener último kilometraje de vehiculo_kilometraje
           const kmsVehiculo = kilometrajes
             ?.filter((k: any) => k.vehiculo_id === v.id)
-            .sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
-          
-          if (kmsVehiculo && kmsVehiculo.length > 0 && kmsVehiculo[0].kilometros) {
+            .sort(
+              (a: any, b: any) =>
+                new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+            );
+
+          if (
+            kmsVehiculo &&
+            kmsVehiculo.length > 0 &&
+            kmsVehiculo[0].kilometros
+          ) {
             grupo.km_promedio += kmsVehiculo[0].kilometros;
           }
-          
+
           // Valor actual: Si está vendido, usar precio_venta_final, sino valor_estimado_actual
           if (valEco.vendido && valEco.precio_venta_final) {
             grupo.valor_actual_promedio += valEco.precio_venta_final;

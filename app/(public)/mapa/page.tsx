@@ -30,20 +30,20 @@ export default function MapaPage() {
   const [toastMessage, setToastMessage] = useState('')
   const [detectedCountry, setDetectedCountry] = useState<string | null>(null)
   const mapRef = useRef<any>(null) // Referencia al mapa para controlarlo
-  
+
   // Hook de filtros persistentes (reemplaza el useState anterior)
   const { filtros, setFiltros, metadata, setMetadata, limpiarFiltros, contarFiltrosActivos } = usePersistentFilters()
 
   // Verificar autenticación
   useEffect(() => {
     const supabase = createClient()
-    
+
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
       setAuthLoading(false)
     }
-    
+
     getUser()
 
     // Suscribirse a cambios de autenticación
@@ -104,12 +104,12 @@ export default function MapaPage() {
 
           if (data && data.length > 0) {
             allAreas.push(...(data as Area[]))
-            
+
             // ✅ SOLO LOGGEAR, NO ACTUALIZAR ESTADO (evita re-renders múltiples)
             console.log(`📦 Cargadas ${data.length} áreas (página ${page + 1}) - Total: ${allAreas.length}`)
-            
+
             page++
-            
+
             // Si recibimos menos de 1000, ya no hay más
             if (data.length < pageSize) {
               hasMore = false
@@ -120,7 +120,7 @@ export default function MapaPage() {
         }
 
         console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
-        
+
         // ✅ ACTUALIZAR ESTADO UNA SOLA VEZ AL FINAL (evita parpadeo)
         setAreas(allAreas)
         setLoadingProgress({ loaded: allAreas.length, total: allAreas.length })
@@ -133,7 +133,7 @@ export default function MapaPage() {
         } catch (e) {
           console.warn('⚠️ No se pudo guardar en cache (localStorage lleno?)', e)
         }
-        
+
         // Log de depuración para ver distribución de países
         if (process.env.NODE_ENV === 'development') {
           const porPais: Record<string, number> = {}
@@ -161,27 +161,27 @@ export default function MapaPage() {
         async (position) => {
           const lat = position.coords.latitude
           const lng = position.coords.longitude
-          
+
           setUserLocation({ lat, lng })
           setGpsActive(true)
-          
+
           console.log('📍 GPS activado:', { lat, lng })
-          
+
           // Reverse Geocoding para detectar país
           try {
             const locationData = await reverseGeocode(lat, lng)
-            
+
             if (locationData?.country) {
               console.log('🌍 País detectado:', locationData.country)
               setDetectedCountry(locationData.country)
-              
+
               // Actualizar metadata GPS
               setMetadata({
                 gpsCountry: locationData.country,
                 gpsActive: true,
                 paisSource: filtros.pais ? metadata.paisSource : 'gps'
               })
-              
+
               // APLICAR FILTRO AUTOMÁTICO si no hay filtro de país previo
               if (!filtros.pais) {
                 console.log('✅ Aplicando filtro automático de país:', locationData.country)
@@ -189,7 +189,7 @@ export default function MapaPage() {
                   ...filtros,
                   pais: locationData.country
                 })
-                
+
                 // Mostrar Toast Notification
                 setToastMessage(`Para mejorar los tiempos de carga, hemos aplicado un filtro del país donde te encuentras. Puedes cambiarlo en los filtros si lo deseas.`)
                 setShowToast(true)
@@ -213,7 +213,7 @@ export default function MapaPage() {
   // Centrar mapa cuando cambia el filtro de país
   useEffect(() => {
     if (!filtros.pais || !mapRef.current) return
-    
+
     // Coordenadas centrales de cada país (Europa + LATAM)
     const paisCoordenadas: Record<string, { lat: number, lng: number }> = {
       // Europa Occidental
@@ -279,9 +279,9 @@ export default function MapaPage() {
       'Puerto Rico': { lat: 18.2208, lng: -66.5901 },
       'Jamaica': { lat: 18.1096, lng: -77.2975 },
     }
-    
+
     const coordenadas = paisCoordenadas[filtros.pais]
-    
+
     if (coordenadas && mapRef.current) {
       console.log(`🗺️ Centrando mapa en ${filtros.pais}`)
       // Solo centrar (panTo), sin cambiar zoom
@@ -309,12 +309,12 @@ export default function MapaPage() {
       // Filtro de búsqueda
       if (filtros.busqueda) {
         const busqueda = filtros.busqueda.toLowerCase()
-        const coincide = 
+        const coincide =
           area.nombre.toLowerCase().includes(busqueda) ||
           area.ciudad?.toLowerCase().includes(busqueda) ||
           area.provincia?.toLowerCase().includes(busqueda) ||
           area.descripcion?.toLowerCase().includes(busqueda)
-        
+
         if (!coincide) return false
       }
 
@@ -322,7 +322,7 @@ export default function MapaPage() {
       if (filtros.pais) {
         const paisArea = area.pais?.trim() || ''
         const paisFiltro = filtros.pais.trim()
-        
+
         // Log para depuración (solo en desarrollo)
         if (process.env.NODE_ENV === 'development') {
           if (paisArea !== paisFiltro && paisArea.toLowerCase().includes('port')) {
@@ -334,7 +334,7 @@ export default function MapaPage() {
             })
           }
         }
-        
+
         if (paisArea !== paisFiltro) {
           return false
         }
@@ -410,7 +410,7 @@ export default function MapaPage() {
     return (
       <div className="h-screen flex flex-col overflow-hidden bg-gray-100">
         <Navbar />
-        
+
         {/* Skeleton del mapa con animación */}
         <div className="flex-1 relative">
           {/* Fondo con patrón de mapa */}
@@ -423,7 +423,7 @@ export default function MapaPage() {
               backgroundSize: '50px 50px'
             }}></div>
           </div>
-          
+
           {/* Indicador de carga centrado */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-4">
@@ -436,31 +436,31 @@ export default function MapaPage() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Texto dinámico basado en si viene de cache */}
               <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
                 {areas.length > 0 ? '⚡ Carga Instantánea' : 'Cargando Mapa'}
               </h2>
               <p className="text-gray-600 text-center mb-6">
-                {areas.length > 0 
-                  ? `${areas.length} áreas desde cache...` 
-                  : loadingProgress.loaded > 0 
+                {areas.length > 0
+                  ? `${areas.length} áreas desde cache...`
+                  : loadingProgress.loaded > 0
                     ? `${loadingProgress.loaded} áreas cargadas...`
                     : 'Preparando tu mapa de autocaravanas...'}
               </p>
-              
+
               {/* Barra de progreso - solo si está cargando desde servidor */}
               {loadingProgress.loaded > 0 && areas.length === 0 && (
                 <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                  <div 
+                  <div
                     className="bg-gradient-to-r from-sky-500 to-blue-600 h-full transition-all duration-300 ease-out rounded-full"
-                    style={{ 
-                      width: `${Math.min((loadingProgress.loaded / 5000) * 100, 100)}%` 
+                    style={{
+                      width: `${Math.min((loadingProgress.loaded / 5000) * 100, 100)}%`
                     }}
                   ></div>
                 </div>
               )}
-              
+
               {/* Spinner */}
               <div className="flex justify-center mt-6">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600"></div>
@@ -476,7 +476,7 @@ export default function MapaPage() {
     <div className="h-screen flex flex-col overflow-hidden relative">
       {/* Navbar - siempre visible */}
       <Navbar />
-      
+
       {/* Layout principal - difuminado si no hay usuario */}
       <main className={`flex-1 relative flex overflow-hidden min-h-0 ${!user ? 'blur-sm pointer-events-none select-none' : ''}`}>
         {/* Panel de Filtros - Desktop y Tablet */}
