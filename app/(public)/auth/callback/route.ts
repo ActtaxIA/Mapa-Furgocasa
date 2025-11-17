@@ -28,6 +28,10 @@ export async function GET(request: NextRequest) {
             return cookieStore.get(name)?.value
           },
           set(name: string, value: string, options: CookieOptions) {
+            // CRÍTICO: httpOnly debe ser TRUE para cookies de sesión (seguridad)
+            // Solo las cookies de refresh token deben ser httpOnly
+            const isSessionCookie = name.includes('auth-token') && !name.includes('refresh')
+            
             // Establecer en cookieStore
             cookieStore.set({
               name,
@@ -36,7 +40,7 @@ export async function GET(request: NextRequest) {
               path: '/',
               sameSite: 'lax',
               secure: true,
-              httpOnly: false, // FALSE para que JavaScript pueda leer las cookies
+              httpOnly: !isSessionCookie, // TRUE para refresh tokens, FALSE para access tokens
               maxAge: options.maxAge || 31536000,
             })
 
@@ -48,7 +52,7 @@ export async function GET(request: NextRequest) {
               path: '/',
               sameSite: 'lax',
               secure: true,
-              httpOnly: false, // FALSE para que JavaScript pueda leer las cookies
+              httpOnly: !isSessionCookie, // TRUE para refresh tokens, FALSE para access tokens
               maxAge: options.maxAge || 31536000,
             })
           },

@@ -83,12 +83,53 @@ export function Navbar() {
   }, [user]);
 
   const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    setUser(null);
-    setIsAdmin(false);
-    setShowUserMenu(false);
-    window.location.href = "/";
+    try {
+      const supabase = createClient();
+      
+      // 1. Cerrar sesión en Supabase
+      await supabase.auth.signOut();
+      
+      // 2. Limpiar TODAS las cookies de autenticación
+      document.cookie.split(";").forEach(function(c) { 
+        const cookieName = c.trim().split("=")[0];
+        if (cookieName.includes('sb-') || cookieName.includes('supabase')) {
+          document.cookie = cookieName + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
+        }
+      });
+      
+      // 3. Limpiar localStorage (mantener solo preferencias de UI)
+      const keysToPreserve = ['hasSeenWelcome']; // Preservar preferencias de UI
+      const itemsToPreserve: Record<string, string> = {};
+      
+      keysToPreserve.forEach(key => {
+        const value = localStorage.getItem(key);
+        if (value) itemsToPreserve[key] = value;
+      });
+      
+      localStorage.clear();
+      
+      // Restaurar preferencias
+      Object.entries(itemsToPreserve).forEach(([key, value]) => {
+        localStorage.setItem(key, value);
+      });
+      
+      // 4. Limpiar sessionStorage
+      sessionStorage.clear();
+      
+      // 5. Actualizar estado local
+      setUser(null);
+      setIsAdmin(false);
+      setShowUserMenu(false);
+      
+      // 6. Redirigir al home
+      window.location.href = "/";
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      // Forzar limpieza y redirección incluso si hay error
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/";
+    }
   };
 
   return (

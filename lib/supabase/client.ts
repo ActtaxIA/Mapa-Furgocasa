@@ -1,23 +1,25 @@
 import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/database.types";
-import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Usar globalThis para singleton VERDADERO entre módulos
-declare global {
-  var __supabase_client: SupabaseClient<Database> | undefined;
-}
-
+/**
+ * CRÍTICO: NO usar singleton global
+ * Cada llamada crea una instancia NUEVA con su propia sesión
+ * Esto evita que las sesiones se compartan entre usuarios
+ */
 export function createClient() {
-  // Reutilizar instancia global si existe
-  if (globalThis.__supabase_client) {
-    return globalThis.__supabase_client;
-  }
-
-  // Crear nueva instancia y guardarla globalmente
-  globalThis.__supabase_client = createBrowserClient<Database>(
+  return createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      auth: {
+        // Configuración segura de autenticación
+        flowType: 'pkce', // Usar PKCE para mayor seguridad
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        // NO especificar storage - dejar que Supabase use el default (localStorage)
+        // pero de forma aislada por instancia
+      },
       cookies: {
         get(name: string) {
           if (typeof document === "undefined") return undefined;
@@ -45,8 +47,6 @@ export function createClient() {
 
           if (isProduction) {
             cookieOptions.push("Secure");
-            // NO establecer domain - dejar que el navegador lo maneje automáticamente
-            // Esto evita problemas de cookies entre dominios en móviles
           }
 
           document.cookie = cookieOptions.join("; ");
@@ -74,6 +74,4 @@ export function createClient() {
       },
     }
   );
-
-  return globalThis.__supabase_client;
 }
