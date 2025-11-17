@@ -681,6 +681,9 @@ export default function VehiculoPage() {
         todasLasFotos.push(...vehiculo.fotos_adicionales);
       }
 
+      console.log(`📸 Total de fotos encontradas: ${todasLasFotos.length}`);
+      console.log(`📸 URLs de fotos:`, todasLasFotos);
+
       if (todasLasFotos.length > 0) {
         checkPageBreak(60);
         pdf.setFontSize(13);
@@ -689,13 +692,30 @@ export default function VehiculoPage() {
         pdf.text("FOTOGRAFÍAS DEL VEHÍCULO", margin, yPos);
         yPos += 10;
 
+        let fotosIncluidas = 0;
+
         for (let i = 0; i < Math.min(todasLasFotos.length, 5); i++) {
           // Máximo 5 fotos
           try {
             const fotoUrl = todasLasFotos[i];
-            const { data: fotoData } = await supabase.storage
+            console.log(`📸 Procesando foto ${i + 1}:`, fotoUrl);
+            
+            // Extraer el path correcto de la URL
+            let fotoPath = fotoUrl;
+            if (fotoUrl.includes('vehiculos/')) {
+              fotoPath = fotoUrl.split('vehiculos/')[1];
+            }
+            
+            console.log(`📸 Path procesado:`, fotoPath);
+            
+            const { data: fotoData, error: fotoError } = await supabase.storage
               .from("vehiculos")
-              .download(fotoUrl.replace(/^.*\/vehiculos\//, ""));
+              .download(fotoPath);
+
+            if (fotoError) {
+              console.error(`❌ Error descargando foto ${i + 1}:`, fotoError);
+              continue;
+            }
 
             if (fotoData) {
               const fotoBlob = await fotoData.arrayBuffer();
@@ -748,11 +768,18 @@ export default function VehiculoPage() {
               );
               yPos += maxHeight + 5;
               pdf.setTextColor(0, 0, 0);
+              
+              fotosIncluidas++;
+              console.log(`✅ Foto ${i + 1} incluida en el PDF`);
             }
           } catch (error) {
-            console.warn(`Error cargando foto ${i + 1}:`, error);
+            console.error(`❌ Error cargando foto ${i + 1}:`, error);
           }
         }
+        
+        console.log(`📸 Total de fotos incluidas en PDF: ${fotosIncluidas}/${todasLasFotos.length}`);
+      } else {
+        console.log(`⚠️  No hay fotos para incluir en el PDF`);
       }
 
       // 5. INFORME COMPLETO CON FORMATO MEJORADO

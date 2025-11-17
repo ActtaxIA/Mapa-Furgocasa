@@ -415,15 +415,14 @@ export default function AdminVehiculosPage() {
       key: "cantidad_vendidos",
       title: "Vendidos",
       sortable: true,
-      render: (item) => (
+      render: (item) =>
         item.cantidad_vendidos > 0 ? (
           <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
             ✓ {item.cantidad_vendidos}
           </span>
         ) : (
           <span className="text-gray-400">0</span>
-        )
-      ),
+        ),
     },
     {
       key: "año_promedio",
