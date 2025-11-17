@@ -555,7 +555,7 @@ export default function VehiculoPage() {
       pdf.setFontSize(13);
       pdf.setFont("helvetica", "bold");
       pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
-      pdf.text("📋 DATOS DEL VEHÍCULO", margin + 3, yPos + 5);
+      pdf.text("DATOS DEL VEHÍCULO", margin + 3, yPos + 5);
 
       yPos += 12;
       pdf.setFontSize(10);
@@ -586,7 +586,7 @@ export default function VehiculoPage() {
       pdf.setFontSize(13);
       pdf.setFont("helvetica", "bold");
       pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
-      pdf.text("💰 VALORACIÓN Y PRECIOS RECOMENDADOS", margin, yPos);
+      pdf.text("VALORACIÓN Y PRECIOS RECOMENDADOS", margin, yPos);
       yPos += 10;
 
       // Caja de Precio de Salida
@@ -597,7 +597,7 @@ export default function VehiculoPage() {
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(11);
         pdf.setFont("helvetica", "normal");
-        pdf.text("🚀 PRECIO DE SALIDA", margin + 3, yPos + 4);
+        pdf.text("PRECIO DE SALIDA", margin + 3, yPos + 4);
 
         pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
@@ -623,7 +623,7 @@ export default function VehiculoPage() {
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(11);
         pdf.setFont("helvetica", "normal");
-        pdf.text("🎯 PRECIO OBJETIVO", margin + 3, yPos + 4);
+        pdf.text("PRECIO OBJETIVO", margin + 3, yPos + 4);
 
         pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
@@ -649,7 +649,7 @@ export default function VehiculoPage() {
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(11);
         pdf.setFont("helvetica", "normal");
-        pdf.text("⚠️ PRECIO MÍNIMO", margin + 3, yPos + 4);
+        pdf.text("PRECIO MÍNIMO", margin + 3, yPos + 4);
 
         pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
@@ -686,7 +686,7 @@ export default function VehiculoPage() {
         pdf.setFontSize(13);
         pdf.setFont("helvetica", "bold");
         pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
-        pdf.text("📸 FOTOGRAFÍAS DEL VEHÍCULO", margin, yPos);
+        pdf.text("FOTOGRAFÍAS DEL VEHÍCULO", margin, yPos);
         yPos += 10;
 
         for (let i = 0; i < Math.min(todasLasFotos.length, 5); i++) {
@@ -769,7 +769,7 @@ export default function VehiculoPage() {
       pdf.setFontSize(18);
       pdf.setFont("helvetica", "bold");
       pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
-      pdf.text("📄 INFORME DE VALORACIÓN COMPLETO", pageWidth / 2, 15, { align: "center" });
+      pdf.text("INFORME DE VALORACIÓN COMPLETO", pageWidth / 2, 15, { align: "center" });
 
       pdf.setFontSize(10);
       pdf.setFont("helvetica", "normal");
@@ -786,6 +786,8 @@ export default function VehiculoPage() {
 
       // Procesar el informe con mejor formato
       const textoPlano = valoracion.informe_texto
+        // Eliminar todos los emojis Unicode (no soportados por jsPDF)
+        .replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, "")
         .replace(/##\s+(.+)/g, "\n\n===SECTION===$1")
         .replace(/###\s+(.+)/g, "\n\n---SUBSECTION---$1")
         .replace(/\*\*(.+?)\*\*/g, "***$1***")
