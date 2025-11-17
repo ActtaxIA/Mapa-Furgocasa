@@ -749,21 +749,45 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
     // 6. EXTRAER PRECIOS DEL INFORME
     console.log(`\n💰 [PASO 6/7] Extrayendo precios del informe...`)
 
-    // Regex mejorado: captura números con puntos o comas como separadores de miles
-    // Ejemplos: "64.000€", "64,000€", "64000€", "64.000 €", "64,000 €"
-    const precioSalidaMatch = informeTexto.match(/precio\s+de\s+salida\s+recomendado[:\s]+(\d{1,3}(?:[.,]\d{3})*)/i)
-    const precioObjetivoMatch = informeTexto.match(/precio\s+objetivo\s+de\s+venta[:\s]+(\d{1,3}(?:[.,]\d{3})*)/i)
-    const precioMinimoMatch = informeTexto.match(/precio\s+mínimo\s+aceptable[:\s]+(\d{1,3}(?:[.,]\d{3})*)/i)
+    // Regex mejorado: busca precios en múltiples formatos y ubicaciones
+    // Prioridad 1: Sección "5. VALORACIÓN Y PRECIOS RECOMENDADOS"
+    // Prioridad 2: Resumen final "Precios Finales Recomendados"
+    const precioSalidaMatch = informeTexto.match(/precio\s+(?:de\s+)?salida\s+(?:recomendado)?[:\s]+(\d{1,3}(?:[.,]\d{3})*)[\s€]/i)
+    const precioObjetivoMatch = informeTexto.match(/precio\s+objetivo\s+(?:de\s+venta)?[:\s]+(\d{1,3}(?:[.,]\d{3})*)[\s€]/i)
+    const precioMinimoMatch = informeTexto.match(/precio\s+mínimo\s+(?:aceptable)?[:\s]+(\d{1,3}(?:[.,]\d{3})*)[\s€]/i)
+    
+    console.log(`   🔍 Buscando precios en informe...`)
+    console.log(`   📄 Longitud informe: ${informeTexto.length} caracteres`)
 
     // Función auxiliar para parsear precios eliminando puntos y comas como separadores
     const parsearPrecio = (precioStr: string): number => {
       return parseFloat(precioStr.replace(/[.,]/g, ''))
     }
 
-    // Debug: mostrar lo que capturó el regex
-    console.log(`   🔍 Match Salida: "${precioSalidaMatch ? precioSalidaMatch[1] : 'NO MATCH'}"`)
-    console.log(`   🔍 Match Objetivo: "${precioObjetivoMatch ? precioObjetivoMatch[1] : 'NO MATCH'}"`)
-    console.log(`   🔍 Match Mínimo: "${precioMinimoMatch ? precioMinimoMatch[1] : 'NO MATCH'}"`)
+    // Debug: mostrar lo que capturó el regex y el contexto
+    if (!precioSalidaMatch) {
+      console.log(`   ❌ NO MATCH Salida - Buscando en informe...`)
+      const contextoSalida = informeTexto.match(/precio.*salida.*\d+[.,]?\d*/i)
+      console.log(`   📝 Contexto encontrado: "${contextoSalida ? contextoSalida[0].substring(0, 100) : 'N/A'}"`)
+    } else {
+      console.log(`   ✅ Match Salida: "${precioSalidaMatch[1]}"`)
+    }
+    
+    if (!precioObjetivoMatch) {
+      console.log(`   ❌ NO MATCH Objetivo - Buscando en informe...`)
+      const contextoObjetivo = informeTexto.match(/precio.*objetivo.*\d+[.,]?\d*/i)
+      console.log(`   📝 Contexto encontrado: "${contextoObjetivo ? contextoObjetivo[0].substring(0, 100) : 'N/A'}"`)
+    } else {
+      console.log(`   ✅ Match Objetivo: "${precioObjetivoMatch[1]}"`)
+    }
+    
+    if (!precioMinimoMatch) {
+      console.log(`   ❌ NO MATCH Mínimo - Buscando en informe...`)
+      const contextoMinimo = informeTexto.match(/precio.*mínimo.*\d+[.,]?\d*/i)
+      console.log(`   📝 Contexto encontrado: "${contextoMinimo ? contextoMinimo[0].substring(0, 100) : 'N/A'}"`)
+    } else {
+      console.log(`   ✅ Match Mínimo: "${precioMinimoMatch[1]}"`)
+    }
 
     // IMPORTANTE: Usar pvp_base_particular (precio normalizado) como fallback en lugar de precio_compra
     const precioReferenciaFallback = valoracion?.pvp_base_particular || valoracion?.precio_compra
@@ -771,9 +795,16 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
     const precioObjetivo = precioObjetivoMatch ? parsearPrecio(precioObjetivoMatch[1]) : precioReferenciaFallback || null
     const precioMinimo = precioMinimoMatch ? parsearPrecio(precioMinimoMatch[1]) : precioReferenciaFallback ? precioReferenciaFallback * 0.9 : null
 
-    console.log(`   💵 Salida parseado: ${precioSalida}€`)
-    console.log(`   🎯 Objetivo parseado: ${precioObjetivo}€`)
-    console.log(`   📉 Mínimo parseado: ${precioMinimo}€`)
+    console.log(`\n   💰 PRECIOS FINALES:`)
+    console.log(`   💵 Salida: ${precioSalida?.toLocaleString()}€ ${precioSalidaMatch ? '(extraído IA)' : '(fallback +10%)'}`)
+    console.log(`   🎯 Objetivo: ${precioObjetivo?.toLocaleString()}€ ${precioObjetivoMatch ? '(extraído IA)' : '(fallback)'}`)
+    console.log(`   📉 Mínimo: ${precioMinimo?.toLocaleString()}€ ${precioMinimoMatch ? '(extraído IA)' : '(fallback -10%)'}`)
+    
+    // ADVERTENCIA si se usaron fallbacks
+    if (!precioObjetivoMatch || !precioSalidaMatch || !precioMinimoMatch) {
+      console.warn(`   ⚠️  ADVERTENCIA: Se usaron precios fallback porque no se pudieron extraer del informe`)
+      console.warn(`   ⚠️  Esto puede causar incoherencias entre el informe y los precios mostrados`)
+    }
 
     // Actualizar progreso: 90%
     await (supabase as any)
