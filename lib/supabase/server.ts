@@ -16,7 +16,15 @@ export async function createClient() {
         },
         set(name: string, value: string, options: CookieOptions) {
           try {
-            cookieStore.set({ name, value, ...options })
+            // Forzar cookies de larga duración (30 días)
+            cookieStore.set({ 
+              name, 
+              value, 
+              ...options,
+              maxAge: options.maxAge || 2592000, // 30 días por defecto
+              sameSite: (options.sameSite as 'lax' | 'strict' | 'none') || 'lax',
+              secure: true,
+            })
           } catch (error) {
             // El método `set` fue llamado desde un Server Component.
             // Esto puede ser ignorado si tienes middleware refrescando
@@ -32,6 +40,12 @@ export async function createClient() {
             // las sesiones de usuario.
           }
         },
+      },
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        flowType: 'pkce',
       },
     }
   )
