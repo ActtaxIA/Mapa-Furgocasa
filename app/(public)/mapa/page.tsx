@@ -17,6 +17,7 @@ import { reverseGeocode } from '@/lib/google/geocoding'
 export default function MapaPage() {
   const [areas, setAreas] = useState<Area[]>([])
   const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true) // Para skeleton loader
   const [loadingProgress, setLoadingProgress] = useState({ loaded: 0, total: 0 })
   const [areaSeleccionada, setAreaSeleccionada] = useState<Area | null>(null)
   const [mostrarFiltros, setMostrarFiltros] = useState(false)
@@ -53,17 +54,42 @@ export default function MapaPage() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Cargar áreas desde Supabase (CON CARGA PROGRESIVA)
+  // Cargar áreas desde Supabase (CON CACHE Y CARGA PROGRESIVA)
   useEffect(() => {
     const loadAreas = async () => {
       try {
+        const CACHE_KEY = 'mapa_areas_cache'
+        const CACHE_TIMESTAMP_KEY = 'mapa_areas_timestamp'
+        const CACHE_MAX_AGE = 1000 * 60 * 60 // 1 hora
+
+        // 🚀 INTENTAR CARGAR DESDE CACHE PRIMERO
+        const cachedAreas = localStorage.getItem(CACHE_KEY)
+        const cachedTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY)
+
+        if (cachedAreas && cachedTimestamp) {
+          const age = Date.now() - parseInt(cachedTimestamp)
+          if (age < CACHE_MAX_AGE) {
+            console.log('⚡ Cargando áreas desde cache (instantáneo)...')
+            const parsedAreas = JSON.parse(cachedAreas)
+            setAreas(parsedAreas)
+            setLoadingProgress({ loaded: parsedAreas.length, total: parsedAreas.length })
+            setLoading(false)
+            setInitialLoading(false) // ✅ Ocultar skeleton
+            console.log(`✅ ${parsedAreas.length} áreas cargadas desde cache`)
+            return // ✅ Ya terminamos, todo desde cache
+          } else {
+            console.log('🔄 Cache expirado, recargando desde servidor...')
+          }
+        }
+
+        // Si no hay cache válido, cargar desde Supabase
         const supabase = createClient()
         const allAreas: Area[] = []
         const pageSize = 1000
         let page = 0
         let hasMore = true
 
-        console.log('🔄 Cargando áreas progresivamente...')
+        console.log('🔄 Cargando áreas progresivamente desde Supabase...')
 
         // Cargar en lotes de 1000 (OPTIMIZADO: solo campos necesarios)
         while (hasMore) {
@@ -98,6 +124,15 @@ export default function MapaPage() {
         // ✅ ACTUALIZAR ESTADO UNA SOLA VEZ AL FINAL (evita parpadeo)
         setAreas(allAreas)
         setLoadingProgress({ loaded: allAreas.length, total: allAreas.length })
+
+        // 💾 GUARDAR EN CACHE para próxima visita
+        try {
+          localStorage.setItem(CACHE_KEY, JSON.stringify(allAreas))
+          localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString())
+          console.log('💾 Áreas guardadas en cache (válido por 1 hora)')
+        } catch (e) {
+          console.warn('⚠️ No se pudo guardar en cache (localStorage lleno?)', e)
+        }
         
         // Log de depuración para ver distribución de países
         if (process.env.NODE_ENV === 'development') {
@@ -112,6 +147,7 @@ export default function MapaPage() {
         console.error('Error cargando áreas:', err)
       } finally {
         setLoading(false)
+        setInitialLoading(false) // ✅ Ocultar skeleton incluso si hay error
       }
     }
 
@@ -369,7 +405,8 @@ export default function MapaPage() {
     )
   }
 
-  if (loading && areas.length === 0) {
+  // Skeleton Loader MEJORADO - Solo primera carga, luego cache instantáneo
+  if (initialLoading) {
     return (
       <div className="h-screen flex flex-col overflow-hidden bg-gray-100">
         <Navbar />
@@ -400,18 +437,20 @@ export default function MapaPage() {
                 </div>
               </div>
               
-              {/* Texto */}
+              {/* Texto dinámico basado en si viene de cache */}
               <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
-                Cargando Mapa
+                {areas.length > 0 ? '⚡ Carga Instantánea' : 'Cargando Mapa'}
               </h2>
               <p className="text-gray-600 text-center mb-6">
-                {loadingProgress.loaded > 0 
-                  ? `${loadingProgress.loaded} áreas cargadas...`
-                  : 'Preparando tu mapa de autocaravanas...'}
+                {areas.length > 0 
+                  ? `${areas.length} áreas desde cache...` 
+                  : loadingProgress.loaded > 0 
+                    ? `${loadingProgress.loaded} áreas cargadas...`
+                    : 'Preparando tu mapa de autocaravanas...'}
               </p>
               
-              {/* Barra de progreso */}
-              {loadingProgress.loaded > 0 && (
+              {/* Barra de progreso - solo si está cargando desde servidor */}
+              {loadingProgress.loaded > 0 && areas.length === 0 && (
                 <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                   <div 
                     className="bg-gradient-to-r from-sky-500 to-blue-600 h-full transition-all duration-300 ease-out rounded-full"
