@@ -551,12 +551,12 @@ export default function VehiculoPage() {
       // 2. INFORMACIÓN DEL VEHÍCULO EN CAJA CON FONDO
       pdf.setFillColor(colorGrisClaro[0], colorGrisClaro[1], colorGrisClaro[2]);
       pdf.roundedRect(margin, yPos - 2, pageWidth - 2 * margin, 44, 2, 2, "F");
-      
+
       pdf.setFontSize(13);
       pdf.setFont("helvetica", "bold");
       pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
       pdf.text("📋 DATOS DEL VEHÍCULO", margin + 3, yPos + 5);
-      
+
       yPos += 12;
       pdf.setFontSize(10);
       pdf.setFont("helvetica", "normal");
@@ -593,12 +593,12 @@ export default function VehiculoPage() {
       if (valoracion.precio_salida) {
         pdf.setFillColor(colorVerde[0], colorVerde[1], colorVerde[2]);
         pdf.roundedRect(margin, yPos - 2, pageWidth - 2 * margin, 16, 2, 2, "F");
-        
+
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(11);
         pdf.setFont("helvetica", "normal");
         pdf.text("🚀 PRECIO DE SALIDA", margin + 3, yPos + 4);
-        
+
         pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
         pdf.text(
@@ -607,11 +607,11 @@ export default function VehiculoPage() {
           yPos + 4,
           { align: "right" }
         );
-        
+
         pdf.setFontSize(8);
         pdf.setFont("helvetica", "normal");
         pdf.text("Precio inicial para negociación", margin + 3, yPos + 10);
-        
+
         yPos += 20;
       }
 
@@ -619,12 +619,12 @@ export default function VehiculoPage() {
       if (valoracion.precio_objetivo) {
         pdf.setFillColor(colorAzul[0], colorAzul[1], colorAzul[2]);
         pdf.roundedRect(margin, yPos - 2, pageWidth - 2 * margin, 16, 2, 2, "F");
-        
+
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(11);
         pdf.setFont("helvetica", "normal");
         pdf.text("🎯 PRECIO OBJETIVO", margin + 3, yPos + 4);
-        
+
         pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
         pdf.text(
@@ -633,11 +633,11 @@ export default function VehiculoPage() {
           yPos + 4,
           { align: "right" }
         );
-        
+
         pdf.setFontSize(8);
         pdf.setFont("helvetica", "normal");
         pdf.text("Precio realista de venta", margin + 3, yPos + 10);
-        
+
         yPos += 20;
       }
 
@@ -645,12 +645,12 @@ export default function VehiculoPage() {
       if (valoracion.precio_minimo) {
         pdf.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2]);
         pdf.roundedRect(margin, yPos - 2, pageWidth - 2 * margin, 16, 2, 2, "F");
-        
+
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(11);
         pdf.setFont("helvetica", "normal");
         pdf.text("⚠️ PRECIO MÍNIMO", margin + 3, yPos + 4);
-        
+
         pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
         pdf.text(
@@ -659,11 +659,11 @@ export default function VehiculoPage() {
           yPos + 4,
           { align: "right" }
         );
-        
+
         pdf.setFontSize(8);
         pdf.setFont("helvetica", "normal");
         pdf.text("Límite aceptable de negociación", margin + 3, yPos + 10);
-        
+
         yPos += 20;
       }
 
@@ -724,14 +724,14 @@ export default function VehiculoPage() {
               );
 
               checkPageBreak(70);
-              
+
               // Caja con borde para la foto
               pdf.setDrawColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
               pdf.setLineWidth(0.5);
               const maxWidth = pageWidth - 2 * margin;
               const maxHeight = 60;
               pdf.rect(margin, yPos - 2, maxWidth, maxHeight + 6, "S");
-              
+
               pdf.setFontSize(9);
               pdf.setFont("helvetica", "bold");
               pdf.setTextColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
@@ -757,20 +757,20 @@ export default function VehiculoPage() {
 
       // 5. INFORME COMPLETO CON FORMATO MEJORADO
       checkPageBreak(40);
-      
+
       // Nueva página para el informe
       pdf.addPage();
       yPos = 20;
-      
+
       // Header de informe
       pdf.setFillColor(colorGrisClaro[0], colorGrisClaro[1], colorGrisClaro[2]);
       pdf.rect(0, 0, pageWidth, 35, "F");
-      
+
       pdf.setFontSize(18);
       pdf.setFont("helvetica", "bold");
       pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
       pdf.text("📄 INFORME DE VALORACIÓN COMPLETO", pageWidth / 2, 15, { align: "center" });
-      
+
       pdf.setFontSize(10);
       pdf.setFont("helvetica", "normal");
       pdf.setTextColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
@@ -780,7 +780,7 @@ export default function VehiculoPage() {
         25,
         { align: "center" }
       );
-      
+
       yPos = 45;
       pdf.setTextColor(0, 0, 0);
 
@@ -800,15 +800,15 @@ export default function VehiculoPage() {
           checkPageBreak(15);
           yPos += 5;
           const titulo = line.replace("===SECTION===", "").trim();
-          
+
           pdf.setFillColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
           pdf.rect(margin, yPos - 4, pageWidth - 2 * margin, 10, "F");
-          
+
           pdf.setFontSize(12);
           pdf.setFont("helvetica", "bold");
           pdf.setTextColor(255, 255, 255);
           pdf.text(titulo, margin + 2, yPos + 2);
-          
+
           yPos += 12;
           pdf.setTextColor(0, 0, 0);
         }
@@ -817,12 +817,12 @@ export default function VehiculoPage() {
           checkPageBreak(10);
           yPos += 3;
           const titulo = line.replace("---SUBSECTION---", "").trim();
-          
+
           pdf.setFontSize(11);
           pdf.setFont("helvetica", "bold");
           pdf.setTextColor(colorAzul[0], colorAzul[1], colorAzul[2]);
           pdf.text(titulo, margin, yPos);
-          
+
           yPos += 7;
           pdf.setTextColor(0, 0, 0);
         }
@@ -861,24 +861,24 @@ export default function VehiculoPage() {
       const totalPages = pdf.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
-        
+
         // Línea decorativa superior del footer
         pdf.setDrawColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
         pdf.setLineWidth(0.3);
         pdf.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
-        
+
         // Información del footer
         pdf.setFontSize(8);
         pdf.setTextColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
         pdf.setFont("helvetica", "normal");
-        
+
         // Izquierda: Fecha
         pdf.text(
           `Generado: ${new Date().toLocaleDateString("es-ES")}`,
           margin,
           pageHeight - 8
         );
-        
+
         // Centro: Nombre empresa
         pdf.setFont("helvetica", "bold");
         pdf.text(
@@ -887,7 +887,7 @@ export default function VehiculoPage() {
           pageHeight - 8,
           { align: "center" }
         );
-        
+
         // Derecha: Número de página
         pdf.setFont("helvetica", "normal");
         pdf.text(
@@ -896,7 +896,7 @@ export default function VehiculoPage() {
           pageHeight - 8,
           { align: "right" }
         );
-        
+
         // Web en la parte inferior
         pdf.setFontSize(7);
         pdf.setTextColor(colorAzul[0], colorAzul[1], colorAzul[2]);
