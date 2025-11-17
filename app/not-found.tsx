@@ -1,9 +1,14 @@
+'use client'
+
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { HomeIcon, MapIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 
 export default function NotFound() {
+  const router = useRouter()
+  
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
@@ -60,7 +65,7 @@ export default function NotFound() {
             </Link>
 
             <button
-              onClick={() => window.history.back()}
+              onClick={() => router.back()}
               className="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
             >
               <ArrowLeftIcon className="w-5 h-5" />
