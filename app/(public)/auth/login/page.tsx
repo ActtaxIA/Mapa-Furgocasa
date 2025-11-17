@@ -21,7 +21,7 @@ export default function LoginPage() {
 
     try {
       const supabase = createClient()
-      
+
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -47,7 +47,7 @@ export default function LoginPage() {
 
     try {
       const supabase = createClient()
-      
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -56,7 +56,7 @@ export default function LoginPage() {
       })
 
       if (error) throw error
-      
+
       // La redirección a Google es automática
     } catch (error: any) {
       console.error('Error login Google:', error)

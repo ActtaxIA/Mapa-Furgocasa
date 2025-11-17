@@ -97,4 +97,3 @@ Revisar en este orden:
 - **Antes**: 200+ líneas de código complejo tratando de "arreglar" Supabase
 - **Ahora**: 50 líneas de código usando Supabase como está diseñado
 - **Resultado esperado**: Funciona perfectamente sin bucles ni problemas
-
