@@ -19,6 +19,7 @@ interface AnalisisMarcaModelo {
   marca: string;
   modelo: string;
   cantidad: number;
+  cantidad_vendidos: number;
   año_promedio: number;
   km_promedio: number;
   precio_compra_promedio: number;
@@ -249,6 +250,7 @@ export default function AdminVehiculosPage() {
             marca,
             modelo,
             cantidad: 0,
+            cantidad_vendidos: 0,
             año_promedio: 0,
             km_promedio: 0,
             precio_compra_promedio: 0,
@@ -291,6 +293,11 @@ export default function AdminVehiculosPage() {
             kmsVehiculo[0].kilometros
           ) {
             grupo.km_promedio += kmsVehiculo[0].kilometros;
+          }
+
+          // Contar si está vendido
+          if (valEco.vendido) {
+            grupo.cantidad_vendidos++;
           }
 
           // Valor actual: Si está vendido, usar precio_venta_final, sino valor_estimado_actual
@@ -402,6 +409,20 @@ export default function AdminVehiculosPage() {
         <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
           {item.cantidad}
         </span>
+      ),
+    },
+    {
+      key: "cantidad_vendidos",
+      title: "Vendidos",
+      sortable: true,
+      render: (item) => (
+        item.cantidad_vendidos > 0 ? (
+          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+            ✓ {item.cantidad_vendidos}
+          </span>
+        ) : (
+          <span className="text-gray-400">0</span>
+        )
       ),
     },
     {
