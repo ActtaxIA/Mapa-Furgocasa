@@ -698,362 +698,165 @@ export function MiAutocaravanaTab({ userId }: Props) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {vehiculos.map((vehiculo) => (
             <div
               key={vehiculo.id}
-              className="bg-white rounded-xl shadow p-4 sm:p-6 border border-gray-200 hover:shadow-lg transition-shadow"
+              className="bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all overflow-hidden group"
             >
-              {/* Layout Vertical en Móvil, Horizontal en Desktop */}
-              <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-6">
-                {/* Foto del Vehículo */}
-                <div className="flex-shrink-0 relative">
-                  {vehiculo.foto_url ? (
-                    <img
-                      src={vehiculo.foto_url}
-                      alt={`${vehiculo.marca} ${vehiculo.modelo}`}
-                      className="w-32 h-32 rounded-lg object-cover border-2 border-gray-200"
-                    />
-                  ) : (
-                    <div className="w-32 h-32 rounded-lg bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center border-2 border-primary-300">
-                      <TruckIcon className="h-16 w-16 text-primary-600" />
-                    </div>
-                  )}
-                  {/* Badge de Estado */}
-                  {vehiculo.vendido && (
-                    <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white">
-                      VENDIDO
-                    </div>
-                  )}
-                </div>
+              {/* Header compacto con foto y datos básicos */}
+              <div className="relative">
+                {vehiculo.foto_url ? (
+                  <img
+                    src={vehiculo.foto_url}
+                    alt={`${vehiculo.marca} ${vehiculo.modelo}`}
+                    className="w-full h-40 object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-40 bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+                    <TruckIcon className="h-16 w-16 text-primary-600 opacity-50" />
+                  </div>
+                )}
+                {/* Badge de Estado - compacto */}
+                {vehiculo.vendido && (
+                  <div className="absolute top-2 right-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded shadow-lg">
+                    VENDIDO
+                  </div>
+                )}
+              </div>
 
-                {/* Datos del Vehículo */}
-                <div className="flex-1 text-center lg:text-left w-full lg:w-auto">
-                  <div className="flex items-center justify-center lg:justify-start gap-2">
-                    <TruckIcon className="h-6 w-6 text-primary-600" />
-                    <h3 className="text-xl font-bold text-gray-900">
+              {/* Contenido compacto */}
+              <div className="p-4 space-y-3">
+                {/* Matrícula y tipo */}
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <h3 className="text-lg font-bold text-gray-900 flex items-center gap-1">
+                      <TruckIcon className="h-4 w-4 text-primary-600" />
                       {vehiculo.matricula}
                     </h3>
-                    {vehiculo.vendido && (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded-full border border-orange-300">
-                        <TagIcon className="w-3 h-3" />
-                        Vendido
+                    {vehiculo.en_venta && !vehiculo.vendido && (
+                      <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded font-medium">
+                        EN VENTA
                       </span>
                     )}
                   </div>
-                  <div className="mt-2 text-sm text-gray-600 space-y-1">
-                    {/* Tipo de vehículo - 2º en importancia */}
-                    {vehiculo.tipo_vehiculo && (
-                      <p className="flex items-center gap-1">
-                        <strong>Tipo:</strong>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 border border-primary-200">
-                          {vehiculo.tipo_vehiculo}
-                        </span>
-                      </p>
-                    )}
-                    {vehiculo.marca && (
-                      <p>
-                        <strong>Marca:</strong> {vehiculo.marca}
-                      </p>
-                    )}
-                    {vehiculo.modelo && (
-                      <p>
-                        <strong>Modelo:</strong> {vehiculo.modelo}
-                      </p>
-                    )}
-                    {vehiculo.chasis && (
-                      <p>
-                        <strong>Chasis:</strong> {vehiculo.chasis}
-                      </p>
-                    )}
-                    {vehiculo.año && (
-                      <p>
-                        <strong>Año:</strong> {vehiculo.año}
-                      </p>
-                    )}
-                    {vehiculo.color && (
-                      <p>
-                        <strong>Color:</strong> {vehiculo.color}
-                      </p>
-                    )}
-                    <p className="text-xs text-gray-400 mt-2">
-                      Registrado:{" "}
-                      {new Date(vehiculo.created_at).toLocaleDateString(
-                        "es-ES"
-                      )}
-                    </p>
-                  </div>
+                  <p className="text-sm text-gray-600">
+                    {vehiculo.marca} {vehiculo.modelo}
+                    {vehiculo.año && ` • ${vehiculo.año}`}
+                  </p>
+                  {vehiculo.tipo_vehiculo && (
+                    <span className="inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium bg-primary-50 text-primary-700 border border-primary-200">
+                      {vehiculo.tipo_vehiculo}
+                    </span>
+                  )}
                 </div>
 
-                {/* Datos Económicos - Sección Mejorada */}
+                {/* Datos económicos compactos */}
                 {(vehiculo.precio_compra ||
-                  vehiculo.fecha_compra ||
-                  vehiculo.kilometros_compra ||
                   vehiculo.valor_estimado_actual ||
-                  vehiculo.inversion_total ||
                   vehiculo.kilometros_actual) && (
-                  <div className="flex-shrink-0 w-full lg:w-80 space-y-3">
-                    {/* Datos de Compra */}
-                    {(vehiculo.precio_compra ||
-                      vehiculo.fecha_compra ||
-                      vehiculo.kilometros_compra) && (
-                      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border-2 border-blue-200">
-                        <h4 className="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
-                          <CurrencyEuroIcon className="w-4 h-4" />
-                          Datos de Compra
-                        </h4>
-                        <div className="space-y-2 text-sm">
-                          {vehiculo.precio_compra && (
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-600">Precio:</span>
-                              <span className="font-bold text-blue-900">
-                                {new Intl.NumberFormat("es-ES", {
-                                  style: "currency",
-                                  currency: "EUR",
-                                  maximumFractionDigits: 0,
-                                }).format(vehiculo.precio_compra)}
-                              </span>
-                            </div>
-                          )}
-                          {vehiculo.fecha_compra && (
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-600">Fecha:</span>
-                              <span className="font-medium text-gray-900">
-                                {new Date(
-                                  vehiculo.fecha_compra
-                                ).toLocaleDateString("es-ES", {
-                                  month: "short",
-                                  year: "numeric",
-                                })}
-                              </span>
-                            </div>
-                          )}
-                          {vehiculo.kilometros_compra && (
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-600">Km compra:</span>
-                              <span className="font-medium text-gray-900">
-                                {new Intl.NumberFormat("es-ES").format(
-                                  vehiculo.kilometros_compra
-                                )}{" "}
-                                km
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    {vehiculo.precio_compra && (
+                      <div className="bg-blue-50 rounded p-2 border border-blue-100">
+                        <p className="text-gray-600 text-[10px] mb-0.5">
+                          Precio compra
+                        </p>
+                        <p className="font-bold text-blue-900">
+                          {new Intl.NumberFormat("es-ES", {
+                            style: "currency",
+                            currency: "EUR",
+                            maximumFractionDigits: 0,
+                          }).format(vehiculo.precio_compra)}
+                        </p>
                       </div>
                     )}
-
-                    {/* Kilometraje Actual */}
+                    {vehiculo.valor_estimado_actual && (
+                      <div className="bg-green-50 rounded p-2 border border-green-100">
+                        <p className="text-gray-600 text-[10px] mb-0.5">
+                          Valor actual
+                        </p>
+                        <p className="font-bold text-green-900">
+                          {new Intl.NumberFormat("es-ES", {
+                            style: "currency",
+                            currency: "EUR",
+                            maximumFractionDigits: 0,
+                          }).format(vehiculo.valor_estimado_actual)}
+                        </p>
+                      </div>
+                    )}
                     {vehiculo.kilometros_actual && (
-                      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border-2 border-purple-200">
-                        <h4 className="text-sm font-semibold text-purple-900 mb-3 flex items-center gap-2">
-                          <TruckIcon className="w-4 h-4" />
-                          Kilometraje Actual
-                        </h4>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">Km actuales:</span>
-                            <span className="font-bold text-purple-900 text-lg">
-                              {new Intl.NumberFormat("es-ES").format(
-                                vehiculo.kilometros_actual
-                              )}{" "}
-                              km
-                            </span>
-                          </div>
-                          {vehiculo.kilometros_compra && (
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-600">Recorridos:</span>
-                              <span className="font-medium text-gray-900">
-                                {new Intl.NumberFormat("es-ES").format(
-                                  vehiculo.kilometros_actual -
-                                    vehiculo.kilometros_compra
-                                )}{" "}
-                                km
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                      <div className="bg-purple-50 rounded p-2 border border-purple-100">
+                        <p className="text-gray-600 text-[10px] mb-0.5">
+                          Kilometraje
+                        </p>
+                        <p className="font-bold text-purple-900">
+                          {new Intl.NumberFormat("es-ES").format(
+                            vehiculo.kilometros_actual
+                          )}{" "}
+                          km
+                        </p>
                       </div>
                     )}
-
-                    {/* Valoración Económica */}
-                    {(vehiculo.valor_estimado_actual ||
-                      vehiculo.inversion_total) && (
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-200">
-                        <h4 className="text-sm font-semibold text-green-900 mb-3 flex items-center gap-2">
-                          <CurrencyEuroIcon className="w-4 h-4" />
-                          Valoración
-                        </h4>
-                        <div className="space-y-2 text-sm">
-                          {vehiculo.valor_estimado_actual && (
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-600">
-                                Valor actual:
-                              </span>
-                              <span className="font-bold text-green-900">
-                                {new Intl.NumberFormat("es-ES", {
-                                  style: "currency",
-                                  currency: "EUR",
-                                  maximumFractionDigits: 0,
-                                }).format(vehiculo.valor_estimado_actual)}
-                              </span>
-                            </div>
-                          )}
-                          {vehiculo.inversion_total && (
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-600">
-                                Inversión total:
-                              </span>
-                              <span className="font-medium text-gray-900">
-                                {new Intl.NumberFormat("es-ES", {
-                                  style: "currency",
-                                  currency: "EUR",
-                                  maximumFractionDigits: 0,
-                                }).format(vehiculo.inversion_total)}
-                              </span>
-                            </div>
-                          )}
-                          {vehiculo.precio_compra &&
-                            vehiculo.valor_estimado_actual && (
-                              <div className="flex justify-between items-center pt-2 border-t border-green-300">
-                                <span className="text-gray-600">
-                                  {vehiculo.valor_estimado_actual >=
-                                  vehiculo.precio_compra
-                                    ? "Revalorización:"
-                                    : "Depreciación:"}
-                                </span>
-                                <span
-                                  className={`font-bold ${
-                                    vehiculo.valor_estimado_actual <
-                                    vehiculo.precio_compra
-                                      ? "text-red-600"
-                                      : "text-green-600"
-                                  }`}
-                                >
-                                  {vehiculo.valor_estimado_actual >=
-                                  vehiculo.precio_compra
-                                    ? "+"
-                                    : ""}
-                                  {(
-                                    ((vehiculo.valor_estimado_actual -
-                                      vehiculo.precio_compra) /
-                                      vehiculo.precio_compra) *
-                                    100
-                                  ).toFixed(1)}
-                                  %
-                                </span>
-                              </div>
-                            )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Financiación */}
-                    {vehiculo.financiado &&
-                      vehiculo.pendiente_pago &&
-                      vehiculo.pendiente_pago > 0 && (
-                        <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg p-4 border-2 border-orange-200">
-                          <h4 className="text-sm font-semibold text-orange-900 mb-3 flex items-center gap-2">
-                            <CurrencyEuroIcon className="w-4 h-4" />
-                            Financiación
-                          </h4>
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-600">Pendiente:</span>
-                              <span className="font-bold text-orange-900">
-                                {new Intl.NumberFormat("es-ES", {
-                                  style: "currency",
-                                  currency: "EUR",
-                                  maximumFractionDigits: 0,
-                                }).format(vehiculo.pendiente_pago)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                    {/* Estado de Venta */}
-                    {vehiculo.en_venta && vehiculo.precio_venta_deseado && (
-                      <div className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-lg p-4 border-2 border-yellow-300">
-                        <h4 className="text-sm font-semibold text-yellow-900 mb-3 flex items-center gap-2">
-                          <TagIcon className="w-4 h-4" />
-                          En Venta
-                        </h4>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600">Precio venta:</span>
-                            <span className="font-bold text-yellow-900">
-                              {new Intl.NumberFormat("es-ES", {
-                                style: "currency",
-                                currency: "EUR",
-                                maximumFractionDigits: 0,
-                              }).format(vehiculo.precio_venta_deseado)}
-                            </span>
-                          </div>
-                        </div>
+                    {vehiculo.precio_venta_deseado && vehiculo.en_venta && (
+                      <div className="bg-yellow-50 rounded p-2 border border-yellow-200">
+                        <p className="text-gray-600 text-[10px] mb-0.5">
+                          Precio venta
+                        </p>
+                        <p className="font-bold text-yellow-900">
+                          {new Intl.NumberFormat("es-ES", {
+                            style: "currency",
+                            currency: "EUR",
+                            maximumFractionDigits: 0,
+                          }).format(vehiculo.precio_venta_deseado)}
+                        </p>
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* QR Code */}
+                {/* QR Code compacto */}
                 {vehiculo.qr_image_url && (
-                  <div className="flex-shrink-0 w-full lg:w-auto flex flex-col items-center">
-                    <img
-                      src={vehiculo.qr_image_url}
-                      alt={`QR ${vehiculo.matricula}`}
-                      className="w-32 h-32 border-2 border-gray-200 rounded-lg"
-                    />
+                  <div className="bg-gray-50 rounded p-2 flex items-center justify-between border border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={vehiculo.qr_image_url}
+                        alt={`QR ${vehiculo.matricula}`}
+                        className="w-12 h-12 rounded border border-gray-300"
+                      />
+                      <div className="text-xs">
+                        <p className="font-medium text-gray-900">Código QR</p>
+                        <p className="text-gray-500 text-[10px]">
+                          Para reportes
+                        </p>
+                      </div>
+                    </div>
                     <button
                       onClick={() => handleDownloadQR(vehiculo)}
-                      className="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-lg text-primary-700 bg-primary-100 hover:bg-primary-200 transition-colors"
+                      className="p-1.5 text-primary-600 hover:bg-primary-50 rounded transition-colors"
+                      title="Descargar QR"
                     >
-                      <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
-                      Descargar QR
+                      <ArrowDownTrayIcon className="h-4 w-4" />
                     </button>
                   </div>
                 )}
-              </div>
 
-              {/* Información del QR - Simplificada */}
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex items-start gap-3">
-                  <QrCodeIcon className="h-5 w-5 text-primary-600 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-900 mb-1">
-                      Código QR para reportes de accidentes
-                    </p>
-                    <p className="text-xs text-gray-600 mb-2">
-                      Descarga el QR y pégalo en tu vehículo. Recibirás alertas
-                      instantáneas si alguien reporta un accidente.
-                    </p>
-                    <p className="text-xs font-mono bg-white px-2 py-1 rounded border border-gray-300 break-all text-gray-700">
-                      {process.env.NEXT_PUBLIC_APP_URL ||
-                        "https://mapafurgocasa.com"}
-                      /accidente?matricula={vehiculo.matricula}
-                    </p>
-                  </div>
+                {/* Acciones compactas */}
+                <div className="flex gap-2 pt-2 border-t border-gray-200">
+                  <Link
+                    href={`/vehiculo/${vehiculo.id}`}
+                    className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 bg-primary-600 text-white rounded text-xs font-medium hover:bg-primary-700 transition-colors"
+                  >
+                    <ChartBarIcon className="h-3.5 w-3.5" />
+                    Gestionar
+                  </Link>
+                  <button
+                    onClick={() => handleDeleteClick(vehiculo)}
+                    className="px-3 py-2 border border-red-300 rounded text-xs font-medium text-red-700 bg-white hover:bg-red-50 transition-colors"
+                    title="Eliminar vehículo"
+                  >
+                    <TrashIcon className="h-3.5 w-3.5" />
+                  </button>
                 </div>
-              </div>
-
-              {/* Se eliminó el bloque de diseños por vehículo; ahora están en la sección general superior */}
-
-              {/* Acciones */}
-              <div className="mt-4 flex justify-between items-center">
-                <Link
-                  href={`/vehiculo/${vehiculo.id}`}
-                  className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors"
-                >
-                  <ChartBarIcon className="h-5 w-5 mr-2" />
-                  Gestionar Vehículo
-                </Link>
-                <button
-                  onClick={() => handleDeleteClick(vehiculo)}
-                  className="inline-flex items-center px-3 py-2 border border-red-300 rounded-lg text-sm font-medium text-red-700 bg-white hover:bg-red-50 transition-colors"
-                >
-                  <TrashIcon className="h-4 w-4 mr-2" />
-                  Eliminar
-                </button>
               </div>
             </div>
           ))}
