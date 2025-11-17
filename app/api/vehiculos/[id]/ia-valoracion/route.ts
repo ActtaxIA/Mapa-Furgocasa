@@ -208,7 +208,7 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
               kilometros: compra.kilometros_venta || null
             })
             console.log(`   ✅ VENTA REAL: ${vehiculoDataCompra?.marca} ${vehiculoDataCompra?.modelo} → ${compra.precio_venta_final.toLocaleString()}€ (${compra.kilometros_venta?.toLocaleString()} km)`)
-          } 
+          }
           // ✅ PRIORIDAD 2: Si no está vendido, usar pvp_base_particular (precio normalizado)
           else {
             // IMPORTANTE: Usar pvp_base_particular en lugar de precio_compra
@@ -229,7 +229,7 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
         }
 
         console.log(`   ✅ Transacciones REALES procesadas: ${datosCompra.length} → Vehículos únicos: ${vehiculosUnicos.size}`)
-        
+
         // Contar ventas vs compras
         const ventas = Array.from(vehiculosUnicos.values()).filter(v => v.tipo === 'venta_real').length
         const compras = Array.from(vehiculosUnicos.values()).filter(v => v.tipo === 'compra_real').length
@@ -622,7 +622,7 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
     const kmCompra = valoracion?.kilometros_compra || 0
     const kmRecorridos = kmActuales && kmCompra ? kmActuales - kmCompra : null
     const kmPorAño = kmRecorridos && añosAntiguedad ? (kmRecorridos / parseFloat(añosAntiguedad)).toFixed(0) : null
-    
+
     console.log(`   📊 Kilometraje para valoración:`)
     console.log(`      - KM Actual (vehiculo_kilometraje): ${kmActuales?.toLocaleString() || 'N/A'} km`)
     console.log(`      - KM Compra (valoracion_economica): ${kmCompra?.toLocaleString() || 'N/A'} km`)
