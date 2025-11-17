@@ -145,10 +145,15 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
         .limit(20)
 
       // Buscar datos de compra de usuarios (con datos del vehículo)
+      // IMPORTANTE: Usar pvp_base_particular (precio normalizado con impuesto incluido)
+      // en lugar de precio_compra para evitar sesgos por empresas de alquiler exentas
       const { data: datosCompra, error: errorCompra } = await (supabase as any)
         .from('vehiculo_valoracion_economica')
         .select(`
           precio_compra,
+          pvp_base_particular,
+          precio_incluye_impuesto_matriculacion,
+          origen_compra,
           fecha_compra,
           kilometros_compra,
           vehiculo_id,
@@ -159,7 +164,7 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
           )
         `)
         .neq('vehiculo_id', vehiculoId)
-        .not('precio_compra', 'is', null)
+        .not('pvp_base_particular', 'is', null)
         .order('fecha_compra', { ascending: false })
         .limit(20)
 
@@ -264,9 +269,11 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
 
           // Solo agregar si este vehículo no tiene ya una valoración IA
           if (!vehiculosUnicos.has(vehiculoIdComp)) {
+            // IMPORTANTE: Usar pvp_base_particular en lugar de precio_compra
+            // para evitar sesgos por empresas de alquiler exentas del impuesto
             vehiculosUnicos.set(vehiculoIdComp, {
               tipo: 'compra',
-              precio: compra.precio_compra,
+              precio: compra.pvp_base_particular || compra.precio_compra,
               fecha: compra.fecha_compra,
               vehiculo_id: vehiculoIdComp,
               año: vehiculoDataCompra?.año || null,
@@ -651,7 +658,14 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
     const kmRecorridos = kmActuales && kmCompra ? kmActuales - kmCompra : null
     const kmPorAño = kmRecorridos && añosAntiguedad ? (kmRecorridos / parseFloat(añosAntiguedad)).toFixed(0) : null
 
-    const datosEconomicos = `- Precio de compra: ${valoracion?.precio_compra?.toLocaleString() || 'No especificado'}€
+    // IMPORTANTE: Usar pvp_base_particular si está disponible (precio normalizado con impuesto incluido)
+    const precioReferencia = valoracion?.pvp_base_particular || valoracion?.precio_compra
+    const incluyeImpuesto = valoracion?.precio_incluye_impuesto_matriculacion ?? true
+    const origenCompra = valoracion?.origen_compra || 'particular'
+    
+    const datosEconomicos = `- Precio de compra original: ${valoracion?.precio_compra?.toLocaleString() || 'No especificado'}€
+- PVP equivalente particular (normalizado): ${precioReferencia?.toLocaleString() || 'No especificado'}€${!incluyeImpuesto ? ' ⚠️ (precio original sin impuesto matriculación, normalizado añadiendo ~14.75%)' : ''}
+- Origen/tipo de compra: ${origenCompra}${origenCompra === 'empresa_alquiler' ? ' ⚠️ (exento impuesto matriculación)' : ''}
 - Fecha de compra/matriculación: ${fechaCompra || 'No especificado'}
 - Antigüedad: ${añosAntiguedad ? añosAntiguedad + ' años' : 'No especificado'}
 - Kilometraje en compra: ${kmCompra?.toLocaleString() || 'No especificado'} km
@@ -771,9 +785,11 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
     console.log(`   🔍 Match Objetivo: "${precioObjetivoMatch ? precioObjetivoMatch[1] : 'NO MATCH'}"`)
     console.log(`   🔍 Match Mínimo: "${precioMinimoMatch ? precioMinimoMatch[1] : 'NO MATCH'}"`)
 
-    const precioSalida = precioSalidaMatch ? parsearPrecio(precioSalidaMatch[1]) : valoracion?.precio_compra ? valoracion.precio_compra * 1.1 : null
-    const precioObjetivo = precioObjetivoMatch ? parsearPrecio(precioObjetivoMatch[1]) : valoracion?.precio_compra || null
-    const precioMinimo = precioMinimoMatch ? parsearPrecio(precioMinimoMatch[1]) : valoracion?.precio_compra ? valoracion.precio_compra * 0.9 : null
+    // IMPORTANTE: Usar pvp_base_particular (precio normalizado) como fallback en lugar de precio_compra
+    const precioReferenciaFallback = valoracion?.pvp_base_particular || valoracion?.precio_compra
+    const precioSalida = precioSalidaMatch ? parsearPrecio(precioSalidaMatch[1]) : precioReferenciaFallback ? precioReferenciaFallback * 1.1 : null
+    const precioObjetivo = precioObjetivoMatch ? parsearPrecio(precioObjetivoMatch[1]) : precioReferenciaFallback || null
+    const precioMinimo = precioMinimoMatch ? parsearPrecio(precioMinimoMatch[1]) : precioReferenciaFallback ? precioReferenciaFallback * 0.9 : null
 
     console.log(`   💵 Salida parseado: ${precioSalida}€`)
     console.log(`   🎯 Objetivo parseado: ${precioObjetivo}€`)
@@ -833,14 +849,15 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
       : null
 
     // Calcular variación de valor (positivo = revalorización, negativo = depreciación)
-    const precioCompraUsuario = valoracion?.precio_compra
+    // IMPORTANTE: Usar pvp_base_particular (precio normalizado) para cálculos precisos
+    const precioCompraUsuario = valoracion?.pvp_base_particular || valoracion?.precio_compra
     const variacionValor = precioCompraUsuario && precioObjetivo
       ? ((precioObjetivo - precioCompraUsuario) / precioCompraUsuario) * 100
       : null
 
     console.log(`\n📊 Cálculos finales:`)
     console.log(`   💰 Precio base mercado: ${precioBaseMercado ? precioBaseMercado.toFixed(0) + '€' : 'N/A'}`)
-    console.log(`   💵 Precio compra usuario: ${precioCompraUsuario ? precioCompraUsuario.toFixed(0) + '€' : 'No especificado'}`)
+    console.log(`   💵 Precio compra usuario (normalizado): ${precioCompraUsuario ? precioCompraUsuario.toFixed(0) + '€' : 'No especificado'}`)
     console.log(`   🎯 Precio objetivo IA: ${precioObjetivo}€`)
     console.log(`   ${variacionValor !== null && variacionValor >= 0 ? '📈' : '📉'} Variación valor: ${variacionValor !== null ? (variacionValor >= 0 ? '+' : '') + variacionValor.toFixed(1) + '%' : 'N/A (no hay precio de compra)'}`)
     console.log(`   🔍 Cálculo: (${precioObjetivo} - ${precioCompraUsuario}) / ${precioCompraUsuario} * 100 = ${variacionValor}`)

@@ -24,6 +24,12 @@ interface CompraData {
   pais_compra: string
   ciudad_compra: string
 
+  // Impuesto de matriculación (nuevo)
+  origen_compra: string
+  precio_incluye_impuesto_matriculacion: boolean
+  importe_impuesto_matriculacion: string
+  motivo_exencion_impuesto: string
+
   // Estado del vehículo en compra
   kilometros_compra: string
   estado_general: string
@@ -73,6 +79,10 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
     lugar_compra: '',
     pais_compra: 'España',
     ciudad_compra: '',
+    origen_compra: 'particular',
+    precio_incluye_impuesto_matriculacion: true,
+    importe_impuesto_matriculacion: '',
+    motivo_exencion_impuesto: '',
     kilometros_compra: '',
     estado_general: '',
     num_propietarios_anteriores: '',
@@ -126,6 +136,10 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
           lugar_compra: data.lugar_compra || '',
           pais_compra: data.pais_compra || 'España',
           ciudad_compra: data.ciudad_compra || '',
+          origen_compra: data.origen_compra || 'particular',
+          precio_incluye_impuesto_matriculacion: data.precio_incluye_impuesto_matriculacion ?? true,
+          importe_impuesto_matriculacion: data.importe_impuesto_matriculacion?.toString() || '',
+          motivo_exencion_impuesto: data.motivo_exencion_impuesto || '',
           kilometros_compra: data.kilometros_compra?.toString() || '',
           estado_general: data.estado_general || '',
           num_propietarios_anteriores: data.num_propietarios_anteriores?.toString() || '',
@@ -182,6 +196,11 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
         lugar_compra: formData.lugar_compra || null,
         pais_compra: formData.pais_compra || null,
         ciudad_compra: formData.ciudad_compra || null,
+        // Impuesto de matriculación (nuevo)
+        origen_compra: formData.origen_compra || null,
+        precio_incluye_impuesto_matriculacion: formData.precio_incluye_impuesto_matriculacion,
+        importe_impuesto_matriculacion: formData.importe_impuesto_matriculacion ? parseFloat(formData.importe_impuesto_matriculacion) : null,
+        motivo_exencion_impuesto: formData.motivo_exencion_impuesto || null,
         kilometros_compra: formData.kilometros_compra ? parseInt(formData.kilometros_compra) : null,
         estado_general: formData.estado_general || null,
         num_propietarios_anteriores: formData.num_propietarios_anteriores ? parseInt(formData.num_propietarios_anteriores) : null,
@@ -305,6 +324,129 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                 onChange={(e) => setFormData({ ...formData, fecha_compra: e.target.value })}
                 className="w-full px-2 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
+            </div>
+
+            {/* Impuesto de Matriculación - Nuevo */}
+            <div className="md:col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+              <div className="flex items-start gap-2 mb-3">
+                <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold">
+                  i
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-1">
+                    Impuesto de Matriculación
+                  </h4>
+                  <p className="text-xs text-blue-800">
+                    Indica si el precio de compra incluye o no el impuesto de matriculación. 
+                    Esto es importante para valoraciones precisas, ya que empresas de alquiler y 
+                    ciertos compradores están exentos de este impuesto (~14,75% para autocaravanas).
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                {/* Origen/Tipo de compra */}
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                    Origen/Tipo de Compra
+                  </label>
+                  <select
+                    value={formData.origen_compra}
+                    onChange={(e) => {
+                      const origen = e.target.value
+                      setFormData({ 
+                        ...formData, 
+                        origen_compra: origen,
+                        // Auto-desmarcar si es empresa_alquiler
+                        precio_incluye_impuesto_matriculacion: origen === 'empresa_alquiler' ? false : formData.precio_incluye_impuesto_matriculacion
+                      })
+                    }}
+                    className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="particular">Particular</option>
+                    <option value="empresa_alquiler">Empresa de Alquiler (exenta)</option>
+                    <option value="empresa_otros">Otra Empresa</option>
+                    <option value="discapacidad">Persona con Discapacidad (exenta)</option>
+                    <option value="familia_numerosa">Familia Numerosa (bonif. 50%)</option>
+                    <option value="exento_otro">Otra Exención</option>
+                  </select>
+                </div>
+
+                {/* Toggle: ¿Precio incluye impuesto? */}
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                    ¿El precio incluye el impuesto de matriculación?
+                  </label>
+                  <div className="flex items-center gap-4 h-[42px]">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        checked={formData.precio_incluye_impuesto_matriculacion === true}
+                        onChange={() => setFormData({ ...formData, precio_incluye_impuesto_matriculacion: true })}
+                        className="w-4 h-4 text-primary-600"
+                      />
+                      <span className="text-sm text-gray-900">Sí, incluido</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        checked={formData.precio_incluye_impuesto_matriculacion === false}
+                        onChange={() => setFormData({ ...formData, precio_incluye_impuesto_matriculacion: false })}
+                        className="w-4 h-4 text-primary-600"
+                      />
+                      <span className="text-sm text-gray-900">No incluido</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Importe real del impuesto (opcional) */}
+                {!formData.precio_incluye_impuesto_matriculacion && (
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                      Importe Real del Impuesto (€) <span className="text-gray-400 text-xs">(opcional)</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.importe_impuesto_matriculacion}
+                      onChange={(e) => setFormData({ ...formData, importe_impuesto_matriculacion: e.target.value })}
+                      className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="Si conoces el importe exacto"
+                    />
+                  </div>
+                )}
+
+                {/* Motivo de exención (si no incluye impuesto) */}
+                {!formData.precio_incluye_impuesto_matriculacion && (
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                      Motivo Exención <span className="text-gray-400 text-xs">(opcional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.motivo_exencion_impuesto}
+                      onChange={(e) => setFormData({ ...formData, motivo_exencion_impuesto: e.target.value })}
+                      className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="Ej: Alquiler sin conductor, discapacidad 33%..."
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Info visual estimación */}
+              {!formData.precio_incluye_impuesto_matriculacion && formData.precio_compra && (
+                <div className="mt-3 p-2 bg-white border border-blue-300 rounded text-xs text-gray-700">
+                  <strong>💡 Estimación automática:</strong> Si el precio no incluye el impuesto, 
+                  se calculará automáticamente (~14,75% para autocaravanas ≈ {
+                    new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' })
+                      .format(parseFloat(formData.precio_compra || '0') * 0.1475)
+                  }).
+                  El PVP normalizado será aproximadamente {
+                    new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' })
+                      .format(parseFloat(formData.precio_compra || '0') * 1.1475)
+                  }.
+                </div>
+              )}
             </div>
 
             <div>

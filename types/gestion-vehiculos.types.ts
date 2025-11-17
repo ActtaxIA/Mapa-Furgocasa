@@ -296,6 +296,13 @@ export interface VehiculoValoracionEconomica {
   procedencia?: string
   lugar_compra?: string
   kilometros_compra?: number
+  // Impuesto de Matriculación (nuevo)
+  origen_compra?: string
+  precio_incluye_impuesto_matriculacion?: boolean
+  importe_impuesto_matriculacion?: number
+  impuesto_matriculacion_estimado?: number
+  pvp_base_particular?: number
+  motivo_exencion_impuesto?: string
   // Financiación
   financiado?: boolean
   importe_financiado?: number
