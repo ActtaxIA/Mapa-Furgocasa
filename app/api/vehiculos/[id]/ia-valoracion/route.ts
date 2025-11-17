@@ -7,28 +7,30 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 })
 
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+// FUNCIÓN PRINCIPAL DE PROCESAMIENTO (se ejecuta en segundo plano)
+async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: string) {
   const startTime = Date.now()
 
   try {
     console.log(`\n${'='.repeat(60)}`)
     console.log(`🤖 [IA-VALORACION] INICIANDO PROCESO`)
     console.log(`${'='.repeat(60)}`)
-    console.log(`📍 Vehículo ID: ${params.id}`)
+    console.log(`📍 Job ID: ${jobId}`)
+    console.log(`📍 Vehículo ID: ${vehiculoId}`)
     console.log(`⏰ Timestamp: ${new Date().toISOString()}`)
 
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!user) {
-      console.error('❌ Usuario no autenticado')
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
-    }
-
-    console.log(`👤 Usuario: ${user.id} (${user.email})`)
+    // Actualizar estado a "procesando"
+    await (supabase as any)
+      .from('valoracion_ia_trabajos')
+      .update({
+        estado: 'procesando',
+        fecha_inicio: new Date().toISOString(),
+        progreso: 0,
+        mensaje_estado: 'Recopilando datos del vehículo...'
+      })
+      .eq('id', jobId)
 
     // 1. RECOPILAR DATOS DEL VEHÍCULO
     console.log(`\n📥 [PASO 1/7] Recopilando datos del vehículo...`)
@@ -36,13 +38,12 @@ export async function POST(
     const { data: vehiculo, error: vehiculoError } = await (supabase as any)
       .from('vehiculos_registrados')
       .select('*')
-      .eq('id', params.id)
-      .eq('user_id', user.id)
+      .eq('id', vehiculoId)
+      .eq('user_id', userId)
       .single()
 
     if (vehiculoError || !vehiculo) {
-      console.error('❌ Vehículo no encontrado:', vehiculoError)
-      return NextResponse.json({ error: 'Vehículo no encontrado' }, { status: 404 })
+      throw new Error('Vehículo no encontrado')
     }
 
     console.log(`✅ Vehículo encontrado: ${vehiculo.marca} ${vehiculo.modelo}`)
@@ -50,7 +51,7 @@ export async function POST(
     const { data: valoracion } = await (supabase as any)
       .from('vehiculo_valoracion_economica')
       .select('*')
-      .eq('vehiculo_id', params.id)
+      .eq('vehiculo_id', vehiculoId)
       .maybeSingle()
 
     console.log(`   💰 Datos económicos: ${valoracion ? 'Sí (precio: ' + valoracion.precio_compra + '€)' : 'No disponibles'}`)
@@ -58,7 +59,7 @@ export async function POST(
     const { data: ficha } = await (supabase as any)
       .from('vehiculo_ficha_tecnica')
       .select('*')
-      .eq('vehiculo_id', params.id)
+      .eq('vehiculo_id', vehiculoId)
       .maybeSingle()
 
     console.log(`   📋 Ficha técnica: ${ficha ? 'Sí' : 'No disponible'}`)
@@ -66,7 +67,7 @@ export async function POST(
     const { data: averias } = await (supabase as any)
       .from('averias')
       .select('*')
-      .eq('vehiculo_id', params.id)
+      .eq('vehiculo_id', vehiculoId)
       .in('severidad', ['alta', 'critica'])
 
     console.log(`   🔧 Averías graves: ${averias?.length || 0}`)
@@ -74,9 +75,18 @@ export async function POST(
     const { data: mejoras } = await (supabase as any)
       .from('vehiculo_mejoras')
       .select('*')
-      .eq('vehiculo_id', params.id)
+      .eq('vehiculo_id', vehiculoId)
 
     console.log(`   ⚙️  Mejoras: ${mejoras?.length || 0}`)
+
+    // Actualizar progreso: 15%
+    await (supabase as any)
+      .from('valoracion_ia_trabajos')
+      .update({
+        progreso: 15,
+        mensaje_estado: 'Buscando comparables en internet...'
+      })
+      .eq('id', jobId)
 
     // 2. BUSCAR COMPARABLES EN INTERNET (OPCIONAL)
     console.log(`\n🔍 [PASO 2/7] Buscando comparables en internet...`)
@@ -101,6 +111,15 @@ export async function POST(
       comparables = []
     }
 
+    // Actualizar progreso: 30%
+    await (supabase as any)
+      .from('valoracion_ia_trabajos')
+      .update({
+        progreso: 30,
+        mensaje_estado: 'Analizando datos de la base de datos...'
+      })
+      .eq('id', jobId)
+
     // 2B. BUSCAR COMPARABLES EN NUESTRA BASE DE DATOS
     console.log(`\n🔍 [PASO 2B/7] Buscando comparables en nuestra BD...`)
 
@@ -121,7 +140,7 @@ export async function POST(
             modelo
           )
         `)
-        .neq('vehiculo_id', params.id) // Excluir el vehículo actual
+        .neq('vehiculo_id', vehiculoId) // Excluir el vehículo actual
         .order('fecha_valoracion', { ascending: false })
         .limit(20)
 
@@ -139,7 +158,7 @@ export async function POST(
             modelo
           )
         `)
-        .neq('vehiculo_id', params.id)
+        .neq('vehiculo_id', vehiculoId)
         .not('precio_compra', 'is', null)
         .order('fecha_compra', { ascending: false })
         .limit(20)
@@ -206,26 +225,26 @@ export async function POST(
         }
 
         for (const valoracion of valoracionesSimilares as any[]) {
-          const vehiculoId = valoracion.vehiculo_id
+          const vehiculoIdComp = valoracion.vehiculo_id
 
           // FIX: Manejar JOIN que puede venir como objeto o array
           const vehiculoData = Array.isArray(valoracion.vehiculos_registrados)
             ? valoracion.vehiculos_registrados[0]
             : valoracion.vehiculos_registrados
 
-          const existente = vehiculosUnicos.get(vehiculoId)
+          const existente = vehiculosUnicos.get(vehiculoIdComp)
 
           // Si no existe o esta valoración es más reciente, actualizar
           if (!existente || new Date(valoracion.fecha_valoracion) > new Date(existente.fecha)) {
-            vehiculosUnicos.set(vehiculoId, {
+            vehiculosUnicos.set(vehiculoIdComp, {
               tipo: 'valoracion_ia',
               precio: valoracion.precio_objetivo,
               fecha: valoracion.fecha_valoracion,
-              vehiculo_id: vehiculoId,
+              vehiculo_id: vehiculoIdComp,
               año: vehiculoData?.año || null,
               marca: vehiculoData?.marca || null,
               modelo: vehiculoData?.modelo || null,
-              kilometros: kmPorVehiculo.get(vehiculoId) || null
+              kilometros: kmPorVehiculo.get(vehiculoIdComp) || null
             })
           }
         }
@@ -236,7 +255,7 @@ export async function POST(
       // 2. Agregar compras SOLO si el vehículo NO tiene valoración IA
       if (datosCompra && datosCompra.length > 0) {
         for (const compra of datosCompra as any[]) {
-          const vehiculoId = compra.vehiculo_id
+          const vehiculoIdComp = compra.vehiculo_id
 
           // FIX: Manejar JOIN que puede venir como objeto o array
           const vehiculoDataCompra = Array.isArray(compra.vehiculos_registrados)
@@ -244,12 +263,12 @@ export async function POST(
             : compra.vehiculos_registrados
 
           // Solo agregar si este vehículo no tiene ya una valoración IA
-          if (!vehiculosUnicos.has(vehiculoId)) {
-            vehiculosUnicos.set(vehiculoId, {
+          if (!vehiculosUnicos.has(vehiculoIdComp)) {
+            vehiculosUnicos.set(vehiculoIdComp, {
               tipo: 'compra',
               precio: compra.precio_compra,
               fecha: compra.fecha_compra,
-              vehiculo_id: vehiculoId,
+              vehiculo_id: vehiculoIdComp,
               año: vehiculoDataCompra?.año || null,
               marca: vehiculoDataCompra?.marca || null,
               modelo: vehiculoDataCompra?.modelo || null,
@@ -342,7 +361,7 @@ export async function POST(
       // 4. Convertir a array y crear comparables con información completa
       // SEGURIDAD: Filtrar explícitamente el vehículo actual (aunque SQL ya lo hace)
       const vehiculosDeduplicados = Array.from(vehiculosUnicos.values())
-        .filter((v: any) => v.vehiculo_id !== params.id) // Excluir el vehículo actual
+        .filter((v: any) => v.vehiculo_id !== vehiculoId) // Excluir el vehículo actual
 
       console.log(`   🔒 Validación: Vehículos después de excluir el actual: ${vehiculosDeduplicados.length}`)
 
@@ -494,8 +513,8 @@ export async function POST(
 
       for (const comp of comparables) {
         // SEGURIDAD: Excluir explícitamente el vehículo actual (aunque SQL ya lo hace)
-        if (comp.vehiculo_id === params.id) {
-          console.warn(`   ⚠️  BLOQUEADO: Intento de incluir el vehículo actual como comparable (ID: ${params.id})`)
+        if (comp.vehiculo_id === vehiculoId) {
+          console.warn(`   ⚠️  BLOQUEADO: Intento de incluir el vehículo actual como comparable (ID: ${vehiculoId})`)
           continue
         }
 
@@ -556,6 +575,15 @@ export async function POST(
       console.error(`   ⚠️  Error buscando en BD interna:`, error.message)
       console.log(`   ⏭️  Continuando con comparables de SerpAPI únicamente`)
     }
+
+    // Actualizar progreso: 50%
+    await (supabase as any)
+      .from('valoracion_ia_trabajos')
+      .update({
+        progreso: 50,
+        mensaje_estado: 'Cargando configuración de IA...'
+      })
+      .eq('id', jobId)
 
     // 3. OBTENER CONFIGURACIÓN DEL AGENTE DESDE LA BD
     console.log(`\n⚙️  [PASO 3/7] Cargando configuración del agente IA...`)
@@ -649,6 +677,15 @@ export async function POST(
    ${c.url ? `- URL: ${c.url}` : ''}`).join('\n\n')
       : 'No se encontraron comparables en esta búsqueda.'
 
+    // Actualizar progreso: 60%
+    await (supabase as any)
+      .from('valoracion_ia_trabajos')
+      .update({
+        progreso: 60,
+        mensaje_estado: 'Preparando mensajes para GPT-4...'
+      })
+      .eq('id', jobId)
+
     // 5. CONSTRUIR MENSAJES PARA OPENAI DESDE LOS PROMPTS
     console.log(`\n🔨 [PASO 4/7] Preparando mensajes para OpenAI...`)
 
@@ -679,6 +716,15 @@ export async function POST(
 
     console.log(`   ✅ ${messages.length} mensajes preparados`)
 
+    // Actualizar progreso: 70%
+    await (supabase as any)
+      .from('valoracion_ia_trabajos')
+      .update({
+        progreso: 70,
+        mensaje_estado: 'Generando informe con GPT-4... (puede tardar 1-2 minutos)'
+      })
+      .eq('id', jobId)
+
     // 6. LLAMAR A OPENAI GPT-4
     console.log(`\n🤖 [PASO 5/7] Llamando a OpenAI GPT-4...`)
     console.log(`   🔑 API Key: ${process.env.OPENAI_API_KEY ? 'Configurada' : 'NO CONFIGURADA'}`)
@@ -696,6 +742,15 @@ export async function POST(
     console.log(`   ✅ Informe generado`)
     console.log(`   📊 Tokens: ${tokensUsados}`)
     console.log(`   📝 Longitud: ${informeTexto.length} caracteres`)
+
+    // Actualizar progreso: 85%
+    await (supabase as any)
+      .from('valoracion_ia_trabajos')
+      .update({
+        progreso: 85,
+        mensaje_estado: 'Extrayendo precios del informe...'
+      })
+      .eq('id', jobId)
 
     // 6. EXTRAER PRECIOS DEL INFORME
     console.log(`\n💰 [PASO 6/7] Extrayendo precios del informe...`)
@@ -724,6 +779,15 @@ export async function POST(
     console.log(`   🎯 Objetivo parseado: ${precioObjetivo}€`)
     console.log(`   📉 Mínimo parseado: ${precioMinimo}€`)
 
+    // Actualizar progreso: 90%
+    await (supabase as any)
+      .from('valoracion_ia_trabajos')
+      .update({
+        progreso: 90,
+        mensaje_estado: 'Guardando informe en base de datos...'
+      })
+      .eq('id', jobId)
+
     // 7. GUARDAR EN BASE DE DATOS
     console.log(`\n💾 [PASO 7/7] Guardando en base de datos...`)
 
@@ -733,7 +797,7 @@ export async function POST(
     const comparablesLimpios = comparables
       .filter((c: any) => {
         // Excluir el vehículo actual por vehiculo_id
-        if (c.vehiculo_id === params.id) {
+        if (c.vehiculo_id === vehiculoId) {
           console.warn(`   ⚠️  BLOQUEADO EN LIMPIEZA: Comparable del vehículo actual detectado y eliminado`)
           return false
         }
@@ -784,8 +848,8 @@ export async function POST(
     const { data: informeGuardado, error: errorGuardar } = await (supabase as any)
       .from('valoracion_ia_informes')
       .insert({
-        vehiculo_id: params.id,
-        user_id: user.id,
+        vehiculo_id: vehiculoId,
+        user_id: userId,
         fecha_valoracion: new Date().toISOString(),
         precio_salida: precioSalida,
         precio_objetivo: precioObjetivo,
@@ -819,10 +883,6 @@ export async function POST(
         año: vehiculo.año || null,
         precio: c.precio || null,
         kilometros: c.kilometros || null,
-        // ubicacion no existe en la tabla
-        // url_anuncio no existe en la tabla
-        // fuente no existe en la tabla
-        // descripcion no existe en la tabla
         fecha_transaccion: new Date().toISOString().split('T')[0], // Solo fecha, no timestamp
         verificado: true, // Viene de SerpAPI o BD interna
         tipo_calefaccion: null,
@@ -849,15 +909,23 @@ export async function POST(
 
     const tiempoTotal = Date.now() - startTime
 
+    // ACTUALIZAR TRABAJO COMO COMPLETADO
+    await (supabase as any)
+      .from('valoracion_ia_trabajos')
+      .update({
+        estado: 'completado',
+        progreso: 100,
+        mensaje_estado: '¡Valoración completada exitosamente!',
+        informe_id: informeGuardado.id,
+        fecha_finalizacion: new Date().toISOString(),
+        tiempo_procesamiento_segundos: Math.round(tiempoTotal / 1000),
+        tokens_usados: tokensUsados
+      })
+      .eq('id', jobId)
+
     console.log(`\n${'='.repeat(60)}`)
     console.log(`✅ VALORACIÓN COMPLETADA EN ${(tiempoTotal / 1000).toFixed(2)}s`)
     console.log(`${'='.repeat(60)}\n`)
-
-    return NextResponse.json({
-      success: true,
-      informe: informeGuardado,
-      tokens_usados: tokensUsados
-    })
 
   } catch (error: any) {
     console.error(`\n${'='.repeat(60)}`)
@@ -865,29 +933,93 @@ export async function POST(
     console.error(`${'='.repeat(60)}`)
     console.error('📛 Mensaje:', error.message)
     console.error('📚 Stack:', error.stack)
-    console.error('🔍 Error completo:', JSON.stringify(error, null, 2))
     console.error(`${'='.repeat(60)}\n`)
 
-    // Mensajes de error más específicos
-    let errorMessage = 'Error al generar valoración'
-    let errorDetails = error.message
+    // ACTUALIZAR TRABAJO COMO ERROR
+    const supabase = await createClient()
+    await (supabase as any)
+      .from('valoracion_ia_trabajos')
+      .update({
+        estado: 'error',
+        mensaje_estado: 'Error al generar valoración',
+        error_mensaje: error.message,
+        error_detalle: error.stack,
+        fecha_finalizacion: new Date().toISOString()
+      })
+      .eq('id', jobId)
+  }
+}
 
-    if (error.message?.includes('Configuración del agente IA no encontrada')) {
-      errorMessage = 'Configuración no encontrada'
-      errorDetails = 'El agente de valoración IA no está configurado. Por favor, contacta al administrador para ejecutar la configuración inicial.'
-    } else if (error.message?.includes('OpenAI')) {
-      errorMessage = 'Error de OpenAI'
-      errorDetails = 'No se pudo generar la valoración. Verifica la configuración de la API de OpenAI.'
-    } else if (error.code === '42P01') {
-      errorMessage = 'Tabla no encontrada'
-      errorDetails = 'La tabla de valoraciones no existe. Por favor, ejecuta las migraciones de base de datos.'
+// POST: Crear trabajo asíncrono
+export async function POST(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    console.log(`\n🚀 [POST IA-VALORACION] Creando trabajo asíncrono`)
+    console.log(`📍 Vehículo ID: ${params.id}`)
+
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      console.error('❌ Usuario no autenticado')
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
+    console.log(`👤 Usuario: ${user.id} (${user.email})`)
+
+    // Verificar que el vehículo existe y pertenece al usuario
+    const { data: vehiculo, error: vehiculoError } = await (supabase as any)
+      .from('vehiculos_registrados')
+      .select('id, user_id')
+      .eq('id', params.id)
+      .eq('user_id', user.id)
+      .single()
+
+    if (vehiculoError || !vehiculo) {
+      console.error('❌ Vehículo no encontrado')
+      return NextResponse.json({ error: 'Vehículo no encontrado' }, { status: 404 })
+    }
+
+    // Crear trabajo en estado "pendiente"
+    const { data: trabajo, error: errorTrabajo } = await (supabase as any)
+      .from('valoracion_ia_trabajos')
+      .insert({
+        vehiculo_id: params.id,
+        user_id: user.id,
+        estado: 'pendiente',
+        progreso: 0,
+        mensaje_estado: 'Trabajo creado, iniciando procesamiento...'
+      })
+      .select()
+      .single()
+
+    if (errorTrabajo) {
+      console.error('❌ Error creando trabajo:', errorTrabajo)
+      return NextResponse.json({ error: 'Error creando trabajo' }, { status: 500 })
+    }
+
+    console.log(`✅ Trabajo creado con ID: ${trabajo.id}`)
+
+    // INICIAR PROCESAMIENTO EN SEGUNDO PLANO (sin await)
+    procesarValoracionIA(trabajo.id, params.id, user.id).catch((error) => {
+      console.error('❌ Error en procesamiento asíncrono:', error)
+    })
+
+    // RESPONDER INMEDIATAMENTE al cliente
+    return NextResponse.json({
+      success: true,
+      job_id: trabajo.id,
+      mensaje: 'Valoración iniciada. Consulta el estado con GET /api/vehiculos/[id]/ia-valoracion/status?job_id=' + trabajo.id
+    })
+
+  } catch (error: any) {
+    console.error('\n❌ [POST IA-VALORACION] ERROR:', error)
     return NextResponse.json(
       {
-        error: errorMessage,
-        detalle: errorDetails,
-        mensaje_tecnico: error.message
+        error: 'Error iniciando valoración',
+        detalle: error.message
       },
       { status: 500 }
     )

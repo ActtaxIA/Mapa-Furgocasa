@@ -219,3 +219,4 @@ export function generateGPXFilename(routeName: string): string {
   return `mapa-furgocasa-${sanitized}-${timestamp}.gpx`
 }
 
+

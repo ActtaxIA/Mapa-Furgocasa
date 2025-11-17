@@ -359,11 +359,12 @@ export default function VehiculoPage() {
     setShowConfirmModal(false);
     setGenerandoValoracion(true);
     setToast({
-      message: "🤖 Generando valoración con IA... Por favor espera.",
+      message: "🤖 Iniciando valoración con IA...",
       type: "info",
     });
 
     try {
+      // 1. CREAR TRABAJO ASÍNCRONO
       const response = await fetch(
         `/api/vehiculos/${vehiculoId}/ia-valoracion`,
         {
@@ -373,20 +374,89 @@ export default function VehiculoPage() {
 
       const data = await response.json();
 
-      if (response.ok) {
-        setToast({
-          message: "✅ ¡Valoración generada con éxito!",
-          type: "success",
-        });
-        // Recargar las valoraciones
-        await loadValoracionesIA();
-      } else {
+      if (!response.ok) {
         setToast({ message: `❌ Error: ${data.error}`, type: "error" });
+        setGenerandoValoracion(false);
+        return;
       }
+
+      const jobId = data.job_id;
+      console.log("✅ Trabajo creado con ID:", jobId);
+
+      // 2. POLLING: Consultar estado cada 3 segundos
+      let progreso = 0;
+      const pollInterval = setInterval(async () => {
+        try {
+          const statusResponse = await fetch(
+            `/api/vehiculos/${vehiculoId}/ia-valoracion/status?job_id=${jobId}`
+          );
+
+          const statusData = await statusResponse.json();
+
+          if (!statusResponse.ok) {
+            clearInterval(pollInterval);
+            setToast({ 
+              message: `❌ Error consultando estado: ${statusData.error}`, 
+              type: "error" 
+            });
+            setGenerandoValoracion(false);
+            return;
+          }
+
+          // Actualizar progreso
+          progreso = statusData.progreso || 0;
+          const mensaje = statusData.mensaje_estado || "Procesando...";
+          
+          setToast({
+            message: `🤖 ${mensaje} (${progreso}%)`,
+            type: "info",
+          });
+
+          // COMPLETADO
+          if (statusData.estado === "completado") {
+            clearInterval(pollInterval);
+            setToast({
+              message: "✅ ¡Valoración generada con éxito!",
+              type: "success",
+            });
+            // Recargar las valoraciones
+            await loadValoracionesIA();
+            setGenerandoValoracion(false);
+          }
+
+          // ERROR
+          if (statusData.estado === "error") {
+            clearInterval(pollInterval);
+            setToast({ 
+              message: `❌ Error: ${statusData.error_mensaje || "Error desconocido"}`, 
+              type: "error" 
+            });
+            setGenerandoValoracion(false);
+          }
+
+        } catch (error) {
+          console.error("Error en polling:", error);
+          clearInterval(pollInterval);
+          setToast({ message: "❌ Error al consultar el estado", type: "error" });
+          setGenerandoValoracion(false);
+        }
+      }, 3000); // Cada 3 segundos
+
+      // Timeout de seguridad: 5 minutos
+      setTimeout(() => {
+        clearInterval(pollInterval);
+        if (generandoValoracion) {
+          setToast({ 
+            message: "⏱️ La valoración está tardando más de lo esperado. Recarga la página más tarde.", 
+            type: "error" 
+          });
+          setGenerandoValoracion(false);
+        }
+      }, 300000); // 5 minutos
+
     } catch (error) {
       console.error("Error:", error);
       setToast({ message: "❌ Error al generar la valoración", type: "error" });
-    } finally {
       setGenerandoValoracion(false);
     }
   };
