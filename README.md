@@ -1,6 +1,6 @@
 # 🚐 Mapa Furgocasa - Plataforma de Áreas para Autocaravanas en Europa y LATAM
 
-**Versión: 3.5.0 - PRODUCCIÓN** 🎉✅
+**Versión: 3.6.0 - PRODUCCIÓN** 🎉✅
 
 > 🔴 **ENTORNO DE PRODUCCIÓN ACTIVA**
 >
@@ -14,13 +14,17 @@ Plataforma web interactiva totalmente funcional para descubrir y gestionar área
 
 **Estado:** 🟢 **100% OPERATIVO** - Sistema COMPLETO en producción con todas las funcionalidades deseadas implementadas.
 
-**Última actualización:** 15 de Noviembre 2025 - 🎊 **v3.5.0 - VERSIÓN COMPLETA** 🎊
+**Última actualización:** 17 de Noviembre 2025 - 🚀 **v3.6.0 - OPTIMIZACIÓN TOTAL** 🚀
 
+- ✅ **Optimización de carga del mapa** - Cache localStorage (carga instantánea <500ms)
+- ✅ **Singleton Pattern Supabase** - Sin warnings, mejor rendimiento
+- ✅ **Skeleton Loader mejorado** - Feedback visual premium
+- ✅ **Sistema de kilometraje corregido** - Fuente única desde vehiculo_kilometraje
+- ✅ **Lógica de vehículos vendidos** - Ciclo cerrado de valoración
+- ✅ **Impuesto de matriculación** - Normalización PVP para valoración IA precisa
+- ✅ Sistema de Gastos Adicionales integrado
 - ✅ Exportación de rutas a formato GPX (Garmin, TomTom, etc.)
 - ✅ Drag-and-drop para reordenar paradas en rutas
-- ✅ Sistema de Gastos Adicionales integrado
-- ✅ Verificación exhaustiva: 83% de funcionalidades prometidas implementadas
-- ✅ 100% de lo deseado por el usuario completado
 - 🎯 3 categorías completas al 100%: Mapa, Gestión Vehículos, Alertas
 
 ---
