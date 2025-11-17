@@ -17,9 +17,9 @@ export async function createClient() {
         set(name: string, value: string, options: CookieOptions) {
           try {
             // Forzar cookies de larga duración (30 días)
-            cookieStore.set({ 
-              name, 
-              value, 
+            cookieStore.set({
+              name,
+              value,
               ...options,
               maxAge: options.maxAge || 2592000, // 30 días por defecto
               sameSite: (options.sameSite as 'lax' | 'strict' | 'none') || 'lax',

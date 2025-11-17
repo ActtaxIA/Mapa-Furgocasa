@@ -751,68 +751,72 @@ export function MiAutocaravanaTab({ userId }: Props) {
                   )}
                 </div>
 
-                {/* Datos económicos compactos */}
-                {(vehiculo.precio_compra ||
-                  vehiculo.valor_estimado_actual ||
-                  vehiculo.kilometros_actual) && (
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    {vehiculo.precio_compra && (
-                      <div className="bg-blue-50 rounded p-2 border border-blue-100">
-                        <p className="text-gray-600 text-[10px] mb-0.5">
-                          Precio compra
-                        </p>
-                        <p className="font-bold text-blue-900">
-                          {new Intl.NumberFormat("es-ES", {
+                {/* Datos económicos compactos - SIEMPRE VISIBLES */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  {/* Precio compra - siempre visible */}
+                  <div className="bg-blue-50 rounded p-2 border border-blue-100">
+                    <p className="text-gray-600 text-[10px] mb-0.5">
+                      Precio compra
+                    </p>
+                    <p className="font-bold text-blue-900">
+                      {vehiculo.precio_compra
+                        ? new Intl.NumberFormat("es-ES", {
                             style: "currency",
                             currency: "EUR",
                             maximumFractionDigits: 0,
-                          }).format(vehiculo.precio_compra)}
-                        </p>
-                      </div>
-                    )}
-                    {vehiculo.valor_estimado_actual && (
-                      <div className="bg-green-50 rounded p-2 border border-green-100">
-                        <p className="text-gray-600 text-[10px] mb-0.5">
-                          Valor actual
-                        </p>
-                        <p className="font-bold text-green-900">
-                          {new Intl.NumberFormat("es-ES", {
-                            style: "currency",
-                            currency: "EUR",
-                            maximumFractionDigits: 0,
-                          }).format(vehiculo.valor_estimado_actual)}
-                        </p>
-                      </div>
-                    )}
-                    {vehiculo.kilometros_actual && (
-                      <div className="bg-purple-50 rounded p-2 border border-purple-100">
-                        <p className="text-gray-600 text-[10px] mb-0.5">
-                          Kilometraje
-                        </p>
-                        <p className="font-bold text-purple-900">
-                          {new Intl.NumberFormat("es-ES").format(
-                            vehiculo.kilometros_actual
-                          )}{" "}
-                          km
-                        </p>
-                      </div>
-                    )}
-                    {vehiculo.precio_venta_deseado && vehiculo.en_venta && (
-                      <div className="bg-yellow-50 rounded p-2 border border-yellow-200">
-                        <p className="text-gray-600 text-[10px] mb-0.5">
-                          Precio venta
-                        </p>
-                        <p className="font-bold text-yellow-900">
-                          {new Intl.NumberFormat("es-ES", {
-                            style: "currency",
-                            currency: "EUR",
-                            maximumFractionDigits: 0,
-                          }).format(vehiculo.precio_venta_deseado)}
-                        </p>
-                      </div>
-                    )}
+                          }).format(vehiculo.precio_compra)
+                        : "-"}
+                    </p>
                   </div>
-                )}
+
+                  {/* Valor actual - siempre visible */}
+                  <div className="bg-green-50 rounded p-2 border border-green-100">
+                    <p className="text-gray-600 text-[10px] mb-0.5">
+                      Valor actual
+                    </p>
+                    <p className="font-bold text-green-900">
+                      {vehiculo.valor_estimado_actual
+                        ? new Intl.NumberFormat("es-ES", {
+                            style: "currency",
+                            currency: "EUR",
+                            maximumFractionDigits: 0,
+                          }).format(vehiculo.valor_estimado_actual)
+                        : "-"}
+                    </p>
+                  </div>
+
+                  {/* Kilometraje - siempre visible */}
+                  <div className="bg-purple-50 rounded p-2 border border-purple-100">
+                    <p className="text-gray-600 text-[10px] mb-0.5">
+                      Kilometraje
+                    </p>
+                    <p className="font-bold text-purple-900">
+                      {vehiculo.kilometros_actual
+                        ? `${new Intl.NumberFormat("es-ES").format(
+                            vehiculo.kilometros_actual
+                          )} km`
+                        : "-"}
+                    </p>
+                  </div>
+
+                  {/* Precio venta - solo si está en venta */}
+                  {vehiculo.en_venta && !vehiculo.vendido && (
+                    <div className="bg-yellow-50 rounded p-2 border border-yellow-200">
+                      <p className="text-gray-600 text-[10px] mb-0.5">
+                        Precio venta
+                      </p>
+                      <p className="font-bold text-yellow-900">
+                        {vehiculo.precio_venta_deseado
+                          ? new Intl.NumberFormat("es-ES", {
+                              style: "currency",
+                              currency: "EUR",
+                              maximumFractionDigits: 0,
+                            }).format(vehiculo.precio_venta_deseado)
+                          : "-"}
+                      </p>
+                    </div>
+                  )}
+                </div>
 
                 {/* QR Code compacto */}
                 {vehiculo.qr_image_url && (
