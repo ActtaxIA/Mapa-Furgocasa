@@ -4,6 +4,44 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 ---
 
+## [3.7.1] - 2025-11-17 🧹✨
+
+### 🎯 VERSIÓN "MANTENIMIENTO INTELIGENTE"
+
+Implementación de herramientas de mantenimiento automático de la base de datos para garantizar la calidad de los datos de mercado.
+
+### ✨ Agregado
+
+#### Script de Limpieza Automática de Datos de Mercado 🧹
+- **Script TypeScript + JavaScript** (`scripts/limpiar-datos-mercado.{ts,js}`)
+- **3 Funciones principales**:
+  1. **Elimina duplicados** - Compara marca, modelo, año, precio (±500€), kms (±1000)
+  2. **Archiva antiguos** - Marca como "no verificados" datos >18 meses
+  3. **Detecta sospechosos** - Identifica precios irreales, años imposibles, datos incompletos
+- **Borrado en lotes** - 50 registros por batch para performance
+- **Logging detallado** - Muestra cada operación con estadísticas finales
+- **README completo** - Documentación de uso, configuración y troubleshooting
+- **Primera ejecución exitosa**: 229 → 52 registros (177 duplicados eliminados)
+- **Uso recomendado**: Mensualmente o cada 10+ valoraciones IA
+- **Comando**: `node scripts/limpiar-datos-mercado.js`
+- **Commit**: `5c5acee`
+
+### 📊 Impacto
+
+#### Calidad de Datos
+- **77% de duplicados eliminados** en primera ejecución
+- Base de datos más limpia y eficiente
+- Valoraciones IA más precisas con datos únicos
+- Reducción de ruido en comparables
+
+#### Mantenimiento
+- **Automatización completa** del proceso de limpieza
+- **Preserva datos valiosos** (marca como no verificados, no borra)
+- **Auditoría completa** con logs de cada operación
+- **Flexibilidad** - Parámetros configurables en el código
+
+---
+
 ## [3.7.0] - 2025-11-17 🎨✨
 
 ### 🎯 VERSIÓN "PULIDO PROFESIONAL"
