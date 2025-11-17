@@ -22,6 +22,39 @@ export default function LoginPage() {
     try {
       const supabase = createClient()
 
+      // Lista de emails de admin (debe coincidir con el backend)
+      const ADMIN_EMAILS = ['info@furgocasa.com', 'admin@mapafurgocasa.com']
+      const isAdmin = ADMIN_EMAILS.includes(email.toLowerCase())
+
+      // Si es admin, usar endpoint especial que bypasea rate limits
+      if (isAdmin) {
+        const response = await fetch('/api/admin/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Error al iniciar sesión')
+        }
+
+        // Establecer sesión manualmente usando el cliente
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token || '',
+        })
+
+        if (sessionError) throw sessionError
+
+        // Redirigir al admin después del login exitoso
+        router.push('/admin')
+        router.refresh()
+        return
+      }
+
+      // Login normal para usuarios no-admin
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
