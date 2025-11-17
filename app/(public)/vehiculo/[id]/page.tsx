@@ -53,6 +53,7 @@ export default function VehiculoPage() {
 
   const [user, setUser] = useState<any>(null);
   const [vehiculo, setVehiculo] = useState<any>(null);
+  const [valoracionEconomica, setValoracionEconomica] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>("resumen");
   const [isEditing, setIsEditing] = useState(false);
@@ -144,6 +145,16 @@ export default function VehiculoPage() {
       }
 
       setVehiculo(vehiculoData);
+      
+      // Cargar valoración económica (para saber si está vendido)
+      const { data: valoracionData } = await (supabase as any)
+        .from("vehiculo_valoracion_economica")
+        .select("vendido, precio_venta_final, fecha_venta, valor_estimado_actual")
+        .eq("vehiculo_id", vehiculoId)
+        .maybeSingle();
+      
+      setValoracionEconomica(valoracionData);
+      
       // Inicializar datos de edición
       setEditData({
         tipo_vehiculo: vehiculoData.tipo_vehiculo || "",
@@ -1147,42 +1158,53 @@ export default function VehiculoPage() {
                     </div>
 
                     {/* Botón generar valoración */}
-                    <button
-                      onClick={handleGenerarValoracion}
-                      disabled={generandoValoracion}
-                      className="w-full px-4 md:px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm md:text-base font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                      {generandoValoracion ? (
-                        <>
-                          <svg
-                            className="animate-spin h-5 w-5"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          Generando...
-                        </>
-                      ) : (
-                        <>
-                          <SparklesIconSolid className="w-5 h-5" />
-                          Generar Valoración
-                        </>
-                      )}
-                    </button>
+                    {valoracionEconomica?.vendido ? (
+                      <div className="w-full bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800">
+                        <strong>✅ Vehículo vendido</strong>
+                        <p className="mt-1">
+                          Este vehículo fue vendido{valoracionEconomica.fecha_venta ? ` el ${new Date(valoracionEconomica.fecha_venta).toLocaleDateString('es-ES')}` : ''}.
+                          El valor actual es el precio de venta final: <strong>{valoracionEconomica.precio_venta_final?.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }) || 'No especificado'}</strong>.
+                          <br />No se pueden generar más valoraciones.
+                        </p>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={handleGenerarValoracion}
+                        disabled={generandoValoracion}
+                        className="w-full px-4 md:px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm md:text-base font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {generandoValoracion ? (
+                          <>
+                            <svg
+                              className="animate-spin h-5 w-5"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
+                            </svg>
+                            Generando...
+                          </>
+                        ) : (
+                          <>
+                            <SparklesIconSolid className="w-5 h-5" />
+                            Generar Valoración
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1214,18 +1236,31 @@ export default function VehiculoPage() {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     Aún no tienes valoraciones
                   </h3>
-                  <p className="text-gray-600 mb-6">
-                    Genera tu primera valoración con IA para conocer el valor
-                    real de tu vehículo
-                  </p>
-                  <button
-                    onClick={handleGenerarValoracion}
-                    disabled={generandoValoracion}
-                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
-                  >
-                    <SparklesIconSolid className="w-5 h-5" />
-                    Generar Primera Valoración
-                  </button>
+                  {valoracionEconomica?.vendido ? (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800 max-w-md mx-auto">
+                      <strong>✅ Vehículo vendido</strong>
+                      <p className="mt-1">
+                        Este vehículo fue vendido{valoracionEconomica.fecha_venta ? ` el ${new Date(valoracionEconomica.fecha_venta).toLocaleDateString('es-ES')}` : ''}.
+                        El valor actual es el precio de venta final: <strong>{valoracionEconomica.precio_venta_final?.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }) || 'No especificado'}</strong>.
+                        <br />No se pueden generar más valoraciones.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-gray-600 mb-6">
+                        Genera tu primera valoración con IA para conocer el valor
+                        real de tu vehículo
+                      </p>
+                      <button
+                        onClick={handleGenerarValoracion}
+                        disabled={generandoValoracion}
+                        className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                      >
+                        <SparklesIconSolid className="w-5 h-5" />
+                        Generar Primera Valoración
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>

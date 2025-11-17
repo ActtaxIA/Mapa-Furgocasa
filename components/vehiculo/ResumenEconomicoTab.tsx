@@ -24,6 +24,9 @@ interface ResumenData {
   total_mejoras: number | null
   ganancia_perdida: number | null
   depreciacion_anual_porcentaje: number | null
+  vendido: boolean | null
+  precio_venta_final: number | null
+  fecha_venta: string | null
 }
 
 export function ResumenEconomicoTab({ vehiculoId }: Props) {
@@ -152,17 +155,23 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
               </p>
             </div>
 
-            {/* Valor Estimado */}
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border-2 border-green-200 shadow-md hover:shadow-lg transition-shadow">
+            {/* Valor Estimado / Precio Venta Final */}
+            <div className={`bg-gradient-to-br ${resumen.vendido ? 'from-emerald-50 to-emerald-100 border-emerald-200' : 'from-green-50 to-green-100 border-green-200'} rounded-xl p-6 border-2 shadow-md hover:shadow-lg transition-shadow`}>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold text-green-700">Valor Estimado</span>
-                <ArrowTrendingUpIcon className="w-7 h-7 text-green-600" />
+                <span className={`text-sm font-semibold ${resumen.vendido ? 'text-emerald-700' : 'text-green-700'}`}>
+                  {resumen.vendido ? '✅ Precio Venta Final' : 'Valor Estimado'}
+                </span>
+                <ArrowTrendingUpIcon className={`w-7 h-7 ${resumen.vendido ? 'text-emerald-600' : 'text-green-600'}`} />
               </div>
-              <p className="text-3xl font-bold text-green-900 mb-1">
-                {formatCurrency(resumen.valor_estimado_actual)}
+              <p className={`text-3xl font-bold ${resumen.vendido ? 'text-emerald-900' : 'text-green-900'} mb-1`}>
+                {resumen.vendido ? formatCurrency(resumen.precio_venta_final) : formatCurrency(resumen.valor_estimado_actual)}
               </p>
-              <p className="text-xs text-green-600">
-                Valor actual aproximado
+              <p className={`text-xs ${resumen.vendido ? 'text-emerald-600' : 'text-green-600'}`}>
+                {resumen.vendido ? (
+                  <>Vendido{resumen.fecha_venta ? ` el ${new Date(resumen.fecha_venta).toLocaleDateString('es-ES')}` : ''}</>
+                ) : (
+                  'Valor actual aproximado'
+                )}
               </p>
             </div>
           </div>

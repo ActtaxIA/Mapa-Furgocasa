@@ -46,13 +46,22 @@ export function DatosValoracionTab({ vehiculoId }: Props) {
         .eq('vehiculo_id', vehiculoId)
         .maybeSingle()
 
+      // Cargar último kilometraje
+      const { data: ultimoKm } = await (supabase as any)
+        .from('vehiculo_kilometraje')
+        .select('kilometros, fecha')
+        .eq('vehiculo_id', vehiculoId)
+        .order('fecha', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
       // Calcular datos derivados (igual que en la API)
       const fechaCompra = valoracion?.fecha_compra || vehiculo?.created_at?.split('T')[0]
       const añosAntiguedad = fechaCompra
         ? ((Date.now() - new Date(fechaCompra).getTime()) / (365.25 * 24 * 60 * 60 * 1000)).toFixed(1)
         : null
 
-      const kmActuales = ficha?.kilometros_actuales || valoracion?.kilometros_actual || vehiculo?.kilometros_actual || null
+      const kmActuales = ultimoKm?.kilometros || null
       const kmCompra = valoracion?.kilometros_compra || 0
       const kmRecorridos = kmActuales && kmCompra ? kmActuales - kmCompra : null
       const kmPorAño = kmRecorridos && añosAntiguedad ? (kmRecorridos / parseFloat(añosAntiguedad)).toFixed(0) : null
@@ -245,31 +254,18 @@ export function DatosValoracionTab({ vehiculoId }: Props) {
         </h3>
         <div className="space-y-3">
           <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-xs text-gray-600 mb-2">🔍 Fuentes disponibles:</p>
+            <p className="text-xs text-gray-600 mb-2">🔍 Fuente correcta del kilometraje:</p>
             <div className="space-y-1 text-xs">
               <div className="flex items-center gap-2">
-                {datos.ficha?.kilometros_actuales ? (
+                {datos.kmActuales ? (
                   <CheckCircleIcon className="w-4 h-4 text-green-600" />
                 ) : (
                   <XCircleIcon className="w-4 h-4 text-gray-400" />
                 )}
-                <span>vehiculo_ficha_tecnica.kilometros_actuales: {datos.ficha?.kilometros_actuales || 'N/A'} km</span>
+                <span className="font-semibold">vehiculo_kilometraje (último registro): {datos.kmActuales?.toLocaleString() || 'N/A'} km</span>
               </div>
-              <div className="flex items-center gap-2">
-                {datos.valoracion?.kilometros_actual ? (
-                  <CheckCircleIcon className="w-4 h-4 text-green-600" />
-                ) : (
-                  <XCircleIcon className="w-4 h-4 text-gray-400" />
-                )}
-                <span>vehiculo_valoracion_economica.kilometros_actual: {datos.valoracion?.kilometros_actual?.toLocaleString() || 'N/A'} km</span>
-              </div>
-              <div className="flex items-center gap-2">
-                {datos.vehiculo?.kilometros_actual ? (
-                  <CheckCircleIcon className="w-4 h-4 text-green-600" />
-                ) : (
-                  <XCircleIcon className="w-4 h-4 text-gray-400" />
-                )}
-                <span>vehiculos_registrados.kilometros_actual: {datos.vehiculo?.kilometros_actual?.toLocaleString() || 'N/A'} km</span>
+              <div className="text-xs text-gray-500 ml-6">
+                ✅ Esta es la tabla correcta para obtener el kilometraje actual
               </div>
             </div>
           </div>
@@ -277,7 +273,7 @@ export function DatosValoracionTab({ vehiculoId }: Props) {
           <InfoRow
             label="🎯 Kilometraje Actual (usado por la IA)"
             value={datos.kmActuales ? `${datos.kmActuales.toLocaleString()} km` : null}
-            source="Fallback: ficha_tecnica → valoracion_economica → vehiculo_registrado"
+            source="vehiculo_kilometraje (último registro por fecha)"
             highlight={true}
           />
 

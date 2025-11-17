@@ -64,6 +64,17 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
 
     console.log(`   📋 Ficha técnica: ${ficha ? 'Sí' : 'No disponible'}`)
 
+    // Obtener último kilometraje registrado
+    const { data: ultimoKilometraje } = await (supabase as any)
+      .from('vehiculo_kilometraje')
+      .select('kilometros, fecha')
+      .eq('vehiculo_id', vehiculoId)
+      .order('fecha', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    console.log(`   🚗 Último kilometraje: ${ultimoKilometraje?.kilometros?.toLocaleString() || 'N/A'} km (${ultimoKilometraje?.fecha || 'sin fecha'})`)
+
     const { data: averias } = await (supabase as any)
       .from('averias')
       .select('*')
@@ -653,17 +664,17 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
       ? ((Date.now() - new Date(fechaCompra).getTime()) / (365.25 * 24 * 60 * 60 * 1000)).toFixed(1)
       : null
 
-    // IMPORTANTE: Buscar kilometraje en múltiples fuentes (ficha, valoracion, vehiculo)
-    const kmActuales = ficha?.kilometros_actuales || valoracion?.kilometros_actual || vehiculo.kilometros_actual || null
+    // IMPORTANTE: Usar kilometraje de la tabla vehiculo_kilometraje (último registro)
+    const kmActuales = ultimoKilometraje?.kilometros || null
     const kmCompra = valoracion?.kilometros_compra || 0
     const kmRecorridos = kmActuales && kmCompra ? kmActuales - kmCompra : null
     const kmPorAño = kmRecorridos && añosAntiguedad ? (kmRecorridos / parseFloat(añosAntiguedad)).toFixed(0) : null
-
-    console.log(`   📊 Kilometraje detectado:`)
-    console.log(`      - Ficha técnica: ${ficha?.kilometros_actuales || 'N/A'} km`)
-    console.log(`      - Valoración económica: ${valoracion?.kilometros_actual || 'N/A'} km`)
-    console.log(`      - Vehículo registrado: ${vehiculo.kilometros_actual || 'N/A'} km`)
-    console.log(`      ➡️  Usando: ${kmActuales || 'N/A'} km`)
+    
+    console.log(`   📊 Kilometraje para valoración:`)
+    console.log(`      - KM Actual (vehiculo_kilometraje): ${kmActuales?.toLocaleString() || 'N/A'} km`)
+    console.log(`      - KM Compra (valoracion_economica): ${kmCompra?.toLocaleString() || 'N/A'} km`)
+    console.log(`      - KM Recorridos: ${kmRecorridos?.toLocaleString() || 'N/A'} km`)
+    console.log(`      - Promedio anual: ${kmPorAño?.toLocaleString() || 'N/A'} km/año`)
 
     // IMPORTANTE: Usar pvp_base_particular si está disponible (precio normalizado con impuesto incluido)
     const precioReferencia = valoracion?.pvp_base_particular || valoracion?.precio_compra
