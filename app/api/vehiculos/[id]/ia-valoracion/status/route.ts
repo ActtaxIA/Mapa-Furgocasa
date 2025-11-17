@@ -49,7 +49,7 @@ export async function GET(
         .select('*')
         .eq('id', trabajo.informe_id)
         .single()
-      
+
       informe = informeData
     }
 

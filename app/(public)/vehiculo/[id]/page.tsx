@@ -395,9 +395,9 @@ export default function VehiculoPage() {
 
           if (!statusResponse.ok) {
             clearInterval(pollInterval);
-            setToast({ 
-              message: `❌ Error consultando estado: ${statusData.error}`, 
-              type: "error" 
+            setToast({
+              message: `❌ Error consultando estado: ${statusData.error}`,
+              type: "error",
             });
             setGenerandoValoracion(false);
             return;
@@ -406,7 +406,7 @@ export default function VehiculoPage() {
           // Actualizar progreso
           progreso = statusData.progreso || 0;
           const mensaje = statusData.mensaje_estado || "Procesando...";
-          
+
           setToast({
             message: `🤖 ${mensaje} (${progreso}%)`,
             type: "info",
@@ -427,17 +427,21 @@ export default function VehiculoPage() {
           // ERROR
           if (statusData.estado === "error") {
             clearInterval(pollInterval);
-            setToast({ 
-              message: `❌ Error: ${statusData.error_mensaje || "Error desconocido"}`, 
-              type: "error" 
+            setToast({
+              message: `❌ Error: ${
+                statusData.error_mensaje || "Error desconocido"
+              }`,
+              type: "error",
             });
             setGenerandoValoracion(false);
           }
-
         } catch (error) {
           console.error("Error en polling:", error);
           clearInterval(pollInterval);
-          setToast({ message: "❌ Error al consultar el estado", type: "error" });
+          setToast({
+            message: "❌ Error al consultar el estado",
+            type: "error",
+          });
           setGenerandoValoracion(false);
         }
       }, 3000); // Cada 3 segundos
@@ -446,14 +450,14 @@ export default function VehiculoPage() {
       setTimeout(() => {
         clearInterval(pollInterval);
         if (generandoValoracion) {
-          setToast({ 
-            message: "⏱️ La valoración está tardando más de lo esperado. Recarga la página más tarde.", 
-            type: "error" 
+          setToast({
+            message:
+              "⏱️ La valoración está tardando más de lo esperado. Recarga la página más tarde.",
+            type: "error",
           });
           setGenerandoValoracion(false);
         }
       }, 300000); // 5 minutos
-
     } catch (error) {
       console.error("Error:", error);
       setToast({ message: "❌ Error al generar la valoración", type: "error" });
