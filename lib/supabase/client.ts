@@ -2,26 +2,25 @@ import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/database.types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Singleton para evitar "Multiple GoTrueClient instances"
-let client: SupabaseClient<Database> | undefined;
+// Usar globalThis para singleton VERDADERO entre módulos
+declare global {
+  var __supabase_client: SupabaseClient<Database> | undefined;
+}
 
 export function createClient() {
-  // Reutilizar instancia si existe
-  if (client) {
-    return client;
+  // Reutilizar instancia global si existe
+  if (globalThis.__supabase_client) {
+    return globalThis.__supabase_client;
   }
 
-  // Crear nueva instancia
-  client = createBrowserClient<Database>(
+  // Crear nueva instancia y guardarla globalmente
+  globalThis.__supabase_client = createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name: string) {
-          // Verificar que estamos en el navegador
           if (typeof document === "undefined") return undefined;
-
-          // Decodificar URI para manejar valores especiales
           const cookie = document.cookie
             .split("; ")
             .find((row) => row.startsWith(`${name}=`))
@@ -29,26 +28,21 @@ export function createClient() {
           return cookie ? decodeURIComponent(cookie) : undefined;
         },
         set(name: string, value: string, options: any) {
-          // Verificar que estamos en el navegador
           if (typeof document === "undefined") return;
 
-          // Detectar si estamos en producción (HTTPS)
           const isProduction =
             typeof window !== "undefined" &&
             window.location.protocol === "https:";
 
-          // Encodear el valor para manejar caracteres especiales
           const encodedValue = encodeURIComponent(value);
 
-          // Configurar cookies con atributos correctos para móviles
           const cookieOptions = [
             `${name}=${encodedValue}`,
             "path=/",
-            `max-age=${options?.maxAge || 31536000}`, // 1 año por defecto
+            `max-age=${options?.maxAge || 31536000}`,
             "SameSite=Lax",
           ];
 
-          // Agregar Secure en producción (HTTPS) - CRÍTICO para móviles
           if (isProduction) {
             cookieOptions.push("Secure");
             // NO establecer domain - dejar que el navegador lo maneje automáticamente
@@ -58,7 +52,6 @@ export function createClient() {
           document.cookie = cookieOptions.join("; ");
         },
         remove(name: string, options: any) {
-          // Verificar que estamos en el navegador
           if (typeof document === "undefined") return;
 
           const isProduction =
@@ -82,5 +75,5 @@ export function createClient() {
     }
   );
 
-  return client;
+  return globalThis.__supabase_client;
 }

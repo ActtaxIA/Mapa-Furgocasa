@@ -1,5 +1,4 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { buscarComparables } from '@/lib/valoracion/buscar-comparables'
@@ -21,7 +20,7 @@ export async function POST(
     console.log(`📍 Vehículo ID: ${params.id}`)
     console.log(`⏰ Timestamp: ${new Date().toISOString()}`)
 
-    const supabase = createRouteHandlerClient({ cookies })
+    const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
@@ -903,7 +902,7 @@ export async function GET(
   try {
     console.log(`\n🔍 [GET VALORACIONES] Iniciando carga para vehículo: ${params.id}`)
 
-    const supabase = createRouteHandlerClient({ cookies })
+    const supabase = await createClient()
     const { data: { user }, error: userError } = await supabase.auth.getUser()
 
     if (userError) {
@@ -963,7 +962,7 @@ export async function DELETE(
   try {
     console.log(`\n🗑️ [DELETE VALORACION] Iniciando eliminación`)
 
-    const supabase = createRouteHandlerClient({ cookies })
+    const supabase = await createClient()
 
     // 1. Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
