@@ -4,6 +4,91 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 ---
 
+## [3.7.0] - 2025-11-17 🎨✨
+
+### 🎯 VERSIÓN "PULIDO PROFESIONAL"
+
+Enfoque en mejorar la presentación profesional del sistema y precisión de valoraciones IA.
+
+### ✨ Agregado
+
+#### PDF de Valoración Rediseñado 📄
+- **Header corporativo** con logo blanco y colores de marca (rojo + naranja)
+- **Cajas de precios con colores diferenciados**: Verde (Salida), Azul (Objetivo), Naranja (Mínimo)
+- **Sección de datos del vehículo** con fondo gris claro y formato a 2 columnas
+- **Fotografías con bordes** y contador (Fotografía 1/5, 2/5, etc.)
+- **Informe en página separada** con header profesional
+- **Formato markdown mejorado**: Secciones con fondos rojos, subsecciones en azul
+- **Footer profesional** a 3 columnas (Fecha | Mapa Furgocasa | Página X/Y)
+- **Commits**: `009809c`, `fe573ca`, `dcc41d5`, `3d3e386`
+
+#### Página 404 Personalizada 🚫
+- **Diseño corporativo** integrado con Navbar y Footer
+- **Mensaje claro** y amigable con icono de cara triste
+- **3 botones de acción**: Volver al Inicio, Ir al Mapa, Volver Atrás
+- **Enlaces rápidos** a páginas más visitadas
+- **Mejor UX** para enlaces rotos o rutas incorrectas
+- **Commit**: `535e3c1`
+
+#### Columna "Vendidos" en Admin 📊
+- **Nueva columna** en tabla `/admin/vehiculos`
+- **Badge verde** con checkmark (✓) para vendidos
+- **Contador** de vehículos vendidos por marca/modelo
+- **Ordenable** para análisis de ventas
+- **Fuente**: Campo `vendido` de `vehiculo_valoracion_economica`
+- **Commit**: `8ea8a88`
+
+### 🐛 Corregido
+
+#### Comparables IA - Auto-Inflación Eliminada 🔧
+- **Problema**: Valoraciones previas se incluían como comparables, causando inflación artificial
+- **Solución**: Excluir `valoracion_ia_informes` de comparables internos
+- **Priorización**: Usar solo datos reales (ventas y compras normalizadas)
+- **Logging**: Añadido para debugging de fuentes de comparables
+- **Commit**: `b8f735d` (commit previo referenciado)
+
+#### Extracción de Precios del Informe IA 💰
+- **Problema**: Regex no capturaba precios correctamente del informe
+- **Solución**: Regex mejorado con múltiples variantes de formato
+- **Logging detallado**: Muestra contexto cuando no encuentra precios
+- **Advertencias**: Indica si se usaron precios fallback
+- **Commit**: `469baf1`
+
+#### Carga de Fotos en PDF 📸
+- **Problema**: Fotos no aparecían en PDF por errores silenciosos
+- **Solución**: Logging detallado + mejor extracción de path
+- **Manejo de errores**: `continue` en lugar de romper todo el proceso
+- **Path processing**: `split('vehiculos/')[1]` para URLs completas
+- **Commit**: `3d3e386`
+
+#### Emojis y Markdown en PDF 🚫
+- **Problema**: Emojis aparecían como caracteres corruptos (Ø=ÜÂ)
+- **Solución**: Filtro Unicode que elimina todos los emojis
+- **Símbolos #**: Eliminados para evitar marcas de markdown visibles
+- **Commits**: `fe573ca`, `dcc41d5`
+
+### 🔄 Mejorado
+
+#### Precisión de Valoraciones IA
+- Eliminación de loop de auto-inflación
+- Uso exclusivo de datos reales de transacciones
+- Mejor identificación de fuentes de comparables
+- Logging exhaustivo para troubleshooting
+
+#### Experiencia de Usuario
+- PDFs profesionales aptos para presentar a clientes
+- Página 404 que guía al usuario en lugar de confundirlo
+- Mejor visibilidad administrativa de vehículos vendidos
+
+### 📊 Métricas
+- **Commits totales**: 10
+- **Archivos modificados**: 5
+- **Nuevos archivos**: 2 (not-found.tsx, VERSION_3.7_RELEASE_NOTES.md)
+- **Linter errors**: 0
+- **Breaking changes**: 0 (todo retrocompatible)
+
+---
+
 ## [3.5.0] - 2025-11-15 🎊🏆
 
 ### 🎯 VERSIÓN COMPLETA - 100% DE LO DESEADO IMPLEMENTADO
