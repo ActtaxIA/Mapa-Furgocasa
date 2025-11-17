@@ -7,7 +7,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
-      
+
       <main className="flex-1 flex items-center justify-center px-4 py-16">
         <div className="text-center max-w-2xl mx-auto">
           {/* Icono grande */}
@@ -34,7 +34,7 @@ export default function NotFound() {
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             ¡Ups! Página no encontrada
           </h2>
-          
+
           {/* Descripción */}
           <p className="text-xl text-gray-600 mb-8">
             Parece que esta ruta no existe en nuestro mapa. <br />
@@ -50,7 +50,7 @@ export default function NotFound() {
               <HomeIcon className="w-5 h-5" />
               Volver al Inicio
             </Link>
-            
+
             <Link
               href="/mapa"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-600 border-2 border-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-semibold"
@@ -58,7 +58,7 @@ export default function NotFound() {
               <MapIcon className="w-5 h-5" />
               Ir al Mapa
             </Link>
-            
+
             <button
               onClick={() => window.history.back()}
               className="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
@@ -110,4 +110,3 @@ export default function NotFound() {
     </div>
   )
 }
-

@@ -699,15 +699,15 @@ export default function VehiculoPage() {
           try {
             const fotoUrl = todasLasFotos[i];
             console.log(`📸 Procesando foto ${i + 1}:`, fotoUrl);
-            
+
             // Extraer el path correcto de la URL
             let fotoPath = fotoUrl;
             if (fotoUrl.includes('vehiculos/')) {
               fotoPath = fotoUrl.split('vehiculos/')[1];
             }
-            
+
             console.log(`📸 Path procesado:`, fotoPath);
-            
+
             const { data: fotoData, error: fotoError } = await supabase.storage
               .from("vehiculos")
               .download(fotoPath);
@@ -768,7 +768,7 @@ export default function VehiculoPage() {
               );
               yPos += maxHeight + 5;
               pdf.setTextColor(0, 0, 0);
-              
+
               fotosIncluidas++;
               console.log(`✅ Foto ${i + 1} incluida en el PDF`);
             }
@@ -776,7 +776,7 @@ export default function VehiculoPage() {
             console.error(`❌ Error cargando foto ${i + 1}:`, error);
           }
         }
-        
+
         console.log(`📸 Total de fotos incluidas en PDF: ${fotosIncluidas}/${todasLasFotos.length}`);
       } else {
         console.log(`⚠️  No hay fotos para incluir en el PDF`);
