@@ -911,17 +911,17 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
         .eq('marca', vehiculo.marca)
         .eq('modelo', vehiculo.modelo)
         .eq('año', vehiculo.año)
-        .eq('precio', Math.round(respuestaJSON.precio_objetivo))
+        .eq('precio', Math.round(precioObjetivo))
         .maybeSingle()
 
-      if (!vehiculoExistente && respuestaJSON.precio_objetivo) {
+      if (!vehiculoExistente && precioObjetivo) {
         const { error: errorInsertVehiculo } = await (supabase as any)
           .from('datos_mercado_autocaravanas')
           .insert({
             marca: vehiculo.marca,
             modelo: vehiculo.modelo,
             año: vehiculo.año,
-            precio: Math.round(respuestaJSON.precio_objetivo), // ✅ Precio objetivo (más realista)
+            precio: Math.round(precioObjetivo), // ✅ Precio objetivo (más realista)
             kilometros: vehiculo.kilometros || null,
             fecha_transaccion: new Date().toISOString().split('T')[0],
             verificado: true,
@@ -938,7 +938,7 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
         if (errorInsertVehiculo) {
           console.warn(`   ⚠️  Error guardando vehículo valorado (no crítico):`, errorInsertVehiculo.message)
         } else {
-          console.log(`   ✅ Vehículo valorado guardado: ${vehiculo.marca} ${vehiculo.modelo} ${vehiculo.año} - ${Math.round(respuestaJSON.precio_objetivo)}€`)
+          console.log(`   ✅ Vehículo valorado guardado: ${vehiculo.marca} ${vehiculo.modelo} ${vehiculo.año} - ${Math.round(precioObjetivo)}€`)
         }
       } else if (vehiculoExistente) {
         console.log(`   🔄 Vehículo ya existe en BD de mercado (no duplicar)`)

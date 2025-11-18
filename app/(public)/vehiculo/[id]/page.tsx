@@ -516,13 +516,19 @@ export default function VehiculoPage() {
       pdf.rect(0, 0, pageWidth, 50, "F");
 
       // Línea naranja decorativa
-      pdf.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2]);
+      pdf.setFillColor(
+        colorSecundario[0],
+        colorSecundario[1],
+        colorSecundario[2]
+      );
       pdf.rect(0, 50, pageWidth, 3, "F");
 
       pdf.setTextColor(255, 255, 255);
       pdf.setFontSize(26);
       pdf.setFont("helvetica", "bold");
-      pdf.text("VALORACIÓN INTELIGENTE IA", pageWidth / 2, 22, { align: "center" });
+      pdf.text("VALORACIÓN INTELIGENTE IA", pageWidth / 2, 22, {
+        align: "center",
+      });
 
       pdf.setFontSize(14);
       pdf.setFont("helvetica", "normal");
@@ -539,8 +545,17 @@ export default function VehiculoPage() {
         const response = await fetch(logoUrl);
         const blob = await response.blob();
         const arrayBuffer = await blob.arrayBuffer();
-        const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-        pdf.addImage(`data:image/png;base64,${base64}`, "PNG", pageWidth / 2 - 10, 38, 20, 8);
+        const base64 = btoa(
+          String.fromCharCode(...new Uint8Array(arrayBuffer))
+        );
+        pdf.addImage(
+          `data:image/png;base64,${base64}`,
+          "PNG",
+          pageWidth / 2 - 10,
+          38,
+          20,
+          8
+        );
       } catch (error) {
         console.warn("No se pudo cargar el logo:", error);
       }
@@ -549,9 +564,10 @@ export default function VehiculoPage() {
       yPos = 63;
 
       // 2. FOTO PRINCIPAL DEL VEHÍCULO
-      const fotoVehiculo = vehiculo?.foto_url || 
-        (vehiculo?.fotos_adicionales && vehiculo.fotos_adicionales.length > 0 
-          ? vehiculo.fotos_adicionales[0] 
+      const fotoVehiculo =
+        vehiculo?.foto_url ||
+        (vehiculo?.fotos_adicionales && vehiculo.fotos_adicionales.length > 0
+          ? vehiculo.fotos_adicionales[0]
           : null);
 
       if (fotoVehiculo) {
@@ -560,21 +576,37 @@ export default function VehiculoPage() {
           const fotoResponse = await fetch(fotoVehiculo);
           const fotoBlob = await fotoResponse.blob();
           const fotoArrayBuffer = await fotoBlob.arrayBuffer();
-          const fotoBase64 = btoa(String.fromCharCode(...new Uint8Array(fotoArrayBuffer)));
-          
+          const fotoBase64 = btoa(
+            String.fromCharCode(...new Uint8Array(fotoArrayBuffer))
+          );
+
           // Determinar formato de imagen
-          const formatoImagen = fotoVehiculo.toLowerCase().endsWith('.png') ? 'PNG' : 'JPEG';
-          
+          const formatoImagen = fotoVehiculo.toLowerCase().endsWith(".png")
+            ? "PNG"
+            : "JPEG";
+
           // Añadir foto centrada con tamaño apropiado
           const fotoWidth = 80;
           const fotoHeight = 60;
           const fotoX = (pageWidth - fotoWidth) / 2;
-          
+
           // Marco decorativo para la foto
-          pdf.setDrawColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
+          pdf.setDrawColor(
+            colorPrimario[0],
+            colorPrimario[1],
+            colorPrimario[2]
+          );
           pdf.setLineWidth(0.5);
-          pdf.roundedRect(fotoX - 2, yPos - 2, fotoWidth + 4, fotoHeight + 4, 3, 3, 'S');
-          
+          pdf.roundedRect(
+            fotoX - 2,
+            yPos - 2,
+            fotoWidth + 4,
+            fotoHeight + 4,
+            3,
+            3,
+            "S"
+          );
+
           // Añadir la foto
           pdf.addImage(
             `data:image/${formatoImagen.toLowerCase()};base64,${fotoBase64}`,
@@ -584,7 +616,7 @@ export default function VehiculoPage() {
             fotoWidth,
             fotoHeight
           );
-          
+
           yPos += fotoHeight + 10;
         } catch (error) {
           console.warn("No se pudo cargar la foto del vehículo:", error);
@@ -606,7 +638,10 @@ export default function VehiculoPage() {
       pdf.setTextColor(0, 0, 0);
 
       const datosVehiculo = [
-        { label: "Matrícula:", value: vehiculo?.matricula || "No especificada" },
+        {
+          label: "Matrícula:",
+          value: vehiculo?.matricula || "No especificada",
+        },
         { label: "Marca:", value: vehiculo?.marca || "No especificada" },
         { label: "Modelo:", value: vehiculo?.modelo || "No especificado" },
         { label: "Año:", value: vehiculo?.ano || "No especificado" },
@@ -635,7 +670,15 @@ export default function VehiculoPage() {
       // Caja de Precio de Salida
       if (valoracion.precio_salida) {
         pdf.setFillColor(colorVerde[0], colorVerde[1], colorVerde[2]);
-        pdf.roundedRect(margin, yPos - 2, pageWidth - 2 * margin, 16, 2, 2, "F");
+        pdf.roundedRect(
+          margin,
+          yPos - 2,
+          pageWidth - 2 * margin,
+          16,
+          2,
+          2,
+          "F"
+        );
 
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(11);
@@ -661,7 +704,15 @@ export default function VehiculoPage() {
       // Caja de Precio Objetivo
       if (valoracion.precio_objetivo) {
         pdf.setFillColor(colorAzul[0], colorAzul[1], colorAzul[2]);
-        pdf.roundedRect(margin, yPos - 2, pageWidth - 2 * margin, 16, 2, 2, "F");
+        pdf.roundedRect(
+          margin,
+          yPos - 2,
+          pageWidth - 2 * margin,
+          16,
+          2,
+          2,
+          "F"
+        );
 
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(11);
@@ -686,8 +737,20 @@ export default function VehiculoPage() {
 
       // Caja de Precio Mínimo
       if (valoracion.precio_minimo) {
-        pdf.setFillColor(colorSecundario[0], colorSecundario[1], colorSecundario[2]);
-        pdf.roundedRect(margin, yPos - 2, pageWidth - 2 * margin, 16, 2, 2, "F");
+        pdf.setFillColor(
+          colorSecundario[0],
+          colorSecundario[1],
+          colorSecundario[2]
+        );
+        pdf.roundedRect(
+          margin,
+          yPos - 2,
+          pageWidth - 2 * margin,
+          16,
+          2,
+          2,
+          "F"
+        );
 
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(11);
@@ -713,119 +776,7 @@ export default function VehiculoPage() {
       yPos += 5;
       pdf.setTextColor(0, 0, 0);
 
-      // 4. FOTOS DEL VEHÍCULO
-      const supabase = createClient();
-      const todasLasFotos: string[] = [];
-      if (vehiculo?.foto_url) todasLasFotos.push(vehiculo.foto_url);
-      if (
-        vehiculo?.fotos_adicionales &&
-        Array.isArray(vehiculo.fotos_adicionales)
-      ) {
-        todasLasFotos.push(...vehiculo.fotos_adicionales);
-      }
-
-      console.log(`📸 Total de fotos encontradas: ${todasLasFotos.length}`);
-      console.log(`📸 URLs de fotos:`, todasLasFotos);
-
-      if (todasLasFotos.length > 0) {
-        checkPageBreak(60);
-        pdf.setFontSize(13);
-        pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
-        pdf.text("FOTOGRAFÍAS DEL VEHÍCULO", margin, yPos);
-        yPos += 10;
-
-        let fotosIncluidas = 0;
-
-        for (let i = 0; i < Math.min(todasLasFotos.length, 5); i++) {
-          // Máximo 5 fotos
-          try {
-            const fotoUrl = todasLasFotos[i];
-            console.log(`📸 Procesando foto ${i + 1}:`, fotoUrl);
-
-            // Extraer el path correcto de la URL
-            let fotoPath = fotoUrl;
-            if (fotoUrl.includes('vehiculos/')) {
-              fotoPath = fotoUrl.split('vehiculos/')[1];
-            }
-
-            console.log(`📸 Path procesado:`, fotoPath);
-
-            const { data: fotoData, error: fotoError } = await supabase.storage
-              .from("vehiculos")
-              .download(fotoPath);
-
-            if (fotoError) {
-              console.error(`❌ Error descargando foto ${i + 1}:`, fotoError);
-              continue;
-            }
-
-            if (fotoData) {
-              const fotoBlob = await fotoData.arrayBuffer();
-              const fotoBase64 = btoa(
-                String.fromCharCode(...new Uint8Array(fotoBlob))
-              );
-
-              // Procesar imagen para corregir orientación
-              const img = new Image();
-              const fotoCorregidaBase64 = await new Promise<string>(
-                (resolve) => {
-                  img.onload = () => {
-                    const canvas = document.createElement("canvas");
-                    const ctx = canvas.getContext("2d");
-                    if (ctx) {
-                      canvas.width = img.width;
-                      canvas.height = img.height;
-                      ctx.drawImage(img, 0, 0);
-                      resolve(canvas.toDataURL("image/jpeg", 0.8));
-                    } else {
-                      resolve(`data:image/jpeg;base64,${fotoBase64}`);
-                    }
-                  };
-                  img.src = `data:image/jpeg;base64,${fotoBase64}`;
-                }
-              );
-
-              checkPageBreak(70);
-
-              // Caja con borde para la foto
-              pdf.setDrawColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
-              pdf.setLineWidth(0.5);
-              const maxWidth = pageWidth - 2 * margin;
-              const maxHeight = 60;
-              pdf.rect(margin, yPos - 2, maxWidth, maxHeight + 6, "S");
-
-              pdf.setFontSize(9);
-              pdf.setFont("helvetica", "bold");
-              pdf.setTextColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
-              pdf.text(`Fotografía ${i + 1}/${Math.min(todasLasFotos.length, 5)}`, margin + 2, yPos + 2);
-              yPos += 5;
-
-              pdf.addImage(
-                fotoCorregidaBase64,
-                "JPEG",
-                margin + 1,
-                yPos,
-                maxWidth - 2,
-                maxHeight - 2
-              );
-              yPos += maxHeight + 5;
-              pdf.setTextColor(0, 0, 0);
-
-              fotosIncluidas++;
-              console.log(`✅ Foto ${i + 1} incluida en el PDF`);
-            }
-          } catch (error) {
-            console.error(`❌ Error cargando foto ${i + 1}:`, error);
-          }
-        }
-
-        console.log(`📸 Total de fotos incluidas en PDF: ${fotosIncluidas}/${todasLasFotos.length}`);
-      } else {
-        console.log(`⚠️  No hay fotos para incluir en el PDF`);
-      }
-
-      // 5. INFORME COMPLETO CON FORMATO MEJORADO
+      // 4. INFORME COMPLETO CON FORMATO MEJORADO
       checkPageBreak(40);
 
       // Nueva página para el informe
@@ -839,13 +790,19 @@ export default function VehiculoPage() {
       pdf.setFontSize(18);
       pdf.setFont("helvetica", "bold");
       pdf.setTextColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
-      pdf.text("INFORME DE VALORACIÓN COMPLETO", pageWidth / 2, 15, { align: "center" });
+      pdf.text("INFORME DE VALORACIÓN COMPLETO", pageWidth / 2, 15, {
+        align: "center",
+      });
 
       pdf.setFontSize(10);
       pdf.setFont("helvetica", "normal");
       pdf.setTextColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
       pdf.text(
-        `Generado por IA el ${new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}`,
+        `Generado por IA el ${new Date().toLocaleDateString("es-ES", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })}`,
         pageWidth / 2,
         25,
         { align: "center" }
@@ -857,7 +814,10 @@ export default function VehiculoPage() {
       // Procesar el informe con mejor formato
       const textoPlano = valoracion.informe_texto
         // Eliminar todos los emojis Unicode (no soportados por jsPDF)
-        .replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, "")
+        .replace(
+          /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu,
+          ""
+        )
         // Eliminar bloques de código markdown (```...```)
         .replace(/```[\s\S]*?```/g, "")
         // Eliminar resaltados de markdown (==texto== o ::texto::)
@@ -875,13 +835,16 @@ export default function VehiculoPage() {
         .replace(/\*(.+?)\*/g, "$1")
         .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1");
 
-      const lines = textoPlano
-        .split("\n")
-        .filter((line: string) => {
-          const trimmed = line.trim();
-          // Eliminar líneas vacías o con solo viñetas/puntos
-          return trimmed !== '' && trimmed !== '•' && trimmed !== '*' && trimmed !== '-';
-        });
+      const lines = textoPlano.split("\n").filter((line: string) => {
+        const trimmed = line.trim();
+        // Eliminar líneas vacías o con solo viñetas/puntos
+        return (
+          trimmed !== "" &&
+          trimmed !== "•" &&
+          trimmed !== "*" &&
+          trimmed !== "-"
+        );
+      });
 
       lines.forEach((line: string) => {
         // Sección principal (##)
@@ -890,7 +853,11 @@ export default function VehiculoPage() {
           yPos += 5;
           const titulo = line.replace("===SECTION===", "").trim();
 
-          pdf.setFillColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
+          pdf.setFillColor(
+            colorPrimario[0],
+            colorPrimario[1],
+            colorPrimario[2]
+          );
           pdf.rect(margin, yPos - 4, pageWidth - 2 * margin, 10, "F");
 
           pdf.setFontSize(12);
@@ -921,7 +888,10 @@ export default function VehiculoPage() {
           pdf.setFontSize(9);
           pdf.setFont("helvetica", "bold");
           const textoLimpio = line.replace(/\*\*\*/g, "");
-          const wrapped = pdf.splitTextToSize(textoLimpio, pageWidth - 2 * margin);
+          const wrapped = pdf.splitTextToSize(
+            textoLimpio,
+            pageWidth - 2 * margin
+          );
           wrapped.forEach((wLine: string) => {
             checkPageBreak(6);
             pdf.text(wLine, margin, yPos);
@@ -937,7 +907,10 @@ export default function VehiculoPage() {
           checkPageBreak(6);
           pdf.setFontSize(9);
           pdf.setFont("helvetica", "normal");
-          const wrapped = pdf.splitTextToSize(line.trim(), pageWidth - 2 * margin);
+          const wrapped = pdf.splitTextToSize(
+            line.trim(),
+            pageWidth - 2 * margin
+          );
           wrapped.forEach((wLine: string) => {
             checkPageBreak(6);
             pdf.text(wLine, margin, yPos);
@@ -952,13 +925,21 @@ export default function VehiculoPage() {
         pdf.setPage(i);
 
         // Línea decorativa superior del footer
-        pdf.setDrawColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
+        pdf.setDrawColor(
+          colorGrisTexto[0],
+          colorGrisTexto[1],
+          colorGrisTexto[2]
+        );
         pdf.setLineWidth(0.3);
         pdf.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
 
         // Información del footer
         pdf.setFontSize(8);
-        pdf.setTextColor(colorGrisTexto[0], colorGrisTexto[1], colorGrisTexto[2]);
+        pdf.setTextColor(
+          colorGrisTexto[0],
+          colorGrisTexto[1],
+          colorGrisTexto[2]
+        );
         pdf.setFont("helvetica", "normal");
 
         // Izquierda: Fecha
@@ -970,12 +951,9 @@ export default function VehiculoPage() {
 
         // Centro: Nombre empresa
         pdf.setFont("helvetica", "bold");
-        pdf.text(
-          "Mapa Furgocasa",
-          pageWidth / 2,
-          pageHeight - 8,
-          { align: "center" }
-        );
+        pdf.text("Mapa Furgocasa", pageWidth / 2, pageHeight - 8, {
+          align: "center",
+        });
 
         // Derecha: Número de página
         pdf.setFont("helvetica", "normal");
@@ -989,21 +967,21 @@ export default function VehiculoPage() {
         // Web en la parte inferior
         pdf.setFontSize(7);
         pdf.setTextColor(colorAzul[0], colorAzul[1], colorAzul[2]);
-        pdf.text(
-          "www.mapafurgocasa.com",
-          pageWidth / 2,
-          pageHeight - 4,
-          { align: "center" }
-        );
+        pdf.text("www.mapafurgocasa.com", pageWidth / 2, pageHeight - 4, {
+          align: "center",
+        });
       }
 
       // Descargar PDF
-      const nombreArchivo = `Valoracion_IA_${vehiculo?.matricula || "vehiculo"}_${
-        new Date().toISOString().split("T")[0]
-      }.pdf`;
+      const nombreArchivo = `Valoracion_IA_${
+        vehiculo?.matricula || "vehiculo"
+      }_${new Date().toISOString().split("T")[0]}.pdf`;
       pdf.save(nombreArchivo);
 
-      setToast({ message: "✅ PDF profesional descargado correctamente", type: "success" });
+      setToast({
+        message: "✅ PDF profesional descargado correctamente",
+        type: "success",
+      });
     } catch (error) {
       console.error("Error generando PDF:", error);
       setToast({ message: "Error al generar el PDF", type: "error" });
@@ -1239,7 +1217,11 @@ export default function VehiculoPage() {
                       type="number"
                       value={nuevoKilometraje}
                       onChange={(e) => setNuevoKilometraje(e.target.value)}
-                      placeholder={kilometrajeActual ? `Actual: ${kilometrajeActual.toLocaleString()}` : "Nuevo km"}
+                      placeholder={
+                        kilometrajeActual
+                          ? `Actual: ${kilometrajeActual.toLocaleString()}`
+                          : "Nuevo km"
+                      }
                       className="w-28 sm:w-32 px-2 py-1 text-sm border border-orange-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                       disabled={actualizandoKm}
                     />
@@ -1604,8 +1586,9 @@ export default function VehiculoPage() {
                 loadData();
                 // Mostrar toast de éxito
                 setToast({
-                  message: "✅ Venta registrada. El vehículo ya no permite valoraciones IA.",
-                  type: "success"
+                  message:
+                    "✅ Venta registrada. El vehículo ya no permite valoraciones IA.",
+                  type: "success",
                 });
                 // Cambiar a tab de resumen para ver el estado actualizado
                 setTimeout(() => {
