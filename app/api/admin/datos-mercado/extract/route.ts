@@ -179,6 +179,8 @@ Responde en formato JSON con la estructura exacta:
                     estadoLower.includes("0 km") ||
                     estadoLower.includes("sin estrenar");
 
+    let origenPrecio = "URL Manual";
+    
     if (esNuevo) {
       const añoActual = new Date().getFullYear();
       console.log(`🆕 [Extract] Detectado vehículo NUEVO → Aplicando reglas especiales`);
@@ -198,6 +200,25 @@ Responde en formato JSON con la estructura exacta:
       // Asegurar que el estado diga claramente "Nuevo"
       if (!extractedData.estado || estadoLower === "nueva" || estadoLower === "nuevo") {
         extractedData.estado = "Nuevo";
+      }
+
+      // 💰 NORMALIZACIÓN DE PRECIO: Detectar si falta IEDMT
+      const textoCompletoLower = cleanedText.toLowerCase();
+      const faltaIEDMT = textoCompletoLower.includes("iedmt no incluido") ||
+                         textoCompletoLower.includes("impuesto de matriculación no incluido") ||
+                         textoCompletoLower.includes("impuesto matriculación no incluido") ||
+                         textoCompletoLower.includes("sin impuesto de matriculación") ||
+                         textoCompletoLower.includes("sin iedmt") ||
+                         (textoCompletoLower.includes("iedmt") && textoCompletoLower.includes("no incluido"));
+
+      if (faltaIEDMT && extractedData.precio) {
+        const precioOriginal = extractedData.precio;
+        const precioNormalizado = Math.round(precioOriginal * 1.07);
+        console.log(`💰 [Extract] IEDMT NO INCLUIDO detectado → Normalizando precio`);
+        console.log(`   Precio original: ${precioOriginal}€`);
+        console.log(`   Precio normalizado (+7% IEDMT): ${precioNormalizado}€`);
+        extractedData.precio = precioNormalizado;
+        origenPrecio = "Concesionario (PVP Normalizado +7% IEDMT)";
       }
     }
 
@@ -222,7 +243,7 @@ Responde en formato JSON con la estructura exacta:
       fecha_transaccion: new Date().toISOString().split("T")[0],
       verificado: true, // Se considera verificado porque viene de una URL real
       estado: extractedData.estado || "Usado",
-      origen: `URL Manual`,
+      origen: origenPrecio,
       tipo_dato: "Extracción Manual Admin",
       pais: "España",
       tipo_combustible: null,
