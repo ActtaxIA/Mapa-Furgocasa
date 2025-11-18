@@ -1187,11 +1187,35 @@ export default function VehiculoPage() {
               </div>
 
               {/* Botones de Acción */}
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                {/* Actualizar Kilometraje */}
+                {!isEditing && !valoracionEconomica?.vendido && (
+                  <div className="flex items-center gap-2 bg-orange-50 rounded-lg px-3 py-2 border border-orange-200">
+                    <TruckIcon className="w-5 h-5 text-orange-600 flex-shrink-0" />
+                    <input
+                      type="number"
+                      value={nuevoKilometraje}
+                      onChange={(e) => setNuevoKilometraje(e.target.value)}
+                      placeholder={kilometrajeActual ? `Actual: ${kilometrajeActual.toLocaleString()}` : "Nuevo km"}
+                      className="w-28 sm:w-32 px-2 py-1 text-sm border border-orange-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      disabled={actualizandoKm}
+                    />
+                    <button
+                      onClick={handleActualizarKilometraje}
+                      disabled={actualizandoKm || !nuevoKilometraje}
+                      className="px-3 py-1 bg-orange-600 text-white text-sm font-medium rounded hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                      title="Actualizar kilometraje"
+                    >
+                      {actualizandoKm ? "..." : "Actualizar"}
+                    </button>
+                  </div>
+                )}
+
+                {/* Botones de Edición */}
                 {!isEditing ? (
                   <button
                     onClick={handleEditClick}
-                    className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-primary-600 text-white text-sm sm:text-base rounded-lg hover:bg-primary-700 transition-colors touch-manipulation"
+                    className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-primary-600 text-white text-sm sm:text-base rounded-lg hover:bg-primary-700 transition-colors touch-manipulation"
                   >
                     <PencilIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span className="hidden xs:inline">Editar</span>
