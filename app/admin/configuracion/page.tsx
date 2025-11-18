@@ -628,6 +628,44 @@ export default function ConfiguracionPage() {
                 </p>
               </div>
 
+              {/* Porcentaje IEDMT - Solo para valoracion_vehiculos */}
+              {activeTab === 'valoracion_vehiculos' && (
+                <div className="border-l-4 border-orange-500 bg-orange-50 p-4 rounded-r-lg">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">💰</span>
+                    <div className="flex-1">
+                      <label className="block text-sm font-semibold text-orange-900 mb-2">
+                        Porcentaje IEDMT (Impuesto de Matriculación)
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="number"
+                          min="0"
+                          max="20"
+                          step="0.01"
+                          value={editedConfig.config_value.porcentaje_iedmt || 14.75}
+                          onChange={(e) => updateConfigValue('porcentaje_iedmt', parseFloat(e.target.value))}
+                          className="w-32 px-4 py-2 border border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-bold text-orange-900"
+                        />
+                        <span className="text-orange-900 font-semibold">%</span>
+                      </div>
+                      <p className="text-xs text-orange-800 mt-2">
+                        <strong>Usado para:</strong> Normalizar precios sin impuesto incluido (empresas de alquiler exentas) a PVP equivalente particular.
+                      </p>
+                      <p className="text-xs text-orange-700 mt-1">
+                        <strong>Referencia BOE (RDL 1/1993):</strong> Furgonetas camper &lt;3.5t → 4,75%-9,75% | Autocaravanas &gt;3.5t → <strong>14,75%</strong> (estándar)
+                      </p>
+                      <p className="text-xs text-orange-700 mt-1">
+                        📍 Este porcentaje se aplica automáticamente en:
+                        <span className="block ml-4 mt-1">✓ Extracción URL (admin)</span>
+                        <span className="block ml-4">✓ Registro de compras (usuarios)</span>
+                        <span className="block ml-4">✓ Cálculos de valoración IA</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* SISTEMA DE PROMPTS FLEXIBLE */}
               <div className="border-t pt-6">
                 <div className="flex items-center justify-between mb-4">
