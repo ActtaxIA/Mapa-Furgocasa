@@ -215,6 +215,22 @@ export function Footer() {
                   ⚡ vs Park4Night
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/valoracion-ia-vehiculos"
+                  className="hover:text-white transition-colors text-purple-400 font-semibold"
+                >
+                  🤖 Valoración IA
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/sistema-reporte-accidentes"
+                  className="hover:text-white transition-colors text-orange-400 font-semibold"
+                >
+                  🚨 Sistema de Alertas
+                </Link>
+              </li>
             </ul>
           </div>
 
