@@ -240,6 +240,10 @@ export function MiAutocaravanaTab({ userId }: Props) {
         "📤 [Frontend] Enviando datos del vehículo con JSON:",
         vehiculoData
       );
+      console.log(
+        "🔍 [Frontend] Tipo de vehículo:",
+        vehiculoData.tipo_vehiculo
+      );
 
       const response = await fetch("/api/vehiculos", {
         method: "POST",
@@ -910,8 +914,8 @@ export function MiAutocaravanaTab({ userId }: Props) {
 
                   {/* Valor actual / Precio de venta */}
                   <div className={`rounded p-2 border ${
-                    vehiculo.vendido 
-                      ? 'bg-orange-50 border-orange-100' 
+                    vehiculo.vendido
+                      ? 'bg-orange-50 border-orange-100'
                       : 'bg-green-50 border-green-100'
                   }`}>
                     <p className="text-gray-600 text-[10px] mb-0.5">
@@ -920,7 +924,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
                     <p className={`font-bold ${
                       vehiculo.vendido ? 'text-orange-900' : 'text-green-900'
                     }`}>
-                      {vehiculo.vendido 
+                      {vehiculo.vendido
                         ? (vehiculo.precio_venta_final
                             ? new Intl.NumberFormat("es-ES", {
                                 style: "currency",
