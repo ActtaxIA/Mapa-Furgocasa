@@ -193,12 +193,17 @@ Responde en formato JSON con la estructura exacta:
       );
     }
 
-    // 4.5 🚗 REGLA ESPECIAL: Si es NUEVO → año actual y 0 km
+    // 4.5 🚗 REGLA ESPECIAL: Diferenciar entre NUEVO y SEMINUEVO
     const estadoLower = (extractedData.estado || "").toLowerCase();
-    const esNuevo = estadoLower.includes("nueva") ||
-                    estadoLower.includes("nuevo") ||
-                    estadoLower.includes("0 km") ||
-                    estadoLower.includes("sin estrenar");
+    const esSeminuevo = estadoLower.includes("seminuevo") || 
+                        estadoLower.includes("semi-nuevo") ||
+                        estadoLower.includes("semi nuevo");
+    const esNuevo = !esSeminuevo && (
+                      estadoLower.includes("nueva") ||
+                      estadoLower.includes("nuevo") ||
+                      estadoLower.includes("0 km") ||
+                      estadoLower.includes("sin estrenar")
+                    );
 
     let origenPrecio = "URL Manual";
 
@@ -212,8 +217,8 @@ Responde en formato JSON con la estructura exacta:
         extractedData.año = añoActual;
       }
 
-      // Kilómetros = 0 (vehículo nuevo)
-      if (!extractedData.kilometros || extractedData.kilometros > 100) {
+      // Kilómetros = 0 (solo si no tiene o es exactamente 0)
+      if (!extractedData.kilometros || extractedData.kilometros === 0) {
         console.log(`   🚗 Kilómetros ajustados: ${extractedData.kilometros || "null"} → 0`);
         extractedData.kilometros = 0;
       }
@@ -222,6 +227,15 @@ Responde en formato JSON con la estructura exacta:
       if (!extractedData.estado || estadoLower === "nueva" || estadoLower === "nuevo") {
         extractedData.estado = "Nuevo";
       }
+    } else if (esSeminuevo) {
+      console.log(`🔄 [Extract] Detectado SEMINUEVO → Manteniendo kilometraje real: ${extractedData.kilometros || "no detectado"} km`);
+      // No aplicar reglas de vehículo nuevo, mantener datos reales
+    } else {
+      console.log(`🚙 [Extract] Vehículo usado → Manteniendo datos originales`);
+    }
+
+    // Aplicar normalización de precio solo si aplica (nuevos o seminuevos con IEDMT no incluido)
+    if (esNuevo || esSeminuevo) {
 
       // 💰 NORMALIZACIÓN DE PRECIO: Detectar si falta IEDMT
       const textoCompletoLower = textContent.toLowerCase();
