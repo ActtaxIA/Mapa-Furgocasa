@@ -34,7 +34,6 @@ export interface VehiculoRegistrado {
   // Kilometraje actual
   kilometros_actual?: number;
   fecha_ultimo_km?: string;
-  fecha_ultimo_km?: string;
   created_at: string;
   updated_at: string;
 }
