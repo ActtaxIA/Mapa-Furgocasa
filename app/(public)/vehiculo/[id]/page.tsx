@@ -832,7 +832,13 @@ export default function VehiculoPage() {
         .replace(/\*(.+?)\*/g, "$1")
         .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1");
 
-      const lines = textoPlano.split("\n");
+      const lines = textoPlano
+        .split("\n")
+        .filter(line => {
+          const trimmed = line.trim();
+          // Eliminar líneas vacías o con solo viñetas/puntos
+          return trimmed !== '' && trimmed !== '•' && trimmed !== '*' && trimmed !== '-';
+        });
 
       lines.forEach((line: string) => {
         // Sección principal (##)

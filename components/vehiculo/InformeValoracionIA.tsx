@@ -266,6 +266,7 @@ export default function InformeValoracionIA({
         {seccionActiva === 'informe' && (
           <div className="prose prose-blue max-w-none">
             <ReactMarkdown
+              remarkPlugins={[]}
               components={{
                 h2: ({ children }) => (
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4 pb-2 border-b-2 border-blue-200">
@@ -302,7 +303,16 @@ export default function InformeValoracionIA({
                 )
               }}
             >
-              {informe.informe_texto}
+              {informe.informe_texto
+                // Eliminar líneas vacías con solo viñetas o puntos
+                .split('\n')
+                .filter(line => {
+                  const trimmed = line.trim();
+                  // Eliminar líneas vacías o con solo viñetas/puntos
+                  return trimmed !== '' && trimmed !== '•' && trimmed !== '*' && trimmed !== '-';
+                })
+                .join('\n')
+              }
             </ReactMarkdown>
           </div>
         )}
