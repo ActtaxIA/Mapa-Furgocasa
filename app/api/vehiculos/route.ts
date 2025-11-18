@@ -72,8 +72,13 @@ export async function GET() {
             )[0]
           : null;
 
+      // 🎨 MEJORA: Si no hay foto_url pero sí fotos_adicionales, usar la primera como thumbnail
+      const fotoThumbnail = v.foto_url || 
+        (v.fotos_adicionales && v.fotos_adicionales.length > 0 ? v.fotos_adicionales[0] : null);
+
       return {
         ...v,
+        foto_url: fotoThumbnail, // Usar foto_url o primera foto adicional
         // Datos de venta
         vendido: v.vehiculo_valoracion_economica?.vendido || false,
         en_venta: v.vehiculo_valoracion_economica?.en_venta || false,
