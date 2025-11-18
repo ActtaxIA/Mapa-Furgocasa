@@ -43,6 +43,27 @@ export async function POST(request: NextRequest) {
     console.log("🔗 [Extract] Extrayendo datos de URL:", url);
     console.log("👁️ [Extract] Modo preview:", preview ? "SÍ (solo extraer)" : "NO (extraer y guardar)");
 
+    // 0. Obtener porcentaje IEDMT de la configuración global
+    let porcentajeIEDMT = 14.75; // Valor por defecto
+    try {
+      const { data: configIEDMT } = await (supabase as any)
+        .from("ia_config")
+        .select("config_value")
+        .eq("config_key", "valoracion_vehiculos")
+        .single();
+
+      if (configIEDMT?.config_value?.porcentaje_iedmt) {
+        porcentajeIEDMT = parseFloat(configIEDMT.config_value.porcentaje_iedmt);
+        console.log(`💰 [Extract] Porcentaje IEDMT desde config: ${porcentajeIEDMT}%`);
+      } else {
+        console.log(`⚠️ [Extract] Porcentaje IEDMT no configurado, usando por defecto: ${porcentajeIEDMT}%`);
+      }
+    } catch (configError) {
+      console.warn("⚠️ [Extract] Error leyendo config IEDMT, usando por defecto:", configError);
+    }
+    const factorIEDMT = 1 + porcentajeIEDMT / 100;
+    console.log(`🔢 [Extract] Factor IEDMT calculado: ${factorIEDMT}`);
+
     // 1. Hacer fetch del HTML de la página
     let htmlContent = "";
     try {
@@ -203,7 +224,7 @@ Responde en formato JSON con la estructura exacta:
       }
 
       // 💰 NORMALIZACIÓN DE PRECIO: Detectar si falta IEDMT
-      const textoCompletoLower = cleanedText.toLowerCase();
+      const textoCompletoLower = textContent.toLowerCase();
       const faltaIEDMT = textoCompletoLower.includes("iedmt no incluido") ||
                          textoCompletoLower.includes("impuesto de matriculación no incluido") ||
                          textoCompletoLower.includes("impuesto matriculación no incluido") ||
@@ -213,13 +234,14 @@ Responde en formato JSON con la estructura exacta:
 
       if (faltaIEDMT && extractedData.precio) {
         const precioOriginal = extractedData.precio;
-        // IEDMT autocaravanas >3.5t = 14,75% (estándar mayoría de vehículos)
-        const precioNormalizado = Math.round(precioOriginal * 1.1475);
+        // IEDMT configurable globalmente desde /admin/configuracion
+        const precioNormalizado = Math.round(precioOriginal * factorIEDMT);
         console.log(`💰 [Extract] IEDMT NO INCLUIDO detectado → Normalizando precio`);
         console.log(`   Precio original: ${precioOriginal}€`);
-        console.log(`   Precio normalizado (+14,75% IEDMT): ${precioNormalizado}€`);
+        console.log(`   Precio normalizado (+${porcentajeIEDMT}% IEDMT): ${precioNormalizado}€`);
+        console.log(`   Factor aplicado: ${factorIEDMT}`);
         extractedData.precio = precioNormalizado;
-        origenPrecio = "Concesionario (PVP Normalizado +14,75% IEDMT)";
+        origenPrecio = `Concesionario (PVP Normalizado +${porcentajeIEDMT}% IEDMT)`;
       }
     }
 
