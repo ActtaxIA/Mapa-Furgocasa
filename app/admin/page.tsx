@@ -16,7 +16,8 @@ import {
   MagnifyingGlassIcon,
   PlusIcon,
   ExclamationTriangleIcon,
-  TruckIcon
+  TruckIcon,
+  TableCellsIcon
 } from '@heroicons/react/24/outline'
 
 export default function AdminDashboardPage() {
@@ -112,6 +113,13 @@ export default function AdminDashboardPage() {
       icon: <TruckIcon className="w-12 h-12" />,
       href: '/admin/vehiculos',
       color: 'from-cyan-500 to-blue-600'
+    },
+    {
+      title: 'Datos de Mercado',
+      description: 'Gestiona comparables para valoraciones',
+      icon: <TableCellsIcon className="w-12 h-12" />,
+      href: '/admin/datos-mercado',
+      color: 'from-emerald-500 to-teal-600'
     }
   ]
 
