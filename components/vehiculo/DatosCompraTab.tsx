@@ -252,7 +252,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
           .select('marca, modelo, ano')
           .eq('id', vehiculoId)
           .single()
-        
+
         if (vehiculoData && formData.precio_compra && formData.fecha_compra) {
           const { error: errorMercado } = await (supabase as any)
             .from('datos_mercado_autocaravanas')
@@ -273,7 +273,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
               homologacion: null,
               region: null
             })
-          
+
           if (errorMercado) {
             console.warn('⚠️ No se pudo guardar en datos_mercado (no crítico):', errorMercado.message)
           } else {
@@ -377,8 +377,8 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                     Impuesto de Matriculación
                   </h4>
                   <p className="text-xs text-blue-800">
-                    Indica si el precio de compra incluye o no el impuesto de matriculación. 
-                    Esto es importante para valoraciones precisas, ya que empresas de alquiler y 
+                    Indica si el precio de compra incluye o no el impuesto de matriculación.
+                    Esto es importante para valoraciones precisas, ya que empresas de alquiler y
                     ciertos compradores están exentos de este impuesto (~14,75% para autocaravanas).
                   </p>
                 </div>
@@ -394,8 +394,8 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                     value={formData.origen_compra}
                     onChange={(e) => {
                       const origen = e.target.value
-                      setFormData({ 
-                        ...formData, 
+                      setFormData({
+                        ...formData,
                         origen_compra: origen,
                         // Auto-desmarcar si es empresa_alquiler
                         precio_incluye_impuesto_matriculacion: origen === 'empresa_alquiler' ? false : formData.precio_incluye_impuesto_matriculacion
@@ -476,7 +476,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
               {/* Info visual estimación */}
               {!formData.precio_incluye_impuesto_matriculacion && formData.precio_compra && (
                 <div className="mt-3 p-2 bg-white border border-blue-300 rounded text-xs text-gray-700">
-                  <strong>💡 Estimación automática:</strong> Si el precio no incluye el impuesto, 
+                  <strong>💡 Estimación automática:</strong> Si el precio no incluye el impuesto,
                   se calculará automáticamente (~14,75% para autocaravanas ≈ {
                     new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' })
                       .format(parseInt(formData.precio_compra || '0') * 0.1475)

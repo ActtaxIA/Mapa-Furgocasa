@@ -91,7 +91,7 @@ export default function VentaTab({ vehiculoId, onVentaRegistrada }: Props) {
           texto: '¡Venta registrada correctamente! Gracias por contribuir con datos al mercado.'
         })
         await cargarDatos()
-        
+
         // 🔄 Notificar al padre que se registró la venta (para recargar datos)
         if (onVentaRegistrada) {
           onVentaRegistrada()
