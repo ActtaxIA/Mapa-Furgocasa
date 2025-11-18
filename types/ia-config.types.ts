@@ -15,6 +15,7 @@ export interface IAConfigValue {
   temperature: number
   max_tokens: number
   prompts: PromptMessage[]
+  porcentaje_iedmt?: number  // Porcentaje IEDMT para normalización de precios (solo valoracion_vehiculos)
 }
 
 export interface IAConfig {
