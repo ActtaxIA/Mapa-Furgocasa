@@ -315,6 +315,29 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       // No bloqueamos la respuesta por error en datos_mercado
     }
 
+    // 🚗 Guardar kilometros_venta en vehiculo_kilometraje para historial
+    if (dataToSave.kilometros_venta) {
+      try {
+        const { error: kmError } = await (supabase as any)
+          .from('vehiculo_kilometraje')
+          .insert({
+            vehiculo_id: vehiculoId,
+            user_id: user.id,
+            kilometros: dataToSave.kilometros_venta,
+            fecha: fecha_venta.trim()
+          })
+        
+        if (kmError) {
+          console.warn('⚠️ [Venta API] No se pudo guardar kilometraje (no crítico):', kmError.message)
+        } else {
+          console.log('✅ [Venta API] Kilometraje de venta guardado en vehiculo_kilometraje')
+        }
+      } catch (kmSaveError: any) {
+        console.warn('⚠️ [Venta API] Error guardando kilometraje:', kmSaveError.message)
+        // No bloqueamos la respuesta
+      }
+    }
+
     // Añadir cálculos a la respuesta (aunque no se guarden en BD)
     const responseData = {
       ...result.data,
