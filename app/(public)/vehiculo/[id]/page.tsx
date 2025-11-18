@@ -1516,7 +1516,24 @@ export default function VehiculoPage() {
             <GastosAdicionalesTab vehiculoId={vehiculoId} />
           )}
 
-          {activeTab === "venta" && <VentaTab vehiculoId={vehiculoId} />}
+          {activeTab === "venta" && (
+            <VentaTab 
+              vehiculoId={vehiculoId} 
+              onVentaRegistrada={() => {
+                // Recargar datos del vehículo para actualizar estado vendido
+                loadData();
+                // Mostrar toast de éxito
+                setToast({
+                  message: "✅ Venta registrada. El vehículo ya no permite valoraciones IA.",
+                  type: "success"
+                });
+                // Cambiar a tab de resumen para ver el estado actualizado
+                setTimeout(() => {
+                  setActiveTab("resumen");
+                }, 2000);
+              }}
+            />
+          )}
         </div>
       </main>
 

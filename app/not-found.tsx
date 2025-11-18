@@ -8,7 +8,7 @@ import { HomeIcon, MapIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 
 export default function NotFound() {
   const router = useRouter()
-  
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />

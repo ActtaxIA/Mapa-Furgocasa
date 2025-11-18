@@ -17,3 +17,6 @@ ALTER TABLE datos_mercado_autocaravanas DISABLE ROW LEVEL SECURITY;
 --
 -- CREATE POLICY "Solo service role puede insertar" ON datos_mercado_autocaravanas
 --   FOR INSERT WITH CHECK (auth.role() = 'service_role');
+
+
+

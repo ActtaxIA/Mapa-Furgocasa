@@ -73,7 +73,7 @@ export async function GET() {
           : null;
 
       // 🎨 MEJORA: Si no hay foto_url pero sí fotos_adicionales, usar la primera como thumbnail
-      const fotoThumbnail = v.foto_url || 
+      const fotoThumbnail = v.foto_url ||
         (v.fotos_adicionales && v.fotos_adicionales.length > 0 ? v.fotos_adicionales[0] : null);
 
       return {

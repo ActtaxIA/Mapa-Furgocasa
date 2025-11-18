@@ -23,9 +23,10 @@ interface VentaData {
 
 interface Props {
   vehiculoId: string
+  onVentaRegistrada?: () => void
 }
 
-export default function VentaTab({ vehiculoId }: Props) {
+export default function VentaTab({ vehiculoId, onVentaRegistrada }: Props) {
   const [datos, setDatos] = useState<VentaData | null>(null)
   const [cargando, setCargando] = useState(true)
   const [guardando, setGuardando] = useState(false)
@@ -90,6 +91,11 @@ export default function VentaTab({ vehiculoId }: Props) {
           texto: '¡Venta registrada correctamente! Gracias por contribuir con datos al mercado.'
         })
         await cargarDatos()
+        
+        // 🔄 Notificar al padre que se registró la venta (para recargar datos)
+        if (onVentaRegistrada) {
+          onVentaRegistrada()
+        }
       } else {
         const error = await response.json()
         setMensaje({ tipo: 'error', texto: error.error || 'Error al registrar venta' })
