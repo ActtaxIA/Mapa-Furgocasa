@@ -172,6 +172,35 @@ Responde en formato JSON con la estructura exacta:
       );
     }
 
+    // 4.5 🚗 REGLA ESPECIAL: Si es NUEVO → año actual y 0 km
+    const estadoLower = (extractedData.estado || "").toLowerCase();
+    const esNuevo = estadoLower.includes("nueva") || 
+                    estadoLower.includes("nuevo") || 
+                    estadoLower.includes("0 km") ||
+                    estadoLower.includes("sin estrenar");
+
+    if (esNuevo) {
+      const añoActual = new Date().getFullYear();
+      console.log(`🆕 [Extract] Detectado vehículo NUEVO → Aplicando reglas especiales`);
+      
+      // Año = año actual (o año extraído si es mayor, porque puede ser modelo futuro)
+      if (!extractedData.año || extractedData.año < añoActual) {
+        console.log(`   📅 Año ajustado: ${extractedData.año || "null"} → ${añoActual}`);
+        extractedData.año = añoActual;
+      }
+      
+      // Kilómetros = 0 (vehículo nuevo)
+      if (!extractedData.kilometros || extractedData.kilometros > 100) {
+        console.log(`   🚗 Kilómetros ajustados: ${extractedData.kilometros || "null"} → 0`);
+        extractedData.kilometros = 0;
+      }
+      
+      // Asegurar que el estado diga claramente "Nuevo"
+      if (!extractedData.estado || estadoLower === "nueva" || estadoLower === "nuevo") {
+        extractedData.estado = "Nuevo";
+      }
+    }
+
     // 5. Si es preview, devolver datos SIN guardar
     if (preview) {
       console.log("👁️ [Extract] Modo preview - devolviendo datos sin guardar");
