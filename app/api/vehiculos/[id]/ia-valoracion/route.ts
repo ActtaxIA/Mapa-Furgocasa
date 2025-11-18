@@ -901,7 +901,53 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
 
     console.log(`   ✅ Informe guardado con ID: ${informeGuardado.id}`)
 
-    // 8. GUARDAR COMPARABLES EN TABLA DE MERCADO (si hay)
+    // 8. GUARDAR VEHÍCULO VALORADO EN TABLA DE MERCADO (con precio_objetivo)
+    console.log(`\n💾 Guardando vehículo valorado en datos_mercado_autocaravanas...`)
+    try {
+      // Verificar si ya existe este vehículo valorado
+      const { data: vehiculoExistente, error: errorCheckVehiculo } = await (supabase as any)
+        .from('datos_mercado_autocaravanas')
+        .select('id')
+        .eq('marca', vehiculo.marca)
+        .eq('modelo', vehiculo.modelo)
+        .eq('año', vehiculo.año)
+        .eq('precio', Math.round(respuestaJSON.precio_objetivo))
+        .maybeSingle()
+
+      if (!vehiculoExistente && respuestaJSON.precio_objetivo) {
+        const { error: errorInsertVehiculo } = await (supabase as any)
+          .from('datos_mercado_autocaravanas')
+          .insert({
+            marca: vehiculo.marca,
+            modelo: vehiculo.modelo,
+            año: vehiculo.año,
+            precio: Math.round(respuestaJSON.precio_objetivo), // ✅ Precio objetivo (más realista)
+            kilometros: vehiculo.kilometros || null,
+            fecha_transaccion: new Date().toISOString().split('T')[0],
+            verificado: true,
+            estado: 'Usado',
+            origen: 'Valoración IA Usuario',
+            tipo_dato: 'Valoración IA Usuario', // Diferenciado de comparables externos
+            pais: 'España',
+            tipo_combustible: null,
+            tipo_calefaccion: null,
+            homologacion: null,
+            region: null
+          })
+
+        if (errorInsertVehiculo) {
+          console.warn(`   ⚠️  Error guardando vehículo valorado (no crítico):`, errorInsertVehiculo.message)
+        } else {
+          console.log(`   ✅ Vehículo valorado guardado: ${vehiculo.marca} ${vehiculo.modelo} ${vehiculo.año} - ${Math.round(respuestaJSON.precio_objetivo)}€`)
+        }
+      } else if (vehiculoExistente) {
+        console.log(`   🔄 Vehículo ya existe en BD de mercado (no duplicar)`)
+      }
+    } catch (errorVehiculoMercado) {
+      console.warn(`   ⚠️  Error procesando vehículo para BD mercado:`, errorVehiculoMercado)
+    }
+
+    // 9. GUARDAR COMPARABLES EN TABLA DE MERCADO (si hay)
     // IMPORTANTE: Usar comparablesLimpios (ya filtrados y sin el vehículo actual)
     if (comparablesLimpios.length > 0) {
       console.log(`\n📊 Guardando ${comparablesLimpios.length} comparables en datos_mercado_autocaravanas...`)
@@ -943,15 +989,48 @@ async function procesarValoracionIA(jobId: string, vehiculoId: string, userId: s
         }
       })
 
-      const { data: mercadoGuardado, error: errorMercado } = await (supabase as any)
-        .from('datos_mercado_autocaravanas')
-        .insert(comparablesParaGuardar)
-        .select()
+      // 🚫 FILTRAR DUPLICADOS: Verificar si ya existen en BD antes de insertar
+      const comparablesUnicos: any[] = []
+      for (const comp of comparablesParaGuardar) {
+        // Buscar duplicado exacto (misma marca, modelo, año, precio y kilometros)
+        const { data: existente, error: errorCheck } = await (supabase as any)
+          .from('datos_mercado_autocaravanas')
+          .select('id')
+          .eq('marca', comp.marca)
+          .eq('modelo', comp.modelo)
+          .eq('año', comp.año)
+          .eq('precio', comp.precio)
+          .maybeSingle()
 
-      if (errorMercado) {
-        console.error(`   ⚠️ Error guardando en mercado (no crítico):`, errorMercado)
+        if (errorCheck && errorCheck.code !== 'PGRST116') {
+          console.warn(`   ⚠️  Error verificando duplicado:`, errorCheck.message)
+          // En caso de error de verificación, lo añadimos igual (mejor duplicar que perder)
+          comparablesUnicos.push(comp)
+        } else if (!existente) {
+          // No existe, es único
+          comparablesUnicos.push(comp)
+          console.log(`   ✅ Nuevo comparable: ${comp.marca} ${comp.modelo} ${comp.año} - ${comp.precio}€`)
+        } else {
+          // Ya existe, NO insertar
+          console.log(`   🔄 Duplicado detectado (ya existe): ${comp.marca} ${comp.modelo} ${comp.año} - ${comp.precio}€`)
+        }
+      }
+
+      console.log(`   📊 Comparables únicos: ${comparablesUnicos.length} de ${comparablesParaGuardar.length}`)
+
+      if (comparablesUnicos.length > 0) {
+        const { data: mercadoGuardado, error: errorMercado } = await (supabase as any)
+          .from('datos_mercado_autocaravanas')
+          .insert(comparablesUnicos)
+          .select()
+
+        if (errorMercado) {
+          console.error(`   ⚠️ Error guardando en mercado (no crítico):`, errorMercado)
+        } else {
+          console.log(`   ✅ ${mercadoGuardado?.length || 0} comparables guardados en BD de mercado (sin duplicados)`)
+        }
       } else {
-        console.log(`   ✅ ${mercadoGuardado?.length || 0} comparables guardados en BD de mercado`)
+        console.log(`   ℹ️  Todos los comparables ya existían en la BD (0 insertados)`)
       }
     }
 
