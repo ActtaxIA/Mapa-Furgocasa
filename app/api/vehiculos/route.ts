@@ -140,6 +140,7 @@ export async function POST(request: Request) {
     const chasis = body.chasis as string | null;
     const año = body.año as number | null;
     const color = body.color as string | null;
+    const tipo_vehiculo = body.tipo_vehiculo as string | null;
     const foto_url = body.foto_url as string | null; // URL ya subida desde el frontend
 
     // Validación básica
@@ -229,6 +230,7 @@ export async function POST(request: Request) {
         chasis: chasis?.trim() || null,
         año: año || null,
         color: color?.trim() || null,
+        tipo_vehiculo: tipo_vehiculo?.trim() || null,
         foto_url: foto_url,
         qr_code_id,
         qr_image_url,

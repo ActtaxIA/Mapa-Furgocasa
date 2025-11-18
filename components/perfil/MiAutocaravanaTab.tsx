@@ -15,6 +15,10 @@ import {
   ChartBarIcon,
   TagIcon,
   CurrencyEuroIcon,
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  ArrowsUpDownIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
@@ -64,6 +68,12 @@ export function MiAutocaravanaTab({ userId }: Props) {
   const [fotoFile, setFotoFile] = useState<File | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
 
+  // 🔍 FILTROS Y ORDENACIÓN
+  const [filtroEstado, setFiltroEstado] = useState<'todos' | 'propiedad' | 'vendidos'>('todos');
+  const [busqueda, setBusqueda] = useState('');
+  const [ordenPor, setOrdenPor] = useState<'fecha_compra' | 'año' | 'precio_compra' | 'valor_actual' | 'matricula'>('fecha_compra');
+  const [ordenDireccion, setOrdenDireccion] = useState<'asc' | 'desc'>('desc');
+
   useEffect(() => {
     loadVehiculos();
   }, [userId]);
@@ -94,6 +104,50 @@ export function MiAutocaravanaTab({ userId }: Props) {
       setLoading(false);
     }
   };
+
+  // 🔍 Aplicar filtros y ordenación
+  const vehiculosFiltrados = vehiculos
+    .filter((v) => {
+      // Filtro por estado
+      if (filtroEstado === 'propiedad' && v.vendido) return false;
+      if (filtroEstado === 'vendidos' && !v.vendido) return false;
+
+      // Filtro por búsqueda
+      if (busqueda.trim()) {
+        const busquedaLower = busqueda.toLowerCase();
+        const matchMatricula = v.matricula?.toLowerCase().includes(busquedaLower);
+        const matchMarca = v.marca?.toLowerCase().includes(busquedaLower);
+        const matchModelo = v.modelo?.toLowerCase().includes(busquedaLower);
+        return matchMatricula || matchMarca || matchModelo;
+      }
+
+      return true;
+    })
+    .sort((a, b) => {
+      let compareValue = 0;
+
+      switch (ordenPor) {
+        case 'matricula':
+          compareValue = (a.matricula || '').localeCompare(b.matricula || '');
+          break;
+        case 'año':
+          compareValue = (a.año || 0) - (b.año || 0);
+          break;
+        case 'fecha_compra':
+          const fechaA = a.fecha_compra ? new Date(a.fecha_compra).getTime() : 0;
+          const fechaB = b.fecha_compra ? new Date(b.fecha_compra).getTime() : 0;
+          compareValue = fechaA - fechaB;
+          break;
+        case 'precio_compra':
+          compareValue = (a.precio_compra || 0) - (b.precio_compra || 0);
+          break;
+        case 'valor_actual':
+          compareValue = (a.valor_estimado_actual || 0) - (b.valor_estimado_actual || 0);
+          break;
+      }
+
+      return ordenDireccion === 'asc' ? compareValue : -compareValue;
+    });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -686,8 +740,93 @@ export function MiAutocaravanaTab({ userId }: Props) {
         </div>
       )}
 
+      {/* 🔍 Controles de Filtrado y Ordenación */}
+      {vehiculos.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Búsqueda */}
+            <div className="flex-1">
+              <div className="relative">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar por matrícula, marca o modelo..."
+                  value={busqueda}
+                  onChange={(e) => setBusqueda(e.target.value)}
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+                {busqueda && (
+                  <button
+                    onClick={() => setBusqueda('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <XMarkIcon className="h-5 w-5" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Filtro por Estado */}
+            <div className="flex items-center gap-2">
+              <FunnelIcon className="h-5 w-5 text-gray-500" />
+              <select
+                value={filtroEstado}
+                onChange={(e) => setFiltroEstado(e.target.value as any)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              >
+                <option value="todos">Todos ({stats.total})</option>
+                <option value="propiedad">En Propiedad ({stats.enPropiedad})</option>
+                <option value="vendidos">Vendidos ({stats.vendidos})</option>
+              </select>
+            </div>
+
+            {/* Ordenar Por */}
+            <div className="flex items-center gap-2">
+              <ArrowsUpDownIcon className="h-5 w-5 text-gray-500" />
+              <select
+                value={ordenPor}
+                onChange={(e) => setOrdenPor(e.target.value as any)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              >
+                <option value="fecha_compra">Fecha de Compra</option>
+                <option value="año">Año</option>
+                <option value="precio_compra">Precio de Compra</option>
+                <option value="valor_actual">Valor Actual</option>
+                <option value="matricula">Matrícula</option>
+              </select>
+              <button
+                onClick={() => setOrdenDireccion(ordenDireccion === 'asc' ? 'desc' : 'asc')}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title={ordenDireccion === 'asc' ? 'Ascendente' : 'Descendente'}
+              >
+                <span className="text-sm font-medium text-gray-700">
+                  {ordenDireccion === 'asc' ? '↑' : '↓'}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Contador de resultados */}
+          {(busqueda || filtroEstado !== 'todos') && (
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <p className="text-sm text-gray-600">
+                Mostrando <span className="font-semibold">{vehiculosFiltrados.length}</span> de {vehiculos.length} vehículos
+                {busqueda && (
+                  <button
+                    onClick={() => { setBusqueda(''); setFiltroEstado('todos'); }}
+                    className="ml-2 text-primary-600 hover:text-primary-700 underline"
+                  >
+                    Limpiar filtros
+                  </button>
+                )}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Lista de vehículos */}
-      {vehiculos.length === 0 ? (
+      {vehiculosFiltrados.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
           <TruckIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">
@@ -699,7 +838,7 @@ export function MiAutocaravanaTab({ userId }: Props) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {vehiculos.map((vehiculo) => (
+          {vehiculosFiltrados.map((vehiculo) => (
             <div
               key={vehiculo.id}
               className="bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all overflow-hidden group"

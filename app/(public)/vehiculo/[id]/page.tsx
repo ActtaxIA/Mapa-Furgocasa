@@ -1517,8 +1517,8 @@ export default function VehiculoPage() {
           )}
 
           {activeTab === "venta" && (
-            <VentaTab 
-              vehiculoId={vehiculoId} 
+            <VentaTab
+              vehiculoId={vehiculoId}
               onVentaRegistrada={() => {
                 // Recargar datos del vehículo para actualizar estado vendido
                 loadData();
