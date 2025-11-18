@@ -55,10 +55,13 @@ export default function ConfiguracionPage() {
     supabase: boolean
     chatbotOpenAI: boolean
   } | null>(null)
+  const [porcentajeIEDMT, setPorcentajeIEDMT] = useState<number>(14.75)
+  const [savingIEDMT, setSavingIEDMT] = useState(false)
 
   useEffect(() => {
     loadConfigs()
     checkApiConnections()
+    loadPorcentajeIEDMT()
   }, [])
 
   const checkApiConnections = async () => {
@@ -156,6 +159,57 @@ export default function ConfiguracionPage() {
       showMessage('error', 'Error al cargar la configuración')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const loadPorcentajeIEDMT = async () => {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('ia_config')
+        .select('config_value')
+        .eq('config_key', 'valoracion_vehiculos')
+        .single()
+
+      if (!error && data?.config_value?.porcentaje_iedmt) {
+        setPorcentajeIEDMT(parseFloat(data.config_value.porcentaje_iedmt))
+      }
+    } catch (error) {
+      console.error('Error cargando porcentaje IEDMT:', error)
+    }
+  }
+
+  const savePorcentajeIEDMT = async () => {
+    try {
+      setSavingIEDMT(true)
+
+      // Actualizar en valoracion_vehiculos
+      const { data: currentConfig } = await (supabase as any)
+        .from('ia_config')
+        .select('config_value')
+        .eq('config_key', 'valoracion_vehiculos')
+        .single()
+
+      if (currentConfig) {
+        const updatedValue = {
+          ...currentConfig.config_value,
+          porcentaje_iedmt: porcentajeIEDMT
+        }
+
+        const { error } = await (supabase as any)
+          .from('ia_config')
+          .update({ config_value: updatedValue })
+          .eq('config_key', 'valoracion_vehiculos')
+
+        if (error) throw error
+
+        showMessage('success', `✅ Porcentaje IEDMT actualizado a ${porcentajeIEDMT}% - Se aplicará en todas las normalizaciones de precios`)
+        await loadConfigs() // Recargar para reflejar cambios
+      }
+    } catch (error) {
+      console.error('Error guardando porcentaje IEDMT:', error)
+      showMessage('error', 'Error al guardar el porcentaje IEDMT')
+    } finally {
+      setSavingIEDMT(false)
     }
   }
 
@@ -522,6 +576,115 @@ export default function ConfiguracionPage() {
           </div>
         )}
 
+        {/* SECCIÓN GLOBAL: Porcentaje IEDMT */}
+        <div className="bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-300 rounded-lg shadow-lg p-6 mb-6">
+          <div className="flex items-start gap-4">
+            <div className="bg-orange-500 text-white p-3 rounded-full">
+              <span className="text-3xl">💰</span>
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-orange-900 mb-2">
+                ⚙️ Configuración Global: Porcentaje IEDMT (Impuesto de Matriculación)
+              </h2>
+              <p className="text-sm text-orange-800 mb-4">
+                Este porcentaje se usa para <strong>normalizar precios sin impuesto incluido</strong> y convertirlos a PVP equivalente particular.
+                Afecta a <strong>TODA la aplicación</strong>.
+              </p>
+
+              {/* Input del porcentaje */}
+              <div className="bg-white border-2 border-orange-300 rounded-lg p-4 mb-4">
+                <div className="flex items-center gap-4 mb-3">
+                  <label className="text-sm font-bold text-gray-900">
+                    Porcentaje IEDMT:
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      step="0.01"
+                      value={porcentajeIEDMT}
+                      onChange={(e) => setPorcentajeIEDMT(parseFloat(e.target.value) || 0)}
+                      className="w-28 px-3 py-2 border-2 border-orange-400 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-bold text-orange-900 text-lg"
+                    />
+                    <span className="text-orange-900 font-bold text-lg">%</span>
+                  </div>
+                  <button
+                    onClick={savePorcentajeIEDMT}
+                    disabled={savingIEDMT}
+                    className="px-4 py-2 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {savingIEDMT ? (
+                      <>
+                        <ArrowPathIcon className="w-4 h-4 animate-spin" />
+                        Guardando...
+                      </>
+                    ) : (
+                      <>
+                        <CheckIcon className="w-4 h-4" />
+                        Guardar
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="text-xs text-gray-700 space-y-1">
+                  <p><strong>📚 Referencia BOE (RDL 1/1993):</strong></p>
+                  <ul className="ml-4 list-disc">
+                    <li>Furgonetas camper &lt;3.5t: 4,75%-9,75% (según emisiones)</li>
+                    <li>Autocaravanas &gt;3.5t: <strong>14,75%</strong> (estándar - mayoría del mercado)</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Dónde se aplica */}
+              <div className="bg-white border-2 border-blue-300 rounded-lg p-4">
+                <h3 className="text-sm font-bold text-blue-900 mb-2">
+                  📍 Este porcentaje se aplica AUTOMÁTICAMENTE en:
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">✓</span>
+                    <div>
+                      <strong>Extracción URL (Admin)</strong>
+                      <p className="text-xs text-gray-600">Cuando añades comparables desde URLs de concesionarios</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">✓</span>
+                    <div>
+                      <strong>Registro de Compras (Usuarios)</strong>
+                      <p className="text-xs text-gray-600">Cuando usuarios compran de empresas exentas (alquiler)</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">✓</span>
+                    <div>
+                      <strong>Cálculos Valoración IA</strong>
+                      <p className="text-xs text-gray-600">Para comparar precios de forma homogénea</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">✓</span>
+                    <div>
+                      <strong>Tabla Datos de Mercado</strong>
+                      <p className="text-xs text-gray-600">Normalización de todos los comparables guardados</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Advertencia */}
+              <div className="mt-3 bg-yellow-50 border border-yellow-300 rounded-lg p-3">
+                <p className="text-xs text-yellow-900">
+                  <strong>⚠️ Importante:</strong> Cambiar este porcentaje afecta a <strong>TODAS las normalizaciones futuras</strong> en toda la aplicación.
+                  Los datos ya guardados no se modifican retroactivamente.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Message */}
         {message && (
           <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
@@ -627,44 +790,6 @@ export default function ConfiguracionPage() {
                   Longitud máxima de la respuesta (más tokens = respuestas más largas pero más costosas)
                 </p>
               </div>
-
-              {/* Porcentaje IEDMT - Solo para valoracion_vehiculos */}
-              {activeTab === 'valoracion_vehiculos' && (
-                <div className="border-l-4 border-orange-500 bg-orange-50 p-4 rounded-r-lg">
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl">💰</span>
-                    <div className="flex-1">
-                      <label className="block text-sm font-semibold text-orange-900 mb-2">
-                        Porcentaje IEDMT (Impuesto de Matriculación)
-                      </label>
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="number"
-                          min="0"
-                          max="20"
-                          step="0.01"
-                          value={editedConfig.config_value.porcentaje_iedmt || 14.75}
-                          onChange={(e) => updateConfigValue('porcentaje_iedmt', parseFloat(e.target.value))}
-                          className="w-32 px-4 py-2 border border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent font-bold text-orange-900"
-                        />
-                        <span className="text-orange-900 font-semibold">%</span>
-                      </div>
-                      <p className="text-xs text-orange-800 mt-2">
-                        <strong>Usado para:</strong> Normalizar precios sin impuesto incluido (empresas de alquiler exentas) a PVP equivalente particular.
-                      </p>
-                      <p className="text-xs text-orange-700 mt-1">
-                        <strong>Referencia BOE (RDL 1/1993):</strong> Furgonetas camper &lt;3.5t → 4,75%-9,75% | Autocaravanas &gt;3.5t → <strong>14,75%</strong> (estándar)
-                      </p>
-                      <p className="text-xs text-orange-700 mt-1">
-                        📍 Este porcentaje se aplica automáticamente en:
-                        <span className="block ml-4 mt-1">✓ Extracción URL (admin)</span>
-                        <span className="block ml-4">✓ Registro de compras (usuarios)</span>
-                        <span className="block ml-4">✓ Cálculos de valoración IA</span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* SISTEMA DE PROMPTS FLEXIBLE */}
               <div className="border-t pt-6">
