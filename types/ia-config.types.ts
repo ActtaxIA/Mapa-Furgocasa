@@ -62,4 +62,3 @@ export const PROMPT_LABELS: Record<PromptRole, string> = {
   assistant: 'Assistant',
   agent: 'Agent'
 }
-

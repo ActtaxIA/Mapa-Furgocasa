@@ -53,11 +53,11 @@ if (esNuevo) {
                      texto.includes("Sin impuesto de matriculación");
 
   if (faltaIEDMT && precio) {
-    // 3. Aplicar normalización (+7%)
-    const precioNormalizado = Math.round(precio * 1.07);
+    // 3. Aplicar normalización (+14,75% para autocaravanas >3.5t)
+    const precioNormalizado = Math.round(precio * 1.1475);
     
     // 4. Marcar origen claramente
-    origen = "Concesionario (PVP Normalizado +7% IEDMT)";
+    origen = "Concesionario (PVP Normalizado +14,75% IEDMT)";
   }
 }
 ```
@@ -76,8 +76,8 @@ Estado: Nueva
 ### **Procesamiento:**
 1. ✅ Detecta: `esNuevo = true`
 2. ✅ Detecta: `faltaIEDMT = true`
-3. ✅ Calcula: `68.500 × 1.07 = 73.295€`
-4. ✅ Marca: `origen = "Concesionario (PVP Normalizado +7% IEDMT)"`
+3. ✅ Calcula: `68.500 × 1.1475 = 78.554€`
+4. ✅ Marca: `origen = "Concesionario (PVP Normalizado +14,75% IEDMT)"`
 
 ### **Salida (guardado en BD):**
 ```json
@@ -85,10 +85,10 @@ Estado: Nueva
   "marca": "Knaus",
   "modelo": "Boxlife 600 MQ Platinum Selection",
   "año": 2025,
-  "precio": 73295,
+  "precio": 78554,
   "kilometros": 0,
   "estado": "Nuevo",
-  "origen": "Concesionario (PVP Normalizado +7% IEDMT)",
+  "origen": "Concesionario (PVP Normalizado +14,75% IEDMT)",
   "verificado": true
 }
 ```
@@ -118,7 +118,7 @@ Cuando se aplica la normalización, verás:
    🚗 Kilómetros ajustados: null → 0
 💰 [Extract] IEDMT NO INCLUIDO detectado → Normalizando precio
    Precio original: 68500€
-   Precio normalizado (+7% IEDMT): 73295€
+   Precio normalizado (+14,75% IEDMT): 78554€
 💾 [Extract] Guardando en base de datos...
 ```
 

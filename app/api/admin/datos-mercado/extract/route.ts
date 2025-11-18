@@ -195,29 +195,29 @@ Responde en formato JSON con la estructura exacta:
 
     // 4.5 🚗 REGLA ESPECIAL: Si es NUEVO → año actual y 0 km
     const estadoLower = (extractedData.estado || "").toLowerCase();
-    const esNuevo = estadoLower.includes("nueva") || 
-                    estadoLower.includes("nuevo") || 
+    const esNuevo = estadoLower.includes("nueva") ||
+                    estadoLower.includes("nuevo") ||
                     estadoLower.includes("0 km") ||
                     estadoLower.includes("sin estrenar");
 
     let origenPrecio = "URL Manual";
-    
+
     if (esNuevo) {
       const añoActual = new Date().getFullYear();
       console.log(`🆕 [Extract] Detectado vehículo NUEVO → Aplicando reglas especiales`);
-      
+
       // Año = año actual (o año extraído si es mayor, porque puede ser modelo futuro)
       if (!extractedData.año || extractedData.año < añoActual) {
         console.log(`   📅 Año ajustado: ${extractedData.año || "null"} → ${añoActual}`);
         extractedData.año = añoActual;
       }
-      
+
       // Kilómetros = 0 (vehículo nuevo)
       if (!extractedData.kilometros || extractedData.kilometros > 100) {
         console.log(`   🚗 Kilómetros ajustados: ${extractedData.kilometros || "null"} → 0`);
         extractedData.kilometros = 0;
       }
-      
+
       // Asegurar que el estado diga claramente "Nuevo"
       if (!extractedData.estado || estadoLower === "nueva" || estadoLower === "nuevo") {
         extractedData.estado = "Nuevo";
@@ -285,7 +285,7 @@ Responde en formato JSON con la estructura exacta:
       console.error("❌ [Extract] Error insertando dato:", insertError);
       console.error("❌ [Extract] Detalles del error:", insertError);
       return NextResponse.json(
-        { 
+        {
           error: "Error al guardar datos en la base de datos",
           details: insertError.message,
           code: insertError.code,
