@@ -294,7 +294,7 @@ export default function InformeValoracionIA({
                   </strong>
                 ),
                 code: ({ children, inline }: any) => (
-                  inline 
+                  inline
                     ? <code className="px-1.5 py-0.5 bg-gray-100 text-gray-800 rounded text-sm font-mono">{children}</code>
                     : <code className="block p-3 bg-gray-100 text-gray-800 rounded text-sm font-mono whitespace-pre-wrap my-2">{children}</code>
                 ),

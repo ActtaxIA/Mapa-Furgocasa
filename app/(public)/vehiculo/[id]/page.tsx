@@ -834,7 +834,7 @@ export default function VehiculoPage() {
 
       const lines = textoPlano
         .split("\n")
-        .filter(line => {
+        .filter((line: string) => {
           const trimmed = line.trim();
           // Eliminar líneas vacías o con solo viñetas/puntos
           return trimmed !== '' && trimmed !== '•' && trimmed !== '*' && trimmed !== '-';
