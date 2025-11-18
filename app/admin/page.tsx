@@ -30,7 +30,7 @@ export default function AdminDashboardPage() {
   const checkAdmin = async () => {
     const supabase = createClient()
     const { data: { session } } = await supabase.auth.getSession()
-    
+
     if (!session?.user || !session.user.user_metadata?.is_admin) {
       router.push('/mapa')
     }
@@ -126,7 +126,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
@@ -147,20 +147,20 @@ export default function AdminDashboardPage() {
               className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
             >
               <div className={`h-2 bg-gradient-to-r ${section.color}`} />
-              
+
               <div className="p-6">
                 <div className={`inline-flex p-3 rounded-lg bg-gradient-to-r ${section.color} text-white mb-4 group-hover:scale-110 transition-transform`}>
                   {section.icon}
                 </div>
-                
+
                 <h2 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-sky-600 transition-colors">
                   {section.title}
                 </h2>
-                
+
                 <p className="text-gray-600 text-sm mb-4">
                   {section.description}
                 </p>
-                
+
                 <div className="mt-4 text-sm text-sky-600 font-semibold group-hover:translate-x-2 transition-transform inline-block">
                   Acceder →
                 </div>

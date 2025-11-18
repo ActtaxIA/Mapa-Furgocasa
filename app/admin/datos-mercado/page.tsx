@@ -50,6 +50,8 @@ export default function DatosMercadoPage() {
     type: "success" | "error";
     text: string;
   } | null>(null);
+  const [extractedData, setExtractedData] = useState<any>(null); // Datos extraídos pendientes de confirmar
+  const [saving, setSaving] = useState(false);
 
   // 📊 Estados para ordenación y paginación
   const [sortColumn, setSortColumn] = useState<keyof DatoMercado | null>(null);
@@ -184,28 +186,30 @@ export default function DatosMercadoPage() {
     };
   };
 
+  // 🔍 PASO 1: Extraer datos de la URL (solo extracción, NO guarda)
   const handleExtractFromUrl = async (e: React.FormEvent) => {
     e.preventDefault();
     setExtracting(true);
     setExtractMessage(null);
+    setExtractedData(null);
 
     try {
+      // Llamar al endpoint pero con parámetro para NO guardar
       const response = await fetch("/api/admin/datos-mercado/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: extractUrl }),
+        body: JSON.stringify({ url: extractUrl, preview: true }), // preview: true = solo extraer
       });
 
       const data = await response.json();
 
       if (response.ok) {
+        // Guardar datos extraídos para vista previa
+        setExtractedData(data);
         setExtractMessage({
           type: "success",
-          text: `✅ Datos extraídos: ${data.marca} ${data.modelo} (${data.año})`,
+          text: `✅ Datos extraídos correctamente. Revisa y confirma para guardar.`,
         });
-        setExtractUrl("");
-        setShowExtractorModal(false);
-        await loadDatos();
       } else {
         setExtractMessage({
           type: "error",
@@ -221,6 +225,63 @@ export default function DatosMercadoPage() {
     } finally {
       setExtracting(false);
     }
+  };
+
+  // ✅ PASO 2: Confirmar y guardar en BD
+  const handleConfirmAndSave = async () => {
+    if (!extractedData) return;
+
+    setSaving(true);
+    setExtractMessage(null);
+
+    try {
+      const response = await fetch("/api/admin/datos-mercado/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(extractedData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setExtractMessage({
+          type: "success",
+          text: `✅ Guardado exitosamente en la base de datos`,
+        });
+        setExtractUrl("");
+        setExtractedData(null);
+        
+        // Cerrar modal después de 1 segundo
+        setTimeout(() => {
+          setShowExtractorModal(false);
+          setExtractMessage(null);
+        }, 1500);
+
+        await loadDatos();
+      } else {
+        setExtractMessage({
+          type: "error",
+          text: `❌ Error al guardar: ${data.error || "Error desconocido"}${data.details ? ` - ${data.details}` : ""}`,
+        });
+      }
+    } catch (err: any) {
+      console.error("Error guardando datos:", err);
+      setExtractMessage({
+        type: "error",
+        text: `❌ Error de conexión: ${err.message}`,
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // 🔄 Reiniciar extractor
+  const handleResetExtractor = () => {
+    setExtractUrl("");
+    setExtractedData(null);
+    setExtractMessage(null);
+    setExtracting(false);
+    setSaving(false);
   };
 
   const handleDeleteDato = async (id: string) => {
@@ -696,17 +757,21 @@ export default function DatosMercadoPage() {
         })()}
       </div>
 
-      {/* Modal Extractor de URL */}
+      {/* Modal Extractor de URL con Vista Previa */}
       {showExtractorModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+          <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold text-gray-900">
-                Extraer Datos de URL
+                {extractedData ? "Vista Previa de Datos" : "Extraer Datos de URL"}
               </h2>
               <button
-                onClick={() => setShowExtractorModal(false)}
+                onClick={() => {
+                  setShowExtractorModal(false);
+                  handleResetExtractor();
+                }}
                 className="text-gray-400 hover:text-gray-600"
+                disabled={saving}
               >
                 <svg
                   className="w-6 h-6"
@@ -724,67 +789,197 @@ export default function DatosMercadoPage() {
               </button>
             </div>
 
-            <p className="text-gray-600 mb-4">
-              Pega la URL de un anuncio de autocaravana y extraeremos
-              automáticamente los datos (marca, modelo, año, precio, km).
-            </p>
+            {/* PASO 1: Formulario de extracción */}
+            {!extractedData && (
+              <>
+                <p className="text-gray-600 mb-4">
+                  Pega la URL de un anuncio de autocaravana y extraeremos
+                  automáticamente los datos (marca, modelo, año, precio, km).
+                </p>
 
-            <form onSubmit={handleExtractFromUrl}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  URL del Anuncio
-                </label>
-                <input
-                  type="url"
-                  value={extractUrl}
-                  onChange={(e) => setExtractUrl(e.target.value)}
-                  placeholder="https://www.example.com/autocaravana..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  required
-                  disabled={extracting}
-                />
-              </div>
+                <form onSubmit={handleExtractFromUrl}>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      URL del Anuncio
+                    </label>
+                    <input
+                      type="url"
+                      value={extractUrl}
+                      onChange={(e) => setExtractUrl(e.target.value)}
+                      placeholder="https://www.coches.net/autocaravana..."
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      required
+                      disabled={extracting}
+                    />
+                  </div>
 
-              {extractMessage && (
-                <div
-                  className={`mb-4 p-4 rounded-lg ${
-                    extractMessage.type === "success"
-                      ? "bg-green-50 text-green-800 border border-green-200"
-                      : "bg-red-50 text-red-800 border border-red-200"
-                  }`}
-                >
-                  {extractMessage.text}
-                </div>
-              )}
-
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowExtractorModal(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                  disabled={extracting}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={extracting || !extractUrl}
-                >
-                  {extracting ? (
-                    <>
-                      <span className="animate-spin inline-block mr-2">⏳</span>
-                      Extrayendo...
-                    </>
-                  ) : (
-                    <>
-                      <LinkIcon className="w-5 h-5 inline mr-2" />
-                      Extraer Datos
-                    </>
+                  {extractMessage && (
+                    <div
+                      className={`mb-4 p-4 rounded-lg ${
+                        extractMessage.type === "success"
+                          ? "bg-green-50 text-green-800 border border-green-200"
+                          : "bg-red-50 text-red-800 border border-red-200"
+                      }`}
+                    >
+                      {extractMessage.text}
+                    </div>
                   )}
-                </button>
-              </div>
-            </form>
+
+                  <div className="flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowExtractorModal(false);
+                        handleResetExtractor();
+                      }}
+                      className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                      disabled={extracting}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={extracting || !extractUrl}
+                    >
+                      {extracting ? (
+                        <>
+                          <span className="animate-spin inline-block mr-2">⏳</span>
+                          Extrayendo...
+                        </>
+                      ) : (
+                        <>
+                          <LinkIcon className="w-5 h-5 inline mr-2" />
+                          Extraer Datos
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
+
+            {/* PASO 2: Vista previa de datos extraídos */}
+            {extractedData && (
+              <>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-blue-800">
+                    <strong>✅ Extracción completada.</strong> Revisa los datos y confirma para guardarlos en la base de datos.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  {/* Marca */}
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                      Marca
+                    </label>
+                    <p className="text-lg font-bold text-gray-900">
+                      {extractedData.marca || <span className="text-gray-400">-</span>}
+                    </p>
+                  </div>
+
+                  {/* Modelo */}
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                      Modelo
+                    </label>
+                    <p className="text-lg font-bold text-gray-900">
+                      {extractedData.modelo || <span className="text-gray-400">-</span>}
+                    </p>
+                  </div>
+
+                  {/* Año */}
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                      Año
+                    </label>
+                    <p className="text-lg font-bold text-gray-900">
+                      {extractedData.año || <span className="text-gray-400">-</span>}
+                    </p>
+                  </div>
+
+                  {/* Precio */}
+                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <label className="block text-xs font-medium text-green-700 uppercase mb-1">
+                      Precio
+                    </label>
+                    <p className="text-lg font-bold text-green-900">
+                      {extractedData.precio
+                        ? new Intl.NumberFormat("es-ES", {
+                            style: "currency",
+                            currency: "EUR",
+                            maximumFractionDigits: 0,
+                          }).format(extractedData.precio)
+                        : <span className="text-gray-400">-</span>}
+                    </p>
+                  </div>
+
+                  {/* Kilómetros */}
+                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                    <label className="block text-xs font-medium text-orange-700 uppercase mb-1">
+                      Kilómetros
+                    </label>
+                    <p className="text-lg font-bold text-orange-900">
+                      {extractedData.kilometros
+                        ? `${new Intl.NumberFormat("es-ES").format(extractedData.kilometros)} km`
+                        : <span className="text-gray-400">-</span>}
+                    </p>
+                  </div>
+
+                  {/* Estado */}
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                      Estado
+                    </label>
+                    <p className="text-lg font-bold text-gray-900">
+                      {extractedData.estado || <span className="text-gray-400">-</span>}
+                    </p>
+                  </div>
+                </div>
+
+                {extractMessage && (
+                  <div
+                    className={`mb-4 p-4 rounded-lg ${
+                      extractMessage.type === "success"
+                        ? "bg-green-50 text-green-800 border border-green-200"
+                        : "bg-red-50 text-red-800 border border-red-200"
+                    }`}
+                  >
+                    {extractMessage.text}
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={handleResetExtractor}
+                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    disabled={saving}
+                  >
+                    Intentar Otra URL
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmAndSave}
+                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                    disabled={saving}
+                  >
+                    {saving ? (
+                      <>
+                        <span className="animate-spin inline-block mr-2">⏳</span>
+                        Guardando...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircleIcon className="w-5 h-5 inline mr-2" />
+                        Confirmar y Guardar
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

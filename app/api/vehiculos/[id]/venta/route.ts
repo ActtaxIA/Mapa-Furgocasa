@@ -241,7 +241,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         .eq('id', existingData.id)
         .select()
         .single()
-      
+
       result = { data: updatedData, error: updateError }
     } else {
       // Crear nuevo registro
@@ -282,7 +282,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         .select('marca, modelo, ano')
         .eq('id', vehiculoId)
         .single()
-      
+
       if (vehiculoData) {
         const { error: errorMercado } = await (supabase as any)
           .from('datos_mercado_autocaravanas')
@@ -303,7 +303,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             homologacion: null,
             region: null
           })
-        
+
         if (errorMercado) {
           console.warn('⚠️ [Venta API] No se pudo guardar en datos_mercado (no crítico):', errorMercado.message)
         } else {
@@ -326,7 +326,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             kilometros: dataToSave.kilometros_venta,
             fecha: fecha_venta.trim()
           })
-        
+
         if (kmError) {
           console.warn('⚠️ [Venta API] No se pudo guardar kilometraje (no crítico):', kmError.message)
         } else {

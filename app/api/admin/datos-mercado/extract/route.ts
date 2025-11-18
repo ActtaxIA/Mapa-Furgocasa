@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { url } = await request.json();
+    const { url, preview } = await request.json();
 
     if (!url || typeof url !== "string") {
       return NextResponse.json(
@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log("🔗 [Extract] Extrayendo datos de URL:", url);
+    console.log("👁️ [Extract] Modo preview:", preview ? "SÍ (solo extraer)" : "NO (extraer y guardar)");
 
     // 1. Hacer fetch del HTML de la página
     let htmlContent = "";
@@ -171,7 +172,18 @@ Responde en formato JSON con la estructura exacta:
       );
     }
 
-    // 5. Guardar en datos_mercado_autocaravanas
+    // 5. Si es preview, devolver datos SIN guardar
+    if (preview) {
+      console.log("👁️ [Extract] Modo preview - devolviendo datos sin guardar");
+      return NextResponse.json({
+        success: true,
+        preview: true,
+        ...extractedData,
+      });
+    }
+
+    // 6. Si NO es preview, guardar en datos_mercado_autocaravanas
+    console.log("💾 [Extract] Guardando en base de datos...");
     const dataToInsert = {
       marca: extractedData.marca || null,
       modelo: extractedData.modelo || null,
@@ -198,8 +210,13 @@ Responde en formato JSON con la estructura exacta:
 
     if (insertError) {
       console.error("❌ [Extract] Error insertando dato:", insertError);
+      console.error("❌ [Extract] Detalles del error:", insertError);
       return NextResponse.json(
-        { error: "Error al guardar datos en la base de datos" },
+        { 
+          error: "Error al guardar datos en la base de datos",
+          details: insertError.message,
+          code: insertError.code,
+        },
         { status: 500 }
       );
     }
@@ -219,4 +236,3 @@ Responde en formato JSON con la estructura exacta:
     );
   }
 }
-
