@@ -213,12 +213,13 @@ Responde en formato JSON con la estructura exacta:
 
       if (faltaIEDMT && extractedData.precio) {
         const precioOriginal = extractedData.precio;
-        const precioNormalizado = Math.round(precioOriginal * 1.07);
+        // IEDMT autocaravanas >3.5t = 14,75% (estándar mayoría de vehículos)
+        const precioNormalizado = Math.round(precioOriginal * 1.1475);
         console.log(`💰 [Extract] IEDMT NO INCLUIDO detectado → Normalizando precio`);
         console.log(`   Precio original: ${precioOriginal}€`);
-        console.log(`   Precio normalizado (+7% IEDMT): ${precioNormalizado}€`);
+        console.log(`   Precio normalizado (+14,75% IEDMT): ${precioNormalizado}€`);
         extractedData.precio = precioNormalizado;
-        origenPrecio = "Concesionario (PVP Normalizado +7% IEDMT)";
+        origenPrecio = "Concesionario (PVP Normalizado +14,75% IEDMT)";
       }
     }
 
