@@ -908,19 +908,34 @@ export function MiAutocaravanaTab({ userId }: Props) {
                     </p>
                   </div>
 
-                  {/* Valor actual - siempre visible */}
-                  <div className="bg-green-50 rounded p-2 border border-green-100">
+                  {/* Valor actual / Precio de venta */}
+                  <div className={`rounded p-2 border ${
+                    vehiculo.vendido 
+                      ? 'bg-orange-50 border-orange-100' 
+                      : 'bg-green-50 border-green-100'
+                  }`}>
                     <p className="text-gray-600 text-[10px] mb-0.5">
-                      Valor actual
+                      {vehiculo.vendido ? 'Precio de venta' : 'Valor actual'}
                     </p>
-                    <p className="font-bold text-green-900">
-                      {vehiculo.valor_estimado_actual
-                        ? new Intl.NumberFormat("es-ES", {
-                            style: "currency",
-                            currency: "EUR",
-                            maximumFractionDigits: 0,
-                          }).format(vehiculo.valor_estimado_actual)
-                        : "-"}
+                    <p className={`font-bold ${
+                      vehiculo.vendido ? 'text-orange-900' : 'text-green-900'
+                    }`}>
+                      {vehiculo.vendido 
+                        ? (vehiculo.precio_venta_final
+                            ? new Intl.NumberFormat("es-ES", {
+                                style: "currency",
+                                currency: "EUR",
+                                maximumFractionDigits: 0,
+                              }).format(vehiculo.precio_venta_final)
+                            : "-")
+                        : (vehiculo.valor_estimado_actual
+                            ? new Intl.NumberFormat("es-ES", {
+                                style: "currency",
+                                currency: "EUR",
+                                maximumFractionDigits: 0,
+                              }).format(vehiculo.valor_estimado_actual)
+                            : "-")
+                      }
                     </p>
                   </div>
 
