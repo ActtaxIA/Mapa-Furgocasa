@@ -188,7 +188,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
       const dataToSave = {
         vehiculo_id: vehiculoId,
         user_id: user.id,
-        precio_compra: formData.precio_compra ? parseFloat(formData.precio_compra) : null,
+        precio_compra: formData.precio_compra ? parseInt(formData.precio_compra) : null,
         fecha_compra: formData.fecha_compra || null,
         procedencia: formData.procedencia || null,
         tipo_vendedor: formData.tipo_vendedor || null,
@@ -199,7 +199,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
         // Impuesto de matriculación (nuevo)
         origen_compra: formData.origen_compra || null,
         precio_incluye_impuesto_matriculacion: formData.precio_incluye_impuesto_matriculacion,
-        importe_impuesto_matriculacion: formData.importe_impuesto_matriculacion ? parseFloat(formData.importe_impuesto_matriculacion) : null,
+        importe_impuesto_matriculacion: formData.importe_impuesto_matriculacion ? parseInt(formData.importe_impuesto_matriculacion) : null,
         motivo_exencion_impuesto: formData.motivo_exencion_impuesto || null,
         kilometros_compra: formData.kilometros_compra ? parseInt(formData.kilometros_compra) : null,
         estado_general: formData.estado_general || null,
@@ -211,16 +211,16 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
         tipo_garantia: formData.tipo_garantia || null,
         transferencia_incluida: formData.transferencia_incluida,
         financiado: formData.financiado,
-        importe_financiado: formData.importe_financiado ? parseFloat(formData.importe_financiado) : null,
-        cuota_mensual: formData.cuota_mensual ? parseFloat(formData.cuota_mensual) : null,
+        importe_financiado: formData.importe_financiado ? parseInt(formData.importe_financiado) : null,
+        cuota_mensual: formData.cuota_mensual ? parseInt(formData.cuota_mensual) : null,
         plazo_meses: formData.plazo_meses ? parseInt(formData.plazo_meses) : null,
-        pendiente_pago: formData.pendiente_pago ? parseFloat(formData.pendiente_pago) : null,
+        pendiente_pago: formData.pendiente_pago ? parseInt(formData.pendiente_pago) : null,
         entidad_financiera: formData.entidad_financiera || null,
         tipo_interes: formData.tipo_interes ? parseFloat(formData.tipo_interes) : null,
-        precio_inicial: formData.precio_inicial ? parseFloat(formData.precio_inicial) : null,
-        descuento_aplicado: formData.descuento_aplicado ? parseFloat(formData.descuento_aplicado) : null,
+        precio_inicial: formData.precio_inicial ? parseInt(formData.precio_inicial) : null,
+        descuento_aplicado: formData.descuento_aplicado ? parseInt(formData.descuento_aplicado) : null,
         vehiculo_entregado: formData.vehiculo_entregado,
-        precio_vehiculo_entregado: formData.precio_vehiculo_entregado ? parseFloat(formData.precio_vehiculo_entregado) : null,
+        precio_vehiculo_entregado: formData.precio_vehiculo_entregado ? parseInt(formData.precio_vehiculo_entregado) : null,
         extras_incluidos: formData.extras_incluidos || null,
         notas: formData.notas || null
       }
@@ -260,7 +260,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
               marca: vehiculoData.marca,
               modelo: vehiculoData.modelo,
               año: vehiculoData.ano,
-              precio: parseFloat(formData.precio_compra),
+              precio: parseInt(formData.precio_compra),
               kilometros: formData.kilometros_compra ? parseInt(formData.kilometros_compra) : null,
               fecha_transaccion: formData.fecha_compra,
               verificado: true,
@@ -479,11 +479,11 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
                   <strong>💡 Estimación automática:</strong> Si el precio no incluye el impuesto, 
                   se calculará automáticamente (~14,75% para autocaravanas ≈ {
                     new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' })
-                      .format(parseFloat(formData.precio_compra || '0') * 0.1475)
+                      .format(parseInt(formData.precio_compra || '0') * 0.1475)
                   }).
                   El PVP normalizado será aproximadamente {
                     new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' })
-                      .format(parseFloat(formData.precio_compra || '0') * 1.1475)
+                      .format(parseInt(formData.precio_compra || '0') * 1.1475)
                   }.
                 </div>
               )}

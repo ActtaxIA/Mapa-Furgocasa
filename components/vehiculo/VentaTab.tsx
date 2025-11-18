@@ -70,7 +70,7 @@ export default function VentaTab({ vehiculoId, onVentaRegistrada }: Props) {
       setMensaje(null)
 
       // Convertir precio a número entero (sin decimales) para evitar problemas de precisión
-      const precioEntero = Math.round(parseFloat(formData.precio_venta_final))
+      const precioEntero = parseInt(formData.precio_venta_final)
 
       const response = await fetch(`/api/vehiculos/${vehiculoId}/venta`, {
         method: 'POST',
@@ -110,8 +110,8 @@ export default function VentaTab({ vehiculoId, onVentaRegistrada }: Props) {
 
   const calcularGananciaPerdida = () => {
     if (!datos?.inversion_total || !formData.precio_venta_final) return null
-    // Usar Math.round para evitar problemas de precisión de punto flotante
-    const precioVenta = Math.round(parseFloat(formData.precio_venta_final))
+    // Usar parseInt para evitar problemas de precisión de punto flotante
+    const precioVenta = parseInt(formData.precio_venta_final)
     return precioVenta - datos.inversion_total
   }
 
@@ -444,7 +444,7 @@ export default function VentaTab({ vehiculoId, onVentaRegistrada }: Props) {
                   </div>
                   <div className="flex justify-between border-t pt-2">
                     <span>Precio de venta:</span>
-                    <span className="font-semibold">{Math.round(parseFloat(formData.precio_venta_final)).toLocaleString('es-ES')} €</span>
+                    <span className="font-semibold">{parseInt(formData.precio_venta_final).toLocaleString('es-ES')} €</span>
                   </div>
                 </div>
                 {calcularTiempoPropiedad() && (
