@@ -548,7 +548,50 @@ export default function VehiculoPage() {
       pdf.setTextColor(0, 0, 0);
       yPos = 63;
 
-      // 2. INFORMACIÓN DEL VEHÍCULO EN CAJA CON FONDO
+      // 2. FOTO PRINCIPAL DEL VEHÍCULO
+      const fotoVehiculo = vehiculo?.foto_url || 
+        (vehiculo?.fotos_adicionales && vehiculo.fotos_adicionales.length > 0 
+          ? vehiculo.fotos_adicionales[0] 
+          : null);
+
+      if (fotoVehiculo) {
+        try {
+          // Cargar la foto del vehículo
+          const fotoResponse = await fetch(fotoVehiculo);
+          const fotoBlob = await fotoResponse.blob();
+          const fotoArrayBuffer = await fotoBlob.arrayBuffer();
+          const fotoBase64 = btoa(String.fromCharCode(...new Uint8Array(fotoArrayBuffer)));
+          
+          // Determinar formato de imagen
+          const formatoImagen = fotoVehiculo.toLowerCase().endsWith('.png') ? 'PNG' : 'JPEG';
+          
+          // Añadir foto centrada con tamaño apropiado
+          const fotoWidth = 80;
+          const fotoHeight = 60;
+          const fotoX = (pageWidth - fotoWidth) / 2;
+          
+          // Marco decorativo para la foto
+          pdf.setDrawColor(colorPrimario[0], colorPrimario[1], colorPrimario[2]);
+          pdf.setLineWidth(0.5);
+          pdf.roundedRect(fotoX - 2, yPos - 2, fotoWidth + 4, fotoHeight + 4, 3, 3, 'S');
+          
+          // Añadir la foto
+          pdf.addImage(
+            `data:image/${formatoImagen.toLowerCase()};base64,${fotoBase64}`,
+            formatoImagen,
+            fotoX,
+            yPos,
+            fotoWidth,
+            fotoHeight
+          );
+          
+          yPos += fotoHeight + 10;
+        } catch (error) {
+          console.warn("No se pudo cargar la foto del vehículo:", error);
+        }
+      }
+
+      // 3. INFORMACIÓN DEL VEHÍCULO EN CAJA CON FONDO
       pdf.setFillColor(colorGrisClaro[0], colorGrisClaro[1], colorGrisClaro[2]);
       pdf.roundedRect(margin, yPos - 2, pageWidth - 2 * margin, 44, 2, 2, "F");
 
