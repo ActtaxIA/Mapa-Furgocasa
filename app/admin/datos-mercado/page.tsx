@@ -15,6 +15,10 @@ import {
   XCircleIcon,
   TrashIcon,
   PlusIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 
 interface DatoMercado {
@@ -46,6 +50,12 @@ export default function DatosMercadoPage() {
     type: "success" | "error";
     text: string;
   } | null>(null);
+
+  // 📊 Estados para ordenación y paginación
+  const [sortColumn, setSortColumn] = useState<keyof DatoMercado | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
 
   const router = useRouter();
 
@@ -111,6 +121,67 @@ export default function DatosMercadoPage() {
     }
 
     setFilteredDatos(filtered);
+    setCurrentPage(1); // Reset a página 1 cuando cambian filtros
+  };
+
+  // 🔄 Función de ordenación
+  const handleSort = (column: keyof DatoMercado) => {
+    if (sortColumn === column) {
+      // Si ya está ordenado por esta columna, cambiar dirección
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      // Nueva columna, ordenar descendente por defecto
+      setSortColumn(column);
+      setSortDirection("desc");
+    }
+  };
+
+  // 📄 Aplicar ordenación y paginación
+  const getSortedAndPaginatedData = () => {
+    let sorted = [...filteredDatos];
+
+    // Ordenar
+    if (sortColumn) {
+      sorted.sort((a, b) => {
+        const aVal = a[sortColumn];
+        const bVal = b[sortColumn];
+
+        // Manejar nulos
+        if (aVal === null && bVal === null) return 0;
+        if (aVal === null) return 1;
+        if (bVal === null) return -1;
+
+        // Comparar
+        if (typeof aVal === "string" && typeof bVal === "string") {
+          return sortDirection === "asc"
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+        }
+
+        if (typeof aVal === "number" && typeof bVal === "number") {
+          return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
+        }
+
+        if (typeof aVal === "boolean" && typeof bVal === "boolean") {
+          return sortDirection === "asc"
+            ? (aVal ? 1 : 0) - (bVal ? 1 : 0)
+            : (bVal ? 1 : 0) - (aVal ? 1 : 0);
+        }
+
+        return 0;
+      });
+    }
+
+    // Paginación
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginated = sorted.slice(startIndex, endIndex);
+
+    return {
+      data: paginated,
+      totalPages: Math.ceil(sorted.length / itemsPerPage),
+      totalItems: sorted.length,
+    };
   };
 
   const handleExtractFromUrl = async (e: React.FormEvent) => {
@@ -292,121 +363,337 @@ export default function DatosMercadoPage() {
           </div>
         </div>
 
-        {/* Tabla de datos */}
+        {/* Selector de items por página */}
+        <div className="bg-white rounded-lg shadow p-4 mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">
+              Mostrar:
+            </label>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            <span className="text-sm text-gray-600">registros por página</span>
+          </div>
+          <div className="text-sm text-gray-600">
+            Total: <span className="font-semibold">{filteredDatos.length}</span> registros
+            {(busqueda || filtroVerificado !== "todos") && ` (de ${datos.length} totales)`}
+          </div>
+        </div>
+
+        {/* Tabla de datos con ordenación */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Vehículo
+                  {/* Vehículo */}
+                  <th
+                    onClick={() => handleSort("marca")}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                  >
+                    <div className="flex items-center gap-1">
+                      Vehículo
+                      {sortColumn === "marca" && (
+                        sortDirection === "asc" ? (
+                          <ChevronUpIcon className="w-4 h-4" />
+                        ) : (
+                          <ChevronDownIcon className="w-4 h-4" />
+                        )
+                      )}
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Precio
+                  {/* Precio */}
+                  <th
+                    onClick={() => handleSort("precio")}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                  >
+                    <div className="flex items-center gap-1">
+                      Precio
+                      {sortColumn === "precio" && (
+                        sortDirection === "asc" ? (
+                          <ChevronUpIcon className="w-4 h-4" />
+                        ) : (
+                          <ChevronDownIcon className="w-4 h-4" />
+                        )
+                      )}
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    KM
+                  {/* KM */}
+                  <th
+                    onClick={() => handleSort("kilometros")}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                  >
+                    <div className="flex items-center gap-1">
+                      KM
+                      {sortColumn === "kilometros" && (
+                        sortDirection === "asc" ? (
+                          <ChevronUpIcon className="w-4 h-4" />
+                        ) : (
+                          <ChevronDownIcon className="w-4 h-4" />
+                        )
+                      )}
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Origen
+                  {/* Año */}
+                  <th
+                    onClick={() => handleSort("año")}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                  >
+                    <div className="flex items-center gap-1">
+                      Año
+                      {sortColumn === "año" && (
+                        sortDirection === "asc" ? (
+                          <ChevronUpIcon className="w-4 h-4" />
+                        ) : (
+                          <ChevronDownIcon className="w-4 h-4" />
+                        )
+                      )}
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Estado
+                  {/* Origen */}
+                  <th
+                    onClick={() => handleSort("origen")}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                  >
+                    <div className="flex items-center gap-1">
+                      Origen
+                      {sortColumn === "origen" && (
+                        sortDirection === "asc" ? (
+                          <ChevronUpIcon className="w-4 h-4" />
+                        ) : (
+                          <ChevronDownIcon className="w-4 h-4" />
+                        )
+                      )}
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Fecha
+                  {/* Estado */}
+                  <th
+                    onClick={() => handleSort("estado")}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                  >
+                    <div className="flex items-center gap-1">
+                      Estado
+                      {sortColumn === "estado" && (
+                        sortDirection === "asc" ? (
+                          <ChevronUpIcon className="w-4 h-4" />
+                        ) : (
+                          <ChevronDownIcon className="w-4 h-4" />
+                        )
+                      )}
+                    </div>
                   </th>
+                  {/* Fecha */}
+                  <th
+                    onClick={() => handleSort("created_at")}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                  >
+                    <div className="flex items-center gap-1">
+                      Fecha
+                      {sortColumn === "created_at" && (
+                        sortDirection === "asc" ? (
+                          <ChevronUpIcon className="w-4 h-4" />
+                        ) : (
+                          <ChevronDownIcon className="w-4 h-4" />
+                        )
+                      )}
+                    </div>
+                  </th>
+                  {/* Acciones */}
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Acciones
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredDatos.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="px-6 py-12 text-center text-gray-500"
-                    >
-                      {busqueda || filtroVerificado !== "todos"
-                        ? "No se encontraron resultados"
-                        : "No hay datos de mercado"}
-                    </td>
-                  </tr>
-                ) : (
-                  filteredDatos.map((dato) => (
-                    <tr key={dato.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          {dato.verificado ? (
-                            <CheckCircleIcon className="w-5 h-5 text-green-500 mr-2" />
-                          ) : (
-                            <XCircleIcon className="w-5 h-5 text-orange-400 mr-2" />
-                          )}
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {dato.marca || "-"} {dato.modelo || "-"}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              {dato.año || "Sin año"}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {dato.precio
-                          ? new Intl.NumberFormat("es-ES", {
-                              style: "currency",
-                              currency: "EUR",
-                              maximumFractionDigits: 0,
-                            }).format(dato.precio)
-                          : "-"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {dato.kilometros
-                          ? `${new Intl.NumberFormat("es-ES").format(
-                              dato.kilometros
-                            )} km`
-                          : "-"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {dato.origen || "Desconocido"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {dato.estado || "-"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {dato.fecha_transaccion
-                          ? new Date(dato.fecha_transaccion).toLocaleDateString(
-                              "es-ES"
-                            )
-                          : new Date(dato.created_at).toLocaleDateString("es-ES")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <button
-                          onClick={() => handleDeleteDato(dato.id)}
-                          className="text-red-600 hover:text-red-900 transition-colors"
-                          title="Eliminar"
-                        >
-                          <TrashIcon className="w-5 h-5" />
-                        </button>
+                {(() => {
+                  const { data: paginatedData } = getSortedAndPaginatedData();
+                  return paginatedData.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={8}
+                        className="px-6 py-12 text-center text-gray-500"
+                      >
+                        {busqueda || filtroVerificado !== "todos"
+                          ? "No se encontraron resultados"
+                          : "No hay datos de mercado"}
                       </td>
                     </tr>
-                  ))
-                )}
+                  ) : (
+                    paginatedData.map((dato) => (
+                      <tr key={dato.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            {dato.verificado ? (
+                              <CheckCircleIcon className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
+                            ) : (
+                              <XCircleIcon className="w-5 h-5 text-orange-400 mr-2 flex-shrink-0" />
+                            )}
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {dato.marca || "-"} {dato.modelo || "-"}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {dato.precio
+                            ? new Intl.NumberFormat("es-ES", {
+                                style: "currency",
+                                currency: "EUR",
+                                maximumFractionDigits: 0,
+                              }).format(dato.precio)
+                            : "-"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {dato.kilometros
+                            ? `${new Intl.NumberFormat("es-ES").format(
+                                dato.kilometros
+                              )} km`
+                            : "-"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {dato.año || "-"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {dato.origen || "Desconocido"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {dato.estado || "-"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {dato.fecha_transaccion
+                            ? new Date(dato.fecha_transaccion).toLocaleDateString(
+                                "es-ES"
+                              )
+                            : new Date(dato.created_at).toLocaleDateString("es-ES")}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <button
+                            onClick={() => handleDeleteDato(dato.id)}
+                            className="text-red-600 hover:text-red-900 transition-colors"
+                            title="Eliminar"
+                          >
+                            <TrashIcon className="w-5 h-5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  );
+                })()}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Contador de resultados */}
-        {(busqueda || filtroVerificado !== "todos") && (
-          <div className="mt-4 text-center text-sm text-gray-600">
-            Mostrando {filteredDatos.length} de {datos.length} resultados
-          </div>
-        )}
+        {/* Paginación */}
+        {(() => {
+          const { totalPages, totalItems } = getSortedAndPaginatedData();
+          if (totalPages <= 1) return null;
+
+          const pages = [];
+          const maxVisiblePages = 5;
+          let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+          let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+          if (endPage - startPage < maxVisiblePages - 1) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+          }
+
+          for (let i = startPage; i <= endPage; i++) {
+            pages.push(i);
+          }
+
+          return (
+            <div className="mt-4 flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Mostrando{" "}
+                <span className="font-semibold">
+                  {(currentPage - 1) * itemsPerPage + 1}
+                </span>{" "}
+                -{" "}
+                <span className="font-semibold">
+                  {Math.min(currentPage * itemsPerPage, totalItems)}
+                </span>{" "}
+                de <span className="font-semibold">{totalItems}</span> registros
+              </div>
+
+              <div className="flex items-center gap-2">
+                {/* Botón Anterior */}
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  title="Página anterior"
+                >
+                  <ChevronLeftIcon className="w-5 h-5" />
+                </button>
+
+                {/* Primera página */}
+                {startPage > 1 && (
+                  <>
+                    <button
+                      onClick={() => setCurrentPage(1)}
+                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      1
+                    </button>
+                    {startPage > 2 && <span className="px-2 text-gray-500">...</span>}
+                  </>
+                )}
+
+                {/* Páginas visibles */}
+                {pages.map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-4 py-2 border rounded-lg transition-colors ${
+                      currentPage === page
+                        ? "bg-primary-600 text-white border-primary-600"
+                        : "border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                {/* Última página */}
+                {endPage < totalPages && (
+                  <>
+                    {endPage < totalPages - 1 && <span className="px-2 text-gray-500">...</span>}
+                    <button
+                      onClick={() => setCurrentPage(totalPages)}
+                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      {totalPages}
+                    </button>
+                  </>
+                )}
+
+                {/* Botón Siguiente */}
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  title="Página siguiente"
+                >
+                  <ChevronRightIcon className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Modal Extractor de URL */}
@@ -504,4 +791,3 @@ export default function DatosMercadoPage() {
     </div>
   );
 }
-
