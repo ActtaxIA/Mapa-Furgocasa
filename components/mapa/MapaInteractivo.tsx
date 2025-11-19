@@ -43,6 +43,42 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
   useEffect(() => {
     const initMap = async () => {
       try {
+        // ✅ ESPERAR A QUE EL CONTENEDOR TENGA DIMENSIONES
+        const waitForContainer = (): Promise<void> => {
+          return new Promise((resolve) => {
+            let attempts = 0
+            const maxAttempts = 50 // Máximo 5 segundos (50 * 100ms)
+            
+            const checkSize = () => {
+              if (mapRef.current) {
+                const rect = mapRef.current.getBoundingClientRect()
+                if (rect.width > 0 && rect.height > 0) {
+                  console.log('✅ Contenedor tiene dimensiones:', { width: rect.width, height: rect.height })
+                  resolve()
+                  return
+                }
+              }
+              
+              attempts++
+              if (attempts >= maxAttempts) {
+                console.warn('⚠️ Timeout esperando dimensiones del contenedor, inicializando de todas formas...')
+                resolve()
+                return
+              }
+              
+              // Esperar un frame antes de verificar de nuevo
+              requestAnimationFrame(() => {
+                setTimeout(checkSize, 100)
+              })
+            }
+            
+            // Empezar a verificar después del primer frame
+            requestAnimationFrame(checkSize)
+          })
+        }
+
+        await waitForContainer()
+
         const loader = new Loader({
           apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
           version: 'weekly',
@@ -53,6 +89,14 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
         const google = (window as any).google
         
         if (mapRef.current) {
+          // ✅ VERIFICAR DIMENSIONES UNA VEZ MÁS ANTES DE CREAR EL MAPA
+          const rect = mapRef.current.getBoundingClientRect()
+          if (rect.width === 0 || rect.height === 0) {
+            console.warn('⚠️ Contenedor aún sin dimensiones, reintentando en 200ms...')
+            setTimeout(initMap, 200)
+            return
+          }
+
           console.log('🗺️ Inicializando mapa con centro:', { lat: 40.4168, lng: -3.7038 }, 'zoom:', 6)
           const mapInstance = new Map(mapRef.current, {
             center: { lat: 40.4168, lng: -3.7038 }, // Madrid centro por defecto
@@ -85,6 +129,15 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
           infoWindowRef.current = new google.maps.InfoWindow()
 
           console.log('✅ Mapa inicializado correctamente en Madrid, zoom 6')
+          
+          // ✅ FORZAR RESIZE DEL MAPA PARA ASEGURAR RENDERIZADO CORRECTO
+          // Esto es crítico para la primera carga en PC
+          setTimeout(() => {
+            if (mapInstance && google.maps.event) {
+              google.maps.event.trigger(mapInstance, 'resize')
+              console.log('🔄 Resize del mapa forzado')
+            }
+          }, 150)
         }
       } catch (err) {
         console.error('Error inicializando mapa:', err)
@@ -660,7 +713,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
   return (
     <div className="relative w-full h-full">
       {/* Mapa */}
-      <div ref={mapRef} className="w-full h-full" />
+      <div ref={mapRef} className="w-full h-full min-h-[400px]" />
 
       {/* Botón GPS - Arriba Centro */}
       <button
