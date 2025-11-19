@@ -455,12 +455,12 @@ export default function DatosMercadoPage() {
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="overflow-x-auto max-w-full">
             <table className="min-w-full divide-y divide-gray-200 table-fixed" style={{ minWidth: '1200px' }}>
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm">
                 <tr>
                   {/* Vehículo */}
                   <th
                     onClick={() => handleSort("marca")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-56"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-56 bg-gray-50"
                   >
                     <div className="flex items-center gap-1">
                       Vehículo
@@ -476,7 +476,7 @@ export default function DatosMercadoPage() {
                   {/* Precio */}
                   <th
                     onClick={() => handleSort("precio")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-32"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-32 bg-gray-50"
                   >
                     <div className="flex items-center gap-1">
                       Precio
@@ -492,7 +492,7 @@ export default function DatosMercadoPage() {
                   {/* KM */}
                   <th
                     onClick={() => handleSort("kilometros")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-32"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-32 bg-gray-50"
                   >
                     <div className="flex items-center gap-1">
                       KM
@@ -508,7 +508,7 @@ export default function DatosMercadoPage() {
                   {/* Año */}
                   <th
                     onClick={() => handleSort("año")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-24"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-24 bg-gray-50"
                   >
                     <div className="flex items-center gap-1">
                       Año
@@ -524,7 +524,7 @@ export default function DatosMercadoPage() {
                   {/* Origen */}
                   <th
                     onClick={() => handleSort("origen")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-40"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-40 bg-gray-50"
                   >
                     <div className="flex items-center gap-1">
                       Origen
@@ -540,7 +540,7 @@ export default function DatosMercadoPage() {
                   {/* Estado */}
                   <th
                     onClick={() => handleSort("estado")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-48"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-48 bg-gray-50"
                   >
                     <div className="flex items-center gap-1">
                       Estado
@@ -556,7 +556,7 @@ export default function DatosMercadoPage() {
                   {/* Fecha */}
                   <th
                     onClick={() => handleSort("created_at")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-32"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-32 bg-gray-50"
                   >
                     <div className="flex items-center gap-1">
                       Fecha
@@ -570,7 +570,7 @@ export default function DatosMercadoPage() {
                     </div>
                   </th>
                   {/* Acciones */}
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24 bg-gray-50">
                     Acciones
                   </th>
                 </tr>
