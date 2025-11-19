@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { useDragToScroll } from '@/hooks/useDragToScroll'
 import { Navbar } from '@/components/layout/Navbar'
 import type { Area } from '@/types/database.types'
 import {
@@ -180,6 +181,9 @@ export default function AdminAnalyticsPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<TabType>('general')
   const router = useRouter()
+  
+  // Hook para drag-to-scroll en tabla
+  const { handlers, containerStyle } = useDragToScroll()
 
   useEffect(() => {
     checkAdminAndLoadAnalytics()
@@ -1421,7 +1425,7 @@ export default function AdminAnalyticsPage() {
       {/* Sistema de Tabs - Similar al perfil de usuario */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden sticky top-0 z-20">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" style={containerStyle} {...handlers}>
             <div className="flex border-b border-gray-200">
               <button
                 onClick={() => setActiveTab('general')}

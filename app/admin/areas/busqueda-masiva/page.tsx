@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { useDragToScroll } from '@/hooks/useDragToScroll'
 import { Navbar } from '@/components/layout/Navbar'
 import Link from 'next/link'
 import {
@@ -254,6 +255,9 @@ export default function BusquedaMasivaPage() {
   const [existingAreas, setExistingAreas] = useState<Set<string>>(new Set())
   const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info', text: string } | null>(null)
   const [importing, setImporting] = useState(false)
+  
+  // Hook para drag-to-scroll en tabla
+  const { handlers, containerStyle } = useDragToScroll()
 
   // Estado para búsqueda en mapa
   const [mapSearchQuery, setMapSearchQuery] = useState('')
@@ -1260,7 +1264,7 @@ export default function BusquedaMasivaPage() {
 
             {/* Lista de resultados del mapa */}
             <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto" style={containerStyle} {...handlers}>
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
@@ -1395,7 +1399,7 @@ export default function BusquedaMasivaPage() {
 
             {/* Lista de resultados */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto" style={containerStyle} {...handlers}>
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>

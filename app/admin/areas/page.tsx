@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { DeleteConfirmModal } from '@/components/ui/DeleteConfirmModal'
+import { useDragToScroll } from '@/hooks/useDragToScroll'
 import Link from 'next/link'
 import * as XLSX from 'xlsx'
 import {
@@ -114,6 +115,9 @@ export default function AdminAreasPage() {
   const [bulkDeleteModal, setBulkDeleteModal] = useState(false)
   const [itemsPorPagina, setItemsPorPagina] = useState(10)
   const router = useRouter()
+  
+  // Hook para drag-to-scroll en tabla
+  const { handlers, containerStyle } = useDragToScroll()
 
   useEffect(() => {
     checkAdminAndLoadAreas()
@@ -843,7 +847,7 @@ export default function AdminAreasPage() {
 
         {/* Tabla mejorada de áreas */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" style={containerStyle} {...handlers}>
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
