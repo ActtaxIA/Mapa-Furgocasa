@@ -1,0 +1,38 @@
+# Normalizar line endings para todos los archivos de texto
+* text=auto
+
+# Forzar LF para archivos de código
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.sql text eol=lf
+*.txt text eol=lf
+*.sh text eol=lf
+*.bat text eol=crlf
+*.config.js text eol=lf
+*.config.ts text eol=lf
+
+# Archivos binarios
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.db binary
+*.pem binary
+
+# Archivos que NO deben ser rastreados por Git (ya en .gitignore pero por si acaso)
+next-env.d.ts -text
+
