@@ -1,0 +1,24 @@
+{
+  // Formatear solo al guardar, NO al abrir
+  "editor.formatOnSave": true,
+  "editor.formatOnOpen": false,
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+  
+  // EditorConfig - aplicar solo al guardar
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  
+  // No modificar archivos automáticamente al abrirlos
+  "files.trimTrailingWhitespace": false,
+  "files.insertFinalNewline": false,
+  
+  // TypeScript/JavaScript
+  "typescript.format.enable": true,
+  "javascript.format.enable": true,
+  
+  // Prevenir modificaciones automáticas innecesarias
+  "files.autoSave": "off",
+  "editor.trimAutoWhitespace": false
+}
