@@ -211,7 +211,7 @@ export default function HomePage() {
               </div>
 
               {/* Grid de características */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
                   <div className="text-3xl mb-3">🤖</div>
                   <p className="font-bold text-gray-900 mb-1">Valoración IA</p>
@@ -242,6 +242,17 @@ export default function HomePage() {
                   <p className="font-bold text-gray-900 mb-1">Gestión Fotos</p>
                   <p className="text-sm text-gray-600">Galería completa</p>
                 </div>
+              </div>
+
+              {/* CTA para más información */}
+              <div className="text-center">
+                <Link
+                  href="/valoracion-ia-vehiculos"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-[#0b3c74] text-white rounded-xl font-bold text-lg hover:bg-[#0d4a8f] transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                >
+                  <SparklesIcon className="w-5 h-5 mr-2" />
+                  Conoce más sobre Valoración IA
+                </Link>
               </div>
             </div>
           </div>
@@ -276,7 +287,7 @@ export default function HomePage() {
               </div>
 
               {/* Grid de características */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
                   <div className="flex items-start gap-4">
                     <div className="text-3xl">🚨</div>
@@ -313,6 +324,17 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* CTA para más información */}
+              <div className="text-center">
+                <Link
+                  href="/sistema-reporte-accidentes"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-red-600 text-white rounded-xl font-bold text-lg hover:bg-red-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                >
+                  <ShieldCheckIcon className="w-5 h-5 mr-2" />
+                  Descubre el Sistema de Alertas
+                </Link>
               </div>
             </div>
           </div>
