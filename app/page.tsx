@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { InstallAppCTA } from '@/components/ui/InstallAppCTA'
 import {
   MapIcon,
   MapPinIcon,
@@ -596,6 +597,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Sección Instalar App Móvil */}
+      <InstallAppCTA />
 
       <Footer />
     </div>
