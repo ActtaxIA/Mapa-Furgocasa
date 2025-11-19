@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useDragToScroll } from '@/hooks/useDragToScroll'
 import {
   ChevronUpIcon,
   ChevronDownIcon,
@@ -48,6 +49,9 @@ export function AdminTable<T extends Record<string, any>>({
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>(initialSortDirection)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
+  
+  // Hook para drag-to-scroll en tabla
+  const { handlers, containerStyle } = useDragToScroll()
 
   // Filtrar datos según búsqueda
   const filteredData = useMemo(() => {
@@ -241,7 +245,7 @@ export function AdminTable<T extends Record<string, any>>({
       </div>
 
       {/* Tabla */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" style={containerStyle} {...handlers}>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
