@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
@@ -59,14 +59,18 @@ export default function DatosMercadoPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
 
-  // 🖱️ Estados para drag-to-scroll
+  // 🖱️ Estados para drag-to-scroll (scroll suave como móvil)
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [velocity, setVelocity] = useState(0);
+  const [lastX, setLastX] = useState(0);
+  const [lastTime, setLastTime] = useState(0);
+  const animationFrameRef = useRef<number | null>(null);
 
   const router = useRouter();
 
-  // 🖱️ Funciones para drag-to-scroll
+  // 🖱️ Funciones para drag-to-scroll con inercia (como móvil)
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     // No activar drag si se hace click en un botón o enlace
     const target = e.target as HTMLElement;
@@ -78,12 +82,22 @@ export default function DatosMercadoPage() {
     setIsDragging(true);
     setStartX(e.pageX - container.offsetLeft);
     setScrollLeft(container.scrollLeft);
+    setLastX(e.pageX);
+    setLastTime(Date.now());
+    setVelocity(0);
     container.style.cursor = 'grabbing';
     container.style.userSelect = 'none';
+    
+    // Cancelar cualquier animación de inercia en curso
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
   };
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isDragging) {
+      applyInertia(e.currentTarget);
       setIsDragging(false);
       e.currentTarget.style.cursor = 'grab';
     }
@@ -91,6 +105,7 @@ export default function DatosMercadoPage() {
 
   const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isDragging) {
+      applyInertia(e.currentTarget);
       setIsDragging(false);
       e.currentTarget.style.cursor = 'grab';
     }
@@ -99,10 +114,47 @@ export default function DatosMercadoPage() {
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isDragging) return;
     e.preventDefault();
+    
     const container = e.currentTarget;
     const x = e.pageX - container.offsetLeft;
-    const walk = (x - startX) * 2; // Multiplicar por 2 para scroll más rápido
+    const currentTime = Date.now();
+    
+    // Calcular velocidad para la inercia
+    const deltaX = e.pageX - lastX;
+    const deltaTime = currentTime - lastTime;
+    
+    if (deltaTime > 0) {
+      setVelocity(deltaX / deltaTime);
+    }
+    
+    setLastX(e.pageX);
+    setLastTime(currentTime);
+    
+    // Scroll directo (1:1 como en móvil)
+    const walk = x - startX;
     container.scrollLeft = scrollLeft - walk;
+  };
+
+  // Aplicar inercia después de soltar (efecto momentum como en móvil)
+  const applyInertia = (container: HTMLDivElement) => {
+    let currentVelocity = velocity * 50; // Amplificar velocidad
+    const friction = 0.92; // Fricción para desacelerar gradualmente
+    const minVelocity = 0.5; // Velocidad mínima antes de detenerse
+    
+    const animate = () => {
+      if (Math.abs(currentVelocity) < minVelocity) {
+        return; // Detener animación
+      }
+      
+      container.scrollLeft -= currentVelocity;
+      currentVelocity *= friction; // Aplicar fricción
+      
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+    
+    if (Math.abs(currentVelocity) >= minVelocity) {
+      animate();
+    }
   };
 
   useEffect(() => {
@@ -499,7 +551,13 @@ export default function DatosMercadoPage() {
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div 
             className="overflow-x-auto" 
-            style={{ width: '100%', maxWidth: '100%', cursor: 'grab' }}
+            style={{ 
+              width: '100%', 
+              maxWidth: '100%', 
+              cursor: 'grab',
+              WebkitOverflowScrolling: 'touch', // Scroll suave en webkit (Safari)
+              scrollBehavior: 'auto' // Auto para drag manual, smooth se aplica en inercia
+            }}
             onMouseDown={handleMouseDown}
             onMouseLeave={handleMouseLeave}
             onMouseUp={handleMouseUp}
