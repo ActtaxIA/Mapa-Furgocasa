@@ -59,7 +59,51 @@ export default function DatosMercadoPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
 
+  // 🖱️ Estados para drag-to-scroll
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
   const router = useRouter();
+
+  // 🖱️ Funciones para drag-to-scroll
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    // No activar drag si se hace click en un botón o enlace
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a') || target.closest('th')) {
+      return;
+    }
+    
+    const container = e.currentTarget;
+    setIsDragging(true);
+    setStartX(e.pageX - container.offsetLeft);
+    setScrollLeft(container.scrollLeft);
+    container.style.cursor = 'grabbing';
+    container.style.userSelect = 'none';
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isDragging) {
+      setIsDragging(false);
+      e.currentTarget.style.cursor = 'grab';
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isDragging) {
+      setIsDragging(false);
+      e.currentTarget.style.cursor = 'grab';
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const container = e.currentTarget;
+    const x = e.pageX - container.offsetLeft;
+    const walk = (x - startX) * 2; // Multiplicar por 2 para scroll más rápido
+    container.scrollLeft = scrollLeft - walk;
+  };
 
   useEffect(() => {
     checkAdminAndLoad();
@@ -453,7 +497,14 @@ export default function DatosMercadoPage() {
 
         {/* Tabla de datos con ordenación */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto" style={{ width: '100%', maxWidth: '100%' }}>
+          <div 
+            className="overflow-x-auto" 
+            style={{ width: '100%', maxWidth: '100%', cursor: 'grab' }}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+          >
             <table className="divide-y divide-gray-200" style={{ width: '100%', minWidth: '1400px', tableLayout: 'fixed' }}>
               <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm">
                 <tr>
