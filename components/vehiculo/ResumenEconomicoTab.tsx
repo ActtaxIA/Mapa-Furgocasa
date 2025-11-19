@@ -10,6 +10,7 @@ import {
   SparklesIcon,
   ChartBarIcon
 } from '@heroicons/react/24/outline'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Area, AreaChart } from 'recharts'
 
 interface Props {
   vehiculoId: string
@@ -27,14 +28,25 @@ interface ResumenData {
   vendido: boolean | null
   precio_venta_final: number | null
   fecha_venta: string | null
+  fecha_compra: string | null
+}
+
+interface ValoracionIA {
+  id: string
+  fecha_valoracion: string
+  precio_objetivo: number
+  precio_salida: number
+  precio_minimo: number
 }
 
 export function ResumenEconomicoTab({ vehiculoId }: Props) {
   const [loading, setLoading] = useState(true)
   const [resumen, setResumen] = useState<ResumenData | null>(null)
+  const [valoracionesIA, setValoracionesIA] = useState<ValoracionIA[]>([])
 
   useEffect(() => {
     loadResumen()
+    loadValoraciones()
   }, [vehiculoId])
 
   const loadResumen = async () => {
@@ -56,6 +68,20 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
     }
   }
 
+  const loadValoraciones = async () => {
+    try {
+      const response = await fetch(`/api/vehiculos/${vehiculoId}/ia-valoracion`)
+      if (!response.ok) {
+        console.error('Error cargando valoraciones:', response.statusText)
+        return
+      }
+      const data = await response.json()
+      setValoracionesIA(data.informes || [])
+    } catch (error) {
+      console.error('Error cargando valoraciones:', error)
+    }
+  }
+
   // Función para formatear números sin decimales (formato español: 55.000)
   const formatCurrency = (value: number | null) => {
     if (value === null || value === undefined) return '-'
@@ -66,6 +92,52 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
     if (value === null || value === undefined) return '-'
     return `${value.toFixed(2)}%`
   }
+
+  // Preparar datos para el gráfico de evolución del valor
+  const prepararDatosGrafico = () => {
+    const puntos: any[] = []
+
+    // 1. Punto inicial: Precio de compra
+    if (resumen?.precio_compra && resumen.fecha_compra) {
+      puntos.push({
+        fecha: new Date(resumen.fecha_compra).getTime(),
+        fechaLabel: new Date(resumen.fecha_compra).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+        valor: resumen.precio_compra,
+        tipo: 'Compra',
+        descripcion: 'Precio de compra inicial'
+      })
+    }
+
+    // 2. Puntos intermedios: Valoraciones IA (ordenadas cronológicamente)
+    valoracionesIA
+      .sort((a, b) => new Date(a.fecha_valoracion).getTime() - new Date(b.fecha_valoracion).getTime())
+      .forEach((val, index) => {
+        puntos.push({
+          fecha: new Date(val.fecha_valoracion).getTime(),
+          fechaLabel: new Date(val.fecha_valoracion).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+          valor: val.precio_objetivo,
+          tipo: `Valoración ${index + 1}`,
+          descripcion: `Valoración IA (${val.precio_objetivo.toLocaleString('es-ES')} €)`
+        })
+      })
+
+    // 3. Punto final: Precio de venta (si está vendido)
+    if (resumen?.vendido && resumen.precio_venta_final && resumen.fecha_venta) {
+      puntos.push({
+        fecha: new Date(resumen.fecha_venta).getTime(),
+        fechaLabel: new Date(resumen.fecha_venta).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+        valor: resumen.precio_venta_final,
+        tipo: 'Venta',
+        descripcion: 'Precio de venta final'
+      })
+    }
+
+    // Ordenar por fecha
+    return puntos.sort((a, b) => a.fecha - b.fecha)
+  }
+
+  const datosGrafico = prepararDatosGrafico()
+  const tieneHistorialValor = datosGrafico.length >= 2
 
   if (loading) {
     return (
@@ -194,6 +266,168 @@ export function ResumenEconomicoTab({ vehiculoId }: Props) {
                 <div className="text-right">
                   <p className="text-sm text-gray-600">Pérdida de valor estimada por año</p>
                   <p className="text-xs text-gray-500 mt-1">Basado en precio de compra</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Gráfico de Evolución del Valor */}
+          {tieneHistorialValor && (
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border-2 border-indigo-200 p-6 shadow-lg">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <ChartBarIcon className="w-6 h-6 text-indigo-600" />
+                    Evolución del Valor del Vehículo
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Historial de precio desde la compra{valoracionesIA.length > 0 && ' con valoraciones'}{resumen?.vendido && ' hasta la venta'}
+                  </p>
+                </div>
+                <div className="hidden sm:flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <span className="text-xs text-gray-600">Compra</span>
+                  </div>
+                  {valoracionesIA.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                      <span className="text-xs text-gray-600">Valoraciones</span>
+                    </div>
+                  )}
+                  {resumen?.vendido && (
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      <span className="text-xs text-gray-600">Venta</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg p-4 border border-indigo-100">
+                <ResponsiveContainer width="100%" height={350}>
+                  <AreaChart data={datosGrafico} margin={{ top: 10, right: 30, left: 0, bottom: 50 }}>
+                    <defs>
+                      <linearGradient id="colorValor" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis 
+                      dataKey="fechaLabel" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      tick={{ fontSize: 12, fill: '#6b7280' }}
+                    />
+                    <YAxis 
+                      tickFormatter={(value) => `${(value / 1000).toFixed(0)}k €`}
+                      tick={{ fontSize: 12, fill: '#6b7280' }}
+                      domain={['dataMin - 2000', 'dataMax + 2000']}
+                    />
+                    <Tooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload[0]) {
+                          const data = payload[0].payload
+                          return (
+                            <div className="bg-white border-2 border-indigo-200 rounded-lg p-3 shadow-lg">
+                              <p className="font-semibold text-gray-900 mb-1">{data.tipo}</p>
+                              <p className="text-sm text-gray-600">{data.fechaLabel}</p>
+                              <p className="text-lg font-bold text-indigo-600 mt-1">
+                                {data.valor.toLocaleString('es-ES')} €
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">{data.descripcion}</p>
+                            </div>
+                          )
+                        }
+                        return null
+                      }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="valor" 
+                      stroke="#8b5cf6" 
+                      strokeWidth={3}
+                      fill="url(#colorValor)"
+                      dot={(props: any) => {
+                        const { cx, cy, payload } = props
+                        let fill = '#3b82f6' // azul por defecto (compra)
+                        if (payload.tipo === 'Venta') fill = '#10b981' // verde (venta)
+                        else if (payload.tipo.includes('Valoración')) fill = '#8b5cf6' // morado (valoración)
+                        
+                        return (
+                          <circle 
+                            cx={cx} 
+                            cy={cy} 
+                            r={6} 
+                            fill={fill}
+                            stroke="white"
+                            strokeWidth={2}
+                          />
+                        )
+                      }}
+                      activeDot={{ r: 8 }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Estadísticas del gráfico */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+                <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                  <p className="text-xs text-blue-700 font-semibold mb-1">Precio Inicial</p>
+                  <p className="text-lg font-bold text-blue-900">
+                    {formatCurrency(datosGrafico[0]?.valor)}
+                  </p>
+                </div>
+                <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                  <p className="text-xs text-purple-700 font-semibold mb-1">Valoraciones</p>
+                  <p className="text-lg font-bold text-purple-900">
+                    {valoracionesIA.length}
+                  </p>
+                </div>
+                <div className={`rounded-lg p-3 border ${
+                  resumen?.vendido 
+                    ? 'bg-green-50 border-green-200' 
+                    : 'bg-indigo-50 border-indigo-200'
+                }`}>
+                  <p className={`text-xs font-semibold mb-1 ${
+                    resumen?.vendido ? 'text-green-700' : 'text-indigo-700'
+                  }`}>
+                    {resumen?.vendido ? 'Precio Venta' : 'Valor Actual'}
+                  </p>
+                  <p className={`text-lg font-bold ${
+                    resumen?.vendido ? 'text-green-900' : 'text-indigo-900'
+                  }`}>
+                    {formatCurrency(datosGrafico[datosGrafico.length - 1]?.valor)}
+                  </p>
+                </div>
+                <div className={`rounded-lg p-3 border ${
+                  (datosGrafico[datosGrafico.length - 1]?.valor || 0) < (datosGrafico[0]?.valor || 0)
+                    ? 'bg-red-50 border-red-200'
+                    : 'bg-emerald-50 border-emerald-200'
+                }`}>
+                  <p className={`text-xs font-semibold mb-1 ${
+                    (datosGrafico[datosGrafico.length - 1]?.valor || 0) < (datosGrafico[0]?.valor || 0)
+                      ? 'text-red-700'
+                      : 'text-emerald-700'
+                  }`}>
+                    Variación Total
+                  </p>
+                  <p className={`text-lg font-bold ${
+                    (datosGrafico[datosGrafico.length - 1]?.valor || 0) < (datosGrafico[0]?.valor || 0)
+                      ? 'text-red-900'
+                      : 'text-emerald-900'
+                  }`}>
+                    {(() => {
+                      const inicial = datosGrafico[0]?.valor || 0
+                      const final = datosGrafico[datosGrafico.length - 1]?.valor || 0
+                      const diferencia = final - inicial
+                      const porcentaje = inicial > 0 ? ((diferencia / inicial) * 100).toFixed(1) : 0
+                      return `${diferencia >= 0 ? '+' : ''}${porcentaje}%`
+                    })()}
+                  </p>
                 </div>
               </div>
             </div>
