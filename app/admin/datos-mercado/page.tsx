@@ -453,14 +453,14 @@ export default function DatosMercadoPage() {
 
         {/* Tabla de datos con ordenación */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+          <div className="overflow-x-auto max-w-full">
+            <table className="min-w-full divide-y divide-gray-200 table-fixed" style={{ minWidth: '1200px' }}>
               <thead className="bg-gray-50">
                 <tr>
                   {/* Vehículo */}
                   <th
                     onClick={() => handleSort("marca")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-56"
                   >
                     <div className="flex items-center gap-1">
                       Vehículo
@@ -476,7 +476,7 @@ export default function DatosMercadoPage() {
                   {/* Precio */}
                   <th
                     onClick={() => handleSort("precio")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-32"
                   >
                     <div className="flex items-center gap-1">
                       Precio
@@ -492,7 +492,7 @@ export default function DatosMercadoPage() {
                   {/* KM */}
                   <th
                     onClick={() => handleSort("kilometros")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-32"
                   >
                     <div className="flex items-center gap-1">
                       KM
@@ -508,7 +508,7 @@ export default function DatosMercadoPage() {
                   {/* Año */}
                   <th
                     onClick={() => handleSort("año")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-24"
                   >
                     <div className="flex items-center gap-1">
                       Año
@@ -524,7 +524,7 @@ export default function DatosMercadoPage() {
                   {/* Origen */}
                   <th
                     onClick={() => handleSort("origen")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-40"
                   >
                     <div className="flex items-center gap-1">
                       Origen
@@ -540,7 +540,7 @@ export default function DatosMercadoPage() {
                   {/* Estado */}
                   <th
                     onClick={() => handleSort("estado")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-48"
                   >
                     <div className="flex items-center gap-1">
                       Estado
@@ -556,7 +556,7 @@ export default function DatosMercadoPage() {
                   {/* Fecha */}
                   <th
                     onClick={() => handleSort("created_at")}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-32"
                   >
                     <div className="flex items-center gap-1">
                       Fecha
@@ -570,7 +570,7 @@ export default function DatosMercadoPage() {
                     </div>
                   </th>
                   {/* Acciones */}
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                     Acciones
                   </th>
                 </tr>
@@ -592,15 +592,15 @@ export default function DatosMercadoPage() {
                   ) : (
                     paginatedData.map((dato) => (
                       <tr key={dato.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4">
                           <div className="flex items-center">
                             {dato.verificado ? (
                               <CheckCircleIcon className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
                             ) : (
                               <XCircleIcon className="w-5 h-5 text-orange-400 mr-2 flex-shrink-0" />
                             )}
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">
+                            <div className="min-w-0 flex-1">
+                              <div className="text-sm font-medium text-gray-900 truncate" title={`${dato.marca || "-"} ${dato.modelo || "-"}`}>
                                 {dato.marca || "-"} {dato.modelo || "-"}
                               </div>
                             </div>
@@ -625,13 +625,15 @@ export default function DatosMercadoPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {dato.año || "-"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 max-w-full truncate" title={dato.origen || "Desconocido"}>
                             {dato.origen || "Desconocido"}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {dato.estado || "-"}
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-gray-900 truncate" title={dato.estado || "-"}>
+                            {dato.estado || "-"}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {dato.fecha_transaccion
