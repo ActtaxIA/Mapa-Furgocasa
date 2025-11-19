@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useDragToScroll } from '@/hooks/useDragToScroll'
 import { Navbar } from '@/components/layout/Navbar'
+import Link from 'next/link'
 import type { Area } from '@/types/database.types'
 import {
   MapPinIcon,
@@ -14,7 +15,8 @@ import {
   StarIcon,
   ChartBarIcon,
   ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon
+  ArrowTrendingDownIcon,
+  ArrowLeftIcon
 } from '@heroicons/react/24/outline'
 
 interface AnalyticsData {
@@ -1410,6 +1412,13 @@ export default function AdminAnalyticsPage() {
 
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <Link
+            href="/admin"
+            className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 mb-4"
+          >
+            <ArrowLeftIcon className="w-5 h-5" />
+            Volver al Panel
+          </Link>
           <div className="flex items-center gap-3">
             <ChartBarIcon className="w-8 h-8 text-sky-600" />
             <div>
