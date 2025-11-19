@@ -453,8 +453,8 @@ export default function DatosMercadoPage() {
 
         {/* Tabla de datos con ordenación */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto max-w-full">
-            <table className="min-w-full divide-y divide-gray-200 table-fixed" style={{ minWidth: '1200px' }}>
+          <div className="overflow-x-auto" style={{ width: '100%', maxWidth: '100%' }}>
+            <table className="divide-y divide-gray-200" style={{ width: '100%', minWidth: '1400px', tableLayout: 'fixed' }}>
               <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm">
                 <tr>
                   {/* Vehículo */}
