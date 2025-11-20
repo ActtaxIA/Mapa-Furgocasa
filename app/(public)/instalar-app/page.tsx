@@ -26,13 +26,15 @@ export default function InstalarAppPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 mb-8 transition-colors"
-          >
-            <ArrowLeftIcon className="w-4 h-4" />
-            Volver al inicio
-          </Link>
+          <div className="mb-12">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 transition-colors"
+            >
+              <ArrowLeftIcon className="w-4 h-4" />
+              Volver al inicio
+            </Link>
+          </div>
           
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-700 rounded-3xl mb-6 shadow-lg">
             <DevicePhoneMobileIcon className="w-12 h-12 text-white" />
