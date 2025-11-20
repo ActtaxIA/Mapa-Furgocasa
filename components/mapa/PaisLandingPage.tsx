@@ -182,13 +182,22 @@ export function PaisLandingPage({ pais }: PaisLandingPageProps) {
             {/* Mapa con altura fija */}
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-gray-200">
               <div style={{ height: '600px' }}>
-                <MapaInteractivo 
-                  areas={areas}
-                  loading={loading}
-                  paisFiltrado={pais.nombre}
-                  centroInicial={{ lat: pais.lat, lng: pais.lng }}
-                  zoomInicial={6}
-                />
+                {loading ? (
+                  <div className="flex items-center justify-center h-full bg-gray-50">
+                    <div className="text-center">
+                      <div className="animate-spin w-12 h-12 border-4 border-[#0b3c74] border-t-transparent rounded-full mx-auto mb-4"></div>
+                      <p className="text-gray-600">Cargando mapa...</p>
+                    </div>
+                  </div>
+                ) : (
+                  <MapaInteractivo 
+                    areas={areas}
+                    areaSeleccionada={areaMejorValorada}
+                    onAreaClick={(area) => {
+                      window.location.href = `/area/${area.slug}`
+                    }}
+                  />
+                )}
               </div>
             </div>
 
