@@ -193,16 +193,53 @@ async function procesarValoracionIA(
         .order("fecha_compra", { ascending: false })
         .limit(40); // Aumentado para tener más datos reales
 
-      // Buscar datos de mercado scrapeados
-      const { data: datosMercado, error: errorMercado } = await (
-        supabase as any
-      )
+      // 🚗 FILTRADO POR CHASIS: Crítico para valoraciones precisas
+      // Un Mercedes Sprinter cuesta 30.000€ más que un Fiat Ducato base
+      const chasisVehiculo = (vehiculo.chasis || '').toLowerCase();
+      
+      // Grupos de chasis equivalentes en precio
+      const chasisEconomicos = ['fiat', 'ducato', 'citroën', 'citroen', 'jumper', 'peugeot', 'boxer'];
+      const chasisMedios = ['volkswagen', 'vw', 'crafter', 'ford', 'transit', 'renault', 'master'];
+      const chasisPremium = ['mercedes', 'sprinter'];
+      
+      let grupoChasis = 'todos';
+      if (chasisEconomicos.some(c => chasisVehiculo.includes(c))) {
+        grupoChasis = 'economico';
+      } else if (chasisMedios.some(c => chasisVehiculo.includes(c))) {
+        grupoChasis = 'medio';
+      } else if (chasisPremium.some(c => chasisVehiculo.includes(c))) {
+        grupoChasis = 'premium';
+      }
+      
+      console.log(`   🚗 Chasis del vehículo: "${vehiculo.chasis || 'No especificado'}" → Grupo: ${grupoChasis}`);
+      
+      // Buscar datos de mercado scrapeados - FILTRADOS POR GRUPO DE CHASIS
+      let queryMercado = (supabase as any)
         .from("datos_mercado_autocaravanas")
         .select("*")
         .eq("verificado", true)
-        .not("precio", "is", null)
+        .not("precio", "is", null);
+      
+      // Aplicar filtro de chasis si corresponde
+      if (grupoChasis !== 'todos' && vehiculo.chasis) {
+        // Buscar comparables con chasis del mismo grupo
+        const chasisGrupo = grupoChasis === 'economico' ? chasisEconomicos :
+                           grupoChasis === 'medio' ? chasisMedios :
+                           chasisPremium;
+        
+        console.log(`   🔍 Filtrando comparables por chasis similar: ${chasisGrupo.join(', ')}`);
+        
+        // Construir OR conditions para chasis similares
+        // Nota: Permitimos también null para no excluir datos históricos sin chasis
+        const orConditions = chasisGrupo.map(c => `chasis.ilike.%${c}%`).join(',');
+        queryMercado = queryMercado.or(`chasis.is.null,${orConditions}`);
+      } else {
+        console.log(`   ℹ️  Sin filtro de chasis (vehículo sin chasis especificado o grupo desconocido)`);
+      }
+      
+      const { data: datosMercado, error: errorMercado } = await queryMercado
         .order("created_at", { ascending: false })
-        .limit(20);
+        .limit(30); // Aumentado a 30 porque algunos serán filtrados
 
       let comparablesInternos = [];
 
@@ -711,10 +748,11 @@ async function procesarValoracionIA(
       year: "numeric",
     });
 
-    const datosVehiculo = `- Marca/Chasis: ${
+    const datosVehiculo = `- Marca Camperizador: ${
       vehiculo.marca || "No especificado"
     }
 - Modelo: ${vehiculo.modelo || "No especificado"}
+- Chasis (vehículo base): ${vehiculo.chasis || "No especificado"}
 - Tipo: ${vehiculo.tipo_vehiculo || "Autocaravana"}
 - Matrícula: ${vehiculo.matricula || "No especificado"}
 - Motor: ${ficha?.motor || "No especificado"}

@@ -25,6 +25,7 @@ interface DatoMercado {
   id: string;
   marca: string | null;
   modelo: string | null;
+  chasis: string | null;
   año: number | null;
   precio: number | null;
   kilometros: number | null;
@@ -543,7 +544,7 @@ export default function DatosMercadoPage() {
           </div>
           <div className="text-sm text-gray-600">
             Total: <span className="font-semibold">{filteredDatos.length}</span> registros
-            {(busqueda || filtroVerificado !== "todos") && ` (de ${datos.length} totales)`}
+            {            (busqueda || filtroVerificado !== "todos") && ` (de ${datos.length} totales)`}
           </div>
         </div>
 
@@ -563,7 +564,7 @@ export default function DatosMercadoPage() {
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
           >
-            <table className="divide-y divide-gray-200" style={{ width: '100%', minWidth: '1400px', tableLayout: 'fixed' }}>
+            <table className="divide-y divide-gray-200" style={{ width: '100%', minWidth: '1600px', tableLayout: 'fixed' }}>
               <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm">
                 <tr>
                   {/* Vehículo */}
@@ -574,6 +575,22 @@ export default function DatosMercadoPage() {
                     <div className="flex items-center gap-1">
                       Vehículo
                       {sortColumn === "marca" && (
+                        sortDirection === "asc" ? (
+                          <ChevronUpIcon className="w-4 h-4" />
+                        ) : (
+                          <ChevronDownIcon className="w-4 h-4" />
+                        )
+                      )}
+                    </div>
+                  </th>
+                  {/* Chasis */}
+                  <th
+                    onClick={() => handleSort("chasis")}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none w-40 bg-gray-50"
+                  >
+                    <div className="flex items-center gap-1">
+                      Chasis
+                      {sortColumn === "chasis" && (
                         sortDirection === "asc" ? (
                           <ChevronUpIcon className="w-4 h-4" />
                         ) : (
@@ -690,7 +707,7 @@ export default function DatosMercadoPage() {
                   return paginatedData.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={8}
+                        colSpan={9}
                         className="px-6 py-12 text-center text-gray-500"
                       >
                         {busqueda || filtroVerificado !== "todos"
@@ -714,6 +731,11 @@ export default function DatosMercadoPage() {
                               </div>
                             </div>
                           </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 max-w-full truncate" title={dato.chasis || "No especificado"}>
+                            {dato.chasis || "-"}
+                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {dato.precio
@@ -997,6 +1019,16 @@ export default function DatosMercadoPage() {
                     </label>
                     <p className="text-lg font-bold text-gray-900">
                       {extractedData.modelo || <span className="text-gray-400">-</span>}
+                    </p>
+                  </div>
+
+                  {/* Chasis */}
+                  <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
+                    <label className="block text-xs font-medium text-indigo-700 uppercase mb-1">
+                      Chasis
+                    </label>
+                    <p className="text-lg font-bold text-indigo-900">
+                      {extractedData.chasis || <span className="text-gray-400">-</span>}
                     </p>
                   </div>
 

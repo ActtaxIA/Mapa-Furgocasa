@@ -106,32 +106,52 @@ export async function POST(request: NextRequest) {
       apiKey: process.env.OPENAI_API_KEY,
     });
 
-    const prompt = `Eres un experto extractor de datos de anuncios de autocaravanas/furgonetas camper.
+    const prompt = `Eres un experto en autocaravanas y furgonetas camper.
 
-A partir del siguiente texto de un anuncio, extrae la siguiente información:
+IMPORTANTE: Las autocaravanas tienen DOS marcas diferentes:
+1. MARCA DEL CAMPERIZADOR (quien construye el interior): Hymer, Weinsberg, Knaus, Dethleffs, Rapido, Bürstner, Adria, Roller Team, Benimar, Carado, Pilote, etc.
+2. CHASIS (vehículo base/motorización): Fiat Ducato, Mercedes Sprinter, Citroën Jumper, Peugeot Boxer, Volkswagen Crafter, Ford Transit, Renault Master, etc.
 
-- marca: Marca de la autocaravana (ej: Adria, Weinsberg, Giottivan, Hymer, Bürstner, Fiat, Peugeot, etc.)
-- modelo: Modelo completo (ej: Twin Plus 600, Cara One 550, MC Louis Menfys Van 3, etc.)
+EXTRAE LA SIGUIENTE INFORMACIÓN DEL ANUNCIO:
+
+- marca: Marca del CAMPERIZADOR/FABRICANTE del interior (ej: Hymer, Weinsberg, Knaus, Dethleffs, Rapido, Adria, Bürstner, Roller Team, Benimar, MC Louis, etc.)
+- modelo: Modelo del camperizador (ej: Free 600, CaraOne 540, Twin Plus 600, etc.)
+- chasis: Marca y modelo del VEHÍCULO BASE (ej: "Fiat Ducato", "Mercedes Sprinter", "Citroën Jumper", "Peugeot Boxer", "Volkswagen Crafter", "Ford Transit")
 - año: Año de fabricación (número de 4 dígitos)
 - precio: Precio de venta en euros (número entero, sin símbolos)
 - kilometros: Kilometraje actual (número entero, sin símbolos)
-- estado: Estado del vehículo (ej: "Usado", "Seminuevo", "Como nuevo", "Ocasión")
+- estado: Estado del vehículo (ej: "Usado", "Seminuevo", "Como nuevo", "Ocasión", "Nuevo")
 
-REGLAS IMPORTANTES:
-1. Si no encuentras un dato, devuelve null para ese campo
-2. Para el precio, si ves "desde" o "a partir de", usa ese valor
-3. Para kilometraje, busca variantes como "km", "kms", "kilómetros"
-4. El año debe ser entre 1990 y 2030
-5. El precio debe ser mayor a 5000€
-6. Devuelve SOLO un objeto JSON válido, sin texto adicional
+REGLAS CRÍTICAS:
+1. **CHASIS**: Busca términos como "sobre Fiat", "base Mercedes", "motorización Ducato", "chasis Sprinter", "140CV", "2.3L"
+2. Si NO encuentras un dato específico, devuelve null
+3. Si solo hay UN fabricante mencionado (ej: "Fiat Ducato camperizada"), usa ese en AMBOS campos (marca Y chasis)
+4. **Marcas camperizadoras comunes**: Hymer, Weinsberg, Knaus, Dethleffs, Rapido, Bürstner, Adria, Roller Team, Pilote, Rimor, Benimar, Giottivan, MC Louis, Carado, Sunlight
+5. **Chasis comunes**: Fiat Ducato, Mercedes Sprinter, Citroën Jumper, Peugeot Boxer, Volkswagen Crafter, Ford Transit, Renault Master
+6. El precio debe ser mayor a 5000€
+7. Devuelve SOLO JSON válido, sin texto adicional
+
+EJEMPLOS CORRECTOS:
+- "Hymer Free 600 sobre Fiat Ducato 140CV" 
+  → marca: "Hymer", modelo: "Free 600", chasis: "Fiat Ducato"
+
+- "Weinsberg CaraOne 540 MQ - Mercedes Sprinter 319"
+  → marca: "Weinsberg", modelo: "CaraOne 540 MQ", chasis: "Mercedes Sprinter"
+
+- "Knaus BoxStar 600 con base Peugeot Boxer"
+  → marca: "Knaus", modelo: "BoxStar 600", chasis: "Peugeot Boxer"
+
+- "Fiat Ducato L2H2 camperizada profesional"
+  → marca: "Fiat", modelo: "Ducato L2H2", chasis: "Fiat Ducato"
 
 TEXTO DEL ANUNCIO:
 ${textSnippet}
 
-Responde en formato JSON con la estructura exacta:
+Responde en formato JSON:
 {
   "marca": "...",
   "modelo": "...",
+  "chasis": "...",
   "año": ...,
   "precio": ...,
   "kilometros": ...,
@@ -274,6 +294,7 @@ Responde en formato JSON con la estructura exacta:
     const dataToInsert = {
       marca: extractedData.marca || null,
       modelo: extractedData.modelo || null,
+      chasis: extractedData.chasis || null,
       año: extractedData.año || null,
       precio: extractedData.precio || null,
       kilometros: extractedData.kilometros || null,

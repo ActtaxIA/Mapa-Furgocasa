@@ -1128,7 +1128,7 @@ export default function VehiculoPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Marca
+                          Marca Camperizador
                         </label>
                         <input
                           type="text"
@@ -1137,7 +1137,7 @@ export default function VehiculoPage() {
                             setEditData({ ...editData, marca: e.target.value })
                           }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                          placeholder="Ej: Fiat, Volkswagen..."
+                          placeholder="Ej: Hymer, Weinsberg, Knaus..."
                         />
                       </div>
 
@@ -1152,7 +1152,22 @@ export default function VehiculoPage() {
                             setEditData({ ...editData, modelo: e.target.value })
                           }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                          placeholder="Ej: Ducato, California..."
+                          placeholder="Ej: Free 600, CaraOne 540..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Chasis (Vehículo Base)
+                        </label>
+                        <input
+                          type="text"
+                          value={editData.chasis || ''}
+                          onChange={(e) =>
+                            setEditData({ ...editData, chasis: e.target.value })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          placeholder="Ej: Fiat Ducato, Mercedes Sprinter..."
                         />
                       </div>
 

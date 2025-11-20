@@ -279,7 +279,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     try {
       const { data: vehiculoData } = await (supabase as any)
         .from('vehiculos_registrados')
-        .select('marca, modelo, ano')
+        .select('marca, modelo, ano, chasis')
         .eq('id', vehiculoId)
         .single()
 
@@ -289,6 +289,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           .insert({
             marca: vehiculoData.marca,
             modelo: vehiculoData.modelo,
+            chasis: vehiculoData.chasis,
             año: vehiculoData.ano,
             precio: precioNumero,
             kilometros: dataToSave.kilometros_venta || null,

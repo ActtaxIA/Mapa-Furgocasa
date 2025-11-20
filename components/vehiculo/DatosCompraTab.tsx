@@ -249,7 +249,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
       try {
         const { data: vehiculoData } = await (supabase as any)
           .from('vehiculos_registrados')
-          .select('marca, modelo, ano')
+          .select('marca, modelo, ano, chasis')
           .eq('id', vehiculoId)
           .single()
 
@@ -259,6 +259,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
             .insert({
               marca: vehiculoData.marca,
               modelo: vehiculoData.modelo,
+              chasis: vehiculoData.chasis,
               año: vehiculoData.ano,
               precio: parseInt(formData.precio_compra),
               kilometros: formData.kilometros_compra ? parseInt(formData.kilometros_compra) : null,

@@ -394,6 +394,7 @@ export interface GastoAdicionalFormData {
 export interface DatoMercado {
   marca: string
   modelo: string
+  chasis?: string
   año: number
   tipo_dato: 'compra' | 'venta' | 'venta_anuncio'
   precio: number
