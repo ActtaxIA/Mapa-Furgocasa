@@ -135,7 +135,7 @@ export function PaisLandingPage({ pais }: PaisLandingPageProps) {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 max-w-3xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Todo para tu viaje en {pais.terminología === 'autocaravanas' ? 'autocaravana' : 'casa rodante'} por {pais.nombre}
+              Todo para tu viaje en {pais.terminologia === 'autocaravanas' ? 'autocaravana' : 'casa rodante'} por {pais.nombre}
             </h2>
             <p className="text-xl text-gray-600">
               Planifica, descubre y disfruta con toda la información que necesitas
