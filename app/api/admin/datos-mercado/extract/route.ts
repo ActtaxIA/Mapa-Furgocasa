@@ -207,8 +207,24 @@ Responde en formato JSON:
     // 4. Validar datos extraídos
     if (!extractedData.marca || !extractedData.precio) {
       console.warn("⚠️ [Extract] Datos insuficientes:", extractedData);
+      
+      // Mensaje específico según qué falta
+      let errorMsg = "No se pudo extraer ";
+      const missing = [];
+      if (!extractedData.marca) missing.push("marca");
+      if (!extractedData.precio) missing.push("precio");
+      errorMsg += missing.join(" y ") + " del anuncio";
+      
+      // Agregar más contexto si falta el precio
+      if (!extractedData.precio && extractedData.marca) {
+        errorMsg += ". El anuncio puede tener precio 'bajo consulta' o no estar visible en el HTML.";
+      }
+      
       return NextResponse.json(
-        { error: "No se pudo extraer marca y precio del anuncio" },
+        { 
+          error: errorMsg,
+          extracted: extractedData // Devolver lo que sí se extrajo para debug
+        },
         { status: 400 }
       );
     }
