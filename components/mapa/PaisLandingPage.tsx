@@ -22,21 +22,20 @@ interface PaisLandingPageProps {
 }
 
 export function PaisLandingPage({ pais }: PaisLandingPageProps) {
-  const [totalAreas, setTotalAreas] = useState(0)
-  const [loading, setLoading] = useState(true)
+  const [totalAreas, setTotalAreas] = useState(1000) // Total global de áreas
 
   useEffect(() => {
     cargarTotalAreas()
-  }, [pais.nombre])
+  }, [])
 
   const cargarTotalAreas = async () => {
     try {
       const supabase = createClient()
       
+      // Cargar total de TODAS las áreas de la app (igual que home)
       const { count, error } = await (supabase as any)
         .from('areas')
         .select('*', { count: 'exact', head: true })
-        .eq('pais', pais.nombre)
         .eq('activo', true)
 
       if (!error && count) {
@@ -44,8 +43,6 @@ export function PaisLandingPage({ pais }: PaisLandingPageProps) {
       }
     } catch (err) {
       console.error('Error:', err)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -112,9 +109,7 @@ export function PaisLandingPage({ pais }: PaisLandingPageProps) {
             {/* Stats cards */}
             <div className="grid grid-cols-3 gap-4 max-w-3xl mx-auto">
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl py-6 border border-white/20">
-                <div className="text-4xl md:text-5xl font-bold text-white mb-1">
-                  {loading ? '...' : `+${totalAreas}`}
-                </div>
+                <div className="text-4xl md:text-5xl font-bold text-white mb-1">+{totalAreas}</div>
                 <div className="text-sm text-white/80">Áreas Verificadas</div>
               </div>
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl py-6 border border-white/20">
@@ -149,10 +144,10 @@ export function PaisLandingPage({ pais }: PaisLandingPageProps) {
                 <MapPinIcon className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                {loading ? '...' : `+${totalAreas} Áreas`} en {pais.nombre}
+                +{totalAreas} Áreas Actualizadas
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Base de datos completa con áreas públicas, privadas, campings y parkings. Información verificada de servicios, precios y ubicaciones exactas en {pais.nombre}.
+                Base de datos completa con áreas públicas, privadas, campings y parkings en {pais.nombre} y más países. Información verificada de servicios, precios y ubicaciones exactas.
               </p>
             </div>
 
