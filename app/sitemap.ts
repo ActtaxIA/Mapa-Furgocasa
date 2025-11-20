@@ -107,6 +107,126 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
+  // Landing pages SEO por país (16 Europa + 3 Sudamérica = 19 páginas)
+  const paisesLandingPages: MetadataRoute.Sitemap = [
+    // Europa (16 países) - autocaravanas
+    {
+      url: `${baseUrl}/mapa-autocaravanas-espana`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9, // España es el principal
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-francia`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-portugal`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-italia`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-alemania`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-paises-bajos`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.75,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-belgica`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.75,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-suiza`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.75,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-austria`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.75,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-noruega`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.75,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-suecia`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.75,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-dinamarca`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-luxemburgo`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.65,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-andorra`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-eslovenia`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/mapa-autocaravanas-chequia`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    // Sudamérica (3 países) - casas rodantes
+    {
+      url: `${baseUrl}/mapa-casas-rodantes-argentina`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/mapa-casas-rodantes-chile`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/mapa-casas-rodantes-uruguay`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+  ]
+
   // URLs dinámicas de áreas
   const areaPages: MetadataRoute.Sitemap = areas
     ? areas.map((area: any) => ({
@@ -117,6 +237,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
     : []
 
-  return [...staticPages, ...areaPages]
+  return [...staticPages, ...paisesLandingPages, ...areaPages]
 }
 
