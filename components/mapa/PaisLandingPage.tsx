@@ -191,7 +191,7 @@ export function PaisLandingPage({ pais }: PaisLandingPageProps) {
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Consejos para viajar en {pais.terminología === 'autocaravanas' ? 'autocaravana' : 'casa rodante'} por {pais.nombre}
+                Consejos para viajar en {pais.terminologia === 'autocaravanas' ? 'autocaravana' : 'casa rodante'} por {pais.nombre}
               </h2>
               <p className="text-xl text-gray-600">
                 Información práctica y regulaciones locales
