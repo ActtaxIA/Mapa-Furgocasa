@@ -66,13 +66,13 @@ export function PaisLandingPage({ pais }: PaisLandingPageProps) {
   const estadisticas = useMemo(() => {
     if (areas.length === 0) return null
 
-    const conValoracion = areas.filter(a => a.valoracion_media && a.valoracion_media > 0)
+    const conValoracion = areas.filter(a => a.google_rating && a.google_rating > 0)
     const promedioValoracion = conValoracion.length > 0
-      ? (conValoracion.reduce((sum, a) => sum + (a.valoracion_media || 0), 0) / conValoracion.length).toFixed(1)
+      ? (conValoracion.reduce((sum, a) => sum + (a.google_rating || 0), 0) / conValoracion.length).toFixed(1)
       : 'N/A'
 
-    const gratuitas = areas.filter(a => !a.precio || a.precio === 0 || a.precio === '0').length
-    const dePago = areas.filter(a => a.precio && parseFloat(a.precio.toString()) > 0).length
+    const gratuitas = areas.filter(a => !a.precio_noche || a.precio_noche === 0).length
+    const dePago = areas.filter(a => a.precio_noche && a.precio_noche > 0).length
 
     return {
       total: areas.length,
@@ -259,14 +259,14 @@ export function PaisLandingPage({ pais }: PaisLandingPageProps) {
                           <MapPinIcon className="w-4 h-4" />
                           {areaMejorValorada.ciudad}, {areaMejorValorada.provincia}
                         </div>
-                        {areaMejorValorada.valoracion_media && (
+                        {areaMejorValorada.google_rating && (
                           <div className="flex items-center gap-1">
                             <StarSolid className="w-5 h-5 text-yellow-500" />
                             <span className="font-bold text-gray-900">
-                              {areaMejorValorada.valoracion_media.toFixed(1)}
+                              {areaMejorValorada.google_rating.toFixed(1)}
                             </span>
                             <span className="text-sm text-gray-500">
-                              ({areaMejorValorada.numero_valoraciones || 0} valoraciones)
+                              (Google Rating)
                             </span>
                           </div>
                         )}
