@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
     const dataToInsert = {
       marca: extractedData.marca || null,
       modelo: extractedData.modelo || null,
+      chasis: extractedData.chasis || null,
       año: extractedData.año || null,
       precio: extractedData.precio || null,
       kilometros: extractedData.kilometros || null,
