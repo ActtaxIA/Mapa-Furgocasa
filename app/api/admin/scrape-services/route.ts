@@ -364,6 +364,73 @@ export async function POST(request: NextRequest) {
       serviciosFinales[servicio] = serviciosDetectados[servicio] === true
     })
 
+    // 🔧 LÓGICA DE INFERENCIA: Deducir servicios relacionados
+    console.log('🧠 [SCRAPE] Aplicando lógica de inferencia...')
+    let serviciosInferidos = 0
+
+    // REGLA 1: Si hay agua → probablemente hay vaciados
+    if (serviciosFinales['agua'] === true) {
+      if (serviciosFinales['vaciado_aguas_negras'] !== true) {
+        console.log('   💡 [SCRAPE] Inferencia: Agua → vaciado aguas negras')
+        serviciosFinales['vaciado_aguas_negras'] = true
+        serviciosInferidos++
+      }
+      if (serviciosFinales['vaciado_aguas_grises'] !== true) {
+        console.log('   💡 [SCRAPE] Inferencia: Agua → vaciado aguas grises')
+        serviciosFinales['vaciado_aguas_grises'] = true
+        serviciosInferidos++
+      }
+    }
+
+    // REGLA 2: Si hay duchas → seguro hay WC y agua
+    if (serviciosFinales['duchas'] === true) {
+      if (serviciosFinales['wc'] !== true) {
+        console.log('   💡 [SCRAPE] Inferencia: Duchas → WC')
+        serviciosFinales['wc'] = true
+        serviciosInferidos++
+      }
+      if (serviciosFinales['agua'] !== true) {
+        console.log('   💡 [SCRAPE] Inferencia: Duchas → agua')
+        serviciosFinales['agua'] = true
+        serviciosInferidos++
+      }
+      if (serviciosFinales['vaciado_aguas_negras'] !== true) {
+        console.log('   💡 [SCRAPE] Inferencia: Duchas → vaciado aguas negras')
+        serviciosFinales['vaciado_aguas_negras'] = true
+        serviciosInferidos++
+      }
+      if (serviciosFinales['vaciado_aguas_grises'] !== true) {
+        console.log('   💡 [SCRAPE] Inferencia: Duchas → vaciado aguas grises')
+        serviciosFinales['vaciado_aguas_grises'] = true
+        serviciosInferidos++
+      }
+    }
+
+    // REGLA 3: Si hay WC → probablemente hay agua
+    if (serviciosFinales['wc'] === true && serviciosFinales['agua'] !== true) {
+      console.log('   💡 [SCRAPE] Inferencia: WC → agua')
+      serviciosFinales['agua'] = true
+      serviciosInferidos++
+    }
+
+    // REGLA 4: Si hay electricidad + agua → área de servicio completa
+    if (serviciosFinales['electricidad'] === true && serviciosFinales['agua'] === true) {
+      if (serviciosFinales['vaciado_aguas_negras'] !== true) {
+        console.log('   💡 [SCRAPE] Inferencia: Electricidad + Agua → vaciado aguas negras')
+        serviciosFinales['vaciado_aguas_negras'] = true
+        serviciosInferidos++
+      }
+      if (serviciosFinales['vaciado_aguas_grises'] !== true) {
+        console.log('   💡 [SCRAPE] Inferencia: Electricidad + Agua → vaciado aguas grises')
+        serviciosFinales['vaciado_aguas_grises'] = true
+        serviciosInferidos++
+      }
+    }
+
+    if (serviciosInferidos > 0) {
+      console.log(`   ✅ [SCRAPE] ${serviciosInferidos} servicio(s) añadido(s) por inferencia`)
+    }
+
     // Contar servicios detectados
     const totalServicios = Object.values(serviciosFinales).filter((v: any) => v === true).length
     const serviciosEncontrados = Object.entries(serviciosFinales)

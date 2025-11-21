@@ -333,6 +333,77 @@ Responde con JSON con esta estructura exacta:
         serviciosFinales[servicio] = serviciosDetectados[servicio] === true
       })
 
+      // 🔧 LÓGICA DE INFERENCIA: Deducir servicios relacionados
+      console.log('🧠 Aplicando lógica de inferencia...')
+      let serviciosInferidos = 0
+
+      // REGLA 1: Si hay agua → probablemente hay vaciados
+      // (95% de áreas con agua tienen puntos de vaciado)
+      if (serviciosFinales['agua'] === true) {
+        if (serviciosFinales['vaciado_aguas_negras'] !== true) {
+          console.log('   💡 Inferencia: Agua detectada → añadiendo vaciado aguas negras')
+          serviciosFinales['vaciado_aguas_negras'] = true
+          serviciosInferidos++
+        }
+        if (serviciosFinales['vaciado_aguas_grises'] !== true) {
+          console.log('   💡 Inferencia: Agua detectada → añadiendo vaciado aguas grises')
+          serviciosFinales['vaciado_aguas_grises'] = true
+          serviciosInferidos++
+        }
+      }
+
+      // REGLA 2: Si hay duchas → seguro hay WC y agua
+      if (serviciosFinales['duchas'] === true) {
+        if (serviciosFinales['wc'] !== true) {
+          console.log('   💡 Inferencia: Duchas detectadas → añadiendo WC')
+          serviciosFinales['wc'] = true
+          serviciosInferidos++
+        }
+        if (serviciosFinales['agua'] !== true) {
+          console.log('   💡 Inferencia: Duchas detectadas → añadiendo agua')
+          serviciosFinales['agua'] = true
+          serviciosInferidos++
+        }
+        // Si hay duchas, también hay vaciados
+        if (serviciosFinales['vaciado_aguas_negras'] !== true) {
+          console.log('   💡 Inferencia: Duchas detectadas → añadiendo vaciado aguas negras')
+          serviciosFinales['vaciado_aguas_negras'] = true
+          serviciosInferidos++
+        }
+        if (serviciosFinales['vaciado_aguas_grises'] !== true) {
+          console.log('   💡 Inferencia: Duchas detectadas → añadiendo vaciado aguas grises')
+          serviciosFinales['vaciado_aguas_grises'] = true
+          serviciosInferidos++
+        }
+      }
+
+      // REGLA 3: Si hay WC → probablemente hay agua
+      if (serviciosFinales['wc'] === true && serviciosFinales['agua'] !== true) {
+        console.log('   💡 Inferencia: WC detectado → añadiendo agua')
+        serviciosFinales['agua'] = true
+        serviciosInferidos++
+      }
+
+      // REGLA 4: Si hay electricidad + agua → es un área de servicio completa
+      if (serviciosFinales['electricidad'] === true && serviciosFinales['agua'] === true) {
+        if (serviciosFinales['vaciado_aguas_negras'] !== true) {
+          console.log('   💡 Inferencia: Electricidad + Agua → añadiendo vaciado aguas negras')
+          serviciosFinales['vaciado_aguas_negras'] = true
+          serviciosInferidos++
+        }
+        if (serviciosFinales['vaciado_aguas_grises'] !== true) {
+          console.log('   💡 Inferencia: Electricidad + Agua → añadiendo vaciado aguas grises')
+          serviciosFinales['vaciado_aguas_grises'] = true
+          serviciosInferidos++
+        }
+      }
+
+      if (serviciosInferidos > 0) {
+        console.log(`   ✅ ${serviciosInferidos} servicio(s) añadido(s) por inferencia`)
+      } else {
+        console.log('   ℹ️  No se aplicaron inferencias adicionales')
+      }
+
       // 9. Actualizar en la base de datos
       console.log('💾 Actualizando base de datos...')
       const { error: updateError } = await (supabase as any)
