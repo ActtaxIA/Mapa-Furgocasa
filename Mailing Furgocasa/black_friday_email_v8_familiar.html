@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Friday 2025 - Familiar</title>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+        
+        .email-container {
+            max-width: 650px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .header-fun {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #ffecd2 100%);
+            padding: 50px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .emoji-float {
+            position: absolute;
+            font-size: 40px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .emoji-1 { top: 20px; left: 30px; animation-delay: 0s; }
+        .emoji-2 { top: 40px; right: 40px; animation-delay: 1s; }
+        .emoji-3 { bottom: 30px; left: 50px; animation-delay: 2s; }
+        .emoji-4 { bottom: 20px; right: 60px; animation-delay: 1.5s; }
+        
+        .header-fun h1 {
+            font-size: 48px;
+            margin: 0 0 15px 0;
+            color: #ff6b6b;
+            text-shadow: 3px 3px 0px rgba(255,255,255,0.5);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header-fun p {
+            font-size: 22px;
+            color: #333333;
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .content {
+            padding: 50px 40px;
+        }
+        
+        .intro-text {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .intro-text h2 {
+            font-size: 32px;
+            color: #ff6b6b;
+            margin: 0 0 20px 0;
+        }
+        
+        .intro-text p {
+            font-size: 18px;
+            line-height: 1.7;
+            color: #555555;
+            margin: 0;
+        }
+        
+        .memory-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .memory-card {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 30px 20px;
+            border-radius: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .memory-card:hover {
+            transform: translateY(-10px) rotate(-2deg);
+        }
+        
+        .memory-card .icon {
+            font-size: 50px;
+            display: block;
+            margin-bottom: 15px;
+            animation: spin 10s linear infinite;
+        }
+        
+        .memory-card h3 {
+            font-size: 20px;
+            color: #ff6b6b;
+            margin: 0 0 10px 0;
+        }
+        
+        .memory-card p {
+            font-size: 15px;
+            color: #666666;
+            margin: 0;
+        }
+        
+        .big-offer {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            color: #ffffff;
+            padding: 50px 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .big-offer::before {
+            content: "🎈";
+            position: absolute;
+            font-size: 150px;
+            opacity: 0.2;
+            top: -40px;
+            left: -40px;
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .big-offer::after {
+            content: "🎉";
+            position: absolute;
+            font-size: 150px;
+            opacity: 0.2;
+            bottom: -40px;
+            right: -40px;
+            animation: float 5s ease-in-out infinite;
+        }
+        
+        .big-offer h2 {
+            font-size: 48px;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .big-offer p {
+            font-size: 22px;
+            margin: 15px 0 0 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .family-benefits {
+            background-color: #fff9e6;
+            padding: 40px 30px;
+            border-radius: 20px;
+            margin: 40px 0;
+            border: 3px dashed #ff6b6b;
+        }
+        
+        .family-benefits h3 {
+            font-size: 28px;
+            color: #ff6b6b;
+            text-align: center;
+            margin: 0 0 30px 0;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            animation: slideInRight 0.8s ease-out;
+        }
+        
+        .benefit-item .emoji {
+            font-size: 40px;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .benefit-item .text {
+            flex-grow: 1;
+        }
+        
+        .benefit-item h4 {
+            font-size: 18px;
+            color: #333333;
+            margin: 0 0 5px 0;
+        }
+        
+        .benefit-item p {
+            font-size: 15px;
+            color: #666666;
+            margin: 0;
+        }
+        
+        .image-family {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .image-family img {
+            max-width: 300px;
+            height: auto;
+            border-radius: 20px;
+            border: 5px solid #ff6b6b;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            transition: transform 0.5s ease;
+        }
+        
+        .image-family img:hover {
+            transform: scale(1.05) rotate(-3deg);
+        }
+        
+        .testimonial {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 40px 0;
+            border-left: 5px solid #ff6b6b;
+            font-style: italic;
+        }
+        
+        .testimonial p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #555555;
+            margin: 0 0 15px 0;
+        }
+        
+        .testimonial .author {
+            font-size: 14px;
+            color: #ff6b6b;
+            font-weight: bold;
+            text-align: right;
+            font-style: normal;
+        }
+        
+        .cta-family {
+            text-align: center;
+            padding: 50px 0;
+        }
+        
+        .cta-family h2 {
+            font-size: 32px;
+            color: #333333;
+            margin: 0 0 30px 0;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 20px 50px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(255, 107, 107, 0.6);
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333333;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .footer .hearts {
+            font-size: 24px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header-fun">
+            <div class="emoji-float emoji-1">🚐</div>
+            <div class="emoji-float emoji-2">🏖️</div>
+            <div class="emoji-float emoji-3">⛰️</div>
+            <div class="emoji-float emoji-4">🌟</div>
+            
+            <h1>🎊 Black Friday Familiar 🎊</h1>
+            <p>¡Crea recuerdos inolvidables!</p>
+        </div>
+        
+        <div class="content">
+            <div class="intro-text">
+                <h2>💖 Momentos que duran para siempre</h2>
+                <p>
+                    ¿Recuerdas los viajes de tu infancia? Ahora tú puedes crear esos recuerdos 
+                    mágicos para tu familia. Cada aventura es una historia que contarán durante años.
+                </p>
+            </div>
+            
+            <div class="memory-cards">
+                <div class="memory-card">
+                    <span class="icon">🌅</span>
+                    <h3>Amaneceres juntos</h3>
+                    <p>Despertarse en lugares nuevos</p>
+                </div>
+                
+                <div class="memory-card">
+                    <span class="icon">🏕️</span>
+                    <h3>Noches de estrellas</h3>
+                    <p>Acampar bajo el cielo</p>
+                </div>
+                
+                <div class="memory-card">
+                    <span class="icon">🍳</span>
+                    <h3>Desayunos especiales</h3>
+                    <p>En la playa o la montaña</p>
+                </div>
+                
+                <div class="memory-card">
+                    <span class="icon">🎲</span>
+                    <h3>Juegos en familia</h3>
+                    <p>Sin pantallas, con risas</p>
+                </div>
+            </div>
+            
+            <div class="big-offer">
+                <h2>🎁 25% OFF 🎁</h2>
+                <p>¡Porque las familias merecen aventuras!</p>
+            </div>
+            
+            <div class="family-benefits">
+                <h3>🌈 Lo que tu familia ganará:</h3>
+                
+                <div class="benefit-item">
+                    <span class="emoji">👨‍👩‍👧‍👦</span>
+                    <div class="text">
+                        <h4>Más tiempo juntos</h4>
+                        <p>Sin distracciones, solo vosotros y la aventura</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <span class="emoji">🎒</span>
+                    <div class="text">
+                        <h4>Educación viajera</h4>
+                        <p>Tus hijos aprenderán más que en cualquier libro</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <span class="emoji">💰</span>
+                    <div class="text">
+                        <h4>Ahorro increíble</h4>
+                        <p>Hasta 15.000€ de descuento + pack familiar gratis</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <span class="emoji">🛡️</span>
+                    <div class="text">
+                        <h4>Tranquilidad total</h4>
+                        <p>Seguro familia incluido y asistencia 24/7</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="image-family">
+                <img src="https://www.mapafurgocasa.com/black_friday_2025.png" alt="Tu nueva vida familiar">
+            </div>
+            
+            <div class="testimonial">
+                <p>
+                    "El mejor regalo que le hicimos a nuestros hijos. Cada fin de semana es una aventura 
+                    nueva. Ver sus caritas de felicidad cuando llegamos a un lugar diferente... ¡no tiene precio!"
+                </p>
+                <p class="author">- Familia González, clientes Furgocasa 2024</p>
+            </div>
+            
+            <div class="cta-family">
+                <h2>🚀 ¡Comienza vuestra aventura!</h2>
+                <a href="https://www.mapafurgocasa.com" class="cta-button">Ver Ofertas Familiares</a>
+            </div>
+            
+            <div style="text-align: center; font-size: 16px; color: #666666; margin-top: 30px;">
+                ⏰ Oferta válida hasta el 30/11/2025<br>
+                🎁 Incluye pack familiar de accesorios (valor 2.000€)
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p style="font-size: 24px; font-weight: bold; color: #ff6b6b;">FURGOCASA</p>
+            <div class="hearts">❤️ 💛 💚 💙 💜</div>
+            <p>Creando familias viajeras felices</p>
+            <p>www.mapafurgocasa.com | info@mapafurgocasa.com</p>
+        </div>
+    </div>
+</body>
+</html>
+
