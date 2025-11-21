@@ -279,7 +279,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     try {
       const { data: vehiculoData } = await (supabase as any)
         .from('vehiculos_registrados')
-        .select('marca, modelo, ano, chasis')
+        .select('marca, modelo, año, chasis')
         .eq('id', vehiculoId)
         .single()
 
@@ -290,7 +290,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             marca: vehiculoData.marca,
             modelo: vehiculoData.modelo,
             chasis: vehiculoData.chasis,
-            año: vehiculoData.ano,
+            año: vehiculoData.año,
             precio: precioNumero,
             kilometros: dataToSave.kilometros_venta || null,
             fecha_transaccion: fecha_venta.trim(),
@@ -308,7 +308,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         if (errorMercado) {
           console.warn('⚠️ [Venta API] No se pudo guardar en datos_mercado (no crítico):', errorMercado.message)
         } else {
-          console.log('✅ [Venta API] Venta guardada en datos_mercado_autocaravanas')
+          console.log('✅ [Venta API] Venta guardada en datos_mercado_autocaravanas con precio:', precioNumero)
         }
       }
     } catch (mercadoError: any) {

@@ -249,19 +249,29 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
       try {
         const { data: vehiculoData } = await (supabase as any)
           .from('vehiculos_registrados')
-          .select('marca, modelo, ano, chasis')
+          .select('marca, modelo, año, chasis')
           .eq('id', vehiculoId)
           .single()
 
         if (vehiculoData && formData.precio_compra && formData.fecha_compra) {
+          // Calcular precio normalizado (con impuesto incluido si aplica)
+          const precioCompraNumero = parseFloat(formData.precio_compra)
+          let precioNormalizado = precioCompraNumero
+          
+          // Si el precio NO incluye impuesto de matriculación, calcular PVP base
+          if (!formData.precio_incluye_impuesto_matriculacion) {
+            const tasaImpuesto = 0.1472 // 14.72% (impuesto de matriculación España)
+            precioNormalizado = precioCompraNumero * (1 + tasaImpuesto)
+          }
+
           const { error: errorMercado } = await (supabase as any)
             .from('datos_mercado_autocaravanas')
             .insert({
               marca: vehiculoData.marca,
               modelo: vehiculoData.modelo,
               chasis: vehiculoData.chasis,
-              año: vehiculoData.ano,
-              precio: parseInt(formData.precio_compra),
+              año: vehiculoData.año,
+              precio: precioNormalizado,
               kilometros: formData.kilometros_compra ? parseInt(formData.kilometros_compra) : null,
               fecha_transaccion: formData.fecha_compra,
               verificado: true,
@@ -278,7 +288,7 @@ export function DatosCompraTab({ vehiculoId, onDataSaved }: Props) {
           if (errorMercado) {
             console.warn('⚠️ No se pudo guardar en datos_mercado (no crítico):', errorMercado.message)
           } else {
-            console.log('✅ Compra guardada en datos_mercado_autocaravanas')
+            console.log('✅ Compra guardada en datos_mercado_autocaravanas con precio:', precioNormalizado)
           }
         }
       } catch (mercadoError) {
