@@ -497,3 +497,5 @@ export function getPaisBySLug(slug: string): PaisSEO | undefined {
 export const PAISES_EUROPA = Object.values(PAISES_SEO_CONFIG).filter(p => p.region === 'europa')
 export const PAISES_SUDAMERICA = Object.values(PAISES_SEO_CONFIG).filter(p => p.region === 'sudamerica')
 
+
+

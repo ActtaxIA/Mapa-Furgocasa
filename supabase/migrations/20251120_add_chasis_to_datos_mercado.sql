@@ -24,3 +24,4 @@ La "marca" es del camperizador (Hymer, Weinsberg, Knaus), el "chasis" es del fab
 -- Mensaje de confirmación
 SELECT 'Columna chasis agregada correctamente a datos_mercado_autocaravanas' as mensaje;
 
+

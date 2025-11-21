@@ -30,3 +30,5 @@ export default function UruguayPage() {
   return <PaisLandingPage pais={pais} />
 }
 
+
+

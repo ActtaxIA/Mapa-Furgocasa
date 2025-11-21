@@ -30,3 +30,5 @@ export default function NoruegaPage() {
   return <PaisLandingPage pais={pais} />
 }
 
+
+

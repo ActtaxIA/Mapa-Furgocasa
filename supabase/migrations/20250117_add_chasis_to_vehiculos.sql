@@ -15,3 +15,6 @@ COMMENT ON COLUMN vehiculos_registrados.chasis IS 'Marca del chasis del vehícul
 
 -- Crear índice para búsquedas
 CREATE INDEX IF NOT EXISTS idx_vehiculos_chasis ON vehiculos_registrados(chasis);
+
+
+

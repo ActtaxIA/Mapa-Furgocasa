@@ -30,3 +30,5 @@ export default function BelgicaPage() {
   return <PaisLandingPage pais={pais} />
 }
 
+
+

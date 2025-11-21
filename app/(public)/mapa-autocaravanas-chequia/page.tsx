@@ -30,3 +30,5 @@ export default function ChequiaPage() {
   return <PaisLandingPage pais={pais} />
 }
 
+
+

@@ -326,3 +326,5 @@ Se han implementado exitosamente **19 landing pages SEO** optimizadas para captu
 **Autor:** Mapa Furgocasa Team  
 **Versión:** 1.0
 
+
+
