@@ -1,0 +1,440 @@
+<!-- SECCIÓN DURACIÓN Y CANCELACIÓN -->
+<style>
+    .fc-duracion-cancel {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 50px 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-duracion-cancel-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 30px;
+    }
+    .fc-duracion-box {
+        background: #fff;
+        border: 2px solid #e3e6ee;
+        border-radius: 20px;
+        padding: 40px 36px;
+    }
+    .fc-duracion-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .fc-duracion-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: #063971;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: #fff;
+        flex-shrink: 0;
+    }
+    .fc-duracion-title {
+        font-size: 28px;
+        font-weight: bold;
+        color: #222;
+        line-height: 1.2;
+    }
+    .fc-duracion-content {
+        font-size: 15px;
+        color: #555;
+        line-height: 1.7;
+        margin-bottom: 24px;
+    }
+    .fc-duracion-lista {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .fc-duracion-lista li {
+        padding: 14px 18px;
+        margin-bottom: 12px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border-left: 4px solid #063971;
+        font-size: 15px;
+        color: #444;
+    }
+    .fc-duracion-lista li strong {
+        color: #063971;
+        font-weight: bold;
+    }
+    .fc-duracion-destacado {
+        padding: 20px;
+        background: linear-gradient(135deg, #063971 0%, #074a8c 100%);
+        border-radius: 16px;
+        color: #fff;
+        text-align: center;
+        margin-top: 24px;
+    }
+    .fc-duracion-destacado-numero {
+        font-size: 48px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+    .fc-duracion-destacado-texto {
+        font-size: 16px;
+        opacity: 0.95;
+    }
+    .fc-cancelacion-box {
+        background: linear-gradient(135deg, #063971 0%, #074a8c 100%);
+        border-radius: 20px;
+        padding: 40px 36px;
+        color: #fff;
+    }
+    .fc-cancelacion-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .fc-cancelacion-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        flex-shrink: 0;
+    }
+    .fc-cancelacion-title {
+        font-size: 28px;
+        font-weight: bold;
+        line-height: 1.2;
+    }
+    .fc-cancelacion-content {
+        font-size: 15px;
+        line-height: 1.7;
+        opacity: 0.95;
+        margin-bottom: 24px;
+    }
+    .fc-cancelacion-tabla {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+    }
+    .fc-cancelacion-tabla-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    .fc-cancelacion-tabla-row:last-child {
+        border-bottom: none;
+    }
+    .fc-cancelacion-tabla-label {
+        font-size: 15px;
+    }
+    .fc-cancelacion-tabla-valor {
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .fc-cancelacion-nota {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 18px;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+    .fc-cancelacion-nota strong {
+        color: #ffdd8a;
+    }
+    .fc-desistimiento-modif-box {
+        margin-top: 40px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 30px;
+    }
+    .fc-desistimiento-section,
+    .fc-modificacion-section {
+        background: #fff;
+        border: 2px solid #e3e6ee;
+        border-radius: 20px;
+        padding: 36px 32px;
+    }
+    .fc-desistimiento-title,
+    .fc-modificacion-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .fc-desistimiento-icon,
+    .fc-modificacion-icon {
+        font-size: 28px;
+    }
+    .fc-desistimiento-texto,
+    .fc-modificacion-texto {
+        font-size: 15px;
+        color: #555;
+        line-height: 1.7;
+        margin-bottom: 24px;
+    }
+    .fc-desistimiento-detalles {
+        display: grid;
+        gap: 16px;
+    }
+    .fc-desistimiento-detalle {
+        background: #f8f9fa;
+        border-left: 4px solid #063971;
+        border-radius: 12px;
+        padding: 20px;
+    }
+    .fc-desistimiento-detalle-alert {
+        background: #fff8e6;
+        border-left-color: #ffb347;
+    }
+    .fc-desistimiento-detalle-numero {
+        font-size: 18px;
+        font-weight: bold;
+        color: #063971;
+        margin-bottom: 8px;
+    }
+    .fc-desistimiento-detalle-alert .fc-desistimiento-detalle-numero {
+        color: #ff8c42;
+    }
+    .fc-desistimiento-detalle-texto {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+    }
+    .fc-modificacion-condiciones {
+        display: grid;
+        gap: 16px;
+    }
+    .fc-modificacion-condicion {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+    }
+    .fc-modificacion-condicion-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #063971;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+    .fc-modificacion-condicion-texto {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+    }
+    .fc-modificacion-condicion-texto strong {
+        color: #063971;
+        display: block;
+        margin-bottom: 4px;
+    }
+    @media (max-width: 1000px) {
+        .fc-desistimiento-modif-box {
+            grid-template-columns: 1fr;
+        }
+        .fc-duracion-cancel-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 768px) {
+        .fc-duracion-cancel {
+            padding: 20px 16px;
+        }
+        .fc-duracion-box,
+        .fc-cancelacion-box {
+            padding: 32px 24px;
+        }
+        .fc-duracion-icon,
+        .fc-cancelacion-icon {
+            width: 56px;
+            height: 56px;
+            font-size: 28px;
+        }
+        .fc-duracion-title,
+        .fc-cancelacion-title {
+            font-size: 24px;
+        }
+        .fc-duracion-destacado-numero {
+            font-size: 40px;
+        }
+        .fc-desistimiento-section,
+        .fc-modificacion-section {
+            padding: 28px 24px;
+        }
+        .fc-desistimiento-title,
+        .fc-modificacion-title {
+            font-size: 20px;
+        }
+        .fc-desistimiento-detalle,
+        .fc-modificacion-condicion {
+            padding: 16px;
+        }
+        .fc-modificacion-condicion {
+            flex-direction: column;
+            text-align: center;
+        }
+        .fc-modificacion-condicion-icon {
+            margin: 0 auto;
+        }
+    }
+</style>
+
+<div class="fc-duracion-cancel">
+    <div class="fc-duracion-cancel-grid">
+        <!-- DURACIÓN -->
+        <div class="fc-duracion-box">
+            <div class="fc-duracion-header">
+                <div class="fc-duracion-icon">⏱️</div>
+                <h3 class="fc-duracion-title">Duraci&oacute;n del alquiler</h3>
+            </div>
+            
+            <p class="fc-duracion-content">
+                La duraci&oacute;n del alquiler var&iacute;a seg&uacute;n la temporada y debe 
+                ajustarse a nuestros per&iacute;odos m&iacute;nimos establecidos.
+            </p>
+
+            <ul class="fc-duracion-lista">
+                <li>
+                    <strong>Temporada Baja y Media:</strong> M&iacute;nimo 2 d&iacute;as de alquiler
+                </li>
+                <li>
+                    <strong>Temporada Alta:</strong> M&iacute;nimo 7 d&iacute;as de alquiler
+                </li>
+                <li>
+                    <strong>Duraci&oacute;n m&aacute;xima:</strong> 60 d&iacute;as en todos los casos
+                </li>
+            </ul>
+
+            <div class="fc-duracion-destacado">
+                <div class="fc-duracion-destacado-numero">24 horas</div>
+                <div class="fc-duracion-destacado-texto">
+                    Los d&iacute;as de alquiler se devengan por per&iacute;odos completos de 24 horas
+                </div>
+            </div>
+
+            <p class="fc-duracion-content" style="margin-top: 24px; font-size: 14px; color: #666;">
+                <strong>Nota:</strong> El per&iacute;odo de alquiler comienza con la entrega del veh&iacute;culo 
+                a la hora acordada y finaliza con la devoluci&oacute;n de las llaves al personal de Furgocasa.
+            </p>
+        </div>
+
+        <!-- CANCELACIÓN -->
+        <div class="fc-cancelacion-box">
+            <div class="fc-cancelacion-header">
+                <div class="fc-cancelacion-icon">🔄</div>
+                <h3 class="fc-cancelacion-title">Pol&iacute;tica de cancelaci&oacute;n</h3>
+            </div>
+
+            <p class="fc-cancelacion-content">
+                En caso de cancelaci&oacute;n, FURGOCASA aplicar&aacute; los siguientes cargos sobre el precio total del alquiler:
+            </p>
+
+            <div class="fc-cancelacion-tabla">
+                <div class="fc-cancelacion-tabla-row">
+                    <div class="fc-cancelacion-tabla-label">M&aacute;s de 60 d&iacute;as antes</div>
+                    <div class="fc-cancelacion-tabla-valor" style="color: #4caf50;">GRATIS</div>
+                </div>
+                <div class="fc-cancelacion-tabla-row">
+                    <div class="fc-cancelacion-tabla-label">Entre 59 y 16 d&iacute;as antes</div>
+                    <div class="fc-cancelacion-tabla-valor">10% del total</div>
+                </div>
+                <div class="fc-cancelacion-tabla-row">
+                    <div class="fc-cancelacion-tabla-label">Entre 15 y 8 d&iacute;as antes</div>
+                    <div class="fc-cancelacion-tabla-valor">50% del total</div>
+                </div>
+                <div class="fc-cancelacion-tabla-row">
+                    <div class="fc-cancelacion-tabla-label">Menos de 7 d&iacute;as antes</div>
+                    <div class="fc-cancelacion-tabla-valor">75% del total</div>
+                </div>
+            </div>
+
+            <div class="fc-cancelacion-nota">
+                <strong>🛡️ Servicio de Cancelaci&oacute;n:</strong> Por 5&euro;/d&iacute;a (contratado al reservar), se limita el coste de cancelaci&oacute;n en el periodo de 59 a 16 d&iacute;as a dicho importe. <br><span style="font-size: 13px; opacity: 0.8;">(No aplica si restan menos de 16 d&iacute;as para el alquiler).</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="fc-desistimiento-modif-box">
+        <div class="fc-desistimiento-section">
+            <h3 class="fc-desistimiento-title">
+                <span class="fc-desistimiento-icon">📋</span>
+                <span>Derecho de desistimiento</span>
+            </h3>
+            <p class="fc-desistimiento-texto">
+                El cliente dispone de <strong>14 d&iacute;as naturales</strong> del derecho a desistir del 
+                contrato de alquiler sin necesidad de justificaci&oacute;n y sin penalizaci&oacute;n alguna.
+            </p>
+            <div class="fc-desistimiento-detalles">
+                <div class="fc-desistimiento-detalle">
+                    <div class="fc-desistimiento-detalle-numero">14 d&iacute;as</div>
+                    <div class="fc-desistimiento-detalle-texto">
+                        El plazo de desistimiento expira a los 14 d&iacute;as naturales del env&iacute;o de 
+                        la factura y contrato por parte de FURGOCASA.
+                    </div>
+                </div>
+                <div class="fc-desistimiento-detalle">
+                    <div class="fc-desistimiento-detalle-numero">7 d&iacute;as antes</div>
+                    <div class="fc-desistimiento-detalle-texto">
+                        Si entre la reserva y el inicio del alquiler distan menos de 14 d&iacute;as, el derecho 
+                        para desistir vence, como tarde, 7 d&iacute;as antes del inicio del viaje.
+                    </div>
+                </div>
+                <div class="fc-desistimiento-detalle fc-desistimiento-detalle-alert">
+                    <div class="fc-desistimiento-detalle-numero">❌ Sin derecho</div>
+                    <div class="fc-desistimiento-detalle-texto">
+                        Si la reserva se realiza con menos de 7 d&iacute;as de antelaci&oacute;n al inicio 
+                        del viaje, no podr&aacute; ejercitarse este derecho.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fc-modificacion-section">
+            <h3 class="fc-modificacion-title">
+                <span class="fc-modificacion-icon">🔄</span>
+                <span>Modificaci&oacute;n de fechas</span>
+            </h3>
+            <p class="fc-modificacion-texto">
+                El cliente tiene la opci&oacute;n de <strong>modificar una vez las fechas de su alquiler 
+                sin coste alguno</strong>.
+            </p>
+            <div class="fc-modificacion-condiciones">
+                <div class="fc-modificacion-condicion">
+                    <div class="fc-modificacion-condicion-icon">✓</div>
+                    <div class="fc-modificacion-condicion-texto">
+                        <strong>Misma temporada:</strong> Si el precio ha variado pero cambias dentro de la 
+                        misma temporada, se mantiene el precio d&iacute;a inicial.
+                    </div>
+                </div>
+                <div class="fc-modificacion-condicion">
+                    <div class="fc-modificacion-condicion-icon">↔️</div>
+                    <div class="fc-modificacion-condicion-texto">
+                        <strong>Temporada distinta:</strong> Se aplicar&aacute; el ajuste seg&uacute;n los 
+                        precios orientativos de la nueva temporada.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN DURACIÓN Y CANCELACIÓN -->
+

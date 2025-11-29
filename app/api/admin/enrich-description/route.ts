@@ -127,18 +127,20 @@ export async function POST(request: NextRequest) {
 
     // FILTRAR resultados que NO sean de la ciudad correcta
     if (serpData.organic_results && serpData.organic_results.length > 0) {
-      const ciudadLower = area.ciudad.toLowerCase()
+      const ciudadLower = (area.ciudad || '').toLowerCase()
       const resultadosOriginales = serpData.organic_results.length
       
-      serpData.organic_results = serpData.organic_results.filter((result: any) => {
-        const snippet = (result.snippet || '').toLowerCase()
-        const title = (result.title || '').toLowerCase()
+      if (ciudadLower) {
+        serpData.organic_results = serpData.organic_results.filter((result: any) => {
+          const snippet = (result.snippet || '').toLowerCase()
+          const title = (result.title || '').toLowerCase()
+          
+          // Mantener solo resultados que mencionen la ciudad correcta
+          return snippet.includes(ciudadLower) || title.includes(ciudadLower)
+        })
         
-        // Mantener solo resultados que mencionen la ciudad correcta
-        return snippet.includes(ciudadLower) || title.includes(ciudadLower)
-      })
-      
-      console.log(`  - Filtrado por ciudad "${area.ciudad}": ${resultadosOriginales} → ${serpData.organic_results.length} resultados`)
+        console.log(`  - Filtrado por ciudad "${area.ciudad}": ${resultadosOriginales} → ${serpData.organic_results.length} resultados`)
+      }
     }
 
     // Extraer información relevante
@@ -176,7 +178,7 @@ Tipo: ${area.tipo_area}
 
     contexto += `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
+INFORMACIÓN TURÍSTICA DE ${(area.ciudad || '').toUpperCase()}:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 (Esta información es solo sobre ${area.ciudad}, NO sobre otras ciudades)
 
