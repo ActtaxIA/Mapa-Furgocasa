@@ -326,12 +326,14 @@ export default function EnriquecerTextosPage() {
 
       // Filtrar resultados por ciudad
       if (serpData.organic_results && serpData.organic_results.length > 0) {
-        const ciudadLower = area.ciudad.toLowerCase()
-        serpData.organic_results = serpData.organic_results.filter((result: any) => {
-          const snippet = (result.snippet || '').toLowerCase()
-          const title = (result.title || '').toLowerCase()
-          return snippet.includes(ciudadLower) || title.includes(ciudadLower)
-        })
+        const ciudadLower = (area.ciudad || '').toLowerCase()
+        if (ciudadLower) {
+          serpData.organic_results = serpData.organic_results.filter((result: any) => {
+            const snippet = (result.snippet || '').toLowerCase()
+            const title = (result.title || '').toLowerCase()
+            return snippet.includes(ciudadLower) || title.includes(ciudadLower)
+          })
+        }
       }
 
       // 2. Construir contexto para OpenAI
@@ -369,7 +371,7 @@ Tipo: ${area.tipo_area}
 
       contexto += `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-INFORMACIÓN TURÍSTICA DE ${area.ciudad.toUpperCase()}:
+INFORMACIÓN TURÍSTICA DE ${(area.ciudad || '').toUpperCase()}:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 (Esta información es solo sobre ${area.ciudad}, NO sobre otras ciudades)
 
