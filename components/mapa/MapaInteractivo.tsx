@@ -298,28 +298,29 @@ export function MapaInteractivo({ areas, areasFiltradasIds, areaSeleccionada, on
 
     console.log(`🔄 Actualizando visibilidad de marcadores (filtro aplicado)`)
 
-    // Si no hay filtro, mostrar todos
+    // Obtener marcadores que deben ser visibles
+    const markersToShow: GoogleMarker[] = []
+    
     if (!areasFiltradasIds) {
-      markersRef.current.forEach(marker => marker.setVisible(true))
-      markerClustererRef.current.render()
-      return
+      // Si no hay filtro, mostrar todos
+      markersToShow.push(...markersRef.current)
+    } else {
+      // Filtrar marcadores según áreas filtradas
+      allAreasRef.current.forEach((area) => {
+        if (areasFiltradasIds.has(area.id)) {
+          const marker = markersMapRef.current.get(area.id)
+          if (marker) {
+            markersToShow.push(marker)
+          }
+        }
+      })
     }
 
-    // Actualizar visibilidad según filtro (SUPER RÁPIDO: O(n) con acceso directo)
-    let visibleCount = 0
-    allAreasRef.current.forEach((area, index) => {
-      const marker = markersMapRef.current.get(area.id)
-      if (marker) {
-        const shouldBeVisible = areasFiltradasIds.has(area.id)
-        marker.setVisible(shouldBeVisible)
-        if (shouldBeVisible) visibleCount++
-      }
-    })
+    // Actualizar clusterer: remover todos y agregar solo los visibles
+    markerClustererRef.current.clearMarkers()
+    markerClustererRef.current.addMarkers(markersToShow)
 
-    // Forzar re-render del clusterer para reflejar los cambios
-    markerClustererRef.current.render()
-
-    console.log(`✅ Marcadores visibles: ${visibleCount} de ${markersRef.current.length}`)
+    console.log(`✅ Marcadores visibles: ${markersToShow.length} de ${markersRef.current.length}`)
   }, [areasFiltradasIds, map])
 
   // Actualizar cuando se selecciona un área desde la lista
