@@ -301,7 +301,7 @@ export function MapaInteractivo({ areas, areasFiltradasIds, areaSeleccionada, on
     // Si no hay filtro, mostrar todos
     if (!areasFiltradasIds) {
       markersRef.current.forEach(marker => marker.setVisible(true))
-      markerClustererRef.current.repaint()
+      markerClustererRef.current.render()
       return
     }
 
@@ -317,7 +317,7 @@ export function MapaInteractivo({ areas, areasFiltradasIds, areaSeleccionada, on
     })
 
     // Forzar re-render del clusterer para reflejar los cambios
-    markerClustererRef.current.repaint()
+    markerClustererRef.current.render()
 
     console.log(`✅ Marcadores visibles: ${visibleCount} de ${markersRef.current.length}`)
   }, [areasFiltradasIds, map])
