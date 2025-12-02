@@ -154,7 +154,7 @@ export default function MapaPage() {
     loadAreas()
   }, [])
 
-  // Obtener ubicación del usuario CON REVERSE GEOCODING
+  // ✅ OPTIMIZACIÓN #3: Obtener ubicación del usuario CON REVERSE GEOCODING (con cache)
   useEffect(() => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -167,27 +167,59 @@ export default function MapaPage() {
 
           console.log('📍 GPS activado:', { lat, lng })
 
-          // Reverse Geocoding para detectar país
+          // Reverse Geocoding para detectar país (CON CACHE)
           try {
-            const locationData = await reverseGeocode(lat, lng)
+            // Verificar cache primero (válido por 24 horas)
+            const cacheKey = 'gps_country_cache'
+            const cacheTimestampKey = 'gps_country_timestamp'
+            const cachedCountry = localStorage.getItem(cacheKey)
+            const cachedTimestamp = localStorage.getItem(cacheTimestampKey)
+            
+            let detectedCountryValue = null
 
-            if (locationData?.country) {
-              console.log('🌍 País detectado:', locationData.country)
-              setDetectedCountry(locationData.country)
+            if (cachedCountry && cachedTimestamp) {
+              const age = Date.now() - parseInt(cachedTimestamp)
+              const maxAge = 1000 * 60 * 60 * 24 // 24 horas
+              
+              if (age < maxAge) {
+                console.log('⚡ País detectado desde cache:', cachedCountry)
+                detectedCountryValue = cachedCountry
+              } else {
+                console.log('🔄 Cache de país expirado, consultando API...')
+              }
+            }
+
+            // Si no hay cache válido, consultar API
+            if (!detectedCountryValue) {
+              const locationData = await reverseGeocode(lat, lng)
+
+              if (locationData?.country) {
+                detectedCountryValue = locationData.country
+                
+                // Guardar en cache
+                localStorage.setItem(cacheKey, detectedCountryValue)
+                localStorage.setItem(cacheTimestampKey, Date.now().toString())
+                console.log('💾 País guardado en cache:', detectedCountryValue)
+              }
+            }
+
+            if (detectedCountryValue) {
+              console.log('🌍 País detectado:', detectedCountryValue)
+              setDetectedCountry(detectedCountryValue)
 
               // Actualizar metadata GPS
               setMetadata({
-                gpsCountry: locationData.country,
+                gpsCountry: detectedCountryValue,
                 gpsActive: true,
                 paisSource: filtros.pais ? metadata.paisSource : 'gps'
               })
 
               // APLICAR FILTRO AUTOMÁTICO si no hay filtro de país previo
               if (!filtros.pais) {
-                console.log('✅ Aplicando filtro automático de país:', locationData.country)
+                console.log('✅ Aplicando filtro automático de país:', detectedCountryValue)
                 setFiltros({
                   ...filtros,
-                  pais: locationData.country
+                  pais: detectedCountryValue
                 })
 
                 // Mostrar Toast Notification
@@ -385,6 +417,11 @@ export default function MapaPage() {
     })
   }, [areas, filtros])
 
+  // ✅ OPTIMIZACIÓN: Convertir áreas filtradas a Set de IDs para lookup O(1) en el mapa
+  const areasFiltradasIds = useMemo(() => {
+    return new Set(areasFiltradas.map((area: any) => area.id))
+  }, [areasFiltradas])
+
   const handleAreaClick = (area: Area) => {
     setAreaSeleccionada(area)
     // En móvil se muestra el InfoWindow del mapa, no se abre la lista
@@ -493,7 +530,8 @@ export default function MapaPage() {
         {/* Mapa - Centro */}
         <div className="flex-1 relative">
           <MapaInteractivo
-            areas={areasFiltradas}
+            areas={areas}
+            areasFiltradasIds={areasFiltradasIds}
             areaSeleccionada={areaSeleccionada}
             onAreaClick={handleAreaClick}
             mapRef={mapRef}

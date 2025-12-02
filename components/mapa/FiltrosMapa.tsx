@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 export interface Filtros {
@@ -46,9 +46,38 @@ const CARACTERISTICAS = [
 ]
 
 export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados, paisesDisponibles }: FiltrosMapaProps) {
+  // ✅ OPTIMIZACIÓN #2: Estado local para el input con debounce
+  const [busquedaLocal, setBusquedaLocal] = useState(filtros.busqueda)
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Sincronizar con filtros externos cuando cambian
+  useEffect(() => {
+    setBusquedaLocal(filtros.busqueda)
+  }, [filtros.busqueda])
+
   const handleBusquedaChange = (valor: string) => {
-    onFiltrosChange({ ...filtros, busqueda: valor })
+    // Actualizar estado local inmediatamente (UI responsive)
+    setBusquedaLocal(valor)
+
+    // Cancelar timer anterior
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+
+    // Aplicar el filtro después de 300ms sin cambios (evita filtrados excesivos)
+    debounceTimerRef.current = setTimeout(() => {
+      onFiltrosChange({ ...filtros, busqueda: valor })
+    }, 300)
   }
+
+  // Cleanup del timer al desmontar
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [])
 
   const handlePaisChange = (valor: string) => {
     onFiltrosChange({ ...filtros, pais: valor })
@@ -108,13 +137,13 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
           <div className="relative">
             <input
               type="text"
-              value={filtros.busqueda}
+              value={busquedaLocal}
               onChange={(e) => handleBusquedaChange(e.target.value)}
               placeholder="Nombre, ciudad, dirección..."
               className="w-full pl-8 pr-8 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-transparent"
             />
             <MagnifyingGlassIcon className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            {filtros.busqueda && (
+            {busquedaLocal && (
               <button
                 onClick={() => handleBusquedaChange('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"

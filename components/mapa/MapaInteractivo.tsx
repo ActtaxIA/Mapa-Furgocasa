@@ -12,17 +12,19 @@ type GoogleMarker = any
 type GoogleInfoWindow = any
 
 interface MapaInteractivoProps {
-  areas: Area[]
+  areas: Area[] // TODAS las áreas (sin filtrar)
+  areasFiltradasIds?: Set<string> // IDs de áreas que pasan el filtro (para setVisible)
   areaSeleccionada: Area | null
   onAreaClick: (area: Area) => void
   mapRef?: React.MutableRefObject<GoogleMap | null>
 }
 
-export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: externalMapRef }: MapaInteractivoProps) {
+export function MapaInteractivo({ areas, areasFiltradasIds, areaSeleccionada, onAreaClick, mapRef: externalMapRef }: MapaInteractivoProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const [map, setMap] = useState<GoogleMap | null>(null)
   const [error, setError] = useState<string | null>(null)
   const markersRef = useRef<GoogleMarker[]>([])
+  const markersMapRef = useRef<Map<string, GoogleMarker>>(new Map()) // Mapa de ID -> Marker para acceso rápido
   const infoWindowRef = useRef<GoogleInfoWindow | null>(null)
   const markerClustererRef = useRef<MarkerClusterer | null>(null)
   const userMarkerRef = useRef<GoogleMarker | null>(null)
@@ -30,6 +32,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const watchIdRef = useRef<number | null>(null)
   const [showInfoTooltip, setShowInfoTooltip] = useState(false) // Estado para tooltip de información
+  const allAreasRef = useRef<Area[]>([]) // Ref para guardar TODAS las áreas
   
   // Cargar estado del GPS desde localStorage DESPUÉS de montar (solo cliente)
   useEffect(() => {
@@ -148,24 +151,30 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
     initMap()
   }, [])
 
-  // Añadir marcadores al mapa con clustering INCREMENTAL (sin parpadeo)
+  // ✅ OPTIMIZACIÓN #1: Crear marcadores UNA SOLA VEZ (no recrear al filtrar)
   useEffect(() => {
     if (!map || areas.length === 0) return
 
     const google = (window as any).google
 
+    // Guardar referencia de TODAS las áreas
+    allAreasRef.current = areas
+
     // Número de markers existentes
     const existingCount = markersRef.current.length
 
     // Si ya tenemos todos los markers, no hacer nada
-    if (existingCount === areas.length) return
+    if (existingCount === areas.length) {
+      console.log(`✅ Ya existen ${existingCount} markers, omitiendo creación`)
+      return
+    }
 
     // Solo crear markers para las áreas NUEVAS (incrementales)
     const newAreas = areas.slice(existingCount)
     
-    console.log(`📍 Añadiendo ${newAreas.length} markers nuevos (total: ${areas.length}, existentes: ${existingCount})`)
+    console.log(`📍 Creando ${newAreas.length} markers nuevos (total: ${areas.length}, existentes: ${existingCount})`)
 
-    const newMarkers = newAreas.map((area) => {
+    const newMarkers = newAreas.map((area, index) => {
       const pinColor = getTipoAreaColor(area.tipo_area)
       
       const marker = new google.maps.Marker({
@@ -182,8 +191,11 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
           strokeColor: '#ffffff',
           strokeWeight: 2,
         },
-        // Sin animación para evitar el rebote
+        visible: areasFiltradasIds ? areasFiltradasIds.has(area.id) : true, // Visible si pasa filtro
       })
+
+      // Guardar en el mapa de marcadores para acceso rápido
+      markersMapRef.current.set(area.id, marker)
 
       // Evento click en marcador
       marker.addListener('click', () => {
@@ -276,18 +288,48 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
       }
       markersRef.current.forEach((marker: any) => marker.setMap(null))
       markersRef.current = []
+      markersMapRef.current.clear()
     }
-  }, [map, areas, onAreaClick])
+  }, [map, areas.length]) // ⚠️ Solo depende de map y areas.length (no areas completo)
+
+  // ✅ OPTIMIZACIÓN #1B: Actualizar visibilidad de marcadores al filtrar (sin recrear)
+  useEffect(() => {
+    if (!map || markersRef.current.length === 0 || !markerClustererRef.current) return
+
+    console.log(`🔄 Actualizando visibilidad de marcadores (filtro aplicado)`)
+
+    // Si no hay filtro, mostrar todos
+    if (!areasFiltradasIds) {
+      markersRef.current.forEach(marker => marker.setVisible(true))
+      markerClustererRef.current.repaint()
+      return
+    }
+
+    // Actualizar visibilidad según filtro (SUPER RÁPIDO: O(n) con acceso directo)
+    let visibleCount = 0
+    allAreasRef.current.forEach((area, index) => {
+      const marker = markersMapRef.current.get(area.id)
+      if (marker) {
+        const shouldBeVisible = areasFiltradasIds.has(area.id)
+        marker.setVisible(shouldBeVisible)
+        if (shouldBeVisible) visibleCount++
+      }
+    })
+
+    // Forzar re-render del clusterer para reflejar los cambios
+    markerClustererRef.current.repaint()
+
+    console.log(`✅ Marcadores visibles: ${visibleCount} de ${markersRef.current.length}`)
+  }, [areasFiltradasIds, map])
 
   // Actualizar cuando se selecciona un área desde la lista
   useEffect(() => {
     if (!map || !areaSeleccionada || !infoWindowRef.current) return
 
-    // Buscar el marcador correspondiente
-    const markerIndex = areas.findIndex((a: any) => a.id === areaSeleccionada.id)
-    if (markerIndex !== -1 && markersRef.current[markerIndex]) {
-      const marker = markersRef.current[markerIndex]
-      
+    // Buscar el marcador usando el mapa (acceso O(1) en vez de O(n))
+    const marker = markersMapRef.current.get(areaSeleccionada.id)
+    
+    if (marker) {
       // Centrar mapa
       map.panTo(marker.getPosition()!)
       map.setZoom(14)
@@ -297,7 +339,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
       infoWindowRef.current.setContent(content)
       infoWindowRef.current.open(map, marker)
     }
-  }, [areaSeleccionada, map, areas])
+  }, [areaSeleccionada, map])
 
   // Auto-activar GPS si estaba activo anteriormente
   useEffect(() => {
