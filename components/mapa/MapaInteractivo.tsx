@@ -12,19 +12,17 @@ type GoogleMarker = any
 type GoogleInfoWindow = any
 
 interface MapaInteractivoProps {
-  areas: Area[] // TODAS las áreas (sin filtrar)
-  areasFiltradasIds?: Set<string> // IDs de áreas que pasan el filtro (para setVisible)
+  areas: Area[]
   areaSeleccionada: Area | null
   onAreaClick: (area: Area) => void
   mapRef?: React.MutableRefObject<GoogleMap | null>
 }
 
-export function MapaInteractivo({ areas, areasFiltradasIds, areaSeleccionada, onAreaClick, mapRef: externalMapRef }: MapaInteractivoProps) {
+export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: externalMapRef }: MapaInteractivoProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const [map, setMap] = useState<GoogleMap | null>(null)
   const [error, setError] = useState<string | null>(null)
   const markersRef = useRef<GoogleMarker[]>([])
-  const markersMapRef = useRef<Map<string, GoogleMarker>>(new Map()) // Mapa de ID -> Marker para acceso rápido
   const infoWindowRef = useRef<GoogleInfoWindow | null>(null)
   const markerClustererRef = useRef<MarkerClusterer | null>(null)
   const userMarkerRef = useRef<GoogleMarker | null>(null)
@@ -32,7 +30,6 @@ export function MapaInteractivo({ areas, areasFiltradasIds, areaSeleccionada, on
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const watchIdRef = useRef<number | null>(null)
   const [showInfoTooltip, setShowInfoTooltip] = useState(false) // Estado para tooltip de información
-  const allAreasRef = useRef<Area[]>([]) // Ref para guardar TODAS las áreas
   
   // Cargar estado del GPS desde localStorage DESPUÉS de montar (solo cliente)
   useEffect(() => {
@@ -151,30 +148,24 @@ export function MapaInteractivo({ areas, areasFiltradasIds, areaSeleccionada, on
     initMap()
   }, [])
 
-  // ✅ OPTIMIZACIÓN #1: Crear marcadores UNA SOLA VEZ (no recrear al filtrar)
+  // Añadir marcadores al mapa con clustering INCREMENTAL (sin parpadeo)
   useEffect(() => {
     if (!map || areas.length === 0) return
 
     const google = (window as any).google
 
-    // Guardar referencia de TODAS las áreas
-    allAreasRef.current = areas
-
     // Número de markers existentes
     const existingCount = markersRef.current.length
 
     // Si ya tenemos todos los markers, no hacer nada
-    if (existingCount === areas.length) {
-      console.log(`✅ Ya existen ${existingCount} markers, omitiendo creación`)
-      return
-    }
+    if (existingCount === areas.length) return
 
     // Solo crear markers para las áreas NUEVAS (incrementales)
     const newAreas = areas.slice(existingCount)
     
-    console.log(`📍 Creando ${newAreas.length} markers nuevos (total: ${areas.length}, existentes: ${existingCount})`)
+    console.log(`📍 Añadiendo ${newAreas.length} markers nuevos (total: ${areas.length}, existentes: ${existingCount})`)
 
-    const newMarkers = newAreas.map((area, index) => {
+    const newMarkers = newAreas.map((area) => {
       const pinColor = getTipoAreaColor(area.tipo_area)
       
       const marker = new google.maps.Marker({
@@ -191,11 +182,8 @@ export function MapaInteractivo({ areas, areasFiltradasIds, areaSeleccionada, on
           strokeColor: '#ffffff',
           strokeWeight: 2,
         },
-        visible: areasFiltradasIds ? areasFiltradasIds.has(area.id) : true, // Visible si pasa filtro
+        // Sin animación para evitar el rebote
       })
-
-      // Guardar en el mapa de marcadores para acceso rápido
-      markersMapRef.current.set(area.id, marker)
 
       // Evento click en marcador
       marker.addListener('click', () => {
@@ -288,49 +276,18 @@ export function MapaInteractivo({ areas, areasFiltradasIds, areaSeleccionada, on
       }
       markersRef.current.forEach((marker: any) => marker.setMap(null))
       markersRef.current = []
-      markersMapRef.current.clear()
     }
-  }, [map, areas.length]) // ⚠️ Solo depende de map y areas.length (no areas completo)
-
-  // ✅ OPTIMIZACIÓN #1B: Actualizar visibilidad de marcadores al filtrar (sin recrear)
-  useEffect(() => {
-    if (!map || markersRef.current.length === 0 || !markerClustererRef.current) return
-
-    console.log(`🔄 Actualizando visibilidad de marcadores (filtro aplicado)`)
-
-    // Obtener marcadores que deben ser visibles
-    const markersToShow: GoogleMarker[] = []
-    
-    if (!areasFiltradasIds) {
-      // Si no hay filtro, mostrar todos
-      markersToShow.push(...markersRef.current)
-    } else {
-      // Filtrar marcadores según áreas filtradas
-      allAreasRef.current.forEach((area) => {
-        if (areasFiltradasIds.has(area.id)) {
-          const marker = markersMapRef.current.get(area.id)
-          if (marker) {
-            markersToShow.push(marker)
-          }
-        }
-      })
-    }
-
-    // Actualizar clusterer: remover todos y agregar solo los visibles
-    markerClustererRef.current.clearMarkers()
-    markerClustererRef.current.addMarkers(markersToShow)
-
-    console.log(`✅ Marcadores visibles: ${markersToShow.length} de ${markersRef.current.length}`)
-  }, [areasFiltradasIds, map])
+  }, [map, areas, onAreaClick])
 
   // Actualizar cuando se selecciona un área desde la lista
   useEffect(() => {
     if (!map || !areaSeleccionada || !infoWindowRef.current) return
 
-    // Buscar el marcador usando el mapa (acceso O(1) en vez de O(n))
-    const marker = markersMapRef.current.get(areaSeleccionada.id)
-    
-    if (marker) {
+    // Buscar el marcador correspondiente
+    const markerIndex = areas.findIndex((a: any) => a.id === areaSeleccionada.id)
+    if (markerIndex !== -1 && markersRef.current[markerIndex]) {
+      const marker = markersRef.current[markerIndex]
+      
       // Centrar mapa
       map.panTo(marker.getPosition()!)
       map.setZoom(14)
@@ -340,7 +297,7 @@ export function MapaInteractivo({ areas, areasFiltradasIds, areaSeleccionada, on
       infoWindowRef.current.setContent(content)
       infoWindowRef.current.open(map, marker)
     }
-  }, [areaSeleccionada, map])
+  }, [areaSeleccionada, map, areas])
 
   // Auto-activar GPS si estaba activo anteriormente
   useEffect(() => {

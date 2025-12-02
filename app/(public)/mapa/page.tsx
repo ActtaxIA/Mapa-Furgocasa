@@ -417,11 +417,6 @@ export default function MapaPage() {
     })
   }, [areas, filtros])
 
-  // ✅ OPTIMIZACIÓN: Convertir áreas filtradas a Set de IDs para lookup O(1) en el mapa
-  const areasFiltradasIds = useMemo(() => {
-    return new Set(areasFiltradas.map((area: any) => area.id))
-  }, [areasFiltradas])
-
   const handleAreaClick = (area: Area) => {
     setAreaSeleccionada(area)
     // En móvil se muestra el InfoWindow del mapa, no se abre la lista
@@ -530,8 +525,7 @@ export default function MapaPage() {
         {/* Mapa - Centro */}
         <div className="flex-1 relative">
           <MapaInteractivo
-            areas={areas}
-            areasFiltradasIds={areasFiltradasIds}
+            areas={areasFiltradas}
             areaSeleccionada={areaSeleccionada}
             onAreaClick={handleAreaClick}
             mapRef={mapRef}
