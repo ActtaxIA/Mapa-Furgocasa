@@ -16,8 +16,8 @@ interface ListaResultadosProps {
 type SortOption = 'relevancia' | 'valoracion' | 'precio' | 'proximidad' | 'nombre'
 type SortDirection = 'asc' | 'desc'
 
-// Sin límite en rutas - mostrar todas las áreas encontradas
-const MAX_RESULTS = Infinity
+// Límite de 50 resultados en la lista (el mapa muestra todos los marcadores)
+const MAX_RESULTS = 50
 
 const getServicioIcon = (servicio: string): string => {
   const iconos: Record<string, string> = {
@@ -134,9 +134,13 @@ export function ListaResultados({ areas, onAreaClick, onClose, userLocation, gps
           <div>
             <h2 className="text-lg font-bold text-primary-900">Lugares Encontrados</h2>
             <p className="text-sm text-primary-700">
-              {hasMoreResults
-                ? `Mostrando ${visibleResults} de ${totalResults} resultados`
-                : `${totalResults} resultados`}
+              {totalResults} {totalResults === 1 ? 'resultado' : 'resultados'}
+              {hasMoreResults && (
+                <span className="block text-xs text-primary-600 mt-1 leading-relaxed">
+                  📍 Mostrando {visibleResults} de {totalResults} lugares<br />
+                  Usa los filtros para refinar tu búsqueda
+                </span>
+              )}
             </p>
           </div>
           {onClose && (
