@@ -8,10 +8,12 @@ export default function WelcomeModal() {
   const [isOpen, setIsOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
   const router = useRouter()
-  const supabase = createClient()
 
   useEffect(() => {
     const checkUserAndModal = async () => {
+      // Crear cliente solo cuando se necesita
+      const supabase = createClient()
+      
       // Verificar si el usuario está autenticado
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
