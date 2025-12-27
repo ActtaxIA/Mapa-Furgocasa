@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { formatErrorForUser } from '@/lib/chatbot/errors'
 
@@ -21,10 +21,11 @@ export default function ChatbotWidget() {
   const [conversacionId, setConversacionId] = useState<string | null>(null)
   const [ubicacion, setUbicacion] = useState<{lat: number, lng: number} | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const supabase = createClientComponentClient()
   
   // Comprobar autenticación
   useEffect(() => {
+    const supabase = createClient()
+    
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
@@ -38,7 +39,7 @@ export default function ChatbotWidget() {
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase])
+  }, [])
   
   // Auto-scroll al último mensaje
   useEffect(() => {
