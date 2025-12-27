@@ -81,9 +81,9 @@ export default function LoginPage() {
 
     try {
       const supabase = createClient()
-      const redirectBase =
-        process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mapafurgocasa.com'
-      const redirectTo = `${redirectBase}/auth/callback?next=/mapa`
+      
+      // SIEMPRE redirigir a producción (consistente con register)
+      const redirectTo = 'https://www.mapafurgocasa.com/auth/callback?next=/mapa'
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
