@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -12,11 +12,17 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const isSubmitting = useRef(false)
   const router = useRouter()
 
   // Login con email y contraseña
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Prevenir múltiples envíos simultáneos
+    if (loading || isSubmitting.current) return
+    
+    isSubmitting.current = true
     setError(null)
     setLoading(true)
 
@@ -68,14 +74,31 @@ export default function LoginPage() {
       router.refresh()
     } catch (error: any) {
       console.error('Error login email:', error)
-      setError(error.message || 'Error al iniciar sesión')
+      
+      // Traducir errores comunes a español
+      let errorMessage = error.message || 'Error al iniciar sesión'
+      
+      if (errorMessage.includes('Invalid login credentials')) {
+        errorMessage = 'Credenciales incorrectas. Verifica tu email y contraseña.'
+      } else if (errorMessage.includes('Email not confirmed')) {
+        errorMessage = 'Debes confirmar tu email antes de iniciar sesión. Revisa tu correo.'
+      } else if (errorMessage.includes('rate limit')) {
+        errorMessage = 'Demasiados intentos. Por favor, espera unos minutos antes de intentarlo de nuevo.'
+      }
+      
+      setError(errorMessage)
     } finally {
       setLoading(false)
+      isSubmitting.current = false
     }
   }
 
   // Login con Google
   const handleGoogleLogin = async () => {
+    // Prevenir múltiples clics
+    if (loading || isSubmitting.current) return
+    
+    isSubmitting.current = true
     setError(null)
     setLoading(true)
 
@@ -103,6 +126,7 @@ export default function LoginPage() {
       console.error('Error login Google:', error)
       setError(error.message || 'Error al iniciar sesión con Google')
       setLoading(false)
+      isSubmitting.current = false
     }
   }
 

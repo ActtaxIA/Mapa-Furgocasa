@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -10,9 +10,15 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const isSubmitting = useRef(false)
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Prevenir múltiples envíos simultáneos
+    if (loading || isSubmitting.current) return
+    
+    isSubmitting.current = true
     setError(null)
     setLoading(true)
 
@@ -26,9 +32,21 @@ export default function ResetPasswordPage() {
 
       setSuccess(true)
     } catch (error: any) {
-      setError(error.message || 'Error al enviar el correo de recuperación')
+      // Traducir errores comunes de Supabase a español
+      let errorMessage = error.message || 'Error al enviar el correo de recuperación'
+      
+      if (errorMessage.includes('rate limit') || errorMessage.includes('Email rate limit exceeded')) {
+        errorMessage = 'Has solicitado demasiados correos de recuperación. Por favor, espera 60 segundos antes de intentarlo de nuevo.'
+      } else if (errorMessage.includes('User not found')) {
+        errorMessage = 'No existe una cuenta con este correo electrónico.'
+      } else if (errorMessage.includes('Invalid email')) {
+        errorMessage = 'El formato del correo electrónico no es válido.'
+      }
+      
+      setError(errorMessage)
     } finally {
       setLoading(false)
+      isSubmitting.current = false
     }
   }
 
@@ -103,8 +121,13 @@ export default function ResetPasswordPage() {
 
             {/* Error */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                {error}
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <div className="flex gap-2">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <p className="text-sm">{error}</p>
+                </div>
               </div>
             )}
 
@@ -112,6 +135,12 @@ export default function ResetPasswordPage() {
             <button
               type="submit"
               disabled={loading}
+              onClick={(e) => {
+                if (loading || isSubmitting.current) {
+                  e.preventDefault()
+                  return
+                }
+              }}
               className="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Enviando...' : 'Enviar Enlace de Recuperación'}
