@@ -107,15 +107,38 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
             viewport: place.geometry.viewport
           }
 
-          console.log('📍 Lugar seleccionado:', location.address)
+          console.log('📍 Lugar seleccionado:', location.address, 'Coords:', location.lat, location.lng)
 
           // Mover mapa si está disponible
           if (mapRef.current) {
+            const map = mapRef.current
+            const targetCenter = { lat: location.lat, lng: location.lng }
+            
             if (location.viewport) {
-              mapRef.current.fitBounds(location.viewport)
+              // Usar fitBounds para ajustar al viewport del lugar
+              console.log('🎯 Usando fitBounds con viewport')
+              map.fitBounds(location.viewport, { top: 50, bottom: 50, left: 50, right: 50 }) // Padding para mejor vista
+              
+              // Después de fitBounds, verificar y ajustar si es necesario
+              setTimeout(() => {
+                const currentZoom = map.getZoom()
+                console.log('📌 Zoom después de fitBounds:', currentZoom)
+                
+                // Si el zoom quedó muy alejado (< 6), acercar un poco más
+                if (currentZoom && currentZoom < 6) {
+                  map.setZoom(8)
+                  map.setCenter(targetCenter)
+                }
+                // Si el zoom quedó muy cerca (> 15), alejar un poco
+                else if (currentZoom && currentZoom > 15) {
+                  map.setZoom(12)
+                }
+              }, 100)
             } else {
-              mapRef.current.panTo({ lat: location.lat, lng: location.lng })
-              mapRef.current.setZoom(12)
+              // Sin viewport: centrar directamente en las coordenadas
+              console.log('🎯 Usando setCenter (sin viewport)')
+              map.setCenter(targetCenter)
+              map.setZoom(10)
             }
           }
 
