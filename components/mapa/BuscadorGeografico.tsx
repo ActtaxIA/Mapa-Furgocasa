@@ -107,46 +107,63 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           if (mapRef.current) {
             const mapInstance = mapRef.current
             
+            // SIEMPRE centrar en las coordenadas EXACTAS del lugar
+            console.log('📍 Centrando en coordenadas exactas:', lat, lng, '(', address, ')')
+            mapInstance.setCenter({ lat, lng })
+            
+            // Calcular zoom apropiado según el viewport
             if (viewport) {
-              // CON VIEWPORT: Usar fitBounds para mostrar toda la región/país/ciudad
-              // NO hacer setCenter antes - interfiere con fitBounds
-              console.log('🗺️ Usando fitBounds para mostrar área completa')
+              // Calcular el nivel de zoom basado en el tamaño del viewport
+              // NO usar fitBounds porque cambiaría el centro
               
-              // fitBounds ajusta automáticamente el zoom y centro para mostrar el viewport
-              mapInstance.fitBounds(viewport)
+              const ne = viewport.getNorthEast()
+              const sw = viewport.getSouthWest()
               
-              // Esperar a que termine el movimiento
-              const idleListener = mapInstance.addListener('idle', () => {
-                window.google.maps.event.removeListener(idleListener)
-                
-                const finalZoom = mapInstance.getZoom()
-                const finalCenter = mapInstance.getCenter()
-                
-                console.log('✅ Mapa posicionado:', {
-                  zoom: finalZoom,
-                  centerLat: finalCenter?.lat(),
-                  centerLng: finalCenter?.lng(),
-                  targetAddress: address
-                })
-                
-                // Solo ajustar si el zoom es extremo
-                // Zoom < 3: Continente entero (demasiado alejado)
-                // Zoom > 18: Nivel calle (demasiado cerca)
-                if (finalZoom && finalZoom < 3) {
-                  console.log('🔧 Zoom excesivamente bajo (continente), ajustando a 5')
-                  mapInstance.setZoom(5)
-                } else if (finalZoom && finalZoom > 18) {
-                  console.log('🔧 Zoom excesivamente alto (calle), ajustando a 15')
-                  mapInstance.setZoom(15)
-                }
+              const latDiff = Math.abs(ne.lat() - sw.lat())
+              const lngDiff = Math.abs(ne.lng() - sw.lng())
+              const maxDiff = Math.max(latDiff, lngDiff)
+              
+              // Calcular zoom basado en el tamaño del viewport
+              // Mientras más grande el viewport, menor el zoom
+              let calculatedZoom = 10
+              
+              if (maxDiff > 30) {
+                calculatedZoom = 4  // País muy grande (Ej: Rusia, China)
+              } else if (maxDiff > 15) {
+                calculatedZoom = 5  // País grande (Ej: Francia, España)
+              } else if (maxDiff > 7) {
+                calculatedZoom = 6  // Región grande
+              } else if (maxDiff > 3) {
+                calculatedZoom = 7  // Región mediana
+              } else if (maxDiff > 1.5) {
+                calculatedZoom = 8  // Región pequeña
+              } else if (maxDiff > 0.7) {
+                calculatedZoom = 9  // Ciudad grande
+              } else if (maxDiff > 0.3) {
+                calculatedZoom = 10 // Ciudad mediana
+              } else if (maxDiff > 0.1) {
+                calculatedZoom = 12 // Ciudad pequeña
+              } else if (maxDiff > 0.05) {
+                calculatedZoom = 13 // Barrio
+              } else {
+                calculatedZoom = 14 // Lugar específico
+              }
+              
+              console.log('🔍 Viewport info:', {
+                latDiff: latDiff.toFixed(4),
+                lngDiff: lngDiff.toFixed(4),
+                maxDiff: maxDiff.toFixed(4),
+                calculatedZoom
               })
+              
+              mapInstance.setZoom(calculatedZoom)
             } else {
-              // SIN VIEWPORT: Usar centro exacto + zoom predeterminado
-              // Esto es raro, pero puede pasar con lugares muy específicos
-              console.log('📍 Sin viewport, centrando en coordenadas exactas:', lat, lng)
-              mapInstance.setCenter({ lat, lng })
+              // Sin viewport: zoom por defecto para ciudad
+              console.log('📍 Sin viewport, usando zoom 12')
               mapInstance.setZoom(12)
             }
+            
+            console.log('✅ Mapa centrado en:', address)
           }
 
           // Notificar al padre
