@@ -27,15 +27,22 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
     mapRef.current = map
   }, [onLocationFound, map])
 
+  // Limpiar autocomplete cuando el input se cierra
+  // Esto es CRÍTICO para que funcionen búsquedas múltiples
+  useEffect(() => {
+    if (!isExpanded) {
+      // Cuando se cierra, limpiar el autocomplete para que se reinicialice en la próxima apertura
+      if (autocompleteRef.current && typeof window !== 'undefined' && window.google?.maps?.event) {
+        window.google.maps.event.clearInstanceListeners(autocompleteRef.current)
+      }
+      autocompleteRef.current = null
+    }
+  }, [isExpanded])
+
   // Inicializar Google Places Autocomplete cuando el input esté visible
   useEffect(() => {
     // Solo inicializar si el input está expandido y existe en el DOM
     if (!isExpanded || !inputRef.current) return
-
-    // Evitar reinicializar si ya existe
-    if (autocompleteRef.current) {
-      return
-    }
 
     let retryCount = 0
     const maxRetries = 30 // 15 segundos máximo
@@ -54,6 +61,15 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           console.error('❌ Google Places API no disponible')
         }
         return
+      }
+
+      // Si ya hay un autocomplete (no debería pasar, pero por seguridad)
+      if (autocompleteRef.current) {
+        console.log('⚠️ Autocomplete ya existe, limpiando...')
+        if (window.google?.maps?.event) {
+          window.google.maps.event.clearInstanceListeners(autocompleteRef.current)
+        }
+        autocompleteRef.current = null
       }
 
       console.log('✅ Inicializando buscador geográfico...')
@@ -106,11 +122,10 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           // Notificar al padre
           onLocationFoundRef.current(location)
 
-          // Limpiar
+          // Limpiar UI (el autocomplete se limpiará en el efecto de arriba)
           setSearchValue('')
           setIsExpanded(false)
           setIsSelecting(false)
-          inputRef.current?.blur()
         })
 
         console.log('✅ Buscador geográfico listo')
@@ -150,7 +165,7 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
   const handleClear = () => {
     setSearchValue('')
     setIsExpanded(false)
-    autocompleteRef.current = null // Limpiar autocomplete para reinicializar en próxima expansión
+    // El autocomplete se limpia automáticamente cuando isExpanded cambia a false
   }
 
   const handleBlur = () => {
