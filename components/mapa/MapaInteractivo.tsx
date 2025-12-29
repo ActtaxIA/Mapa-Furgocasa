@@ -728,9 +728,9 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
       {/* Mapa */}
       <div ref={mapRef} className="w-full h-full min-h-[400px]" />
 
-      {/* Buscador Geográfico - Arriba Centro */}
+      {/* Buscador Geográfico - Móvil: derecha, Desktop: centro */}
       {map && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-72 md:w-80 max-w-[calc(100%-2rem)] z-10 px-2 md:px-0">
+        <div className="absolute top-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 w-56 md:w-80 z-10">
           <BuscadorGeografico
             map={map}
             onLocationFound={handleLocationFound}
