@@ -85,11 +85,11 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
         // Botón compacto (lupa)
         <button
           onClick={handleExpand}
-          className="w-full bg-white rounded-lg shadow-lg hover:shadow-xl transition-all py-3 px-4 flex items-center gap-2 text-gray-700 hover:text-blue-600 border border-gray-200"
+          className="w-full bg-white rounded-lg shadow-lg hover:shadow-xl active:scale-95 transition-all py-2 md:py-3 px-3 md:px-4 flex items-center gap-2 text-gray-700 hover:text-blue-600 border border-gray-200"
           aria-label="Buscar ubicación en el mapa"
         >
-          <MagnifyingGlassIcon className="h-5 w-5" />
-          <span className="text-sm font-medium">Buscar en el mapa</span>
+          <MagnifyingGlassIcon className="h-5 w-5 flex-shrink-0" />
+          <span className="text-xs md:text-sm font-medium truncate">Buscar en el mapa</span>
         </button>
       ) : (
         // Input expandido
@@ -102,8 +102,8 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Buscar ciudad, país, región..."
-            className="w-full bg-white rounded-lg shadow-lg py-3 pl-10 pr-10 text-sm border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Ciudad, país, región..."
+            className="w-full bg-white rounded-lg shadow-lg py-2 md:py-3 pl-10 pr-10 text-xs md:text-sm border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             onBlur={() => {
               // Contraer si está vacío después de perder foco
               if (!searchValue) {
@@ -114,7 +114,7 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           {searchValue && (
             <button
               onClick={handleClear}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 active:text-gray-700"
               aria-label="Limpiar búsqueda"
             >
               <XMarkIcon className="h-5 w-5" />
@@ -123,9 +123,9 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
         </div>
       )}
       
-      {/* Hint text */}
+      {/* Hint text - Solo en desktop */}
       {isExpanded && (
-        <p className="text-xs text-gray-500 mt-1 px-1">
+        <p className="hidden md:block text-xs text-gray-500 mt-1 px-1">
           Escribe una ciudad, país o región para navegar en el mapa
         </p>
       )}

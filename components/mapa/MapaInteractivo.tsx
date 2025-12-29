@@ -762,7 +762,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
 
       {/* Buscador Geográfico - Debajo del botón GPS */}
       {map && (
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-80 max-w-[calc(100%-2rem)] z-10">
+        <div className="absolute top-16 md:top-20 left-1/2 -translate-x-1/2 w-72 md:w-80 max-w-[calc(100%-2rem)] z-10 px-2 md:px-0">
           <BuscadorGeografico
             map={map}
             onLocationFound={handleLocationFound}
