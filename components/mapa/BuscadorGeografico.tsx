@@ -19,12 +19,181 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
   const onLocationFoundRef = useRef(onLocationFound)
   const mapRef = useRef(map)
   const isInitializedRef = useRef(false)
+  const autocompleteServiceRef = useRef<any>(null)
+  const placesServiceRef = useRef<any>(null)
 
   // Mantener refs actualizadas
   useEffect(() => {
     onLocationFoundRef.current = onLocationFound
     mapRef.current = map
   }, [onLocationFound, map])
+
+  // Función para procesar un lugar y mover el mapa
+  const processPlace = (place: any) => {
+    // Validación estricta
+    if (!place || !place.geometry || !place.geometry.location) {
+      console.warn('⚠️ Lugar sin geometría válida:', place?.name)
+      return
+    }
+
+    // Extraer coordenadas INMEDIATAMENTE (antes de cualquier otra operación)
+    const lat = place.geometry.location.lat()
+    const lng = place.geometry.location.lng()
+    const viewport = place.geometry.viewport
+    const address = place.formatted_address || place.name || ''
+
+    // Extraer país
+    const countryComponent = place.address_components?.find((c: any) =>
+      c.types.includes('country')
+    )
+
+    // Log detallado para debugging
+    console.log('📍 Lugar seleccionado:', {
+      address,
+      lat,
+      lng,
+      hasViewport: !!viewport,
+      country: countryComponent?.long_name
+    })
+
+    const location = {
+      lat,
+      lng,
+      address,
+      country: countryComponent?.long_name || '',
+      countryCode: countryComponent?.short_name || '',
+      viewport
+    }
+
+    // Mover mapa si está disponible
+    if (mapRef.current) {
+      const mapInstance = mapRef.current
+      
+      // SIEMPRE centrar en las coordenadas EXACTAS del lugar
+      console.log('📍 Centrando en coordenadas exactas:', lat, lng, '(', address, ')')
+      mapInstance.setCenter({ lat, lng })
+      
+      // Calcular zoom apropiado según el viewport
+      if (viewport) {
+        // Calcular el nivel de zoom basado en el tamaño del viewport
+        // NO usar fitBounds porque cambiaría el centro
+        
+        const ne = viewport.getNorthEast()
+        const sw = viewport.getSouthWest()
+        
+        const latDiff = Math.abs(ne.lat() - sw.lat())
+        const lngDiff = Math.abs(ne.lng() - sw.lng())
+        const maxDiff = Math.max(latDiff, lngDiff)
+        
+        // Calcular zoom basado en el tamaño del viewport
+        // Mientras más grande el viewport, menor el zoom
+        let calculatedZoom = 10
+        
+        if (maxDiff > 30) {
+          calculatedZoom = 4  // País muy grande (Ej: Rusia, China)
+        } else if (maxDiff > 15) {
+          calculatedZoom = 5  // País grande (Ej: Francia, España)
+        } else if (maxDiff > 7) {
+          calculatedZoom = 6  // Región grande
+        } else if (maxDiff > 3) {
+          calculatedZoom = 7  // Región mediana
+        } else if (maxDiff > 1.5) {
+          calculatedZoom = 8  // Región pequeña
+        } else if (maxDiff > 0.7) {
+          calculatedZoom = 9  // Ciudad grande
+        } else if (maxDiff > 0.3) {
+          calculatedZoom = 10 // Ciudad mediana
+        } else if (maxDiff > 0.1) {
+          calculatedZoom = 12 // Ciudad pequeña
+        } else if (maxDiff > 0.05) {
+          calculatedZoom = 13 // Barrio
+        } else {
+          calculatedZoom = 14 // Lugar específico
+        }
+        
+        console.log('🔍 Viewport info:', {
+          latDiff: latDiff.toFixed(4),
+          lngDiff: lngDiff.toFixed(4),
+          maxDiff: maxDiff.toFixed(4),
+          calculatedZoom
+        })
+        
+        mapInstance.setZoom(calculatedZoom)
+      } else {
+        // Sin viewport: zoom por defecto para ciudad
+        console.log('📍 Sin viewport, usando zoom 12')
+        mapInstance.setZoom(12)
+      }
+      
+      console.log('✅ Mapa centrado en:', address)
+    }
+
+    // Notificar al padre
+    onLocationFoundRef.current(location)
+
+    // Limpiar UI y cerrar
+    setSearchValue('')
+    setIsExpanded(false)
+  }
+
+  // Buscar el primer resultado cuando se presiona Enter
+  const searchFirstResult = async (query: string) => {
+    if (!query.trim()) return
+
+    console.log('🔎 Buscando primer resultado para:', query)
+
+    try {
+      // Crear servicios si no existen
+      if (!autocompleteServiceRef.current && window.google?.maps?.places) {
+        autocompleteServiceRef.current = new window.google.maps.places.AutocompleteService()
+      }
+
+      if (!placesServiceRef.current && mapRef.current) {
+        placesServiceRef.current = new window.google.maps.places.PlacesService(mapRef.current)
+      }
+
+      if (!autocompleteServiceRef.current || !placesServiceRef.current) {
+        console.warn('⚠️ Servicios de Google Places no disponibles')
+        return
+      }
+
+      // Buscar predicciones
+      autocompleteServiceRef.current.getPlacePredictions(
+        {
+          input: query,
+          types: ['(regions)']
+        },
+        (predictions: any, status: any) => {
+          if (status !== window.google.maps.places.PlacesServiceStatus.OK || !predictions || predictions.length === 0) {
+            console.warn('⚠️ No se encontraron resultados para:', query)
+            return
+          }
+
+          console.log('✅ Encontrados', predictions.length, 'resultados, usando el primero')
+          
+          // Obtener detalles del primer resultado
+          const firstPrediction = predictions[0]
+          
+          placesServiceRef.current.getDetails(
+            {
+              placeId: firstPrediction.place_id,
+              fields: ['address_components', 'geometry', 'name', 'formatted_address']
+            },
+            (place: any, detailsStatus: any) => {
+              if (detailsStatus === window.google.maps.places.PlacesServiceStatus.OK && place) {
+                console.log('✅ Detalles obtenidos para:', place.formatted_address)
+                processPlace(place)
+              } else {
+                console.warn('⚠️ Error al obtener detalles del lugar')
+              }
+            }
+          )
+        }
+      )
+    } catch (error) {
+      console.error('❌ Error al buscar primer resultado:', error)
+    }
+  }
 
   // Inicializar Google Places Autocomplete UNA SOLA VEZ cuando el componente monta
   // El input siempre existe en el DOM (solo se oculta/muestra con CSS)
@@ -67,111 +236,7 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
         // Listener de selección - PERMANENTE
         autocomplete.addListener('place_changed', () => {
           const place = autocomplete.getPlace()
-
-          // Validación estricta
-          if (!place || !place.geometry || !place.geometry.location) {
-            console.warn('⚠️ Lugar sin geometría válida:', place?.name)
-            return
-          }
-
-          // Extraer coordenadas INMEDIATAMENTE (antes de cualquier otra operación)
-          const lat = place.geometry.location.lat()
-          const lng = place.geometry.location.lng()
-          const viewport = place.geometry.viewport
-          const address = place.formatted_address || place.name || ''
-
-          // Extraer país
-          const countryComponent = place.address_components?.find((c: any) =>
-            c.types.includes('country')
-          )
-
-          // Log detallado para debugging
-          console.log('📍 Lugar seleccionado:', {
-            address,
-            lat,
-            lng,
-            hasViewport: !!viewport,
-            country: countryComponent?.long_name
-          })
-
-          const location = {
-            lat,
-            lng,
-            address,
-            country: countryComponent?.long_name || '',
-            countryCode: countryComponent?.short_name || '',
-            viewport
-          }
-
-          // Mover mapa si está disponible
-          if (mapRef.current) {
-            const mapInstance = mapRef.current
-            
-            // SIEMPRE centrar en las coordenadas EXACTAS del lugar
-            console.log('📍 Centrando en coordenadas exactas:', lat, lng, '(', address, ')')
-            mapInstance.setCenter({ lat, lng })
-            
-            // Calcular zoom apropiado según el viewport
-            if (viewport) {
-              // Calcular el nivel de zoom basado en el tamaño del viewport
-              // NO usar fitBounds porque cambiaría el centro
-              
-              const ne = viewport.getNorthEast()
-              const sw = viewport.getSouthWest()
-              
-              const latDiff = Math.abs(ne.lat() - sw.lat())
-              const lngDiff = Math.abs(ne.lng() - sw.lng())
-              const maxDiff = Math.max(latDiff, lngDiff)
-              
-              // Calcular zoom basado en el tamaño del viewport
-              // Mientras más grande el viewport, menor el zoom
-              let calculatedZoom = 10
-              
-              if (maxDiff > 30) {
-                calculatedZoom = 4  // País muy grande (Ej: Rusia, China)
-              } else if (maxDiff > 15) {
-                calculatedZoom = 5  // País grande (Ej: Francia, España)
-              } else if (maxDiff > 7) {
-                calculatedZoom = 6  // Región grande
-              } else if (maxDiff > 3) {
-                calculatedZoom = 7  // Región mediana
-              } else if (maxDiff > 1.5) {
-                calculatedZoom = 8  // Región pequeña
-              } else if (maxDiff > 0.7) {
-                calculatedZoom = 9  // Ciudad grande
-              } else if (maxDiff > 0.3) {
-                calculatedZoom = 10 // Ciudad mediana
-              } else if (maxDiff > 0.1) {
-                calculatedZoom = 12 // Ciudad pequeña
-              } else if (maxDiff > 0.05) {
-                calculatedZoom = 13 // Barrio
-              } else {
-                calculatedZoom = 14 // Lugar específico
-              }
-              
-              console.log('🔍 Viewport info:', {
-                latDiff: latDiff.toFixed(4),
-                lngDiff: lngDiff.toFixed(4),
-                maxDiff: maxDiff.toFixed(4),
-                calculatedZoom
-              })
-              
-              mapInstance.setZoom(calculatedZoom)
-            } else {
-              // Sin viewport: zoom por defecto para ciudad
-              console.log('📍 Sin viewport, usando zoom 12')
-              mapInstance.setZoom(12)
-            }
-            
-            console.log('✅ Mapa centrado en:', address)
-          }
-
-          // Notificar al padre
-          onLocationFoundRef.current(location)
-
-          // Limpiar UI y cerrar
-          setSearchValue('')
-          setIsExpanded(false)
+          processPlace(place)
         })
 
         console.log('✅ Buscador geográfico listo para múltiples búsquedas')
@@ -231,6 +296,15 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
     // Cancelar blur pendiente
     if (blurTimeoutRef.current) {
       clearTimeout(blurTimeoutRef.current)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Si presiona Enter y hay texto, buscar el primer resultado
+    if (e.key === 'Enter' && searchValue.trim()) {
+      e.preventDefault() // Evitar submit de formulario
+      console.log('⌨️ Enter presionado, buscando primer resultado...')
+      searchFirstResult(searchValue.trim())
     }
   }
 
@@ -304,6 +378,7 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           autoCapitalize="off"
           spellCheck="false"
           onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
           inputMode="text"
           enterKeyHint="search"
         />
