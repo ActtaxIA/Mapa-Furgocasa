@@ -12,14 +12,13 @@ interface BuscadorGeograficoProps {
 export function BuscadorGeografico({ map, onLocationFound, currentCountry }: BuscadorGeograficoProps) {
   const [searchValue, setSearchValue] = useState('')
   const [isExpanded, setIsExpanded] = useState(false)
-  const [isSelecting, setIsSelecting] = useState(false) // Evitar cierre durante selección
   const inputRef = useRef<HTMLInputElement>(null)
   const autocompleteRef = useRef<any>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const initTimeoutRef = useRef<NodeJS.Timeout>()
   const blurTimeoutRef = useRef<NodeJS.Timeout>()
   const onLocationFoundRef = useRef(onLocationFound)
   const mapRef = useRef(map)
+  const isInitializedRef = useRef(false)
 
   // Mantener refs actualizadas
   useEffect(() => {
@@ -27,25 +26,14 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
     mapRef.current = map
   }, [onLocationFound, map])
 
-  // Limpiar autocomplete cuando el input se cierra
-  // Esto es CRÍTICO para que funcionen búsquedas múltiples
+  // Inicializar Google Places Autocomplete UNA SOLA VEZ cuando el componente monta
+  // El input siempre existe en el DOM (solo se oculta/muestra con CSS)
   useEffect(() => {
-    if (!isExpanded) {
-      // Cuando se cierra, limpiar el autocomplete para que se reinicialice en la próxima apertura
-      if (autocompleteRef.current && typeof window !== 'undefined' && window.google?.maps?.event) {
-        window.google.maps.event.clearInstanceListeners(autocompleteRef.current)
-      }
-      autocompleteRef.current = null
-    }
-  }, [isExpanded])
-
-  // Inicializar Google Places Autocomplete cuando el input esté visible
-  useEffect(() => {
-    // Solo inicializar si el input está expandido y existe en el DOM
-    if (!isExpanded || !inputRef.current) return
+    if (isInitializedRef.current || !inputRef.current) return
 
     let retryCount = 0
-    const maxRetries = 30 // 15 segundos máximo
+    const maxRetries = 60 // 30 segundos máximo
+    let timeoutId: NodeJS.Timeout
 
     const initAutocomplete = () => {
       // Verificar que window.google.maps.places esté disponible
@@ -56,40 +44,32 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           !window.google.maps.places.Autocomplete) {
         retryCount++
         if (retryCount < maxRetries) {
-          initTimeoutRef.current = setTimeout(initAutocomplete, 500)
+          timeoutId = setTimeout(initAutocomplete, 500)
         } else {
           console.error('❌ Google Places API no disponible')
         }
         return
       }
 
-      // Si ya hay un autocomplete (no debería pasar, pero por seguridad)
-      if (autocompleteRef.current) {
-        console.log('⚠️ Autocomplete ya existe, limpiando...')
-        if (window.google?.maps?.event) {
-          window.google.maps.event.clearInstanceListeners(autocompleteRef.current)
-        }
-        autocompleteRef.current = null
-      }
+      if (!inputRef.current) return
 
-      console.log('✅ Inicializando buscador geográfico...')
+      console.log('✅ Inicializando buscador geográfico (una sola vez)...')
 
       try {
-        const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current!, {
+        const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
           fields: ['address_components', 'geometry', 'name', 'formatted_address'],
           types: ['(regions)'], // Ciudades, regiones, países
         })
 
         autocompleteRef.current = autocomplete
+        isInitializedRef.current = true
 
-        // Listener de selección
+        // Listener de selección - PERMANENTE
         autocomplete.addListener('place_changed', () => {
-          setIsSelecting(true)
           const place = autocomplete.getPlace()
 
           if (!place.geometry || !place.geometry.location) {
             console.warn('⚠️ Sin geometría:', place.name)
-            setIsSelecting(false)
             return
           }
 
@@ -107,105 +87,91 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
             viewport: place.geometry.viewport
           }
 
-          console.log('📍 Lugar seleccionado:', location.address, 'Coords:', location.lat, location.lng)
+          console.log('📍 Lugar seleccionado:', location.address)
 
           // Mover mapa si está disponible
           if (mapRef.current) {
-            const map = mapRef.current
+            const mapInstance = mapRef.current
             const targetCenter = { lat: location.lat, lng: location.lng }
             
             if (location.viewport) {
-              // Usar fitBounds para ajustar al viewport del lugar
-              console.log('🎯 Usando fitBounds con viewport')
-              map.fitBounds(location.viewport, { top: 50, bottom: 50, left: 50, right: 50 }) // Padding para mejor vista
+              mapInstance.fitBounds(location.viewport, { top: 50, bottom: 50, left: 50, right: 50 })
               
-              // Después de fitBounds, verificar y ajustar si es necesario
+              // Ajustar zoom si es necesario
               setTimeout(() => {
-                const currentZoom = map.getZoom()
-                console.log('📌 Zoom después de fitBounds:', currentZoom)
-                
-                // Si el zoom quedó muy alejado (< 6), acercar un poco más
+                const currentZoom = mapInstance.getZoom()
                 if (currentZoom && currentZoom < 6) {
-                  map.setZoom(8)
-                  map.setCenter(targetCenter)
-                }
-                // Si el zoom quedó muy cerca (> 15), alejar un poco
-                else if (currentZoom && currentZoom > 15) {
-                  map.setZoom(12)
+                  mapInstance.setZoom(8)
+                  mapInstance.setCenter(targetCenter)
+                } else if (currentZoom && currentZoom > 15) {
+                  mapInstance.setZoom(12)
                 }
               }, 100)
             } else {
-              // Sin viewport: centrar directamente en las coordenadas
-              console.log('🎯 Usando setCenter (sin viewport)')
-              map.setCenter(targetCenter)
-              map.setZoom(10)
+              mapInstance.setCenter(targetCenter)
+              mapInstance.setZoom(10)
             }
           }
 
           // Notificar al padre
           onLocationFoundRef.current(location)
 
-          // Limpiar UI (el autocomplete se limpiará en el efecto de arriba)
+          // Limpiar UI y cerrar
           setSearchValue('')
           setIsExpanded(false)
-          setIsSelecting(false)
         })
 
-        console.log('✅ Buscador geográfico listo')
+        console.log('✅ Buscador geográfico listo para múltiples búsquedas')
       } catch (error) {
         console.error('❌ Error al inicializar:', error)
       }
     }
 
-    // Iniciar con un pequeño delay para asegurar que el input esté en el DOM
-    initTimeoutRef.current = setTimeout(initAutocomplete, 200)
+    // Iniciar con un pequeño delay
+    timeoutId = setTimeout(initAutocomplete, 300)
 
     return () => {
-      if (initTimeoutRef.current) {
-        clearTimeout(initTimeoutRef.current)
-      }
+      if (timeoutId) clearTimeout(timeoutId)
     }
-  }, [isExpanded]) // Solo depender de isExpanded
+  }, []) // Array vacío - solo se ejecuta una vez al montar
 
   // Cleanup al desmontar
   useEffect(() => {
     return () => {
       if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current)
-      if (initTimeoutRef.current) clearTimeout(initTimeoutRef.current)
       if (autocompleteRef.current && typeof window !== 'undefined' && window.google?.maps?.event) {
         window.google.maps.event.clearInstanceListeners(autocompleteRef.current)
         autocompleteRef.current = null
+        isInitializedRef.current = false
       }
     }
   }, [])
 
   const handleExpand = () => {
     setIsExpanded(true)
-    // Pequeño delay para asegurar que el render ocurrió antes del focus
-    setTimeout(() => inputRef.current?.focus(), 150)
+    // Focus en el input después de expandir
+    setTimeout(() => {
+      inputRef.current?.focus()
+    }, 50)
   }
 
   const handleClear = () => {
     setSearchValue('')
     setIsExpanded(false)
-    // El autocomplete se limpia automáticamente cuando isExpanded cambia a false
   }
 
   const handleBlur = () => {
-    // No cerrar si se está seleccionando del autocomplete
-    if (isSelecting) return
-    
     // Limpiar timeout anterior
     if (blurTimeoutRef.current) {
       clearTimeout(blurTimeoutRef.current)
     }
     
-    // Delay largo para permitir clic en autocomplete (especialmente en móvil)
+    // Delay para permitir clic en autocomplete
     blurTimeoutRef.current = setTimeout(() => {
-      if (!searchValue && !isSelecting) {
+      if (!searchValue) {
         setIsExpanded(false)
       }
-    }, 400)
+    }, 300)
   }
 
   const handleFocus = () => {
@@ -254,50 +220,51 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
         }
       `}</style>
 
-      {!isExpanded ? (
-        // Botón compacto (lupa)
-        <button
-          onClick={handleExpand}
-          className="w-full bg-white rounded-lg shadow-lg hover:shadow-xl active:scale-95 transition-all py-2.5 md:py-3 px-3 md:px-4 flex items-center gap-2 text-gray-700 hover:text-blue-600 border border-gray-200"
-          aria-label="Buscar ubicación para navegar en el mapa"
-        >
-          <MagnifyingGlassIcon className="h-5 w-5 flex-shrink-0" />
-          <span className="text-xs md:text-sm font-medium truncate">¿A dónde ir?</span>
-        </button>
-      ) : (
-        // Input expandido
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
-          </div>
-          <input
-            ref={inputRef}
-            type="text"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Ciudad, región o país..."
-            className="w-full bg-white rounded-lg shadow-lg py-2.5 md:py-3 pl-10 pr-10 text-sm md:text-sm border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck="false"
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-          />
-          {searchValue && (
-            <button
-              onClick={handleClear}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 active:text-gray-700"
-              aria-label="Limpiar búsqueda"
-              type="button"
-            >
-              <XMarkIcon className="h-5 w-5" />
-            </button>
-          )}
+      {/* Input único - SIEMPRE en el DOM */}
+      {/* Cambia de apariencia según si está expandido o no */}
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+          <MagnifyingGlassIcon className={`h-5 w-5 ${isExpanded ? 'text-gray-400' : 'text-gray-500'}`} />
         </div>
-      )}
+        
+        <input
+          ref={inputRef}
+          type="text"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          onClick={() => !isExpanded && setIsExpanded(true)}
+          onFocus={() => {
+            setIsExpanded(true)
+            handleFocus()
+          }}
+          placeholder={isExpanded ? "Ciudad, región o país..." : "¿A dónde ir?"}
+          className={`w-full bg-white rounded-lg shadow-lg py-2.5 md:py-3 pl-10 text-sm transition-all cursor-text
+            ${isExpanded 
+              ? 'pr-10 border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400' 
+              : 'pr-4 border border-gray-200 hover:shadow-xl hover:border-gray-300'
+            }`}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
+          onBlur={handleBlur}
+          readOnly={!isExpanded}
+        />
+        
+        {/* Botón de limpiar - solo visible cuando está expandido y hay texto */}
+        {isExpanded && searchValue && (
+          <button
+            onClick={handleClear}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 active:text-gray-700 z-10"
+            aria-label="Limpiar búsqueda"
+            type="button"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        )}
+      </div>
       
-      {/* Hint text - Solo en desktop */}
+      {/* Hint text - Solo en desktop cuando está expandido */}
       {isExpanded && (
         <p className="hidden md:block text-[11px] text-blue-600 mt-1 px-2 bg-blue-50/80 rounded py-0.5">
           Navega por el mapa (no filtra áreas)
