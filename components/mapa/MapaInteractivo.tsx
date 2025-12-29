@@ -728,10 +728,21 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
       {/* Mapa */}
       <div ref={mapRef} className="w-full h-full min-h-[400px]" />
 
-      {/* Botón GPS - Arriba Centro */}
+      {/* Buscador Geográfico - Arriba Centro */}
+      {map && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-72 md:w-80 max-w-[calc(100%-2rem)] z-10 px-2 md:px-0">
+          <BuscadorGeografico
+            map={map}
+            onLocationFound={handleLocationFound}
+            currentCountry={currentCountry}
+          />
+        </div>
+      )}
+
+      {/* Botón GPS - Debajo del buscador */}
       <button
         onClick={() => toggleGPS()}
-        className={`absolute top-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full shadow-lg font-semibold transition-all z-10 flex items-center gap-2 ${
+        className={`absolute top-16 md:top-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full shadow-lg font-semibold transition-all z-10 flex items-center gap-2 ${
           gpsActive 
             ? 'bg-orange-500 text-white hover:bg-orange-600' 
             : 'bg-white text-gray-700 hover:bg-gray-50'
@@ -759,17 +770,6 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
         </svg>
         <span className="text-sm" suppressHydrationWarning>{gpsActive ? 'GPS Activo' : 'Ver ubicación'}</span>
       </button>
-
-      {/* Buscador Geográfico - Debajo del botón GPS */}
-      {map && (
-        <div className="absolute top-16 md:top-20 left-1/2 -translate-x-1/2 w-72 md:w-80 max-w-[calc(100%-2rem)] z-10 px-2 md:px-0">
-          <BuscadorGeografico
-            map={map}
-            onLocationFound={handleLocationFound}
-            currentCountry={currentCountry}
-          />
-        </div>
-      )}
 
       {/* Botón de Información - Izquierda, altura de controles de zoom */}
       <button
