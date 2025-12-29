@@ -107,45 +107,45 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           if (mapRef.current) {
             const mapInstance = mapRef.current
             
-            // SIEMPRE centrar primero en las coordenadas exactas
-            console.log('🎯 Centrando en:', lat, lng)
-            mapInstance.setCenter({ lat, lng })
-            
-            // Luego ajustar el zoom según el viewport
             if (viewport) {
-              // Usar fitBounds pero asegurar que el centro sea correcto
-              mapInstance.fitBounds(viewport, { top: 30, bottom: 30, left: 30, right: 30 })
+              // CON VIEWPORT: Usar fitBounds para mostrar toda la región/país/ciudad
+              // NO hacer setCenter antes - interfiere con fitBounds
+              console.log('🗺️ Usando fitBounds para mostrar área completa')
               
-              // Esperar a que fitBounds termine y verificar
+              // fitBounds ajusta automáticamente el zoom y centro para mostrar el viewport
+              mapInstance.fitBounds(viewport)
+              
+              // Esperar a que termine el movimiento
               const idleListener = mapInstance.addListener('idle', () => {
-                // Remover listener inmediatamente
                 window.google.maps.event.removeListener(idleListener)
                 
-                const currentZoom = mapInstance.getZoom()
-                const currentCenter = mapInstance.getCenter()
+                const finalZoom = mapInstance.getZoom()
+                const finalCenter = mapInstance.getCenter()
                 
-                console.log('📌 Después de fitBounds:', {
-                  zoom: currentZoom,
-                  centerLat: currentCenter?.lat(),
-                  centerLng: currentCenter?.lng()
+                console.log('✅ Mapa posicionado:', {
+                  zoom: finalZoom,
+                  centerLat: finalCenter?.lat(),
+                  centerLng: finalCenter?.lng(),
+                  targetAddress: address
                 })
                 
-                // Si el zoom quedó muy alejado, acercar y re-centrar
-                if (currentZoom && currentZoom < 6) {
-                  console.log('🔧 Zoom muy bajo, ajustando a 8')
-                  mapInstance.setZoom(8)
-                  mapInstance.setCenter({ lat, lng })
-                }
-                // Si el zoom quedó muy cerca, alejar
-                else if (currentZoom && currentZoom > 14) {
-                  console.log('🔧 Zoom muy alto, ajustando a 12')
-                  mapInstance.setZoom(12)
+                // Solo ajustar si el zoom es extremo
+                // Zoom < 3: Continente entero (demasiado alejado)
+                // Zoom > 18: Nivel calle (demasiado cerca)
+                if (finalZoom && finalZoom < 3) {
+                  console.log('🔧 Zoom excesivamente bajo (continente), ajustando a 5')
+                  mapInstance.setZoom(5)
+                } else if (finalZoom && finalZoom > 18) {
+                  console.log('🔧 Zoom excesivamente alto (calle), ajustando a 15')
+                  mapInstance.setZoom(15)
                 }
               })
             } else {
-              // Sin viewport: zoom fijo
-              console.log('🎯 Sin viewport, usando zoom 10')
-              mapInstance.setZoom(10)
+              // SIN VIEWPORT: Usar centro exacto + zoom predeterminado
+              // Esto es raro, pero puede pasar con lugares muy específicos
+              console.log('📍 Sin viewport, centrando en coordenadas exactas:', lat, lng)
+              mapInstance.setCenter({ lat, lng })
+              mapInstance.setZoom(12)
             }
           }
 
