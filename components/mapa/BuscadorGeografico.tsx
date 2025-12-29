@@ -232,9 +232,25 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           type="text"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
-          onClick={() => !isExpanded && setIsExpanded(true)}
+          onClick={() => {
+            if (!isExpanded) {
+              setIsExpanded(true)
+              // En móvil, necesitamos re-enfocar después de quitar readOnly para mostrar el teclado
+              setTimeout(() => {
+                inputRef.current?.blur()
+                inputRef.current?.focus()
+              }, 50)
+            }
+          }}
           onFocus={() => {
-            setIsExpanded(true)
+            if (!isExpanded) {
+              setIsExpanded(true)
+              // Re-enfocar para que aparezca el teclado en móvil
+              setTimeout(() => {
+                inputRef.current?.blur()
+                inputRef.current?.focus()
+              }, 50)
+            }
             handleFocus()
           }}
           placeholder={isExpanded ? "Ciudad, región o país..." : "¿A dónde ir?"}
@@ -249,6 +265,8 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           spellCheck="false"
           onBlur={handleBlur}
           readOnly={!isExpanded}
+          inputMode="text"
+          enterKeyHint="search"
         />
         
         {/* Botón de limpiar - solo visible cuando está expandido y hay texto */}
