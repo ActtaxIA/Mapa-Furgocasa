@@ -150,16 +150,6 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
     }
   }
 
-  const handleExpand = () => {
-    setIsExpanded(true)
-    setTimeout(() => inputRef.current?.focus(), 100)
-  }
-
-  const handleClear = () => {
-    setSearchValue('')
-    setIsExpanded(false)
-  }
-
   return (
     <div className="relative">
       {!isExpanded ? (
