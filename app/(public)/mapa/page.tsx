@@ -30,6 +30,7 @@ export default function MapaPage() {
   const [toastMessage, setToastMessage] = useState('')
   const [detectedCountry, setDetectedCountry] = useState<string | null>(null)
   const mapRef = useRef<any>(null) // Referencia al mapa para controlarlo
+  const skipMapCenterRef = useRef(false) // Evitar centrado automático después de búsqueda geográfica
 
   // Hook de filtros persistentes (reemplaza el useState anterior)
   const { filtros, setFiltros, metadata, setMetadata, limpiarFiltros, contarFiltrosActivos } = usePersistentFilters()
@@ -314,6 +315,13 @@ export default function MapaPage() {
 
     const coordenadas = paisCoordenadas[filtros.pais]
 
+    // No centrar si el cambio viene del buscador geográfico
+    if (skipMapCenterRef.current) {
+      console.log('⏭️ Saltando centrado automático (cambio desde buscador geográfico)')
+      skipMapCenterRef.current = false // Resetear para próxima vez
+      return
+    }
+
     if (coordenadas && mapRef.current) {
       console.log(`🗺️ Centrando mapa en ${filtros.pais}`)
       // Solo centrar (panTo), sin cambiar zoom
@@ -425,6 +433,10 @@ export default function MapaPage() {
   // Handler para cambio de país desde búsqueda geográfica
   const handleCountryChange = (newCountry: string, previousCountry: string | null) => {
     console.log(`📍 Cambio de país: ${previousCountry || 'ninguno'} → ${newCountry}`)
+    
+    // Marcar que el cambio viene del buscador geográfico
+    // para que NO se re-centre el mapa automáticamente
+    skipMapCenterRef.current = true
     
     // Cambiar el filtro de país automáticamente
     setFiltros(prev => ({
