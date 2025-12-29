@@ -68,47 +68,83 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
         autocomplete.addListener('place_changed', () => {
           const place = autocomplete.getPlace()
 
-          if (!place.geometry || !place.geometry.location) {
-            console.warn('⚠️ Sin geometría:', place.name)
+          // Validación estricta
+          if (!place || !place.geometry || !place.geometry.location) {
+            console.warn('⚠️ Lugar sin geometría válida:', place?.name)
             return
           }
+
+          // Extraer coordenadas INMEDIATAMENTE (antes de cualquier otra operación)
+          const lat = place.geometry.location.lat()
+          const lng = place.geometry.location.lng()
+          const viewport = place.geometry.viewport
+          const address = place.formatted_address || place.name || ''
 
           // Extraer país
           const countryComponent = place.address_components?.find((c: any) =>
             c.types.includes('country')
           )
 
+          // Log detallado para debugging
+          console.log('📍 Lugar seleccionado:', {
+            address,
+            lat,
+            lng,
+            hasViewport: !!viewport,
+            country: countryComponent?.long_name
+          })
+
           const location = {
-            lat: place.geometry.location.lat(),
-            lng: place.geometry.location.lng(),
-            address: place.formatted_address || place.name || '',
+            lat,
+            lng,
+            address,
             country: countryComponent?.long_name || '',
             countryCode: countryComponent?.short_name || '',
-            viewport: place.geometry.viewport
+            viewport
           }
-
-          console.log('📍 Lugar seleccionado:', location.address)
 
           // Mover mapa si está disponible
           if (mapRef.current) {
             const mapInstance = mapRef.current
-            const targetCenter = { lat: location.lat, lng: location.lng }
             
-            if (location.viewport) {
-              mapInstance.fitBounds(location.viewport, { top: 50, bottom: 50, left: 50, right: 50 })
+            // SIEMPRE centrar primero en las coordenadas exactas
+            console.log('🎯 Centrando en:', lat, lng)
+            mapInstance.setCenter({ lat, lng })
+            
+            // Luego ajustar el zoom según el viewport
+            if (viewport) {
+              // Usar fitBounds pero asegurar que el centro sea correcto
+              mapInstance.fitBounds(viewport, { top: 30, bottom: 30, left: 30, right: 30 })
               
-              // Ajustar zoom si es necesario
-              setTimeout(() => {
+              // Esperar a que fitBounds termine y verificar
+              const idleListener = mapInstance.addListener('idle', () => {
+                // Remover listener inmediatamente
+                window.google.maps.event.removeListener(idleListener)
+                
                 const currentZoom = mapInstance.getZoom()
+                const currentCenter = mapInstance.getCenter()
+                
+                console.log('📌 Después de fitBounds:', {
+                  zoom: currentZoom,
+                  centerLat: currentCenter?.lat(),
+                  centerLng: currentCenter?.lng()
+                })
+                
+                // Si el zoom quedó muy alejado, acercar y re-centrar
                 if (currentZoom && currentZoom < 6) {
+                  console.log('🔧 Zoom muy bajo, ajustando a 8')
                   mapInstance.setZoom(8)
-                  mapInstance.setCenter(targetCenter)
-                } else if (currentZoom && currentZoom > 15) {
+                  mapInstance.setCenter({ lat, lng })
+                }
+                // Si el zoom quedó muy cerca, alejar
+                else if (currentZoom && currentZoom > 14) {
+                  console.log('🔧 Zoom muy alto, ajustando a 12')
                   mapInstance.setZoom(12)
                 }
-              }, 100)
+              })
             } else {
-              mapInstance.setCenter(targetCenter)
+              // Sin viewport: zoom fijo
+              console.log('🎯 Sin viewport, usando zoom 10')
               mapInstance.setZoom(10)
             }
           }
