@@ -5,7 +5,7 @@ import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 interface BuscadorGeograficoProps {
   map: any // Google Map instance
-  onLocationFound: (location: { lat: number; lng: number; address: string; country: string; countryCode: string }) => void
+  onLocationFound: (location: { lat: number; lng: number; address: string; country: string; countryCode: string; viewport?: any }) => void
   currentCountry?: string
 }
 
@@ -15,49 +15,63 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
   const inputRef = useRef<HTMLInputElement>(null)
   const autocompleteRef = useRef<any>(null)
 
-  // Inicializar Google Places Autocomplete con retry
+  // Inicializar Google Places Autocomplete - COMPLETAMENTE INDEPENDIENTE
   useEffect(() => {
-    if (!map || !inputRef.current) return
+    if (!inputRef.current) return
 
     let timeoutId: NodeJS.Timeout
     let retryCount = 0
-    const maxRetries = 10
+    const maxRetries = 30 // 15 segundos máximo
 
     const initAutocomplete = () => {
-      // Verificar que Google Maps esté disponible
-      if (!window.google?.maps?.places?.Autocomplete) {
+      // Verificar SOLO que window.google.maps.places esté disponible
+      // NO depender de 'map' - el autocomplete funciona sin instancia de mapa
+      if (typeof window === 'undefined' || 
+          !window.google || 
+          !window.google.maps || 
+          !window.google.maps.places ||
+          !window.google.maps.places.Autocomplete) {
         retryCount++
         if (retryCount < maxRetries) {
-          console.log(`⏳ Esperando Google Places API... (intento ${retryCount})`)
+          // Log moderado
+          if (retryCount === 1 || retryCount % 10 === 0) {
+            console.log(`⏳ Cargando Google Places... (${retryCount}/${maxRetries})`)
+          }
           timeoutId = setTimeout(initAutocomplete, 500)
         } else {
-          console.error('❌ Google Places API no se cargó después de varios intentos')
+          console.error('❌ Google Places API no disponible. El buscador no funcionará.')
         }
         return
       }
 
-      console.log('✅ Google Places API cargada, inicializando autocomplete...')
+      // Evitar reinicializar si ya existe
+      if (autocompleteRef.current) {
+        console.log('✅ Autocomplete ya inicializado')
+        return
+      }
+
+      console.log('✅ Google Places listo. Inicializando buscador geográfico...')
 
       try {
         const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current!, {
           fields: ['address_components', 'geometry', 'name', 'formatted_address'],
-          types: ['(regions)'], // Permite ciudades, regiones, países
+          types: ['(regions)'], // Ciudades, regiones, países
         })
 
         autocompleteRef.current = autocomplete
 
-        // Listener cuando se selecciona un lugar
+        // Listener de selección
         autocomplete.addListener('place_changed', () => {
           const place = autocomplete.getPlace()
 
           if (!place.geometry || !place.geometry.location) {
-            console.warn('⚠️ No se encontró la ubicación para:', place.name)
+            console.warn('⚠️ Sin geometría:', place.name)
             return
           }
 
-          // Extraer información del país
-          const countryComponent = place.address_components?.find((component: any) =>
-            component.types.includes('country')
+          // Extraer país
+          const countryComponent = place.address_components?.find((c: any) =>
+            c.types.includes('country')
           )
 
           const location = {
@@ -66,36 +80,75 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
             address: place.formatted_address || place.name || '',
             country: countryComponent?.long_name || '',
             countryCode: countryComponent?.short_name || '',
+            viewport: place.geometry.viewport
           }
 
-          console.log('📍 Ubicación encontrada:', location)
+          console.log('📍 Lugar seleccionado:', location.address)
 
-          // Mover el mapa a la nueva ubicación
-          map.panTo({ lat: location.lat, lng: location.lng })
-          map.setZoom(10) // Zoom apropiado para ver la ciudad/región
+          // Mover mapa si está disponible
+          if (map) {
+            if (location.viewport) {
+              console.log('🎯 Ajustando vista (fitBounds)')
+              map.fitBounds(location.viewport)
+            } else {
+              console.log('🎯 Moviendo a punto (panTo)')
+              map.panTo({ lat: location.lat, lng: location.lng })
+              map.setZoom(12)
+            }
+          } else {
+            console.warn('⚠️ Mapa no disponible aún')
+          }
 
-          // Notificar al componente padre
+          // Notificar
           onLocationFound(location)
 
-          // Limpiar y contraer
+          // Limpiar
           setSearchValue('')
           setIsExpanded(false)
+          inputRef.current?.blur()
         })
+
+        console.log('✅ Buscador geográfico listo para usar')
       } catch (error) {
-        console.error('❌ Error inicializando autocomplete:', error)
+        console.error('❌ Error al inicializar:', error)
       }
     }
 
-    // Iniciar el intento de inicialización
+    // Iniciar
     initAutocomplete()
 
     return () => {
       if (timeoutId) clearTimeout(timeoutId)
       if (autocompleteRef.current && window.google?.maps?.event) {
         window.google.maps.event.clearInstanceListeners(autocompleteRef.current)
+        autocompleteRef.current = null
       }
     }
+  }, []) // ✅ Array vacío - solo inicializa UNA VEZ al montar
+
+  // Actualizar callbacks cuando cambien (sin reinicializar autocomplete)
+  useEffect(() => {
+    // Las funciones map, onLocationFound se actualizan aquí si es necesario
+    // pero NO reinicializamos el autocomplete
   }, [map, onLocationFound])
+
+  const handleExpand = () => {
+    setIsExpanded(true)
+    // Pequeño delay para asegurar que el render ocurrió antes del focus
+    setTimeout(() => inputRef.current?.focus(), 100)
+  }
+
+  const handleClear = () => {
+    setSearchValue('')
+    setIsExpanded(false)
+  }
+
+  // Prevenir submit si el usuario da Enter sin seleccionar de la lista
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+    }
+  }
 
   const handleExpand = () => {
     setIsExpanded(true)
@@ -132,6 +185,7 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder="¿A dónde quieres ir? (ej: Madrid, París...)"
             className="w-full bg-white rounded-lg shadow-lg py-2 md:py-3 pl-10 pr-10 text-xs md:text-sm border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onKeyDown={handleKeyDown}
             onBlur={() => {
               // Contraer si está vacío después de perder foco
               if (!searchValue) {

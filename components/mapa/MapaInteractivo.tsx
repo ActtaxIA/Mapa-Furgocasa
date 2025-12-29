@@ -739,38 +739,6 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
         </div>
       )}
 
-      {/* Botón GPS - Debajo del buscador */}
-      <button
-        onClick={() => toggleGPS()}
-        className={`absolute top-16 md:top-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full shadow-lg font-semibold transition-all z-10 flex items-center gap-2 ${
-          gpsActive 
-            ? 'bg-orange-500 text-white hover:bg-orange-600' 
-            : 'bg-white text-gray-700 hover:bg-gray-50'
-        }`}
-        aria-label={gpsActive ? 'Desactivar GPS' : 'Ver ubicación'}
-      >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-        <span className="text-sm" suppressHydrationWarning>{gpsActive ? 'GPS Activo' : 'Ver ubicación'}</span>
-      </button>
-
       {/* Botón de Información - Izquierda, altura de controles de zoom */}
       <button
         onClick={() => setShowInfoTooltip(!showInfoTooltip)}
@@ -871,6 +839,38 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
           </div>
         </div>
       )}
+
+      {/* Botón GPS - Encima de Restablecer Zoom */}
+      <button
+        onClick={() => toggleGPS()}
+        className={`absolute bottom-20 md:bottom-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full shadow-lg font-semibold transition-all z-10 flex items-center gap-2 mb-16 md:mb-0 ${
+          gpsActive 
+            ? 'bg-orange-500 text-white hover:bg-orange-600' 
+            : 'bg-white text-gray-700 hover:bg-gray-50'
+        }`}
+        aria-label={gpsActive ? 'Desactivar GPS' : 'Ver ubicación'}
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+        <span className="text-sm" suppressHydrationWarning>{gpsActive ? 'GPS Activo' : 'Ver ubicación'}</span>
+      </button>
 
       {/* Botón Restablecer Zoom - Abajo Centro (más arriba en móvil para evitar bottom bar) */}
       <button
