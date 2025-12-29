@@ -14,6 +14,15 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
   const [isExpanded, setIsExpanded] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const autocompleteRef = useRef<any>(null)
+  const initTimeoutRef = useRef<NodeJS.Timeout>()
+  const onLocationFoundRef = useRef(onLocationFound)
+  const mapRef = useRef(map)
+
+  // Mantener refs actualizadas
+  useEffect(() => {
+    onLocationFoundRef.current = onLocationFound
+    mapRef.current = map
+  }, [onLocationFound, map])
 
   // Inicializar Google Places Autocomplete cuando el input esté visible
   useEffect(() => {
@@ -26,7 +35,6 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
       return
     }
 
-    let timeoutId: NodeJS.Timeout
     let retryCount = 0
     const maxRetries = 30 // 15 segundos máximo
 
@@ -43,7 +51,7 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           if (retryCount === 1 || retryCount % 10 === 0) {
             console.log(`⏳ Cargando Google Places... (${retryCount}/${maxRetries})`)
           }
-          timeoutId = setTimeout(initAutocomplete, 500)
+          initTimeoutRef.current = setTimeout(initAutocomplete, 500)
         } else {
           console.error('❌ Google Places API no disponible. El buscador no funcionará.')
         }
@@ -86,21 +94,19 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           console.log('📍 Lugar seleccionado:', location.address)
 
           // Mover mapa si está disponible
-          if (map) {
+          if (mapRef.current) {
             if (location.viewport) {
               console.log('🎯 Ajustando vista (fitBounds)')
-              map.fitBounds(location.viewport)
+              mapRef.current.fitBounds(location.viewport)
             } else {
               console.log('🎯 Moviendo a punto (panTo)')
-              map.panTo({ lat: location.lat, lng: location.lng })
-              map.setZoom(12)
+              mapRef.current.panTo({ lat: location.lat, lng: location.lng })
+              mapRef.current.setZoom(12)
             }
-          } else {
-            console.warn('⚠️ Mapa no disponible aún')
           }
 
-          // Notificar
-          onLocationFound(location)
+          // Notificar al padre
+          onLocationFoundRef.current(location)
 
           // Limpiar
           setSearchValue('')
@@ -115,12 +121,24 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
     }
 
     // Iniciar con un pequeño delay para asegurar que el input esté en el DOM
-    timeoutId = setTimeout(initAutocomplete, 100)
+    initTimeoutRef.current = setTimeout(initAutocomplete, 150)
 
     return () => {
-      if (timeoutId) clearTimeout(timeoutId)
+      if (initTimeoutRef.current) {
+        clearTimeout(initTimeoutRef.current)
+      }
     }
-  }, [isExpanded, map, onLocationFound]) // Inicializar cuando se expanda el input
+  }, [isExpanded]) // Solo depender de isExpanded
+
+  // Cleanup al desmontar
+  useEffect(() => {
+    return () => {
+      if (autocompleteRef.current && typeof window !== 'undefined' && window.google?.maps?.event) {
+        window.google.maps.event.clearInstanceListeners(autocompleteRef.current)
+        autocompleteRef.current = null
+      }
+    }
+  }, [])
 
   const handleExpand = () => {
     setIsExpanded(true)
@@ -131,13 +149,6 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
   const handleClear = () => {
     setSearchValue('')
     setIsExpanded(false)
-  }
-
-  // Prevenir submit si el usuario da Enter sin seleccionar de la lista
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-    }
   }
 
   return (
@@ -163,13 +174,13 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="¿A dónde quieres ir? (ej: Madrid, París...)"
+            placeholder="Escribe una ciudad o país..."
             className="w-full bg-white rounded-lg shadow-lg py-2 md:py-3 pl-10 pr-10 text-xs md:text-sm border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onKeyDown={handleKeyDown}
+            autoComplete="off"
             onBlur={() => {
-              // Contraer si está vacío después de perder foco
+              // Contraer si está vacío después de perder foco (con delay para permitir clics en autocomplete)
               if (!searchValue) {
-                setTimeout(() => setIsExpanded(false), 200)
+                setTimeout(() => setIsExpanded(false), 300)
               }
             }}
           />
