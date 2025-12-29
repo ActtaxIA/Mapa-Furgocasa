@@ -267,40 +267,26 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           ref={inputRef}
           type="text"
           value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          onClick={() => {
-            if (!isExpanded) {
-              setIsExpanded(true)
-              // En móvil, necesitamos re-enfocar después de quitar readOnly para mostrar el teclado
-              setTimeout(() => {
-                inputRef.current?.blur()
-                inputRef.current?.focus()
-              }, 50)
-            }
+          onChange={(e) => {
+            setSearchValue(e.target.value)
+            // Expandir automáticamente cuando el usuario empiece a escribir
+            if (!isExpanded) setIsExpanded(true)
           }}
           onFocus={() => {
-            if (!isExpanded) {
-              setIsExpanded(true)
-              // Re-enfocar para que aparezca el teclado en móvil
-              setTimeout(() => {
-                inputRef.current?.blur()
-                inputRef.current?.focus()
-              }, 50)
-            }
+            setIsExpanded(true)
             handleFocus()
           }}
           placeholder={isExpanded ? "Ciudad, región o país..." : "¿A dónde ir?"}
-          className={`w-full bg-white rounded-lg shadow-lg py-2.5 md:py-3 pl-10 text-sm transition-all cursor-text
+          className={`w-full bg-white rounded-lg shadow-lg py-2.5 md:py-3 pl-10 text-sm transition-all
             ${isExpanded 
               ? 'pr-10 border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400' 
-              : 'pr-4 border border-gray-200 hover:shadow-xl hover:border-gray-300'
+              : 'pr-4 border border-gray-200 hover:shadow-xl hover:border-gray-300 cursor-pointer'
             }`}
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck="false"
           onBlur={handleBlur}
-          readOnly={!isExpanded}
           inputMode="text"
           enterKeyHint="search"
         />
