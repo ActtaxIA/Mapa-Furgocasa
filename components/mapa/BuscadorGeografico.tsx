@@ -15,17 +15,23 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
   const inputRef = useRef<HTMLInputElement>(null)
   const autocompleteRef = useRef<any>(null)
 
-  // Inicializar Google Places Autocomplete - COMPLETAMENTE INDEPENDIENTE
+  // Inicializar Google Places Autocomplete cuando el input esté visible
   useEffect(() => {
-    if (!inputRef.current) return
+    // Solo inicializar si el input está expandido y existe en el DOM
+    if (!isExpanded || !inputRef.current) return
+
+    // Evitar reinicializar si ya existe
+    if (autocompleteRef.current) {
+      console.log('✅ Autocomplete ya inicializado')
+      return
+    }
 
     let timeoutId: NodeJS.Timeout
     let retryCount = 0
     const maxRetries = 30 // 15 segundos máximo
 
     const initAutocomplete = () => {
-      // Verificar SOLO que window.google.maps.places esté disponible
-      // NO depender de 'map' - el autocomplete funciona sin instancia de mapa
+      // Verificar que window.google.maps.places esté disponible
       if (typeof window === 'undefined' || 
           !window.google || 
           !window.google.maps || 
@@ -41,12 +47,6 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
         } else {
           console.error('❌ Google Places API no disponible. El buscador no funcionará.')
         }
-        return
-      }
-
-      // Evitar reinicializar si ya existe
-      if (autocompleteRef.current) {
-        console.log('✅ Autocomplete ya inicializado')
         return
       }
 
@@ -114,23 +114,13 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
       }
     }
 
-    // Iniciar
-    initAutocomplete()
+    // Iniciar con un pequeño delay para asegurar que el input esté en el DOM
+    timeoutId = setTimeout(initAutocomplete, 100)
 
     return () => {
       if (timeoutId) clearTimeout(timeoutId)
-      if (autocompleteRef.current && window.google?.maps?.event) {
-        window.google.maps.event.clearInstanceListeners(autocompleteRef.current)
-        autocompleteRef.current = null
-      }
     }
-  }, []) // ✅ Array vacío - solo inicializa UNA VEZ al montar
-
-  // Actualizar callbacks cuando cambien (sin reinicializar autocomplete)
-  useEffect(() => {
-    // Las funciones map, onLocationFound se actualizan aquí si es necesario
-    // pero NO reinicializamos el autocomplete
-  }, [map, onLocationFound])
+  }, [isExpanded, map, onLocationFound]) // Inicializar cuando se expanda el input
 
   const handleExpand = () => {
     setIsExpanded(true)
