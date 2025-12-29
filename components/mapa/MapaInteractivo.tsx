@@ -5,6 +5,7 @@ import { Loader } from '@googlemaps/js-api-loader'
 import { MarkerClusterer, SuperClusterAlgorithm } from '@googlemaps/markerclusterer'
 import type { Area } from '@/types/database.types'
 import Link from 'next/link'
+import { BuscadorGeografico } from './BuscadorGeografico'
 
 // Tipos simplificados para Google Maps (se cargan dinámicamente)
 type GoogleMap = any
@@ -16,9 +17,11 @@ interface MapaInteractivoProps {
   areaSeleccionada: Area | null
   onAreaClick: (area: Area) => void
   mapRef?: React.MutableRefObject<GoogleMap | null>
+  onCountryChange?: (country: string, previousCountry: string | null) => void
+  currentCountry?: string
 }
 
-export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: externalMapRef }: MapaInteractivoProps) {
+export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: externalMapRef, onCountryChange, currentCountry }: MapaInteractivoProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const [map, setMap] = useState<GoogleMap | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -30,6 +33,16 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const watchIdRef = useRef<number | null>(null)
   const [showInfoTooltip, setShowInfoTooltip] = useState(false) // Estado para tooltip de información
+  
+  // Handler para cuando se busca una ubicación geográfica
+  const handleLocationFound = (location: { lat: number; lng: number; address: string; country: string; countryCode: string }) => {
+    console.log('📍 Nueva ubicación seleccionada:', location)
+    
+    // Si el país es diferente al filtro actual, notificar al padre
+    if (onCountryChange && location.country && currentCountry !== location.country) {
+      onCountryChange(location.country, currentCountry || null)
+    }
+  }
   
   // Cargar estado del GPS desde localStorage DESPUÉS de montar (solo cliente)
   useEffect(() => {
@@ -746,6 +759,17 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
         </svg>
         <span className="text-sm" suppressHydrationWarning>{gpsActive ? 'GPS Activo' : 'Ver ubicación'}</span>
       </button>
+
+      {/* Buscador Geográfico - Debajo del botón GPS */}
+      {map && (
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-80 max-w-[calc(100%-2rem)] z-10">
+          <BuscadorGeografico
+            map={map}
+            onLocationFound={handleLocationFound}
+            currentCountry={currentCountry}
+          />
+        </div>
+      )}
 
       {/* Botón de Información - Izquierda, altura de controles de zoom */}
       <button

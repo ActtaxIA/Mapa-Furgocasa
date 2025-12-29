@@ -422,6 +422,28 @@ export default function MapaPage() {
     // En móvil se muestra el InfoWindow del mapa, no se abre la lista
   }
 
+  // Handler para cambio de país desde búsqueda geográfica
+  const handleCountryChange = (newCountry: string, previousCountry: string | null) => {
+    console.log(`📍 Cambio de país: ${previousCountry || 'ninguno'} → ${newCountry}`)
+    
+    // Cambiar el filtro de país automáticamente
+    setFiltros(prev => ({
+      ...prev,
+      pais: newCountry
+    }))
+
+    // Mostrar mensaje informativo
+    const mensaje = previousCountry
+      ? `Has buscado en ${newCountry}. Hemos cambiado el filtro de país de ${previousCountry} a ${newCountry}. Puedes revertirlo desde los filtros.`
+      : `Has buscado en ${newCountry}. Hemos aplicado el filtro de país automáticamente. Puedes modificarlo desde los filtros.`
+    
+    setToastMessage(mensaje)
+    setShowToast(true)
+
+    // Ocultar el toast después de 8 segundos
+    setTimeout(() => setShowToast(false), 8000)
+  }
+
   // Mostrar loading mientras comprobamos autenticación
   if (authLoading) {
     return (
@@ -529,6 +551,8 @@ export default function MapaPage() {
             areaSeleccionada={areaSeleccionada}
             onAreaClick={handleAreaClick}
             mapRef={mapRef}
+            onCountryChange={handleCountryChange}
+            currentCountry={filtros.pais}
           />
 
 
