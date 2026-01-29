@@ -16,6 +16,8 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false)
+  const [registeredEmail, setRegisteredEmail] = useState('')
   const router = useRouter()
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -38,10 +40,17 @@ export default function RegisterPage() {
 
     try {
       const supabase = createClient()
+      
+      // Configurar URL de redireccionamiento para confirmación de email
+      const siteUrl = typeof window !== 'undefined' 
+        ? window.location.origin 
+        : 'https://www.mapafurgocasa.com'
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          emailRedirectTo: `${siteUrl}/auth/callback?next=/mapa`,
           data: {
             username: username || email.split('@')[0],
             first_name: firstName,
@@ -54,14 +63,39 @@ export default function RegisterPage() {
 
       if (error) throw error
 
-      setSuccess(true)
-      
-      // Redirigir después de 2 segundos
-      setTimeout(() => {
-        window.location.href = '/mapa'
-      }, 2000)
+      // Verificar si necesita confirmación de email
+      if (data.user && !data.session) {
+        // Usuario creado pero necesita confirmar email
+        setError(null)
+        setSuccess(true)
+        setNeedsEmailConfirmation(true)
+        setRegisteredEmail(email)
+      } else if (data.user && data.session) {
+        // Usuario creado y ya puede acceder (no requiere confirmación)
+        setSuccess(true)
+        setNeedsEmailConfirmation(false)
+        setRegisteredEmail(email)
+        
+        // Redirigir después de 2 segundos
+        setTimeout(() => {
+          window.location.href = '/mapa'
+        }, 2000)
+      }
     } catch (error: any) {
-      setError(error.message || 'Error al crear la cuenta')
+      console.error('Error en registro:', error)
+      
+      // Traducir errores comunes a español
+      let errorMessage = error.message || 'Error al crear la cuenta'
+      
+      if (errorMessage.includes('User already registered')) {
+        errorMessage = 'Este correo ya está registrado. Por favor, inicia sesión.'
+      } else if (errorMessage.includes('Password should be at least')) {
+        errorMessage = 'La contraseña debe tener al menos 6 caracteres.'
+      } else if (errorMessage.includes('rate limit')) {
+        errorMessage = 'Demasiados intentos. Por favor, espera unos minutos.'
+      }
+      
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -102,14 +136,36 @@ export default function RegisterPage() {
       <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100 flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-100 text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+            {needsEmailConfirmation ? (
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            ) : (
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            )}
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">¡Cuenta creada!</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            {needsEmailConfirmation ? '¡Revisa tu correo!' : '¡Cuenta creada!'}
+          </h2>
           <p className="text-gray-600 mb-6">
-            Tu cuenta ha sido creada exitosamente. Redirigiendo al mapa...
+            {needsEmailConfirmation 
+              ? `Hemos enviado un correo de verificación a ${registeredEmail}. Por favor, revisa tu bandeja de entrada y haz clic en el enlace de confirmación para activar tu cuenta.`
+              : 'Tu cuenta ha sido creada exitosamente. Redirigiendo al mapa...'
+            }
           </p>
+          {needsEmailConfirmation && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <p className="text-sm text-gray-500 mb-4">¿No recibiste el correo?</p>
+              <Link
+                href="/auth/login"
+                className="text-sky-600 hover:text-sky-700 font-medium text-sm"
+              >
+                Volver al inicio de sesión
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     )

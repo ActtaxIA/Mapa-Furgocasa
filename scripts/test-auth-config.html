@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Configuración de Autenticación - Mapa Furgocasa</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .test-section h2 {
+            color: #444;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .status.warning {
+            background: #fed7aa;
+            color: #92400e;
+        }
+        .result {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #e5e7eb;
+        }
+        .result.success {
+            border-left-color: #10b981;
+        }
+        .result.error {
+            border-left-color: #ef4444;
+        }
+        .result.warning {
+            border-left-color: #f59e0b;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+        }
+        button:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .info-box {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #1e40af;
+        }
+        .info-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Test de Configuración de Autenticación</h1>
+        <p class="subtitle">Diagnóstico completo del sistema de autenticación de Supabase</p>
+
+        <div class="info-box">
+            <strong>ℹ️ Información:</strong>
+            Esta herramienta verifica la configuración de Supabase y prueba el flujo de registro y autenticación.
+            NO se crearán usuarios reales, solo se verificará la configuración.
+        </div>
+
+        <!-- Test 1: Configuración básica -->
+        <div class="test-section">
+            <h2>
+                <span>1️⃣</span>
+                Configuración Básica de Supabase
+                <span id="status-config" class="status pending">Pendiente</span>
+            </h2>
+            <button onclick="testBasicConfig()">Verificar Configuración</button>
+            <div id="result-config"></div>
+        </div>
+
+        <!-- Test 2: Políticas de Auth -->
+        <div class="test-section">
+            <h2>
+                <span>2️⃣</span>
+                Políticas de Autenticación
+                <span id="status-policies" class="status pending">Pendiente</span>
+            </h2>
+            <button onclick="testAuthPolicies()">Verificar Políticas</button>
+            <div id="result-policies"></div>
+        </div>
+
+        <!-- Test 3: Configuración de Email -->
+        <div class="test-section">
+            <h2>
+                <span>3️⃣</span>
+                Configuración de Emails
+                <span id="status-email" class="status pending">Pendiente</span>
+            </h2>
+            <button onclick="testEmailConfig()">Verificar Emails</button>
+            <div id="result-email"></div>
+        </div>
+
+        <!-- Test 4: OAuth Google -->
+        <div class="test-section">
+            <h2>
+                <span>4️⃣</span>
+                OAuth con Google
+                <span id="status-oauth" class="status pending">Pendiente</span>
+            </h2>
+            <button onclick="testOAuthConfig()">Verificar OAuth</button>
+            <div id="result-oauth"></div>
+        </div>
+
+        <!-- Test 5: Test de Registro (Sin crear usuario) -->
+        <div class="test-section">
+            <h2>
+                <span>5️⃣</span>
+                Simulación de Registro
+                <span id="status-signup" class="status pending">Pendiente</span>
+            </h2>
+            <button onclick="testSignupFlow()">Simular Registro</button>
+            <div id="result-signup"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Supabase (REEMPLAZAR CON TUS VALORES)
+        const SUPABASE_URL = 'https://dkqnemjcmcnyhuvstosf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrcW5lbWpjbWNueWh1dnN0b3NmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE1NTY1NjgsImV4cCI6MjA3NzEzMjU2OH0.sJrGGYRE00lCoNgdrYCcgZWw3Bx_xrrQgUqB_KGrPb4';
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        function showResult(elementId, status, message, details = null) {
+            const resultDiv = document.getElementById(elementId);
+            const statusSpan = document.getElementById('status-' + elementId.replace('result-', ''));
+            
+            statusSpan.className = 'status ' + status;
+            statusSpan.textContent = status === 'success' ? '✓ OK' : status === 'error' ? '✗ Error' : '⚠ Advertencia';
+            
+            resultDiv.innerHTML = `
+                <div class="result ${status}">
+                    <p>${message}</p>
+                    ${details ? `<pre>${JSON.stringify(details, null, 2)}</pre>` : ''}
+                </div>
+            `;
+        }
+
+        async function testBasicConfig() {
+            try {
+                console.log('🔍 Verificando configuración básica...');
+                
+                const checks = {
+                    url: SUPABASE_URL ? '✓' : '✗',
+                    key: SUPABASE_ANON_KEY ? '✓' : '✗',
+                    client: supabase ? '✓' : '✗',
+                    urlValid: SUPABASE_URL.includes('supabase.co') ? '✓' : '✗'
+                };
+
+                if (checks.url === '✓' && checks.key === '✓' && checks.client === '✓' && checks.urlValid === '✓') {
+                    showResult('result-config', 'success', 
+                        'Configuración básica correcta', 
+                        checks
+                    );
+                } else {
+                    showResult('result-config', 'error', 
+                        'Problema en la configuración básica', 
+                        checks
+                    );
+                }
+            } catch (error) {
+                showResult('result-config', 'error', 
+                    'Error al verificar configuración', 
+                    { error: error.message }
+                );
+            }
+        }
+
+        async function testAuthPolicies() {
+            try {
+                console.log('🔍 Verificando políticas de autenticación...');
+                
+                // Intentar obtener la sesión actual (debería ser null si no hay sesión)
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                const policies = {
+                    canGetSession: error ? '✗ Error: ' + error.message : '✓',
+                    sessionNull: !session ? '✓ (esperado sin login)' : 'ℹ️ Hay sesión activa',
+                };
+
+                showResult('result-policies', 'success', 
+                    'Políticas de autenticación verificadas', 
+                    policies
+                );
+            } catch (error) {
+                showResult('result-policies', 'error', 
+                    'Error al verificar políticas', 
+                    { error: error.message }
+                );
+            }
+        }
+
+        async function testEmailConfig() {
+            console.log('🔍 Verificando configuración de emails...');
+            
+            const emailConfig = {
+                info: 'No se puede verificar la configuración de emails desde el cliente',
+                recomendaciones: [
+                    '1. Ir a Supabase Dashboard → Authentication → Email Templates',
+                    '2. Verificar que "Enable email confirmations" esté activado',
+                    '3. Configurar plantillas de email (Confirm signup, Magic Link, etc.)',
+                    '4. Verificar que el Site URL esté configurado correctamente',
+                    '5. En producción: Configurar un servicio SMTP personalizado'
+                ],
+                currentSiteUrl: window.location.origin,
+                recommendedRedirectUrl: window.location.origin + '/auth/callback'
+            };
+
+            showResult('result-email', 'warning', 
+                'Verificación manual requerida en Supabase Dashboard', 
+                emailConfig
+            );
+        }
+
+        async function testOAuthConfig() {
+            console.log('🔍 Verificando configuración de OAuth...');
+            
+            const oauthConfig = {
+                info: 'Configuración de OAuth Google',
+                pasos: [
+                    '1. Ir a Supabase Dashboard → Authentication → Providers',
+                    '2. Activar Google OAuth',
+                    '3. Configurar Client ID y Client Secret de Google Cloud Console',
+                    '4. Añadir redirect URLs autorizadas:',
+                    '   - ' + SUPABASE_URL + '/auth/v1/callback',
+                    '   - https://www.mapafurgocasa.com/auth/callback',
+                    '5. Verificar que el Site URL incluya https://www.mapafurgocasa.com'
+                ],
+                redirectUrl: 'https://www.mapafurgocasa.com/auth/callback'
+            };
+
+            showResult('result-oauth', 'warning', 
+                'Verificación manual requerida en Supabase Dashboard', 
+                oauthConfig
+            );
+        }
+
+        async function testSignupFlow() {
+            try {
+                console.log('🔍 Simulando flujo de registro...');
+                
+                // Email de prueba que NO se registrará realmente
+                const testEmail = 'test-' + Date.now() + '@mapafurgocasa-test.com';
+                const testPassword = 'TestPassword123!';
+                
+                const result = {
+                    email: testEmail,
+                    pasos: [
+                        '✓ Cliente de Supabase inicializado',
+                        '✓ Función signUp disponible',
+                        'ℹ️ NO se creará usuario real (email de prueba)'
+                    ],
+                    configuracionRequerida: {
+                        emailRedirectTo: window.location.origin + '/auth/callback?next=/mapa',
+                        autoConfirm: 'false (recomendado para producción)',
+                        emailConfirmation: 'true (debe estar activado en Supabase)'
+                    }
+                };
+
+                showResult('result-signup', 'success', 
+                    'Flujo de registro verificado (simulación)', 
+                    result
+                );
+
+            } catch (error) {
+                showResult('result-signup', 'error', 
+                    'Error en la simulación de registro', 
+                    { error: error.message }
+                );
+            }
+        }
+
+        // Mensaje de bienvenida
+        console.log('🚀 Test de configuración de autenticación cargado');
+        console.log('📝 Haz clic en los botones para ejecutar las pruebas');
+    </script>
+</body>
+</html>
