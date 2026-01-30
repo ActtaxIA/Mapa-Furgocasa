@@ -37,7 +37,16 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
   const [showInfoTooltip, setShowInfoTooltip] = useState(false) // Estado para tooltip de información
   
   // Cargar configuración de mapa desde Supabase
-  const { config: mapConfig } = useMapConfig()
+  const { config: mapConfig, loading: configLoading } = useMapConfig()
+  
+  // Log para debugging
+  useEffect(() => {
+    console.log('🎨 Configuración de mapa:', { 
+      proveedor: mapConfig.proveedor, 
+      estilo: mapConfig.estilo,
+      loading: configLoading 
+    })
+  }, [mapConfig, configLoading])
   
   // Handler para cuando se busca una ubicación geográfica
   const handleLocationFound = (location: { lat: number; lng: number; address: string; country: string; countryCode: string }) => {
@@ -57,8 +66,14 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
     }
   }, [])
 
-  // Inicializar Google Maps
+  // Inicializar Google Maps (ESPERAR A QUE LA CONFIGURACIÓN ESTÉ LISTA)
   useEffect(() => {
+    // No inicializar hasta que la configuración esté cargada
+    if (configLoading) {
+      console.log('⏳ Esperando configuración de mapa...')
+      return
+    }
+
     const initMap = async () => {
       try {
         // ✅ ESPERAR A QUE EL CONTENEDOR TENGA DIMENSIONES
@@ -165,7 +180,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
     }
 
     initMap()
-  }, [])
+  }, [configLoading, mapConfig.estilo]) // Re-inicializar si cambia el estilo
 
   // Añadir marcadores al mapa con clustering INCREMENTAL (sin parpadeo)
   useEffect(() => {
