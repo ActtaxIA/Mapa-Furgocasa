@@ -55,12 +55,16 @@ export default function MapaPage() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Cargar áreas desde Supabase (CON CACHE Y CARGA PROGRESIVA)
+  // Cargar áreas desde Supabase (OPTIMIZADO: Solo carga el país seleccionado)
   useEffect(() => {
     const loadAreas = async () => {
       try {
-        const CACHE_KEY = 'mapa_areas_cache'
-        const CACHE_TIMESTAMP_KEY = 'mapa_areas_timestamp'
+        setLoading(true)
+        
+        // Clave de caché basada en el país seleccionado (o 'global' si no hay filtro)
+        const paisKey = filtros.pais ? filtros.pais.replace(/\s+/g, '_').toLowerCase() : 'global'
+        const CACHE_KEY = `mapa_areas_${paisKey}`
+        const CACHE_TIMESTAMP_KEY = `mapa_areas_${paisKey}_timestamp`
         const CACHE_MAX_AGE = 1000 * 60 * 60 // 1 hora
 
         // 🚀 INTENTAR CARGAR DESDE CACHE PRIMERO
@@ -70,16 +74,13 @@ export default function MapaPage() {
         if (cachedAreas && cachedTimestamp) {
           const age = Date.now() - parseInt(cachedTimestamp)
           if (age < CACHE_MAX_AGE) {
-            console.log('⚡ Cargando áreas desde cache (instantáneo)...')
+            console.log(`⚡ Cargando áreas de ${paisKey} desde cache (instantáneo)...`)
             const parsedAreas = JSON.parse(cachedAreas)
             setAreas(parsedAreas)
             setLoadingProgress({ loaded: parsedAreas.length, total: parsedAreas.length })
             setLoading(false)
-            setInitialLoading(false) // ✅ Ocultar skeleton
-            console.log(`✅ ${parsedAreas.length} áreas cargadas desde cache`)
-            return // ✅ Ya terminamos, todo desde cache
-          } else {
-            console.log('🔄 Cache expirado, recargando desde servidor...')
+            setInitialLoading(false)
+            return
           }
         }
 
@@ -90,70 +91,62 @@ export default function MapaPage() {
         let page = 0
         let hasMore = true
 
-        console.log('🔄 Cargando áreas progresivamente desde Supabase...')
+        console.log(`🔄 Cargando áreas de ${filtros.pais || 'todo el mundo'} desde Supabase...`)
 
-        // Cargar en lotes de 1000 (OPTIMIZADO: solo campos necesarios)
         while (hasMore) {
-          const { data, error } = await (supabase as any)
+          let query = supabase
             .from('areas')
             .select('id, nombre, slug, latitud, longitud, ciudad, provincia, pais, tipo_area, precio_noche, foto_principal, servicios, plazas_totales, acceso_24h, barrera_altura')
             .eq('activo', true)
             .order('nombre')
             .range(page * pageSize, (page + 1) * pageSize - 1)
 
+          // ✅ APLICAR FILTRO DE PAÍS EN EL SERVIDOR (OPTIMIZACIÓN CRÍTICA)
+          if (filtros.pais) {
+            query = query.eq('pais', filtros.pais)
+          }
+
+          const { data, error } = await query
+
           if (error) throw error
 
           if (data && data.length > 0) {
             allAreas.push(...(data as Area[]))
-
-            // ✅ SOLO LOGGEAR, NO ACTUALIZAR ESTADO (evita re-renders múltiples)
-            console.log(`📦 Cargadas ${data.length} áreas (página ${page + 1}) - Total: ${allAreas.length}`)
-
+            console.log(`📦 Cargadas ${data.length} áreas (página ${page + 1})`)
             page++
-
-            // Si recibimos menos de 1000, ya no hay más
-            if (data.length < pageSize) {
-              hasMore = false
-            }
+            if (data.length < pageSize) hasMore = false
           } else {
             hasMore = false
           }
         }
 
         console.log(`✅ Total cargadas: ${allAreas.length} áreas`)
-
-        // ✅ ACTUALIZAR ESTADO UNA SOLA VEZ AL FINAL (evita parpadeo)
         setAreas(allAreas)
         setLoadingProgress({ loaded: allAreas.length, total: allAreas.length })
 
-        // 💾 GUARDAR EN CACHE para próxima visita
+        // 💾 GUARDAR EN CACHE ESPECÍFICO
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify(allAreas))
           localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString())
-          console.log('💾 Áreas guardadas en cache (válido por 1 hora)')
         } catch (e) {
-          console.warn('⚠️ No se pudo guardar en cache (localStorage lleno?)', e)
+          console.warn('⚠️ No se pudo guardar en cache', e)
         }
 
-        // Log de depuración para ver distribución de países
-        if (process.env.NODE_ENV === 'development') {
-          const porPais: Record<string, number> = {}
-          allAreas.forEach((area: any) => {
-            const pais = area.pais?.trim() || 'Sin país'
-            porPais[pais] = (porPais[pais] || 0) + 1
-          })
-          console.log('📊 Distribución de áreas por país:', porPais)
-        }
       } catch (err) {
         console.error('Error cargando áreas:', err)
       } finally {
         setLoading(false)
-        setInitialLoading(false) // ✅ Ocultar skeleton incluso si hay error
+        setInitialLoading(false)
       }
     }
 
-    loadAreas()
-  }, [])
+    // Debounce para evitar recargas rápidas al cambiar filtros
+    const timeoutId = setTimeout(() => {
+      loadAreas()
+    }, 300)
+
+    return () => clearTimeout(timeoutId)
+  }, [filtros.pais]) // Recargar cuando cambie el país
 
   // ✅ OPTIMIZACIÓN #3: Obtener ubicación del usuario CON REVERSE GEOCODING (con cache)
   useEffect(() => {
