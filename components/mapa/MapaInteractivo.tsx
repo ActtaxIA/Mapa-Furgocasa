@@ -112,6 +112,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
 
           console.log('🗺️ Inicializando mapa con centro:', { lat: 40.4168, lng: -3.7038 }, 'zoom:', 6)
           const mapInstance = new Map(mapRef.current, {
+            mapId: "DEMO_MAP_ID", // Activa mapas vectoriales (transiciones suaves)
             center: { lat: 40.4168, lng: -3.7038 }, // Madrid centro por defecto
             zoom: 6,
             mapTypeControl: false, // Quitamos para evitar solapamiento
