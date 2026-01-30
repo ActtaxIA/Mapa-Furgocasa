@@ -30,7 +30,11 @@ export function MapLibreMap({
   const mapRef = useRef<maplibregl.Map | null>(null)
   const markersRef = useRef<{ [key: string]: maplibregl.Marker }>({})
   const clusterIndexRef = useRef<Supercluster | null>(null)
+  const userMarkerRef = useRef<maplibregl.Marker | null>(null)
+  const watchIdRef = useRef<number | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
+  const [gpsActive, setGpsActive] = useState(false)
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
 
   // Obtener URL de estilo según configuración
   const getStyleUrl = () => {
@@ -309,6 +313,96 @@ export function MapLibreMap({
     `
   }
 
+  // Función GPS - Igual que Google Maps
+  const toggleGPS = () => {
+    if (!gpsActive) {
+      // Activar GPS
+      if (navigator.geolocation && mapRef.current) {
+        const watchId = navigator.geolocation.watchPosition(
+          (position) => {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            }
+            setUserLocation(pos)
+            
+            // Crear o actualizar marcador de usuario
+            if (!userMarkerRef.current) {
+              // Crear elemento HTML para el marcador GPS
+              const el = document.createElement('div')
+              el.style.width = '20px'
+              el.style.height = '20px'
+              el.style.borderRadius = '50%'
+              el.style.backgroundColor = '#4285F4'
+              el.style.border = '3px solid white'
+              el.style.boxShadow = '0 0 0 4px rgba(66, 133, 244, 0.3)'
+
+              userMarkerRef.current = new maplibregl.Marker({ element: el })
+                .setLngLat([pos.lng, pos.lat])
+                .addTo(mapRef.current!)
+              
+              // Centrar en la primera ubicación
+              mapRef.current!.flyTo({
+                center: [pos.lng, pos.lat],
+                zoom: 14,
+                duration: 1500
+              })
+            } else {
+              // Actualizar posición
+              userMarkerRef.current.setLngLat([pos.lng, pos.lat])
+            }
+          },
+          (error) => {
+            console.error('Error GPS:', error)
+            alert('No se pudo obtener tu ubicación. Verifica los permisos.')
+          },
+          {
+            enableHighAccuracy: true,
+            maximumAge: 10000,
+            timeout: 5000
+          }
+        )
+        watchIdRef.current = watchId
+        setGpsActive(true)
+      }
+    } else {
+      // Desactivar GPS
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current)
+        watchIdRef.current = null
+      }
+      if (userMarkerRef.current) {
+        userMarkerRef.current.remove()
+        userMarkerRef.current = null
+      }
+      setGpsActive(false)
+      setUserLocation(null)
+    }
+  }
+
+  // Función restablecer zoom - Igual que Google Maps
+  const resetZoom = () => {
+    if (mapRef.current) {
+      mapRef.current.flyTo({
+        center: [-3.7038, 40.4168], // Madrid
+        zoom: 6,
+        duration: 1500
+      })
+    }
+  }
+
+  // Limpiar GPS al desmontar
+  useEffect(() => {
+    return () => {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current)
+      }
+      if (userMarkerRef.current) {
+        userMarkerRef.current.remove()
+      }
+    }
+  }, [])
+
   return (
     <div className="relative w-full h-full">
       {/* Contenedor del mapa */}
@@ -343,6 +437,66 @@ export function MapLibreMap({
           {areas.length} {areas.length === 1 ? 'área' : 'áreas'}
         </p>
       </div>
+
+      {/* Botón GPS - Igual que Google Maps */}
+      <button
+        onClick={() => toggleGPS()}
+        className={`absolute bottom-20 md:bottom-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full shadow-lg font-semibold transition-all z-10 flex items-center gap-2 mb-16 md:mb-0 ${
+          gpsActive
+            ? 'bg-primary-600 text-white hover:bg-primary-700'
+            : 'bg-white text-gray-700 hover:bg-gray-50'
+        }`}
+        aria-label={gpsActive ? "Desactivar GPS" : "Activar GPS"}
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+        <span className="text-sm">{gpsActive ? 'GPS Activado' : 'Ver ubicación'}</span>
+      </button>
+
+      {/* Botón Restablecer Zoom - Igual que Google Maps */}
+      <button
+        onClick={resetZoom}
+        className="absolute bottom-6 md:bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-10 flex items-center gap-2 font-semibold text-gray-700 mb-16 md:mb-0"
+        aria-label="Restablecer zoom"
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"
+          />
+        </svg>
+        <span className="text-sm">Restablecer Zoom</span>
+      </button>
     </div>
   )
 }

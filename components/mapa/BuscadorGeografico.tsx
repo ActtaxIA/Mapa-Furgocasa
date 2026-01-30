@@ -37,8 +37,12 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
     }
 
     // Extraer coordenadas INMEDIATAMENTE (antes de cualquier otra operación)
-    const lat = place.geometry.location.lat()
-    const lng = place.geometry.location.lng()
+    const lat = typeof place.geometry.location.lat === 'function' 
+      ? place.geometry.location.lat() 
+      : place.geometry.location.lat
+    const lng = typeof place.geometry.location.lng === 'function'
+      ? place.geometry.location.lng()
+      : place.geometry.location.lng
     const viewport = place.geometry.viewport
     const address = place.formatted_address || place.name || ''
 
@@ -69,46 +73,43 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
     if (mapRef.current) {
       const mapInstance = mapRef.current
       
-      // SIEMPRE centrar en las coordenadas EXACTAS del lugar
-      console.log('📍 Centrando en coordenadas exactas:', lat, lng, '(', address, ')')
-      mapInstance.setCenter({ lat, lng })
-      
       // Calcular zoom apropiado según el viewport
+      let calculatedZoom = 12
+      
       if (viewport) {
-        // Calcular el nivel de zoom basado en el tamaño del viewport
-        // NO usar fitBounds porque cambiaría el centro
+        const ne = typeof viewport.getNorthEast === 'function' ? viewport.getNorthEast() : viewport
+        const sw = typeof viewport.getSouthWest === 'function' ? viewport.getSouthWest() : viewport
         
-        const ne = viewport.getNorthEast()
-        const sw = viewport.getSouthWest()
+        const neLat = typeof ne.lat === 'function' ? ne.lat() : ne.lat
+        const neLng = typeof ne.lng === 'function' ? ne.lng() : ne.lng
+        const swLat = typeof sw.lat === 'function' ? sw.lat() : sw.lat
+        const swLng = typeof sw.lng === 'function' ? sw.lng() : sw.lng
         
-        const latDiff = Math.abs(ne.lat() - sw.lat())
-        const lngDiff = Math.abs(ne.lng() - sw.lng())
+        const latDiff = Math.abs(neLat - swLat)
+        const lngDiff = Math.abs(neLng - swLng)
         const maxDiff = Math.max(latDiff, lngDiff)
         
         // Calcular zoom basado en el tamaño del viewport
-        // Mientras más grande el viewport, menor el zoom
-        let calculatedZoom = 10
-        
         if (maxDiff > 30) {
-          calculatedZoom = 4  // País muy grande (Ej: Rusia, China)
+          calculatedZoom = 4
         } else if (maxDiff > 15) {
-          calculatedZoom = 5  // País grande (Ej: Francia, España)
+          calculatedZoom = 5
         } else if (maxDiff > 7) {
-          calculatedZoom = 6  // Región grande
+          calculatedZoom = 6
         } else if (maxDiff > 3) {
-          calculatedZoom = 7  // Región mediana
+          calculatedZoom = 7
         } else if (maxDiff > 1.5) {
-          calculatedZoom = 8  // Región pequeña
+          calculatedZoom = 8
         } else if (maxDiff > 0.7) {
-          calculatedZoom = 9  // Ciudad grande
+          calculatedZoom = 9
         } else if (maxDiff > 0.3) {
-          calculatedZoom = 10 // Ciudad mediana
+          calculatedZoom = 10
         } else if (maxDiff > 0.1) {
-          calculatedZoom = 12 // Ciudad pequeña
+          calculatedZoom = 12
         } else if (maxDiff > 0.05) {
-          calculatedZoom = 13 // Barrio
+          calculatedZoom = 13
         } else {
-          calculatedZoom = 14 // Lugar específico
+          calculatedZoom = 14
         }
         
         console.log('🔍 Viewport info:', {
@@ -117,12 +118,29 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
           maxDiff: maxDiff.toFixed(4),
           calculatedZoom
         })
-        
+      }
+      
+      // Detectar tipo de mapa y aplicar la acción correspondiente
+      console.log('📍 Centrando en coordenadas exactas:', lat, lng, '(', address, ')')
+      
+      // Google Maps
+      if (typeof mapInstance.setCenter === 'function' && typeof mapInstance.setZoom === 'function') {
+        mapInstance.setCenter({ lat, lng })
         mapInstance.setZoom(calculatedZoom)
-      } else {
-        // Sin viewport: zoom por defecto para ciudad
-        console.log('📍 Sin viewport, usando zoom 12')
-        mapInstance.setZoom(12)
+      } 
+      // MapLibre GL
+      else if (typeof mapInstance.flyTo === 'function' && mapInstance.getCanvas) {
+        mapInstance.flyTo({
+          center: [lng, lat], // MapLibre usa [lng, lat]
+          zoom: calculatedZoom,
+          duration: 1500
+        })
+      }
+      // Leaflet
+      else if (typeof mapInstance.flyTo === 'function' && !mapInstance.getCanvas) {
+        mapInstance.flyTo([lat, lng], calculatedZoom, {
+          duration: 1.5
+        })
       }
       
       console.log('✅ Mapa centrado en:', address)

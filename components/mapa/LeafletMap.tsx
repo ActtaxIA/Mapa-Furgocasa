@@ -12,10 +12,14 @@ if (typeof window !== 'undefined') {
   L = require('leaflet')
   require('leaflet/dist/leaflet.css')
   
-  // Importar Leaflet.markercluster
-  require('leaflet.markercluster')
-  require('leaflet.markercluster/dist/MarkerCluster.css')
-  require('leaflet.markercluster/dist/MarkerCluster.Default.css')
+  // Importar Leaflet.markercluster (TEMPORALMENTE COMENTADO PARA BUILD)
+  try {
+    require('leaflet.markercluster')
+    require('leaflet.markercluster/dist/MarkerCluster.css')
+    require('leaflet.markercluster/dist/MarkerCluster.Default.css')
+  } catch (e) {
+    console.warn('⚠️ leaflet.markercluster no disponible, usando marcadores sin clustering')
+  }
   
   // Fix para los iconos de Leaflet (problema conocido con webpack)
   delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -48,7 +52,11 @@ export function LeafletMap({
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
   const markerClusterGroupRef = useRef<any>(null)
+  const userMarkerRef = useRef<any>(null)
+  const watchIdRef = useRef<number | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
+  const [gpsActive, setGpsActive] = useState(false)
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
 
   // Obtener URL de tiles según estilo
   const getTileUrl = () => {
@@ -112,48 +120,21 @@ export function LeafletMap({
     }
   }, [estilo])
 
-  // Añadir marcadores CON CLUSTERING cuando el mapa esté listo
+  // Añadir marcadores (SIN CLUSTERING por ahora - pendiente npm install)
   useEffect(() => {
     if (!mapRef.current || !mapLoaded || areas.length === 0 || !L) return
 
-    console.log(`📍 Añadiendo ${areas.length} marcadores con clustering a Leaflet...`)
+    console.log(`📍 Añadiendo ${areas.length} marcadores a Leaflet...`)
 
-    // Limpiar cluster group anterior
+    // Limpiar marcadores anteriores
     if (markerClusterGroupRef.current) {
       mapRef.current.removeLayer(markerClusterGroupRef.current)
+      markerClusterGroupRef.current = null
     }
 
-    // Crear nuevo MarkerClusterGroup con opciones similares a Google Maps
-    const markerClusterGroup = L.markerClusterGroup({
-      maxClusterRadius: 100,
-      spiderfyOnMaxZoom: true,
-      showCoverageOnHover: false,
-      zoomToBoundsOnClick: true,
-      disableClusteringAtZoom: 14, // Similar a maxZoom: 13
-      iconCreateFunction: function(cluster: any) {
-        const count = cluster.getChildCount()
-        return L.divIcon({
-          html: `<div style="
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #0284c7;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            border: 3px solid white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-          ">${count}</div>`,
-          className: 'custom-cluster-icon',
-          iconSize: L.point(40, 40)
-        })
-      }
-    })
-
-    // Crear marcadores
+    // Crear marcadores directamente (sin clustering)
+    const markers: any[] = []
+    
     areas.forEach(area => {
       const iconHtml = `
         <div style="
@@ -174,23 +155,23 @@ export function LeafletMap({
       })
 
       const marker = L.marker([area.latitud, area.longitud], { icon: customIcon })
+        .addTo(mapRef.current)
         .bindPopup(createPopupContent(area))
         .on('click', () => {
           onAreaClick(area)
         })
 
-      markerClusterGroup.addLayer(marker)
+      markers.push(marker)
     })
 
-    // Añadir cluster group al mapa
-    mapRef.current.addLayer(markerClusterGroup)
-    markerClusterGroupRef.current = markerClusterGroup
+    // Guardar referencia para limpieza
+    markerClusterGroupRef.current = { markers }
 
-    console.log(`✅ ${areas.length} marcadores añadidos con clustering`)
+    console.log(`✅ ${areas.length} marcadores añadidos (sin clustering - pendiente instalación)`)
 
     return () => {
-      if (markerClusterGroupRef.current && mapRef.current) {
-        mapRef.current.removeLayer(markerClusterGroupRef.current)
+      if (markerClusterGroupRef.current?.markers) {
+        markerClusterGroupRef.current.markers.forEach((m: any) => m.remove())
       }
     }
 
@@ -252,6 +233,97 @@ export function LeafletMap({
     `
   }
 
+  // Función GPS - Igual que Google Maps
+  const toggleGPS = () => {
+    if (!gpsActive && L) {
+      // Activar GPS
+      if (navigator.geolocation && mapRef.current) {
+        const watchId = navigator.geolocation.watchPosition(
+          (position) => {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            }
+            setUserLocation(pos)
+            
+            // Crear o actualizar marcador de usuario
+            if (!userMarkerRef.current) {
+              // Crear icono GPS personalizado
+              const gpsIcon = L.divIcon({
+                html: `<div style="
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 50%;
+                  background-color: #4285F4;
+                  border: 3px solid white;
+                  box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.3);
+                "></div>`,
+                className: 'gps-marker',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+              })
+
+              userMarkerRef.current = L.marker([pos.lat, pos.lng], { icon: gpsIcon })
+                .addTo(mapRef.current)
+              
+              // Centrar en la primera ubicación
+              mapRef.current.flyTo([pos.lat, pos.lng], 14, {
+                duration: 1.5
+              })
+            } else {
+              // Actualizar posición
+              userMarkerRef.current.setLatLng([pos.lat, pos.lng])
+            }
+          },
+          (error) => {
+            console.error('Error GPS:', error)
+            alert('No se pudo obtener tu ubicación. Verifica los permisos.')
+          },
+          {
+            enableHighAccuracy: true,
+            maximumAge: 10000,
+            timeout: 5000
+          }
+        )
+        watchIdRef.current = watchId
+        setGpsActive(true)
+      }
+    } else {
+      // Desactivar GPS
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current)
+        watchIdRef.current = null
+      }
+      if (userMarkerRef.current && mapRef.current) {
+        mapRef.current.removeLayer(userMarkerRef.current)
+        userMarkerRef.current = null
+      }
+      setGpsActive(false)
+      setUserLocation(null)
+    }
+  }
+
+  // Función restablecer zoom - Igual que Google Maps
+  const resetZoom = () => {
+    if (mapRef.current) {
+      mapRef.current.flyTo([40.4168, -3.7038], 6, {
+        duration: 1.5
+      })
+    }
+  }
+
+  // Limpiar GPS al desmontar
+  useEffect(() => {
+    return () => {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current)
+      }
+      if (userMarkerRef.current && mapRef.current) {
+        mapRef.current.removeLayer(userMarkerRef.current)
+      }
+    }
+  }, [])
+
   if (!L) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -294,6 +366,66 @@ export function LeafletMap({
           {areas.length} {areas.length === 1 ? 'área' : 'áreas'}
         </p>
       </div>
+
+      {/* Botón GPS - Igual que Google Maps */}
+      <button
+        onClick={() => toggleGPS()}
+        className={`absolute bottom-20 md:bottom-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full shadow-lg font-semibold transition-all z-[1000] flex items-center gap-2 mb-16 md:mb-0 ${
+          gpsActive
+            ? 'bg-primary-600 text-white hover:bg-primary-700'
+            : 'bg-white text-gray-700 hover:bg-gray-50'
+        }`}
+        aria-label={gpsActive ? "Desactivar GPS" : "Activar GPS"}
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+        <span className="text-sm">{gpsActive ? 'GPS Activado' : 'Ver ubicación'}</span>
+      </button>
+
+      {/* Botón Restablecer Zoom - Igual que Google Maps */}
+      <button
+        onClick={resetZoom}
+        className="absolute bottom-6 md:bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-[1000] flex items-center gap-2 font-semibold text-gray-700 mb-16 md:mb-0"
+        aria-label="Restablecer zoom"
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"
+          />
+        </svg>
+        <span className="text-sm">Restablecer Zoom</span>
+      </button>
     </div>
   )
 }
