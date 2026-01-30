@@ -24,7 +24,33 @@ export function useMapConfig() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const supabase = createClient()
+    
+    // Cargar configuración inicial
     fetchConfig()
+
+    // ✅ Suscribirse a cambios en tiempo real
+    const channel = supabase
+      .channel('map-config-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'configuracion_mapas'
+        },
+        (payload) => {
+          console.log('🔄 Cambio detectado en configuración de mapas:', payload)
+          // Recargar configuración cuando hay cambios
+          fetchConfig()
+        }
+      )
+      .subscribe()
+
+    // Limpiar suscripción al desmontar
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   const fetchConfig = async () => {

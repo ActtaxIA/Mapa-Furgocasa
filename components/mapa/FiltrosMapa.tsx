@@ -194,7 +194,7 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
 
           {/* Dropdown List con Scroll */}
           {paisDropdownOpen && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-[1000] w-full mt-1 bg-white border border-gray-300 rounded-md shadow-xl max-h-80 overflow-y-auto">
               {/* Opción "Todos los países" */}
               <button
                 type="button"
@@ -225,6 +225,13 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
                   {pais}
                 </button>
               ))}
+              
+              {/* Indicador de total de países */}
+              {paisesDisponibles.length > 0 && (
+                <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-3 py-2 text-xs text-gray-500 text-center">
+                  {paisesDisponibles.length} países disponibles
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -36,15 +36,16 @@ export function MapaInteractivo(props: MapaInteractivoProps) {
   console.log('🗺️ Proveedor de mapa seleccionado:', config.proveedor, '| Estilo:', config.estilo)
 
   // Renderizar el mapa según el proveedor configurado
+  // ✅ Usamos key={config.estilo} para forzar remontaje cuando cambia el estilo
   switch (config.proveedor) {
     case 'maplibre':
-      return <MapLibreMap {...props} estilo={config.estilo} />
+      return <MapLibreMap key={`maplibre-${config.estilo}`} {...props} estilo={config.estilo} />
     
     case 'leaflet':
-      return <LeafletMap {...props} estilo={config.estilo} />
+      return <LeafletMap key={`leaflet-${config.estilo}`} {...props} estilo={config.estilo} />
     
     case 'google':
     default:
-      return <MapaInteractivoGoogle {...props} estilo={config.estilo} />
+      return <MapaInteractivoGoogle key={`google-${config.estilo}`} {...props} estilo={config.estilo} />
   }
 }
