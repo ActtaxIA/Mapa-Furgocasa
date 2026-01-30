@@ -1,0 +1,258 @@
+<!-- SECCIÓN EXTRAS INCLUIDOS -->
+<style>
+    .fc-extras-incluidos {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 50px 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-extras-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .fc-extras-header h2 {
+        font-size: 36px;
+        margin-bottom: 12px;
+        color: #222;
+    }
+    .fc-extras-header p {
+        font-size: 16px;
+        color: #666;
+    }
+    .fc-extras-container {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+    .fc-extras-gratis {
+        flex: 1 1 500px;
+        background: linear-gradient(135deg, #063971 0%, #074a8c 100%);
+        border-radius: 20px;
+        padding: 36px 32px;
+        color: #fff;
+    }
+    .fc-extras-gratis-title {
+        font-size: 28px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .fc-extras-gratis-icon {
+        font-size: 32px;
+    }
+    .fc-extras-gratis-subtitle {
+        font-size: 15px;
+        opacity: 0.9;
+        margin-bottom: 24px;
+    }
+    .fc-extras-gratis-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .fc-extras-gratis-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 15px;
+    }
+    .fc-extras-gratis-list li:last-child {
+        border-bottom: none;
+    }
+    .fc-extras-gratis-list li::before {
+        content: '✓';
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+    .fc-extras-pago {
+        flex: 1 1 500px;
+        background: #fff;
+        border: 2px solid #e3e6ee;
+        border-radius: 20px;
+        padding: 36px 32px;
+    }
+    .fc-extras-pago-title {
+        font-size: 28px;
+        margin-bottom: 10px;
+        color: #222;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .fc-extras-pago-icon {
+        font-size: 32px;
+    }
+    .fc-extras-pago-subtitle {
+        font-size: 15px;
+        color: #666;
+        margin-bottom: 24px;
+    }
+    .fc-extras-pago-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .fc-extras-pago-item {
+        padding: 14px 0;
+        border-bottom: 1px solid #e3e6ee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+    }
+    .fc-extras-pago-item:last-child {
+        border-bottom: none;
+    }
+    .fc-extras-pago-item-name {
+        font-size: 15px;
+        color: #444;
+        flex: 1;
+    }
+    .fc-extras-pago-item-price {
+        font-size: 18px;
+        font-weight: bold;
+        color: #063971;
+        white-space: nowrap;
+    }
+    .fc-extras-pago-item-price small {
+        font-size: 13px;
+        font-weight: normal;
+        color: #888;
+    }
+    .fc-extras-destacados {
+        margin-top: 40px;
+        padding: 24px;
+        background: #f8f9fa;
+        border-radius: 16px;
+        border-left: 4px solid #ffb347;
+    }
+    .fc-extras-destacados-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 12px;
+    }
+    .fc-extras-destacados-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 14px;
+        color: #555;
+        line-height: 1.8;
+    }
+    .fc-extras-destacados-list li {
+        margin-bottom: 6px;
+    }
+    .fc-extras-destacados-list strong {
+        color: #ffb347;
+    }
+    @media (max-width: 900px) {
+        .fc-extras-container {
+            flex-direction: column;
+        }
+    }
+    @media (max-width: 768px) {
+        .fc-extras-incluidos {
+            padding: 20px 16px;
+        }
+        .fc-extras-header h2 {
+            font-size: 28px;
+        }
+        .fc-extras-header p {
+            font-size: 14px;
+        }
+        .fc-extras-gratis,
+        .fc-extras-pago {
+            padding: 28px 24px;
+        }
+        .fc-extras-gratis-title,
+        .fc-extras-pago-title {
+            font-size: 24px;
+        }
+    }
+</style>
+
+<div class="fc-extras-incluidos">
+    <div class="fc-extras-header">
+        <h2>Extras y accesorios</h2>
+        <p>Qu&eacute; est&aacute; incluido en el precio y qu&eacute; tiene coste adicional</p>
+    </div>
+
+    <div class="fc-extras-container">
+        <div class="fc-extras-gratis">
+            <div class="fc-extras-gratis-title">
+                <span class="fc-extras-gratis-icon">✓</span>
+                <span>Incluido sin coste</span>
+            </div>
+            <p class="fc-extras-gratis-subtitle">
+                Todo lo necesario para que disfrutes al m&aacute;ximo de tu viaje
+            </p>
+            <ul class="fc-extras-gratis-list">
+                <li>Kil&oacute;metros ilimitados</li>
+                <li>Conductor/es adicional/es</li>
+                <li>Utensilios de cocina completos</li>
+                <li>Kit de camping (mesa y sillas)</li>
+                <li>Derecho a desistir los primeros 14 d&iacute;as</li>
+                <li>Cancelaci&oacute;n gratuita hasta 60 d&iacute;as antes</li>
+            </ul>
+        </div>
+
+        <div class="fc-extras-pago">
+            <div class="fc-extras-pago-title">
+                <span class="fc-extras-pago-icon">💰</span>
+                <span>Extras opcionales</span>
+            </div>
+            <p class="fc-extras-pago-subtitle">
+                Complementos adicionales para mayor comodidad
+            </p>
+            <ul class="fc-extras-pago-list">
+                <div class="fc-extras-pago-item">
+                    <span class="fc-extras-pago-item-name">S&aacute;banas y almohadas</span>
+                    <span class="fc-extras-pago-item-price">30 &euro; <small>/ viaje</small></span>
+                </div>
+                <div class="fc-extras-pago-item">
+                    <span class="fc-extras-pago-item-name">Edred&oacute;n invierno</span>
+                    <span class="fc-extras-pago-item-price">20 &euro; <small>/ viaje</small></span>
+                </div>
+                <div class="fc-extras-pago-item">
+                    <span class="fc-extras-pago-item-name">Toallas de ba&ntilde;o</span>
+                    <span class="fc-extras-pago-item-price">20 &euro; <small>/ viaje</small></span>
+                </div>
+                <div class="fc-extras-pago-item">
+                    <span class="fc-extras-pago-item-name">Mascotas permitidas</span>
+                    <span class="fc-extras-pago-item-price">40 &euro; <small>/ viaje</small></span>
+                </div>
+                <div class="fc-extras-pago-item">
+                    <span class="fc-extras-pago-item-name">Aparcamiento en Murcia</span>
+                    <span class="fc-extras-pago-item-price">10 &euro; <small>/ d&iacute;a</small></span>
+                </div>
+                <div class="fc-extras-pago-item">
+                    <span class="fc-extras-pago-item-name">2&ordf; cama (4 plazas)</span>
+                    <span class="fc-extras-pago-item-price">10 &euro; <small>/ d&iacute;a</small></span>
+                </div>
+            </ul>
+        </div>
+    </div>
+
+    <div class="fc-extras-destacados">
+        <div class="fc-extras-destacados-title">✨ Destacados</div>
+        <ul class="fc-extras-destacados-list">
+            <li><strong>Derecho a desistir los primeros 14 d&iacute;as</strong> sin cargo alguno</li>
+            <li><strong>Cancelaci&oacute;n gratuita</strong> hasta 60 d&iacute;as antes del inicio</li>
+            <li><strong>Kil&oacute;metros ilimitados</strong> en todos nuestros alquileres</li>
+            <li>Aparcamiento solo disponible a partir de 4 d&iacute;as de alquiler (sede Murcia)</li>
+        </ul>
+    </div>
+</div>
+<!-- FIN SECCIÓN EXTRAS INCLUIDOS -->
+

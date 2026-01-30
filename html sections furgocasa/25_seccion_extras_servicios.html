@@ -1,0 +1,185 @@
+<!-- SECCIÓN EXTRAS Y SERVICIOS -->
+<style>
+    .fc-extras {
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-extras-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .fc-extras-header h2 {
+        font-size: 32px;
+        margin-bottom: 8px;
+        color: #222;
+    }
+    .fc-extras-header p {
+        font-size: 15px;
+        color: #666;
+    }
+    .fc-extras-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 18px;
+    }
+    .fc-extra-card {
+        border-radius: 16px;
+        border: 1px solid #e3e6ee;
+        padding: 24px 22px;
+        background: #fff;
+        transition: all 0.3s;
+        position: relative;
+    }
+    .fc-extra-card:hover {
+        border-color: #2c7efb;
+        box-shadow: 0 6px 20px rgba(44, 126, 251, 0.12);
+        transform: translateY(-3px);
+    }
+    .fc-extra-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: #f0f4ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 16px;
+        color: #2c7efb;
+    }
+    .fc-extra-card:nth-child(2) .fc-extra-icon {
+        background: #f0fff4;
+        color: #22b573;
+    }
+    .fc-extra-card:nth-child(3) .fc-extra-icon {
+        background: #fff8f0;
+        color: #ff8c42;
+    }
+    .fc-extra-card:nth-child(4) .fc-extra-icon {
+        background: #f5f0ff;
+        color: #9b59b6;
+    }
+    .fc-extra-card:nth-child(5) .fc-extra-icon {
+        background: #fff0f5;
+        color: #e74c3c;
+    }
+    .fc-extra-card:nth-child(6) .fc-extra-icon {
+        background: #f0f9ff;
+        color: #3498db;
+    }
+    .fc-extra-title {
+        font-size: 17px;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 8px;
+    }
+    .fc-extra-text {
+        font-size: 13px;
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 12px;
+    }
+    .fc-extra-price {
+        font-size: 18px;
+        font-weight: bold;
+        color: #2c7efb;
+        margin-top: auto;
+    }
+    .fc-extra-price small {
+        font-size: 12px;
+        font-weight: normal;
+        color: #888;
+    }
+    .fc-extra-badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #ff6b6b;
+        color: #fff;
+        font-size: 11px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    @media (max-width: 900px) {
+        .fc-extras-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="fc-extras">
+    <div class="fc-extras-header">
+        <h2>Extras y servicios opcionales</h2>
+        <p>Personaliza tu viaje con estos complementos disponibles</p>
+    </div>
+
+    <div class="fc-extras-grid">
+        <div class="fc-extra-card">
+            <div class="fc-extra-icon">🛏️</div>
+            <div class="fc-extra-title">Ropa de cama completa</div>
+            <div class="fc-extra-text">
+                S&aacute;banas, fundas de almohada y mantas para toda la camper. 
+                Todo limpio y listo para usar.
+            </div>
+            <div class="fc-extra-price">25 &euro; <small>/ viaje</small></div>
+        </div>
+
+        <div class="fc-extra-card">
+            <div class="fc-extra-icon">🚗</div>
+            <div class="fc-extra-title">Silla y mesa plegables</div>
+            <div class="fc-extra-text">
+                Set completo de sillas y mesa exterior para disfrutar del aire libre 
+                en tus paradas favoritas.
+            </div>
+            <div class="fc-extra-price">15 &euro; <small>/ viaje</small></div>
+        </div>
+
+        <div class="fc-extra-card">
+            <div class="fc-extra-icon">📱</div>
+            <div class="fc-extra-title">WiFi port&aacute;til</div>
+            <div class="fc-extra-text">
+                Router WiFi con datos ilimitados para mantenerte conectado durante 
+                todo el viaje.
+            </div>
+            <div class="fc-extra-price">35 &euro; <small>/ viaje</small></div>
+        </div>
+
+        <div class="fc-extra-card">
+            <div class="fc-extra-icon">🚲</div>
+            <div class="fc-extra-title">Portabicicletas</div>
+            <div class="fc-extra-text">
+                Portabicicletas trasero para llevar hasta 2 bicicletas. 
+                Perfecto para explorar los alrededores.
+            </div>
+            <div class="fc-extra-price">40 &euro; <small>/ viaje</small></div>
+        </div>
+
+        <div class="fc-extra-card">
+            <span class="fc-extra-badge">Popular</span>
+            <div class="fc-extra-icon">🛡️</div>
+            <div class="fc-extra-title">Seguro sin franquicia</div>
+            <div class="fc-extra-text">
+                Reduce la franquicia a 0&euro;. Viaja con total tranquilidad 
+                sin preocuparte por posibles da&ntilde;os.
+            </div>
+            <div class="fc-extra-price">12 &euro; <small>/ d&iacute;a</small></div>
+        </div>
+
+        <div class="fc-extra-card">
+            <div class="fc-extra-icon">🗺️</div>
+            <div class="fc-extra-title">Gu&iacute;a de rutas personalizada</div>
+            <div class="fc-extra-text">
+                Nuestro equipo te prepara una gu&iacute;a con rutas recomendadas, 
+                paradas interesantes y consejos seg&uacute;n tus gustos.
+            </div>
+            <div class="fc-extra-price">Gratis</div>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN EXTRAS Y SERVICIOS -->
+
+

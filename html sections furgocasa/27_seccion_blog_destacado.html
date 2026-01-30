@@ -1,0 +1,183 @@
+<!-- SECCIÓN BLOG/DESTACADO -->
+<style>
+    .fc-blog-destacado {
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-blog-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .fc-blog-header h2 {
+        font-size: 32px;
+        margin-bottom: 8px;
+        color: #222;
+    }
+    .fc-blog-header p {
+        font-size: 15px;
+        color: #666;
+    }
+    .fc-blog-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 24px;
+    }
+    .fc-blog-card {
+        border-radius: 20px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #e3e6ee;
+        transition: all 0.3s;
+        display: flex;
+        flex-direction: column;
+    }
+    .fc-blog-card:hover {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transform: translateY(-4px);
+    }
+    .fc-blog-image {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    .fc-blog-image::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 100%);
+    }
+    .fc-blog-card:nth-child(2) .fc-blog-image {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    .fc-blog-card:nth-child(3) .fc-blog-image {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    .fc-blog-category {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.95);
+        font-size: 11px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        z-index: 2;
+        color: #667eea;
+    }
+    .fc-blog-content {
+        padding: 24px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .fc-blog-date {
+        font-size: 12px;
+        color: #999;
+        margin-bottom: 10px;
+    }
+    .fc-blog-title {
+        font-size: 20px;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 12px;
+        line-height: 1.4;
+    }
+    .fc-blog-excerpt {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.7;
+        margin-bottom: 16px;
+        flex: 1;
+    }
+    .fc-blog-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #2c7efb;
+        text-decoration: none;
+    }
+    .fc-blog-link:hover {
+        text-decoration: none;
+        color: #1f63c9;
+    }
+    .fc-blog-link::after {
+        content: '→';
+        transition: transform 0.3s;
+    }
+    .fc-blog-link:hover::after {
+        transform: translateX(4px);
+    }
+    @media (max-width: 900px) {
+        .fc-blog-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="fc-blog-destacado">
+    <div class="fc-blog-header">
+        <h2>Inspiraci&oacute;n para tu pr&oacute;ximo viaje</h2>
+        <p>Rutas, consejos y experiencias de otros viajeros</p>
+    </div>
+
+    <div class="fc-blog-grid">
+        <div class="fc-blog-card">
+            <div class="fc-blog-image">
+                <div class="fc-blog-category">Rutas</div>
+            </div>
+            <div class="fc-blog-content">
+                <div class="fc-blog-date">15 de marzo, 2024</div>
+                <h3 class="fc-blog-title">5 rutas imprescindibles por la Costa Brava en camper</h3>
+                <p class="fc-blog-excerpt">
+                    Descubre calas escondidas, pueblos con encanto y los mejores lugares 
+                    para aparcar tu camper en la Costa Brava. Una gu&iacute;a completa con 
+                    paradas recomendadas y consejos pr&aacute;cticos.
+                </p>
+                <a href="#" class="fc-blog-link">Leer art&iacute;culo completo</a>
+            </div>
+        </div>
+
+        <div class="fc-blog-card">
+            <div class="fc-blog-image">
+                <div class="fc-blog-category">Consejos</div>
+            </div>
+            <div class="fc-blog-content">
+                <div class="fc-blog-date">8 de marzo, 2024</div>
+                <h3 class="fc-blog-title">Primera vez en autocaravana: todo lo que necesitas saber</h3>
+                <p class="fc-blog-excerpt">
+                    Si es tu primera vez viajando en camper, este art&iacute;culo te ayudar&aacute; 
+                    a prepararte. Desde qu&eacute; llevar hasta c&oacute;mo elegir el mejor lugar 
+                    para aparcar. Consejos de viajeros experimentados.
+                </p>
+                <a href="#" class="fc-blog-link">Leer art&iacute;culo completo</a>
+            </div>
+        </div>
+
+        <div class="fc-blog-card">
+            <div class="fc-blog-image">
+                <div class="fc-blog-category">Experiencias</div>
+            </div>
+            <div class="fc-blog-content">
+                <div class="fc-blog-date">1 de marzo, 2024</div>
+                <h3 class="fc-blog-title">Viaje en familia: nuestra experiencia recorriendo los Picos de Europa</h3>
+                <p class="fc-blog-excerpt">
+                    Una familia nos cuenta su experiencia de 10 d&iacute;as recorriendo los Picos 
+                    de Europa con una de nuestras campers familiares. Descubre qu&eacute; rutas 
+                    hicieron y qu&eacute; lugares no te puedes perder.
+                </p>
+                <a href="#" class="fc-blog-link">Leer art&iacute;culo completo</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN BLOG/DESTACADO -->
+
+

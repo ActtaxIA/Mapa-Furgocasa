@@ -1,0 +1,423 @@
+<!-- SECCIÓN CALENDARIO DE TEMPORADAS -->
+<style>
+    .fc-temporadas {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 50px 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-temporadas-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .fc-temporadas-header h2 {
+        font-size: 36px;
+        margin-bottom: 12px;
+        color: #222;
+    }
+    .fc-temporadas-header p {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 24px;
+    }
+    .fc-temporadas-year-selector {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 30px;
+    }
+    .fc-temporadas-year-btn {
+        padding: 12px 32px;
+        border-radius: 8px;
+        background: #fff;
+        border: 2px solid #e3e6ee;
+        color: #444;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .fc-temporadas-year-btn.active {
+        background: #063971;
+        border-color: #063971;
+        color: #fff;
+    }
+    .fc-temporadas-year-btn:hover {
+        border-color: #063971;
+        transform: translateY(-2px);
+    }
+    .fc-temporadas-leyenda {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+    }
+    .fc-temporadas-leyenda-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: #444;
+    }
+    .fc-temporadas-leyenda-color {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        border: 2px solid rgba(0,0,0,0.1);
+    }
+    .fc-temporadas-leyenda-color--baja {
+        background: #90EE90;
+    }
+    .fc-temporadas-leyenda-color--media {
+        background: #FFD700;
+    }
+    .fc-temporadas-leyenda-color--media-alta {
+        background: #FFA500;
+    }
+    .fc-temporadas-leyenda-color--alta {
+        background: #FF6B6B;
+    }
+    .fc-temporadas-calendario {
+        background: #fff;
+        border: 2px solid #e3e6ee;
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .fc-temporadas-calendario-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #063971;
+        text-align: center;
+        margin-bottom: 24px;
+    }
+    .fc-temporadas-meses {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    .fc-temporadas-mes {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 18px;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+    }
+    .fc-temporadas-mes:hover {
+        border-color: #063971;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(30, 74, 122, 0.1);
+    }
+    .fc-temporadas-mes-nombre {
+        font-size: 18px;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 12px;
+        text-align: center;
+    }
+    .fc-temporadas-mes-periodos {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .fc-temporadas-mes-periodo {
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        border-radius: 6px;
+        font-size: 13px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+    }
+    .fc-temporadas-mes-periodo:last-child {
+        margin-bottom: 0;
+    }
+    .fc-temporadas-mes-periodo--baja {
+        background: #90EE90;
+        color: #1a5c1a;
+    }
+    .fc-temporadas-mes-periodo--media {
+        background: #FFD700;
+        color: #6b5600;
+    }
+    .fc-temporadas-mes-periodo--media-alta {
+        background: #FFA500;
+        color: #663d00;
+    }
+    .fc-temporadas-mes-periodo--alta {
+        background: #FF6B6B;
+        color: #660000;
+    }
+    .fc-temporadas-mes-fecha {
+        font-size: 12px;
+    }
+    .fc-temporadas-mes-tipo {
+        font-weight: bold;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .fc-temporadas-nota {
+        margin-top: 30px;
+        padding: 20px;
+        background: #fff8e6;
+        border-left: 4px solid #ffb347;
+        border-radius: 12px;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.7;
+    }
+    .fc-temporadas-nota strong {
+        color: #ff8c42;
+    }
+    @media (max-width: 768px) {
+        .fc-temporadas {
+            padding: 20px 16px;
+        }
+        .fc-temporadas-header h2 {
+            font-size: 28px;
+        }
+        .fc-temporadas-header p {
+            font-size: 14px;
+        }
+        .fc-temporadas-year-selector {
+            gap: 8px;
+        }
+        .fc-temporadas-year-btn {
+            padding: 10px 24px;
+            font-size: 14px;
+        }
+        .fc-temporadas-leyenda {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 16px;
+            gap: 12px;
+        }
+        .fc-temporadas-leyenda-item {
+            font-size: 13px;
+        }
+        .fc-temporadas-calendario {
+            padding: 24px 20px;
+        }
+        .fc-temporadas-calendario-title {
+            font-size: 20px;
+        }
+        .fc-temporadas-meses {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        .fc-temporadas-mes {
+            padding: 16px;
+        }
+        .fc-temporadas-mes-nombre {
+            font-size: 16px;
+        }
+        .fc-temporadas-mes-periodo {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+        .fc-temporadas-nota {
+            padding: 16px;
+            font-size: 13px;
+        }
+    }
+</style>
+
+<div class="fc-temporadas">
+    <div class="fc-temporadas-header">
+        <h2>Calendario de temporadas</h2>
+        <p>Consulta las fechas de cada temporada para planificar tu viaje</p>
+    </div>
+
+    <div class="fc-temporadas-year-selector">
+        <button class="fc-temporadas-year-btn active">2025</button>
+        <button class="fc-temporadas-year-btn">2026</button>
+    </div>
+
+    <div class="fc-temporadas-leyenda">
+        <div class="fc-temporadas-leyenda-item">
+            <div class="fc-temporadas-leyenda-color fc-temporadas-leyenda-color--baja"></div>
+            <span><strong>Temporada Baja</strong> - Precios m&aacute;s econ&oacute;micos</span>
+        </div>
+        <div class="fc-temporadas-leyenda-item">
+            <div class="fc-temporadas-leyenda-color fc-temporadas-leyenda-color--media"></div>
+            <span><strong>Temporada Media</strong> - Precios intermedios</span>
+        </div>
+        <div class="fc-temporadas-leyenda-item">
+            <div class="fc-temporadas-leyenda-color fc-temporadas-leyenda-color--media-alta"></div>
+            <span><strong>Temporada Media-Alta</strong> - Precios superiores</span>
+        </div>
+        <div class="fc-temporadas-leyenda-item">
+            <div class="fc-temporadas-leyenda-color fc-temporadas-leyenda-color--alta"></div>
+            <span><strong>Temporada Alta</strong> - Per&iacute;odo de m&aacute;xima demanda</span>
+        </div>
+    </div>
+
+    <div class="fc-temporadas-calendario">
+        <div class="fc-temporadas-calendario-title">A&ntilde;o 2025</div>
+        
+        <div class="fc-temporadas-meses">
+            <div class="fc-temporadas-mes">
+                <div class="fc-temporadas-mes-nombre">Enero</div>
+                <ul class="fc-temporadas-mes-periodos">
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--baja">
+                        <span class="fc-temporadas-mes-fecha">Todo el mes</span>
+                        <span class="fc-temporadas-mes-tipo">Baja</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="fc-temporadas-mes">
+                <div class="fc-temporadas-mes-nombre">Febrero</div>
+                <ul class="fc-temporadas-mes-periodos">
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--baja">
+                        <span class="fc-temporadas-mes-fecha">Todo el mes</span>
+                        <span class="fc-temporadas-mes-tipo">Baja</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="fc-temporadas-mes">
+                <div class="fc-temporadas-mes-nombre">Marzo</div>
+                <ul class="fc-temporadas-mes-periodos">
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--baja">
+                        <span class="fc-temporadas-mes-fecha">1-15 Mar</span>
+                        <span class="fc-temporadas-mes-tipo">Baja</span>
+                    </li>
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--media">
+                        <span class="fc-temporadas-mes-fecha">16-31 Mar</span>
+                        <span class="fc-temporadas-mes-tipo">Media</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="fc-temporadas-mes">
+                <div class="fc-temporadas-mes-nombre">Abril</div>
+                <ul class="fc-temporadas-mes-periodos">
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--media">
+                        <span class="fc-temporadas-mes-fecha">1-10 Abr</span>
+                        <span class="fc-temporadas-mes-tipo">Media</span>
+                    </li>
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--media-alta">
+                        <span class="fc-temporadas-mes-fecha">11-20 Abr</span>
+                        <span class="fc-temporadas-mes-tipo">Media-Alta</span>
+                    </li>
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--media">
+                        <span class="fc-temporadas-mes-fecha">21-30 Abr</span>
+                        <span class="fc-temporadas-mes-tipo">Media</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="fc-temporadas-mes">
+                <div class="fc-temporadas-mes-nombre">Mayo</div>
+                <ul class="fc-temporadas-mes-periodos">
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--media">
+                        <span class="fc-temporadas-mes-fecha">Todo el mes</span>
+                        <span class="fc-temporadas-mes-tipo">Media</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="fc-temporadas-mes">
+                <div class="fc-temporadas-mes-nombre">Junio</div>
+                <ul class="fc-temporadas-mes-periodos">
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--media">
+                        <span class="fc-temporadas-mes-fecha">1-15 Jun</span>
+                        <span class="fc-temporadas-mes-tipo">Media</span>
+                    </li>
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--alta">
+                        <span class="fc-temporadas-mes-fecha">16-30 Jun</span>
+                        <span class="fc-temporadas-mes-tipo">Alta</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="fc-temporadas-mes">
+                <div class="fc-temporadas-mes-nombre">Julio</div>
+                <ul class="fc-temporadas-mes-periodos">
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--alta">
+                        <span class="fc-temporadas-mes-fecha">Todo el mes</span>
+                        <span class="fc-temporadas-mes-tipo">Alta</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="fc-temporadas-mes">
+                <div class="fc-temporadas-mes-nombre">Agosto</div>
+                <ul class="fc-temporadas-mes-periodos">
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--alta">
+                        <span class="fc-temporadas-mes-fecha">Todo el mes</span>
+                        <span class="fc-temporadas-mes-tipo">Alta</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="fc-temporadas-mes">
+                <div class="fc-temporadas-mes-nombre">Septiembre</div>
+                <ul class="fc-temporadas-mes-periodos">
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--alta">
+                        <span class="fc-temporadas-mes-fecha">1-7 Sep</span>
+                        <span class="fc-temporadas-mes-tipo">Alta</span>
+                    </li>
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--media">
+                        <span class="fc-temporadas-mes-fecha">8-30 Sep</span>
+                        <span class="fc-temporadas-mes-tipo">Media</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="fc-temporadas-mes">
+                <div class="fc-temporadas-mes-nombre">Octubre</div>
+                <ul class="fc-temporadas-mes-periodos">
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--media">
+                        <span class="fc-temporadas-mes-fecha">1-12 Oct</span>
+                        <span class="fc-temporadas-mes-tipo">Media</span>
+                    </li>
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--baja">
+                        <span class="fc-temporadas-mes-fecha">13-31 Oct</span>
+                        <span class="fc-temporadas-mes-tipo">Baja</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="fc-temporadas-mes">
+                <div class="fc-temporadas-mes-nombre">Noviembre</div>
+                <ul class="fc-temporadas-mes-periodos">
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--baja">
+                        <span class="fc-temporadas-mes-fecha">Todo el mes</span>
+                        <span class="fc-temporadas-mes-tipo">Baja</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="fc-temporadas-mes">
+                <div class="fc-temporadas-mes-nombre">Diciembre</div>
+                <ul class="fc-temporadas-mes-periodos">
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--baja">
+                        <span class="fc-temporadas-mes-fecha">1-20 Dic</span>
+                        <span class="fc-temporadas-mes-tipo">Baja</span>
+                    </li>
+                    <li class="fc-temporadas-mes-periodo fc-temporadas-mes-periodo--media-alta">
+                        <span class="fc-temporadas-mes-fecha">21-31 Dic</span>
+                        <span class="fc-temporadas-mes-tipo">Media-Alta</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="fc-temporadas-nota">
+        <strong>📅 Nota:</strong> Las fechas de cada temporada pueden variar ligeramente seg&uacute;n 
+        las festividades y puentes. Para conocer el precio exacto de tus fechas, utiliza nuestro 
+        <strong>buscador de disponibilidad</strong>. Los descuentos por duraci&oacute;n se reducen 
+        en temporada media, media-alta y alta.
+    </div>
+</div>
+<!-- FIN SECCIÓN CALENDARIO DE TEMPORADAS -->
+

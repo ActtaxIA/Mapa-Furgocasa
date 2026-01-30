@@ -1,0 +1,174 @@
+<!-- SECCION GRID MODELOS MINIMAL -->
+<style>
+    .fc-modelos {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-modelos-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .fc-modelos-header h2 {
+        font-size: 30px;
+        margin-bottom: 6px;
+    }
+    .fc-modelos-header p {
+        font-size: 14px;
+        color: #777;
+    }
+    .fc-modelos-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+    .fc-modelo-card {
+        border-radius: 18px;
+        border: 1px solid #e3e6ee;
+        padding: 20px 18px;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .fc-modelo-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+    .fc-modelo-tipo {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #999;
+    }
+    .fc-modelo-nombre {
+        font-size: 18px;
+        font-weight: bold;
+        color: #222;
+    }
+    .fc-modelo-chip {
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid #dde4f0;
+        color: #4b5c7a;
+        white-space: nowrap;
+    }
+    .fc-modelo-info {
+        font-size: 13px;
+        color: #555;
+        line-height: 1.6;
+    }
+    .fc-modelo-detalles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 12px;
+        color: #666;
+        margin-top: 4px;
+    }
+    .fc-modelo-detalles span {
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #f4f5f9;
+    }
+    .fc-modelo-precio {
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #1f3b68;
+    }
+    .fc-modelo-precio small {
+        font-size: 11px;
+        font-weight: normal;
+        color: #888;
+        margin-left: 4px;
+    }
+    @media (max-width: 900px) {
+        .fc-modelos-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="fc-modelos">
+    <div class="fc-modelos-header">
+        <h2>Encuentra tu camper ideal</h2>
+        <p>Modelos pensados para diferentes formas de viajar</p>
+    </div>
+
+    <div class="fc-modelos-grid">
+        <div class="fc-modelo-card">
+            <div class="fc-modelo-top">
+                <div>
+                    <div class="fc-modelo-tipo">Parejas</div>
+                    <div class="fc-modelo-nombre">Compacta</div>
+                </div>
+                <div class="fc-modelo-chip">F&aacute;cil de conducir</div>
+            </div>
+            <div class="fc-modelo-info">
+                Ideal para dos personas que quieren moverse con agilidad y aparcar en casi cualquier sitio.
+            </div>
+            <div class="fc-modelo-detalles">
+                <span>2 plazas dormir</span>
+                <span>Cocina b&aacute;sica</span>
+                <span>Ba&ntilde;o compacto</span>
+            </div>
+            <div class="fc-modelo-precio">
+                Desde 89 &euro; / d&iacute;a
+                <small>seg&uacute;n temporada</small>
+            </div>
+        </div>
+
+        <div class="fc-modelo-card">
+            <div class="fc-modelo-top">
+                <div>
+                    <div class="fc-modelo-tipo">Familias</div>
+                    <div class="fc-modelo-nombre">Familiar</div>
+                </div>
+                <div class="fc-modelo-chip">La m&aacute;s reservada</div>
+            </div>
+            <div class="fc-modelo-info">
+                Espacio para todos, almacenamiento extra y distribuci&oacute;n pensada para viajar en familia.
+            </div>
+            <div class="fc-modelo-detalles">
+                <span>4&ndash;5 plazas dormir</span>
+                <span>Ducha separada</span>
+                <span>Aire acondicionado</span>
+            </div>
+            <div class="fc-modelo-precio">
+                Desde 129 &euro; / d&iacute;a
+                <small>seg&uacute;n temporada</small>
+            </div>
+        </div>
+
+        <div class="fc-modelo-card">
+            <div class="fc-modelo-top">
+                <div>
+                    <div class="fc-modelo-tipo">Premium</div>
+                    <div class="fc-modelo-nombre">Suite sobre ruedas</div>
+                </div>
+                <div class="fc-modelo-chip">Extra confort</div>
+            </div>
+            <div class="fc-modelo-info">
+                Para quienes quieren viajar con todos los detalles: acabados de alta gama y tecnolog&iacute;a a bordo.
+            </div>
+            <div class="fc-modelo-detalles">
+                <span>Cama XL</span>
+                <span>Paneles solares</span>
+                <span>TV y Wi&ndash;Fi</span>
+            </div>
+            <div class="fc-modelo-precio">
+                Desde 159 &euro; / d&iacute;a
+                <small>seg&uacute;n temporada</small>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCION GRID MODELOS MINIMAL -->
+
+
+

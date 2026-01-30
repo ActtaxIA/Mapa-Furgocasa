@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verificar Sesión</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Verificar Sesión de Usuario</h1>
+    <button onclick="verificarSesion()">Ver Mi Sesión</button>
+    <pre id="resultado"></pre>
+
+    <script>
+        const supabase = window.supabase.createClient(
+            'https://dkqnemjcmcnyhuvstosf.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrcW5lbWpjbWNueWh1dnN0b3NmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxMjA5ODIsImV4cCI6MjA0NTY5Njk4Mn0.xSaXoU8s2I66nPnrwW7nnzrk7IjSvQ0mDkZMpSjj6HA'
+        );
+
+        async function verificarSesion() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (session) {
+                document.getElementById('resultado').textContent = JSON.stringify({
+                    email: session.user.email,
+                    id: session.user.id,
+                    metadata: session.user.user_metadata,
+                    created_at: session.user.created_at
+                }, null, 2);
+            } else {
+                document.getElementById('resultado').textContent = 'No hay sesión activa';
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+

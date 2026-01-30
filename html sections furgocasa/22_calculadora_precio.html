@@ -1,0 +1,215 @@
+<!-- SECCIÓN CALCULADORA DE PRECIO -->
+<style>
+    .fc-calculadora {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-calculadora-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .fc-calculadora-header h2 {
+        font-size: 32px;
+        margin-bottom: 8px;
+        color: #222;
+    }
+    .fc-calculadora-header p {
+        font-size: 15px;
+        color: #666;
+    }
+    .fc-calculadora-box {
+        border-radius: 20px;
+        border: 1px solid #e3e6ee;
+        background: #fff;
+        padding: 32px 28px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .fc-calc-row {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    .fc-calc-field {
+        flex: 1 1 200px;
+    }
+    .fc-calc-label {
+        font-size: 13px;
+        font-weight: bold;
+        color: #444;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .fc-calc-input {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #d0d5dd;
+        border-radius: 10px;
+        font-size: 15px;
+        transition: all 0.3s;
+        box-sizing: border-box;
+    }
+    .fc-calc-input:focus {
+        outline: none;
+        border-color: #2c7efb;
+        box-shadow: 0 0 0 3px rgba(44, 126, 251, 0.1);
+    }
+    .fc-calc-select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #d0d5dd;
+        border-radius: 10px;
+        font-size: 15px;
+        background: #fff;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-sizing: border-box;
+    }
+    .fc-calc-select:focus {
+        outline: none;
+        border-color: #2c7efb;
+        box-shadow: 0 0 0 3px rgba(44, 126, 251, 0.1);
+    }
+    .fc-calc-result {
+        margin-top: 28px;
+        padding: 24px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #2c7efb 0%, #1f63c9 100%);
+        color: #fff;
+        text-align: center;
+    }
+    .fc-calc-result-label {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        opacity: 0.9;
+        margin-bottom: 8px;
+    }
+    .fc-calc-result-price {
+        font-size: 42px;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+    .fc-calc-result-note {
+        font-size: 13px;
+        opacity: 0.9;
+        margin-top: 8px;
+    }
+    .fc-calc-cta {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 14px 36px;
+        border-radius: 999px;
+        background: #fff;
+        color: #2c7efb !important;
+        font-weight: bold;
+        text-decoration: none;
+        font-size: 15px;
+        transition: all 0.3s;
+    }
+    .fc-calc-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        text-decoration: none;
+    }
+    @media (max-width: 600px) {
+        .fc-calc-row {
+            flex-direction: column;
+        }
+        .fc-calc-field {
+            flex: 1 1 auto;
+        }
+    }
+</style>
+
+<div class="fc-calculadora">
+    <div class="fc-calculadora-header">
+        <h2>Calcula el precio de tu viaje</h2>
+        <p>Introduce tus fechas y modelo para ver el precio aproximado</p>
+    </div>
+
+    <div class="fc-calculadora-box">
+        <div class="fc-calc-row">
+            <div class="fc-calc-field">
+                <label class="fc-calc-label">Fecha inicio</label>
+                <input type="date" class="fc-calc-input" id="fc-calc-fecha-inicio">
+            </div>
+            <div class="fc-calc-field">
+                <label class="fc-calc-label">Fecha fin</label>
+                <input type="date" class="fc-calc-input" id="fc-calc-fecha-fin">
+            </div>
+        </div>
+
+        <div class="fc-calc-row">
+            <div class="fc-calc-field">
+                <label class="fc-calc-label">Modelo de camper</label>
+                <select class="fc-calc-select" id="fc-calc-modelo">
+                    <option value="89">Compacta - Desde 89&euro;/d&iacute;a</option>
+                    <option value="129">Familiar - Desde 129&euro;/d&iacute;a</option>
+                    <option value="159">Premium - Desde 159&euro;/d&iacute;a</option>
+                </select>
+            </div>
+            <div class="fc-calc-field">
+                <label class="fc-calc-label">N&uacute;mero de d&iacute;as</label>
+                <input type="number" class="fc-calc-input" id="fc-calc-dias" value="7" min="3" max="30">
+            </div>
+        </div>
+
+        <div class="fc-calc-result">
+            <div class="fc-calc-result-label">Precio estimado</div>
+            <div class="fc-calc-result-price" id="fc-calc-precio">623 &euro;</div>
+            <div class="fc-calc-result-note">
+                Precio base. Puede variar seg&uacute;n temporada y extras seleccionados.
+            </div>
+            <a href="https://www.furgocasa.com/es/reservar" class="fc-calc-cta">
+                Ver disponibilidad real
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calcularPrecio() {
+        const modelo = parseInt(document.getElementById('fc-calc-modelo').value);
+        const dias = parseInt(document.getElementById('fc-calc-dias').value) || 7;
+        const precio = modelo * dias;
+        document.getElementById('fc-calc-precio').textContent = precio + ' \u20ac';
+    }
+
+    document.getElementById('fc-calc-modelo').addEventListener('change', calcularPrecio);
+    document.getElementById('fc-calc-dias').addEventListener('input', calcularPrecio);
+    
+    const fechaInicio = document.getElementById('fc-calc-fecha-inicio');
+    const fechaFin = document.getElementById('fc-calc-fecha-fin');
+    
+    fechaInicio.addEventListener('change', function() {
+        if (fechaInicio.value && fechaFin.value) {
+            const inicio = new Date(fechaInicio.value);
+            const fin = new Date(fechaFin.value);
+            const diffTime = Math.abs(fin - inicio);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays > 0) {
+                document.getElementById('fc-calc-dias').value = diffDays;
+                calcularPrecio();
+            }
+        }
+    });
+    
+    fechaFin.addEventListener('change', function() {
+        if (fechaInicio.value && fechaFin.value) {
+            const inicio = new Date(fechaInicio.value);
+            const fin = new Date(fechaFin.value);
+            const diffTime = Math.abs(fin - inicio);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays > 0) {
+                document.getElementById('fc-calc-dias').value = diffDays;
+                calcularPrecio();
+            }
+        }
+    });
+</script>
+<!-- FIN SECCIÓN CALCULADORA DE PRECIO -->
+
+

@@ -1,0 +1,110 @@
+<!-- SECCIÓN TIPOS DE ESCAPADA -->
+<style>
+    .fc-escapadas {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-escapadas-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .fc-escapadas-header h2 {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+    .fc-escapadas-header p {
+        color: #666;
+        font-size: 15px;
+    }
+    .fc-escapadas-grid {
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        gap: 18px;
+    }
+    .fc-escapada-card {
+        border-radius: 18px;
+        padding: 24px 22px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+    .fc-escapada-card h3 {
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+    .fc-escapada-card p {
+        font-size: 14px;
+        line-height: 1.6;
+        opacity: 0.95;
+    }
+    .fc-escapada-tag {
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        opacity: 0.75;
+        margin-bottom: 10px;
+    }
+    .fc-escapada-label {
+        position: absolute;
+        right: 16px;
+        bottom: 14px;
+        font-size: 13px;
+        opacity: 0.9;
+    }
+    .fc-escapada-card--playa {
+        background: linear-gradient(135deg, #0099f7, #4facfe);
+    }
+    .fc-escapada-card--montana {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+    }
+    .fc-escapada-card--city {
+        background: linear-gradient(135deg, #f12711, #f5af19);
+    }
+    @media (max-width: 900px) {
+        .fc-escapadas-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="fc-escapadas">
+    <div class="fc-escapadas-header">
+        <h2>Elige tu tipo de escapada</h2>
+        <p>Una camper, tres maneras de vivir el viaje</p>
+    </div>
+
+    <div class="fc-escapadas-grid">
+        <div class="fc-escapada-card fc-escapada-card--playa">
+            <div class="fc-escapada-tag">Costa</div>
+            <h3>Amanecer frente al mar</h3>
+            <p>
+                Du&eacute;rmete oyendo las olas y desayuna con el port&oacute;n abierto a la playa.
+                Rutas perfectas por el Mediterr&aacute;neo y el Atl&aacute;ntico.
+            </p>
+            <div class="fc-escapada-label">Playas, calas, chiringuitos</div>
+        </div>
+        <div class="fc-escapada-card fc-escapada-card--montana">
+            <div class="fc-escapada-tag">Monta&ntilde;a</div>
+            <h3>Noches de estrellas</h3>
+            <p>
+                Aparca en mitad de la naturaleza, respira aire puro y despierta
+                con vistas a picos, bosques y valles.
+            </p>
+            <div class="fc-escapada-label">Picos, parques naturales</div>
+        </div>
+        <div class="fc-escapada-card fc-escapada-card--city">
+            <div class="fc-escapada-tag">Ruta urbana</div>
+            <h3>Ciudades a tu ritmo</h3>
+            <p>
+                Combina cultura, gastronom&iacute;a y escapadas r&aacute;pidas fuera de la ciudad,
+                sin cambiar de &quot;hotel&quot;.
+            </p>
+            <div class="fc-escapada-label">Ciudades, conciertos, planes</div>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN TIPOS DE ESCAPADA -->
+
+

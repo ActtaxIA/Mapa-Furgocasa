@@ -1,0 +1,186 @@
+<!-- SECCIÓN NEWSLETTER -->
+<style>
+    .fc-newsletter {
+        max-width: 900px;
+        margin: 50px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-newsletter-box {
+        border-radius: 24px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        padding: 50px 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .fc-newsletter-decoration {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+    }
+    .fc-newsletter-decoration-1 {
+        top: -50px;
+        left: -50px;
+    }
+    .fc-newsletter-decoration-2 {
+        bottom: -50px;
+        right: -50px;
+    }
+    .fc-newsletter-content {
+        position: relative;
+        z-index: 2;
+    }
+    .fc-newsletter-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+    .fc-newsletter-title {
+        font-size: 36px;
+        margin-bottom: 12px;
+        line-height: 1.2;
+    }
+    .fc-newsletter-subtitle {
+        font-size: 18px;
+        color: #e8f0ff;
+        margin-bottom: 32px;
+        line-height: 1.6;
+    }
+    .fc-newsletter-form {
+        max-width: 500px;
+        margin: 0 auto;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .fc-newsletter-input {
+        flex: 1 1 250px;
+        padding: 14px 18px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 999px;
+        background: rgba(255,255,255,0.15);
+        color: #fff;
+        font-size: 15px;
+        box-sizing: border-box;
+        transition: all 0.3s;
+    }
+    .fc-newsletter-input::placeholder {
+        color: rgba(255,255,255,0.7);
+    }
+    .fc-newsletter-input:focus {
+        outline: none;
+        border-color: rgba(255,255,255,0.5);
+        background: rgba(255,255,255,0.2);
+    }
+    .fc-newsletter-submit {
+        flex: 0 0 auto;
+        padding: 14px 32px;
+        border-radius: 999px;
+        background: #fff;
+        color: #667eea !important;
+        font-weight: bold;
+        font-size: 15px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        white-space: nowrap;
+    }
+    .fc-newsletter-submit:hover {
+        background: #f0f0f0;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+    .fc-newsletter-benefits {
+        margin-top: 32px;
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        font-size: 14px;
+        color: #d5e4ff;
+    }
+    .fc-newsletter-benefit {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .fc-newsletter-benefit-icon {
+        font-size: 18px;
+    }
+    .fc-newsletter-privacy {
+        margin-top: 20px;
+        font-size: 12px;
+        color: rgba(255,255,255,0.8);
+    }
+    .fc-newsletter-privacy a {
+        color: #fff;
+        text-decoration: underline;
+    }
+    @media (max-width: 600px) {
+        .fc-newsletter-box {
+            padding: 40px 28px;
+        }
+        .fc-newsletter-title {
+            font-size: 28px;
+        }
+        .fc-newsletter-form {
+            flex-direction: column;
+        }
+        .fc-newsletter-input,
+        .fc-newsletter-submit {
+            flex: 1 1 auto;
+            width: 100%;
+        }
+        .fc-newsletter-benefits {
+            flex-direction: column;
+            gap: 12px;
+        }
+    }
+</style>
+
+<div class="fc-newsletter">
+    <div class="fc-newsletter-box">
+        <div class="fc-newsletter-decoration fc-newsletter-decoration-1"></div>
+        <div class="fc-newsletter-decoration fc-newsletter-decoration-2"></div>
+
+        <div class="fc-newsletter-content">
+            <div class="fc-newsletter-icon">📧</div>
+            <h2 class="fc-newsletter-title">Mantente al d&iacute;a con nuestras ofertas</h2>
+            <p class="fc-newsletter-subtitle">
+                Suscr&iacute;bete a nuestra newsletter y recibe descuentos exclusivos, 
+                rutas recomendadas y consejos para tu pr&oacute;ximo viaje en camper.
+            </p>
+
+            <form class="fc-newsletter-form">
+                <input type="email" class="fc-newsletter-input" placeholder="Tu email" required>
+                <button type="submit" class="fc-newsletter-submit">Suscribirme</button>
+            </form>
+
+            <div class="fc-newsletter-benefits">
+                <div class="fc-newsletter-benefit">
+                    <span class="fc-newsletter-benefit-icon">✓</span>
+                    <span>Ofertas exclusivas</span>
+                </div>
+                <div class="fc-newsletter-benefit">
+                    <span class="fc-newsletter-benefit-icon">✓</span>
+                    <span>Rutas recomendadas</span>
+                </div>
+                <div class="fc-newsletter-benefit">
+                    <span class="fc-newsletter-benefit-icon">✓</span>
+                    <span>Sin spam, puedes darte de baja cuando quieras</span>
+                </div>
+            </div>
+
+            <div class="fc-newsletter-privacy">
+                Al suscribirte, aceptas nuestra <a href="#">pol&iacute;tica de privacidad</a>. 
+                No compartimos tu email con terceros.
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN NEWSLETTER -->
+
+

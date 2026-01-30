@@ -4,6 +4,7 @@ import { useMapConfig } from '@/hooks/useMapConfig'
 import type { Area } from '@/types/database.types'
 import { MapaInteractivoGoogle } from './MapaInteractivoGoogle'
 import { MapLibreMap } from './MapLibreMap'
+import { LeafletMap } from './LeafletMap'
 
 interface MapaInteractivoProps {
   areas: Area[]
@@ -40,9 +41,7 @@ export function MapaInteractivo(props: MapaInteractivoProps) {
       return <MapLibreMap {...props} estilo={config.estilo} />
     
     case 'leaflet':
-      // TODO: Implementar Leaflet en el futuro
-      console.warn('⚠️ Leaflet no está implementado aún, usando Google Maps')
-      return <MapaInteractivoGoogle {...props} estilo={config.estilo} />
+      return <LeafletMap {...props} estilo={config.estilo} />
     
     case 'google':
     default:

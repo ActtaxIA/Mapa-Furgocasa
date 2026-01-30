@@ -1,0 +1,869 @@
+
+					
+					<style>
+                        /* Estilos encapsulados para no interferir con Joomla/SP Page Builder */
+                        .navidad2025-section {
+                            max-width: 1200px;
+                            margin: 40px auto;
+                            padding: 20px;
+                            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+                            width: 100%;
+                            box-sizing: border-box;
+                        }
+                    
+                        .navidad2025-container {
+                            background-color: #ffffff;
+                            border-radius: 20px;
+                            overflow: hidden;
+                            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+                            width: 100%;
+                            box-sizing: border-box;
+                        }
+                    
+                        .navidad2025-section * {
+                            box-sizing: border-box;
+                            max-width: 100%;
+                        }
+                    
+                        /* Header SUPER navideño con animación */
+                        .navidad2025-header-wrapper {
+                            background: linear-gradient(135deg, #C41E3A 0%, #0C5927 25%, #FFD700 50%, #0C5927 75%, #C41E3A 100%);
+                            background-size: 400% 400%;
+                            animation: gradientShift 8s ease infinite;
+                            width: 100%;
+                            padding: 80px 0;
+                            margin: 0;
+                            position: relative;
+                            overflow: hidden;
+                        }
+                    
+                        @keyframes gradientShift {
+                            0% { background-position: 0% 50%; }
+                            50% { background-position: 100% 50%; }
+                            100% { background-position: 0% 50%; }
+                        }
+                    
+                        /* Copos de nieve animados */
+                        .navidad2025-snowflake {
+                            position: absolute;
+                            color: white;
+                            font-size: 24px;
+                            animation: falling 10s linear infinite;
+                            opacity: 0.8;
+                        }
+                    
+                        @keyframes falling {
+                            0% { 
+                                transform: translateY(-100px) rotate(0deg);
+                                opacity: 0;
+                            }
+                            10% { opacity: 0.8; }
+                            90% { opacity: 0.8; }
+                            100% { 
+                                transform: translateY(800px) rotate(360deg);
+                                opacity: 0;
+                            }
+                        }
+                    
+                        .navidad2025-header {
+                            max-width: 1200px;
+                            margin: 0 auto;
+                            padding: 0 20px;
+                            text-align: center;
+                            position: relative;
+                            z-index: 1;
+                        }
+                    
+                        .navidad2025-header h1 {
+                            color: #ffffff;
+                            font-size: 64px;
+                            margin: 0;
+                            font-weight: bold;
+                            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.6);
+                            animation: bounce 2s ease infinite;
+                        }
+                    
+                        @keyframes bounce {
+                            0%, 100% { transform: translateY(0); }
+                            50% { transform: translateY(-10px); }
+                        }
+                    
+                        .navidad2025-header .emoji-big {
+                            font-size: 80px;
+                            margin: 20px 0;
+                            display: inline-block;
+                            animation: rotate 3s linear infinite;
+                        }
+                    
+                        @keyframes rotate {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    
+                        .navidad2025-header .subtitle {
+                            font-size: 28px;
+                            color: #FFD700;
+                            margin-top: 15px;
+                            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                            animation: pulse 2s ease infinite;
+                        }
+                    
+                        @keyframes pulse {
+                            0%, 100% { transform: scale(1); }
+                            50% { transform: scale(1.05); }
+                        }
+                    
+                        /* Contenido principal */
+                        .navidad2025-content {
+                            padding: 60px 40px;
+                            text-align: center;
+                            background: linear-gradient(180deg, #ffffff 0%, #FFF9E6 100%);
+                        }
+                    
+                        .navidad2025-content h2 {
+                            color: #C41E3A;
+                            font-size: 48px;
+                            margin-bottom: 20px;
+                            font-weight: bold;
+                            animation: wiggle 1s ease infinite;
+                        }
+                    
+                        @keyframes wiggle {
+                            0%, 100% { transform: rotate(0deg); }
+                            25% { transform: rotate(-3deg); }
+                            75% { transform: rotate(3deg); }
+                        }
+                    
+                        .navidad2025-content p {
+                            color: #333333;
+                            font-size: 22px;
+                            line-height: 1.8;
+                            margin-bottom: 25px;
+                        }
+                    
+                        /* Caja de descuento MEGA DIVERTIDA */
+                        .navidad2025-discount-box {
+                            background: linear-gradient(135deg, #C41E3A 0%, #8B0000 100%);
+                            padding: 60px 40px;
+                            margin: 40px 0;
+                            border-radius: 25px;
+                            text-align: center;
+                            border: 8px dashed #FFD700;
+                            position: relative;
+                            box-shadow: 0 10px 40px rgba(196, 30, 58, 0.5);
+                            animation: boxPulse 3s ease infinite;
+                        }
+                    
+                        @keyframes boxPulse {
+                            0%, 100% { transform: scale(1); box-shadow: 0 10px 40px rgba(196, 30, 58, 0.5); }
+                            50% { transform: scale(1.02); box-shadow: 0 15px 50px rgba(196, 30, 58, 0.7); }
+                        }
+                    
+                        .navidad2025-discount-box::before {
+                            content: '🎅';
+                            position: absolute;
+                            font-size: 80px;
+                            top: -40px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            animation: santaBounce 2s ease infinite;
+                        }
+                    
+                        @keyframes santaBounce {
+                            0%, 100% { transform: translateX(-50%) translateY(0); }
+                            50% { transform: translateX(-50%) translateY(-20px); }
+                        }
+                    
+                        .navidad2025-discount-box h2 {
+                            color: #FFD700;
+                            font-size: 80px;
+                            margin: 20px 0 15px 0;
+                            font-weight: bold;
+                            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+                            animation: numberShake 0.5s ease infinite;
+                        }
+                    
+                        @keyframes numberShake {
+                            0%, 100% { transform: rotate(0deg); }
+                            25% { transform: rotate(-5deg); }
+                            75% { transform: rotate(5deg); }
+                        }
+                    
+                        .navidad2025-discount-box p {
+                            color: #ffffff;
+                            font-size: 26px;
+                            margin: 15px 0;
+                            font-weight: bold;
+                        }
+                    
+                        .navidad2025-discount-box .condition {
+                            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                            color: #8B0000;
+                            padding: 20px;
+                            border-radius: 15px;
+                            margin-top: 25px;
+                            font-size: 22px;
+                            font-weight: bold;
+                            border: 4px solid white;
+                            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                            animation: conditionGlow 2s ease infinite;
+                        }
+                    
+                        @keyframes conditionGlow {
+                            0%, 100% { box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5); }
+                            50% { box-shadow: 0 5px 25px rgba(255, 215, 0, 0.9); }
+                        }
+                    
+                        .navidad2025-emoji-decoration {
+                            font-size: 40px;
+                            margin: 0 10px;
+                            display: inline-block;
+                            animation: spin 3s linear infinite;
+                        }
+                    
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    
+                        /* Código promocional SUPER LLAMATIVO */
+                        .navidad2025-promo-section {
+                            padding: 50px 40px;
+                            text-align: center;
+                            background: linear-gradient(180deg, #FFF9E6 0%, #ffffff 100%);
+                        }
+                    
+                        .navidad2025-promo-label {
+                            font-size: 32px;
+                            font-weight: bold;
+                            color: #C41E3A;
+                            margin-bottom: 30px;
+                            animation: labelBounce 1s ease infinite;
+                        }
+                    
+                        @keyframes labelBounce {
+                            0%, 100% { transform: scale(1); }
+                            50% { transform: scale(1.1); }
+                        }
+                    
+                        .navidad2025-promo-code {
+                            display: inline-block;
+                            background: linear-gradient(135deg, #0C5927 0%, #165B33 100%);
+                            color: #FFD700;
+                            font-size: 48px;
+                            font-weight: bold;
+                            padding: 30px 70px;
+                            letter-spacing: 8px;
+                            border: 6px solid #FFD700;
+                            border-radius: 20px;
+                            box-shadow: 0 10px 30px rgba(12, 89, 39, 0.5);
+                            margin: 25px 0;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                            animation: codeShine 3s ease infinite;
+                            position: relative;
+                        }
+                    
+                        @keyframes codeShine {
+                            0%, 100% { 
+                                box-shadow: 0 10px 30px rgba(12, 89, 39, 0.5);
+                                transform: scale(1);
+                            }
+                            50% { 
+                                box-shadow: 0 15px 40px rgba(255, 215, 0, 0.8);
+                                transform: scale(1.05);
+                            }
+                        }
+                    
+                        .navidad2025-promo-code:hover {
+                            transform: scale(1.1) rotate(2deg);
+                            background: linear-gradient(135deg, #165B33 0%, #0C5927 100%);
+                        }
+                    
+                        .navidad2025-promo-code::before,
+                        .navidad2025-promo-code::after {
+                            content: '✨';
+                            position: absolute;
+                            font-size: 30px;
+                            animation: sparkle 1.5s ease infinite;
+                        }
+                    
+                        .navidad2025-promo-code::before {
+                            top: -15px;
+                            left: -15px;
+                        }
+                    
+                        .navidad2025-promo-code::after {
+                            bottom: -15px;
+                            right: -15px;
+                            animation-delay: 0.75s;
+                        }
+                    
+                        @keyframes sparkle {
+                            0%, 100% { opacity: 0; transform: scale(0); }
+                            50% { opacity: 1; transform: scale(1); }
+                        }
+                    
+                        .navidad2025-promo-description {
+                            color: #333333;
+                            font-size: 22px;
+                            line-height: 1.8;
+                            margin: 35px 0;
+                        }
+                    
+                        /* Botón CTA MEGA DIVERTIDO */
+                        .navidad2025-cta-button {
+                            display: inline-block;
+                            background: linear-gradient(135deg, #C41E3A 0%, #8B0000 100%);
+                            color: #FFD700 !important;
+                            text-decoration: none;
+                            font-size: 28px;
+                            font-weight: bold;
+                            padding: 25px 70px;
+                            border-radius: 50px;
+                            margin: 25px 0;
+                            box-shadow: 0 10px 30px rgba(196, 30, 58, 0.4);
+                            transition: all 0.3s;
+                            border: 5px solid #FFD700;
+                            animation: buttonFloat 3s ease infinite;
+                            position: relative;
+                        }
+                    
+                        @keyframes buttonFloat {
+                            0%, 100% { transform: translateY(0); }
+                            50% { transform: translateY(-10px); }
+                        }
+                    
+                        .navidad2025-cta-button:hover {
+                            background: linear-gradient(135deg, #8B0000 0%, #C41E3A 100%);
+                            transform: scale(1.1) translateY(-5px);
+                            box-shadow: 0 15px 40px rgba(196, 30, 58, 0.6);
+                            text-decoration: none;
+                        }
+                    
+                        .navidad2025-cta-button::before {
+                            content: '🎁';
+                            margin-right: 10px;
+                            animation: giftRotate 2s linear infinite;
+                            display: inline-block;
+                        }
+                    
+                        @keyframes giftRotate {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    
+                        /* Alert box DIVERTIDA */
+                        .navidad2025-alert-box {
+                            background: linear-gradient(135deg, #FFE4B5 0%, #FFD700 100%);
+                            border: 5px solid #C41E3A;
+                            padding: 35px;
+                            margin: 50px 0;
+                            border-radius: 20px;
+                            box-shadow: 0 8px 25px rgba(196, 30, 58, 0.3);
+                            animation: alertPulse 2s ease infinite;
+                        }
+                    
+                        @keyframes alertPulse {
+                            0%, 100% { transform: scale(1); }
+                            50% { transform: scale(1.02); }
+                        }
+                    
+                        .navidad2025-alert-box strong {
+                            color: #C41E3A;
+                            font-size: 28px;
+                            display: block;
+                            margin-bottom: 15px;
+                        }
+                    
+                        .navidad2025-alert-box p {
+                            color: #8B0000;
+                            font-size: 20px;
+                            margin: 0;
+                            text-align: left;
+                            font-weight: bold;
+                        }
+                    
+                        /* Features DIVERTIDAS */
+                        .navidad2025-features {
+                            background: linear-gradient(135deg, #F0FFF0 0%, #FFE4E1 100%);
+                            padding: 70px 40px;
+                            position: relative;
+                        }
+                    
+                        .navidad2025-features h3 {
+                            color: #0C5927;
+                            font-size: 42px;
+                            margin-bottom: 50px;
+                            text-align: center;
+                            animation: titleWave 2s ease infinite;
+                        }
+                    
+                        @keyframes titleWave {
+                            0%, 100% { transform: rotate(0deg); }
+                            25% { transform: rotate(-2deg); }
+                            75% { transform: rotate(2deg); }
+                        }
+                    
+                        .navidad2025-features-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                            gap: 30px;
+                            margin-top: 40px;
+                        }
+                    
+                        .navidad2025-feature-card {
+                            background: linear-gradient(135deg, #ffffff 0%, #FFF9E6 100%);
+                            padding: 35px;
+                            border-radius: 20px;
+                            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+                            transition: all 0.3s;
+                            border: 4px solid #0C5927;
+                            border-bottom: 6px solid #C41E3A;
+                        }
+                    
+                        .navidad2025-feature-card:hover {
+                            transform: translateY(-15px) rotate(2deg);
+                            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+                        }
+                    
+                        .navidad2025-feature-card .emoji {
+                            font-size: 50px;
+                            display: block;
+                            margin-bottom: 15px;
+                            animation: emojiDance 3s ease infinite;
+                        }
+                    
+                        @keyframes emojiDance {
+                            0%, 100% { transform: scale(1) rotate(0deg); }
+                            25% { transform: scale(1.1) rotate(-10deg); }
+                            75% { transform: scale(1.1) rotate(10deg); }
+                        }
+                    
+                        .navidad2025-feature-card strong {
+                            color: #C41E3A;
+                            font-size: 22px;
+                            display: block;
+                            margin-bottom: 12px;
+                        }
+                    
+                        .navidad2025-feature-card p {
+                            color: #333333;
+                            font-size: 17px;
+                            line-height: 1.6;
+                            margin: 0;
+                        }
+                    
+                        /* Steps DIVERTIDOS */
+                        .navidad2025-steps-section {
+                            padding: 70px 40px;
+                            text-align: center;
+                            background: linear-gradient(180deg, #ffffff 0%, #FFF9E6 100%);
+                        }
+                    
+                        .navidad2025-steps-section h3 {
+                            color: #0C5927;
+                            font-size: 42px;
+                            margin-bottom: 40px;
+                        }
+                    
+                        .navidad2025-steps-list {
+                            text-align: left;
+                            max-width: 700px;
+                            margin: 40px auto;
+                            font-size: 20px;
+                            line-height: 2.5;
+                            color: #333333;
+                            background: linear-gradient(135deg, #FFF9E6 0%, #FFE4E1 100%);
+                            padding: 40px;
+                            border-radius: 20px;
+                            border: 4px solid #C41E3A;
+                            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                        }
+                    
+                        .navidad2025-steps-list strong {
+                            color: #C41E3A;
+                            font-size: 28px;
+                            display: inline-block;
+                            margin-right: 10px;
+                            animation: stepBounce 2s ease infinite;
+                        }
+                    
+                        @keyframes stepBounce {
+                            0%, 100% { transform: scale(1); }
+                            50% { transform: scale(1.2); }
+                        }
+                    
+                        .navidad2025-disclaimer {
+                            font-size: 15px;
+                            color: #666;
+                            margin-top: 50px;
+                            line-height: 2;
+                            padding-bottom: 50px;
+                            font-style: italic;
+                        }
+                    
+                        /* Responsive - Tablet */
+                        @media (max-width: 992px) {
+                            .navidad2025-section {
+                                padding: 15px;
+                            }
+                    
+                            .navidad2025-content,
+                            .navidad2025-promo-section,
+                            .navidad2025-features,
+                            .navidad2025-steps-section {
+                                padding: 50px 30px;
+                            }
+                    
+                            .navidad2025-discount-box {
+                                padding: 50px 30px;
+                            }
+                    
+                            .navidad2025-header h1 {
+                                font-size: 52px;
+                            }
+                        }
+                    
+                        /* Responsive - Móvil */
+                        @media (max-width: 768px) {
+                            .navidad2025-section {
+                                padding: 10px;
+                            }
+                    
+                            .navidad2025-header-wrapper {
+                                padding: 60px 0;
+                            }
+                    
+                            .navidad2025-header {
+                                padding: 0 15px;
+                            }
+                    
+                            .navidad2025-header h1 {
+                                font-size: 38px;
+                            }
+                    
+                            .navidad2025-header .subtitle {
+                                font-size: 20px;
+                            }
+                    
+                            .navidad2025-header .emoji-big {
+                                font-size: 60px;
+                            }
+                    
+                            .navidad2025-content,
+                            .navidad2025-promo-section,
+                            .navidad2025-features,
+                            .navidad2025-steps-section {
+                                padding: 40px 20px;
+                            }
+                    
+                            .navidad2025-content h2 {
+                                font-size: 32px;
+                                line-height: 1.3;
+                            }
+                    
+                            .navidad2025-content p {
+                                font-size: 18px;
+                                line-height: 1.6;
+                            }
+                    
+                            .navidad2025-discount-box {
+                                padding: 45px 25px;
+                                margin: 35px 0;
+                            }
+                    
+                            .navidad2025-discount-box h2 {
+                                font-size: 56px;
+                                line-height: 1.2;
+                            }
+                    
+                            .navidad2025-discount-box p {
+                                font-size: 20px;
+                                line-height: 1.5;
+                            }
+                    
+                            .navidad2025-discount-box .condition {
+                                font-size: 18px;
+                                padding: 15px;
+                            }
+                    
+                            .navidad2025-emoji-decoration {
+                                font-size: 30px;
+                            }
+                    
+                            .navidad2025-promo-label {
+                                font-size: 24px;
+                            }
+                    
+                            .navidad2025-promo-code {
+                                font-size: 28px;
+                                padding: 22px 35px;
+                                letter-spacing: 4px;
+                            }
+                    
+                            .navidad2025-promo-description {
+                                font-size: 18px;
+                                padding: 0 10px;
+                            }
+                    
+                            .navidad2025-cta-button {
+                                font-size: 20px;
+                                padding: 18px 40px;
+                                width: auto;
+                                max-width: 90%;
+                            }
+                    
+                            .navidad2025-alert-box {
+                                padding: 25px 20px;
+                                margin: 35px 0;
+                            }
+                    
+                            .navidad2025-alert-box strong {
+                                font-size: 22px;
+                            }
+                    
+                            .navidad2025-alert-box p {
+                                font-size: 17px;
+                            }
+                    
+                            .navidad2025-features h3,
+                            .navidad2025-steps-section h3 {
+                                font-size: 32px;
+                                line-height: 1.3;
+                            }
+                    
+                            .navidad2025-features-grid {
+                                grid-template-columns: 1fr;
+                                gap: 20px;
+                            }
+                    
+                            .navidad2025-feature-card {
+                                padding: 25px;
+                            }
+                    
+                            .navidad2025-feature-card .emoji {
+                                font-size: 45px;
+                            }
+                    
+                            .navidad2025-feature-card strong {
+                                font-size: 20px;
+                            }
+                    
+                            .navidad2025-feature-card p {
+                                font-size: 16px;
+                            }
+                    
+                            .navidad2025-steps-list {
+                                font-size: 18px;
+                                line-height: 2.2;
+                                padding: 30px 20px;
+                            }
+                    
+                            .navidad2025-steps-list strong {
+                                font-size: 24px;
+                            }
+                    
+                            .navidad2025-disclaimer {
+                                font-size: 14px;
+                                padding: 0 10px 40px;
+                            }
+                        }
+                    
+                        /* Responsive - Móviles pequeños */
+                        @media (max-width: 480px) {
+                            .navidad2025-header-wrapper {
+                                padding: 50px 0;
+                            }
+                    
+                            .navidad2025-header h1 {
+                                font-size: 32px;
+                            }
+                    
+                            .navidad2025-header .emoji-big {
+                                font-size: 50px;
+                            }
+                    
+                            .navidad2025-header .subtitle {
+                                font-size: 18px;
+                            }
+                    
+                            .navidad2025-content h2 {
+                                font-size: 28px;
+                            }
+                    
+                            .navidad2025-discount-box h2 {
+                                font-size: 48px;
+                            }
+                    
+                            .navidad2025-promo-code {
+                                font-size: 22px;
+                                padding: 18px 28px;
+                                letter-spacing: 3px;
+                            }
+                    
+                            .navidad2025-cta-button {
+                                font-size: 18px;
+                                padding: 16px 35px;
+                            }
+                    
+                            .navidad2025-features h3,
+                            .navidad2025-steps-section h3 {
+                                font-size: 28px;
+                            }
+                    
+                            .navidad2025-steps-list {
+                                font-size: 17px;
+                                padding: 25px 15px;
+                            }
+                        }
+                    </style>
+                    
+                    <!-- Header SUPER DIVERTIDO con animación -->
+                    <div class="navidad2025-header-wrapper">
+                        <!-- Copos de nieve animados -->
+                        <div class="navidad2025-snowflake" style="left: 10%; animation-delay: 0s;">❄️</div>
+                        <div class="navidad2025-snowflake" style="left: 20%; animation-delay: 1s;">⛄</div>
+                        <div class="navidad2025-snowflake" style="left: 30%; animation-delay: 2s;">❄️</div>
+                        <div class="navidad2025-snowflake" style="left: 40%; animation-delay: 0.5s;">🎄</div>
+                        <div class="navidad2025-snowflake" style="left: 50%; animation-delay: 1.5s;">❄️</div>
+                        <div class="navidad2025-snowflake" style="left: 60%; animation-delay: 2.5s;">🎁</div>
+                        <div class="navidad2025-snowflake" style="left: 70%; animation-delay: 1s;">❄️</div>
+                        <div class="navidad2025-snowflake" style="left: 80%; animation-delay: 2s;">⭐</div>
+                        <div class="navidad2025-snowflake" style="left: 90%; animation-delay: 0.8s;">❄️</div>
+                        
+                        <div class="navidad2025-header">
+                            <div class="emoji-big">🎄</div>
+                            <h1>¡NAVIDAD MÁGICA 2025!</h1>
+                            <p class="subtitle">🎅 La aventura más divertida del año 🎁</p>
+                        </div>
+                    </div>
+                    
+                    <div class="navidad2025-section">
+                        <div class="navidad2025-container">
+                            <!-- Contenido principal -->
+                            <div class="navidad2025-content">
+                                <h2>🚐 ¡HO HO HO! ¡DESCUENTO NAVIDEÑO! 🎅</h2>
+                                <p>
+                                    🎄 ¡Santa Claus ha llegado a Furgocasa con el regalo perfecto! 🎁<br>
+                                    Prepárate para la escapada más divertida de tu vida en una de nuestras 
+                                    <strong style="color: #C41E3A;">autocaravanas premium</strong>. 
+                                    ¡Las fiestas nunca fueron tan emocionantes! 🎊✨
+                                </p>
+                            </div>
+                    
+                            <!-- Caja de descuento MEGA DIVERTIDA -->
+                            <div class="navidad2025-discount-box">
+                                <h2>🎉 -15% 🎉</h2>
+                                <p>¡EL DESCUENTO MÁS GRANDE DEL AÑO!</p>
+                                <p><span class="navidad2025-emoji-decoration">🎁</span> En TODAS nuestras CAMPERS&nbsp;<span class="navidad2025-emoji-decoration">🎁</span></p>
+                                <div class="condition">
+                                    ⭐ ¡Mínimo 5 días de aventura pura! ⭐
+                                </div>
+                            </div>
+                    
+                            <!-- Código promocional SUPER LLAMATIVO -->
+                            <div class="navidad2025-promo-section">
+                                <div class="navidad2025-promo-label">🎅 ¡USA TU CÓDIGO MÁGICO! 🎅</div>
+                                <div class="navidad2025-promo-code" onclick="navidad2025CopyCode()">NAVIDAD2025</div><p class="navidad2025-promo-description">
+                                    🎁 ¡HAZ CLIC en el código para copiarlo! 🎁<br>
+                                    Aplícalo en tu reserva de <strong style="color: #C41E3A;">5 días o más</strong> y 
+                                    <strong style="color: #0C5927;">¡AHORRA UN 15%!</strong> 🎊
+                                </p>
+                                <a href="https://www.furgocasa.com/es/reservar" class="navidad2025-cta-button">¡QUIERO MI DESCUENTO!</a>
+                            </div>
+                    
+                            <!-- Alert box DIVERTIDA -->
+                            <div class="navidad2025-alert-box">
+                                <strong>🎁 ¡OFERTA ESPECIAL DE NAVIDAD! 🎄</strong>
+                                <p>
+                                    ⏰ ¡Date prisa! Esta es la MEJOR oferta del año para vivir la Navidad más increíble de tu vida. 
+                                    Nieve, montañas, playas... ¡Tú eliges el destino! 🏔️🏖️<br><br>
+                                    🎅 Recuerda: Mínimo 5 días para activar tu descuento del 15%. 
+                                    ¡Es hora de hacer magia! ✨
+                                </p>
+                            </div>
+                    
+                            <!-- Características DIVERTIDAS -->
+                            <div class="navidad2025-features">
+                                <h3>🎄 ¿POR QUÉ FURGOCASA ES TAN GENIAL? 🎄</h3>
+                                <div class="navidad2025-features-grid">
+                                    <div class="navidad2025-feature-card">
+                                        <span class="emoji">🚐</span>
+                                        <strong>Campers de Lujo</strong>
+                                        <p>¡Viaja con todo el confort que mereces! Nuestras autocaravanas son como hoteles con ruedas 🏨✨</p>
+                                    </div>
+                                    <div class="navidad2025-feature-card">
+                                        <span class="emoji">❄️</span>
+                                        <strong>Calefacción TOP</strong>
+                                        <p>¡Calienta tus noches invernales! Perfectas para disfrutar del frío desde dentro 🔥</p>
+                                    </div>
+                                    <div class="navidad2025-feature-card">
+                                        <span class="emoji">🗺️</span>
+                                        <strong>Total Libertad</strong>
+                                        <p>¡Ve donde quieras, cuando quieras! Crea tu propia aventura navideña 🎒🌟</p>
+                                    </div>
+                                    <div class="navidad2025-feature-card">
+                                        <span class="emoji">📞</span>
+                                        <strong>Soporte 24/7</strong>
+                                        <p>¡Estamos contigo siempre! Incluso en Nochebuena 🎅📱</p>
+                                    </div>
+                                    <div class="navidad2025-feature-card">
+                                        <span class="emoji">🎁</span>
+                                        <strong>Sin Sorpresas</strong>
+                                        <p>Todo incluido, sin costes ocultos. ¡Lo que ves es lo que pagas! 💯</p>
+                                    </div>
+                                    <div class="navidad2025-feature-card">
+                                        <span class="emoji">⭐</span>
+                                        <strong>Experiencia Única</strong>
+                                        <p>¡Crea recuerdos inolvidables! Esta Navidad será ÉPICA 📸🎉</p>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <!-- Cómo reservar DIVERTIDO -->
+                            <div class="navidad2025-steps-section">
+                                <h3>🎅 ¿CÓMO CONSEGUIR TU DESCUENTO? 🎁</h3>
+                                <div class="navidad2025-steps-list">
+                                    <strong>1️⃣</strong> ¡Elige tus fechas! (Mínimo 5 días de diversión) 📅<br>
+                                    <strong>2️⃣</strong> Selecciona tu camper favorita 🚐❤️<br>
+                                    <strong>3️⃣</strong> Introduce el código mágico: <strong style="color: #0C5927;">NAVIDAD2025</strong>&nbsp;🎄<br>
+                                    <strong>4️⃣</strong> ¡BOOM! 15% de descuento activado 💥<br>
+                                    <strong>5️⃣</strong> Prepara las maletas y... ¡A DISFRUTAR! 🎒🎉
+                                </div>
+                                <a href="https://www.furgocasa.com/es/reservar" class="navidad2025-cta-button">¡EMPEZAR LA AVENTURA!</a>
+                                <p class="navidad2025-disclaimer">
+                                    *Promoción válida durante toda la temporada navideña 2025 (alquileres entre el 15 de diciembre y el 11 de enero, ambos incluidos) 🎄 
+                                    Descuento del 15% aplicable SOLO a reservas de 5 días o más. 
+                                    No acumulable con otras promociones. Sujeto a disponibilidad de nuestras increíbles autocaravanas. 
+                                    ¡Date prisa, Santa tiene plazas limitadas! 🎅✨
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <script>
+                        function navidad2025CopyCode() {
+                            const code = 'NAVIDAD15';
+                            navigator.clipboard.writeText(code).then(() => {
+                                // Alert más divertido
+                                alert('🎉🎄 ¡YUHUUU! 🎄🎉\n\n¡Código NAVIDAD15 copiado!\n\n¡Ahora ve a reservar y ahorra un 15%! 🎁✨');
+                            }).catch(err => {
+                                console.error('Error al copiar:', err);
+                                // Fallback para navegadores más antiguos
+                                const textArea = document.createElement('textarea');
+                                textArea.value = code;
+                                document.body.appendChild(textArea);
+                                textArea.select();
+                                try {
+                                    document.execCommand('copy');
+                                    alert('🎉🎄 ¡YUHUUU! 🎄🎉\n\n¡Código NAVIDAD15 copiado!\n\n¡Ahora ve a reservar y ahorra un 15%! 🎁✨');
+                                } catch (err) {
+                                    alert('❄️ Código de la suerte: NAVIDAD15 ❄️\n\n¡Cópialo manualmente y ahorra un 15%! 🎅');
+                                }
+                                document.body.removeChild(textArea);
+                            });
+                        }
+                    </script>
+                                    
+                                    

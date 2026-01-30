@@ -1,0 +1,398 @@
+<!-- SECCIÓN FAQ ACORDEÓN -->
+<style>
+    .faq-section {
+        max-width: 1000px;
+        margin: 60px auto;
+        padding: 60px 20px;
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 20px;
+    }
+
+    .faq-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .faq-header h2 {
+        font-size: 48px;
+        color: #2C3E50;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    .faq-header p {
+        font-size: 20px;
+        color: #7F8C8D;
+    }
+
+    .faq-icon-header {
+        font-size: 80px;
+        margin-bottom: 20px;
+    }
+
+    .faq-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .faq-item {
+        background: white;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+    }
+
+    .faq-item:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .faq-question {
+        padding: 25px 30px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        transition: all 0.3s;
+        user-select: none;
+    }
+
+    .faq-item.active .faq-question {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .faq-question-text {
+        font-size: 20px;
+        font-weight: bold;
+        color: #2C3E50;
+        flex: 1;
+        padding-right: 20px;
+        transition: color 0.3s;
+    }
+
+    .faq-item.active .faq-question-text {
+        color: white;
+    }
+
+    .faq-icon {
+        font-size: 28px;
+        color: #667eea;
+        transition: all 0.3s;
+        min-width: 30px;
+        text-align: center;
+    }
+
+    .faq-item.active .faq-icon {
+        color: white;
+        transform: rotate(180deg);
+    }
+
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+        background: #f8f9fa;
+    }
+
+    .faq-item.active .faq-answer {
+        max-height: 500px;
+        padding: 25px 30px;
+        border-top: 3px solid #667eea;
+    }
+
+    .faq-answer-text {
+        font-size: 17px;
+        line-height: 1.8;
+        color: #34495E;
+        margin: 0;
+    }
+
+    .faq-answer-text ul {
+        margin-top: 15px;
+        padding-left: 25px;
+    }
+
+    .faq-answer-text li {
+        margin-bottom: 10px;
+    }
+
+    .faq-answer-text strong {
+        color: #667eea;
+    }
+
+    .faq-cta {
+        text-align: center;
+        margin-top: 50px;
+        padding: 40px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .faq-cta-title {
+        font-size: 28px;
+        color: #2C3E50;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    .faq-cta-text {
+        font-size: 18px;
+        color: #7F8C8D;
+        margin-bottom: 25px;
+    }
+
+    .faq-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white !important;
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 18px 50px;
+        border-radius: 50px;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s;
+    }
+
+    .faq-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+        text-decoration: none;
+    }
+
+    .faq-contact-info {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+
+    .faq-contact-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #7F8C8D;
+        font-size: 16px;
+    }
+
+    .faq-contact-icon {
+        font-size: 24px;
+        color: #667eea;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .faq-section {
+            padding: 40px 15px;
+        }
+
+        .faq-header h2 {
+            font-size: 36px;
+        }
+
+        .faq-icon-header {
+            font-size: 60px;
+        }
+
+        .faq-question {
+            padding: 20px;
+        }
+
+        .faq-question-text {
+            font-size: 18px;
+        }
+
+        .faq-icon {
+            font-size: 24px;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 20px;
+        }
+
+        .faq-answer-text {
+            font-size: 16px;
+        }
+
+        .faq-cta {
+            padding: 30px 20px;
+        }
+
+        .faq-cta-title {
+            font-size: 24px;
+        }
+
+        .faq-contact-info {
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+</style>
+
+<div class="faq-section">
+    <div class="faq-header">
+        <div class="faq-icon-header">❓</div>
+        <h2>Preguntas Frecuentes</h2>
+        <p>Todo lo que necesitas saber sobre tu aventura en camper</p>
+    </div>
+
+    <div class="faq-container">
+        <!-- Pregunta 1 -->
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question">
+                <div class="faq-question-text">¿Qué documentos necesito para alquilar?</div>
+                <div class="faq-icon">▼</div>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-text">
+                    Para alquilar una autocaravana con nosotros necesitas:
+                    <ul>
+                        <li><strong>DNI o Pasaporte</strong> en vigor</li>
+                        <li><strong>Carnet de conducir</strong> tipo B con antigüedad mínima de 2 años</li>
+                        <li><strong>Tarjeta de crédito</strong> a nombre del conductor para el depósito</li>
+                    </ul>
+                    Es importante que todos los documentos estén en vigor durante todo el periodo de alquiler.
+                </div>
+            </div>
+        </div>
+
+        <!-- Pregunta 2 -->
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question">
+                <div class="faq-question-text">¿Qué incluye el precio del alquiler?</div>
+                <div class="faq-icon">▼</div>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-text">
+                    El precio incluye:
+                    <ul>
+                        <li>Kilometraje <strong>ilimitado</strong></li>
+                        <li>Seguro a todo riesgo con franquicia</li>
+                        <li>Asistencia en carretera <strong>24/7</strong></li>
+                        <li>Kit de limpieza y productos químicos para el baño</li>
+                        <li>Menaje completo de cocina</li>
+                        <li>Ropa de cama (opcional)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pregunta 3 -->
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question">
+                <div class="faq-question-text">¿Puedo viajar fuera de España?</div>
+                <div class="faq-icon">▼</div>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-text">
+                    Sí, puedes viajar por toda Europa. Solo necesitas informarnos con antelación para extender el seguro al país de destino. <strong>Portugal y Francia</strong> están incluidos sin coste adicional. Para otros países de la UE, hay un pequeño suplemento de seguro.
+                </div>
+            </div>
+        </div>
+
+        <!-- Pregunta 4 -->
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question">
+                <div class="faq-question-text">¿Cómo funciona el depósito de garantía?</div>
+                <div class="faq-icon">▼</div>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-text">
+                    Al recoger la camper, realizamos una <strong>retención</strong> (no cargo) en tu tarjeta de crédito de entre 800€ y 1500€ según el modelo. Esta retención se libera automáticamente <strong>24-72 horas</strong> después de la devolución, siempre que el vehículo se entregue en las mismas condiciones.
+                </div>
+            </div>
+        </div>
+
+        <!-- Pregunta 5 -->
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question">
+                <div class="faq-question-text">¿Qué pasa si tengo un problema durante el viaje?</div>
+                <div class="faq-icon">▼</div>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-text">
+                    Disponemos de <strong>asistencia 24/7</strong> durante todo tu viaje. Si tienes cualquier incidencia mecánica, problema con el equipamiento o simplemente dudas, nuestro equipo estará disponible por teléfono para ayudarte. En caso de avería, la asistencia en carretera está incluida sin coste adicional.
+                </div>
+            </div>
+        </div>
+
+        <!-- Pregunta 6 -->
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question">
+                <div class="faq-question-text">¿Puedo cancelar mi reserva?</div>
+                <div class="faq-icon">▼</div>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-text">
+                    Sí, nuestra política de cancelación es flexible:
+                    <ul>
+                        <li><strong>Más de 30 días</strong> antes: Reembolso del 100%</li>
+                        <li><strong>Entre 15-30 días</strong>: Reembolso del 50%</li>
+                        <li><strong>Menos de 15 días</strong>: No reembolsable</li>
+                    </ul>
+                    Te recomendamos contratar un seguro de cancelación para mayor tranquilidad.
+                </div>
+            </div>
+        </div>
+
+        <!-- Pregunta 7 -->
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question">
+                <div class="faq-question-text">¿Es difícil conducir una autocaravana?</div>
+                <div class="faq-icon">▼</div>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-text">
+                    ¡Para nada! Nuestras campers se conducen como una furgoneta normal. Al recoger el vehículo, te damos una <strong>explicación completa</strong> de todos los sistemas y te damos consejos de conducción. En pocos minutos te sentirás cómodo al volante. La mayoría de nuestros clientes son primerizos y repiten la experiencia.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA final -->
+    <div class="faq-cta">
+        <div class="faq-cta-title">¿Aún tienes dudas?</div>
+        <div class="faq-cta-text">Nuestro equipo está aquí para ayudarte</div>
+        <a href="https://www.furgocasa.com/es/reservar" class="faq-button">Habla con Nosotros</a>
+        
+        <div class="faq-contact-info">
+            <div class="faq-contact-item">
+                <span class="faq-contact-icon">📞</span>
+                <span>+34 XXX XXX XXX</span>
+            </div>
+            <div class="faq-contact-item">
+                <span class="faq-contact-icon">✉️</span>
+                <span>info@furgocasa.com</span>
+            </div>
+            <div class="faq-contact-item">
+                <span class="faq-contact-icon">💬</span>
+                <span>Chat en vivo</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleFaq(element) {
+        // Cerrar todos los demás items
+        const allItems = document.querySelectorAll('.faq-item');
+        allItems.forEach(item => {
+            if (item !== element && item.classList.contains('active')) {
+                item.classList.remove('active');
+            }
+        });
+        
+        // Toggle del item clickeado
+        element.classList.toggle('active');
+    }
+</script>
+<!-- FIN SECCIÓN FAQ ACORDEÓN -->
+
+

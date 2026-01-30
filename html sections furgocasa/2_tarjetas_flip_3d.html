@@ -1,0 +1,283 @@
+<!-- SECCIÓN TARJETAS FLIP 3D -->
+<style>
+    .flip3d-section {
+        max-width: 1200px;
+        margin: 60px auto;
+        padding: 20px;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .flip3d-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .flip3d-header h2 {
+        font-size: 42px;
+        color: #2C3E50;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    .flip3d-header p {
+        font-size: 20px;
+        color: #7F8C8D;
+    }
+
+    .flip3d-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+        perspective: 1000px;
+    }
+
+    .flip3d-card {
+        height: 400px;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+    }
+
+    .flip3d-card:hover {
+        transform: rotateY(180deg);
+    }
+
+    .flip3d-card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .flip3d-card-front {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .flip3d-card-front.card-orange {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .flip3d-card-front.card-green {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .flip3d-card-front.card-yellow {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+
+    .flip3d-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .flip3d-card-front h3 {
+        font-size: 28px;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    .flip3d-card-front p {
+        font-size: 16px;
+        text-align: center;
+        opacity: 0.9;
+    }
+
+    .flip3d-card-back {
+        background: white;
+        color: #2C3E50;
+        transform: rotateY(180deg);
+    }
+
+    .flip3d-card-back h4 {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #667eea;
+        font-weight: bold;
+    }
+
+    .flip3d-card-back.back-orange h4 {
+        color: #f5576c;
+    }
+
+    .flip3d-card-back.back-green h4 {
+        color: #00f2fe;
+    }
+
+    .flip3d-card-back.back-yellow h4 {
+        color: #fa709a;
+    }
+
+    .flip3d-card-back ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 25px 0;
+        text-align: left;
+        width: 100%;
+    }
+
+    .flip3d-card-back li {
+        padding: 10px 0;
+        border-bottom: 1px solid #ecf0f1;
+        font-size: 15px;
+    }
+
+    .flip3d-card-back li:before {
+        content: '✓ ';
+        color: #27ae60;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .flip3d-cta {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white !important;
+        text-decoration: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: bold;
+        transition: all 0.3s;
+        margin-top: 10px;
+    }
+
+    .flip3d-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        text-decoration: none;
+    }
+
+    .flip3d-cta.cta-orange {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .flip3d-cta.cta-green {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .flip3d-cta.cta-yellow {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .flip3d-header h2 {
+            font-size: 32px;
+        }
+
+        .flip3d-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .flip3d-card {
+            height: 350px;
+        }
+    }
+</style>
+
+<div class="flip3d-section">
+    <div class="flip3d-header">
+        <h2>Descubre Nuestras Campers</h2>
+        <p>Pasa el ratón sobre cada tarjeta para ver más detalles</p>
+    </div>
+
+    <div class="flip3d-grid">
+        <!-- Tarjeta 1 -->
+        <div class="flip3d-card">
+            <div class="flip3d-card-face flip3d-card-front">
+                <div class="flip3d-icon">🚐</div>
+                <h3>Camper Compacta</h3>
+                <p>Perfect para parejas aventureras</p>
+            </div>
+            <div class="flip3d-card-face flip3d-card-back">
+                <h4>Camper Compacta</h4>
+                <ul>
+                    <li>2 plazas cómodas</li>
+                    <li>Cocina equipada</li>
+                    <li>Baño completo</li>
+                    <li>Calefacción</li>
+                    <li>Desde 89€/día</li>
+                </ul>
+                <a href="https://www.furgocasa.com/es/reservar" class="flip3d-cta">Ver Disponibilidad</a>
+            </div>
+        </div>
+
+        <!-- Tarjeta 2 -->
+        <div class="flip3d-card">
+            <div class="flip3d-card-face flip3d-card-front card-orange">
+                <div class="flip3d-icon">🏕️</div>
+                <h3>Camper Familiar</h3>
+                <p>Espacio y comodidad para toda la familia</p>
+            </div>
+            <div class="flip3d-card-face flip3d-card-back back-orange">
+                <h4>Camper Familiar</h4>
+                <ul>
+                    <li>4-6 plazas</li>
+                    <li>Amplio salón</li>
+                    <li>Ducha separada</li>
+                    <li>Aire acondicionado</li>
+                    <li>Desde 129€/día</li>
+                </ul>
+                <a href="https://www.furgocasa.com/es/reservar" class="flip3d-cta cta-orange">Ver Disponibilidad</a>
+            </div>
+        </div>
+
+        <!-- Tarjeta 3 -->
+        <div class="flip3d-card">
+            <div class="flip3d-card-face flip3d-card-front card-green">
+                <div class="flip3d-icon">🌟</div>
+                <h3>Camper Premium</h3>
+                <p>Máximo lujo y tecnología</p>
+            </div>
+            <div class="flip3d-card-face flip3d-card-back back-green">
+                <h4>Camper Premium</h4>
+                <ul>
+                    <li>4 plazas premium</li>
+                    <li>Diseño exclusivo</li>
+                    <li>Smart TV y WiFi</li>
+                    <li>Paneles solares</li>
+                    <li>Desde 159€/día</li>
+                </ul>
+                <a href="https://www.furgocasa.com/es/reservar" class="flip3d-cta cta-green">Ver Disponibilidad</a>
+            </div>
+        </div>
+
+        <!-- Tarjeta 4 -->
+        <div class="flip3d-card">
+            <div class="flip3d-card-face flip3d-card-front card-yellow">
+                <div class="flip3d-icon">⚡</div>
+                <h3>Ofertas Especiales</h3>
+                <p>Descuentos exclusivos todo el año</p>
+            </div>
+            <div class="flip3d-card-face flip3d-card-back back-yellow">
+                <h4>Ofertas Especiales</h4>
+                <ul>
+                    <li>Descuentos temporada baja</li>
+                    <li>Reservas largas -20%</li>
+                    <li>Sin franquicia</li>
+                    <li>Extras gratis</li>
+                    <li>¡Consulta ahora!</li>
+                </ul>
+                <a href="https://www.furgocasa.com/es/reservar" class="flip3d-cta cta-yellow">Ver Ofertas</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN TARJETAS FLIP 3D -->
+
+

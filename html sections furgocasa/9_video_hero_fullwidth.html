@@ -1,0 +1,348 @@
+<!-- SECCIÓN HERO FULLWIDTH CON VIDEO -->
+<style>
+    .video-hero-section {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', sans-serif;
+        position: relative;
+        height: 700px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Fondo simulado de video con animación */
+    .video-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        background-size: 200% 200%;
+        animation: gradientShift 10s ease infinite;
+        z-index: 1;
+    }
+
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Overlay oscuro */
+    .video-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 2;
+    }
+
+    /* Partículas animadas */
+    .video-particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: white;
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: floatParticle 15s linear infinite;
+    }
+
+    @keyframes floatParticle {
+        0% {
+            transform: translateY(100vh) translateX(0);
+            opacity: 0;
+        }
+        10% {
+            opacity: 0.6;
+        }
+        90% {
+            opacity: 0.6;
+        }
+        100% {
+            transform: translateY(-100px) translateX(100px);
+            opacity: 0;
+        }
+    }
+
+    .particle-1 { left: 10%; animation-delay: 0s; }
+    .particle-2 { left: 30%; animation-delay: 2s; animation-duration: 12s; }
+    .particle-3 { left: 50%; animation-delay: 4s; animation-duration: 18s; }
+    .particle-4 { left: 70%; animation-delay: 1s; animation-duration: 14s; }
+    .particle-5 { left: 90%; animation-delay: 3s; animation-duration: 16s; }
+
+    /* Contenido */
+    .video-hero-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        color: white;
+        max-width: 900px;
+        padding: 40px;
+        animation: fadeInScale 1.5s ease-out;
+    }
+
+    @keyframes fadeInScale {
+        0% {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .video-hero-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 12px 30px;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .video-hero-title {
+        font-size: 72px;
+        font-weight: bold;
+        margin-bottom: 25px;
+        line-height: 1.2;
+        text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+        animation: slideInUp 1s ease-out 0.3s both;
+    }
+
+    @keyframes slideInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .video-hero-subtitle {
+        font-size: 28px;
+        margin-bottom: 40px;
+        line-height: 1.6;
+        opacity: 0.95;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        animation: slideInUp 1s ease-out 0.6s both;
+    }
+
+    .video-hero-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: slideInUp 1s ease-out 0.9s both;
+    }
+
+    .video-hero-button {
+        display: inline-block;
+        padding: 20px 50px;
+        font-size: 20px;
+        font-weight: bold;
+        text-decoration: none;
+        border-radius: 50px;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .video-hero-button-primary {
+        background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+        color: white !important;
+        box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+    }
+
+    .video-hero-button-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6);
+        text-decoration: none;
+    }
+
+    .video-hero-button-secondary {
+        background: rgba(255, 255, 255, 0.2);
+        color: white !important;
+        border: 3px solid white;
+        backdrop-filter: blur(10px);
+    }
+
+    .video-hero-button-secondary:hover {
+        background: white;
+        color: #667eea !important;
+        transform: translateY(-3px);
+        text-decoration: none;
+    }
+
+    /* Flecha de scroll */
+    .video-scroll-indicator {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        animation: bounceArrow 2s ease-in-out infinite;
+    }
+
+    @keyframes bounceArrow {
+        0%, 100% {
+            transform: translateX(-50%) translateY(0);
+        }
+        50% {
+            transform: translateX(-50%) translateY(15px);
+        }
+    }
+
+    .scroll-arrow {
+        font-size: 40px;
+        color: white;
+        opacity: 0.8;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Stats overlay */
+    .video-stats {
+        position: absolute;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        display: flex;
+        gap: 60px;
+        animation: fadeIn 2s ease-out 1.5s both;
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+
+    .video-stat-item {
+        text-align: center;
+        color: white;
+    }
+
+    .video-stat-number {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .video-stat-label {
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.9;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .video-hero-section {
+            height: 600px;
+        }
+
+        .video-hero-content {
+            padding: 30px 20px;
+        }
+
+        .video-hero-title {
+            font-size: 42px;
+        }
+
+        .video-hero-subtitle {
+            font-size: 20px;
+        }
+
+        .video-hero-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .video-hero-button {
+            padding: 16px 40px;
+            font-size: 18px;
+        }
+
+        .video-stats {
+            gap: 30px;
+            bottom: 100px;
+        }
+
+        .video-stat-number {
+            font-size: 28px;
+        }
+
+        .video-stat-label {
+            font-size: 12px;
+        }
+    }
+</style>
+
+<div class="video-hero-section">
+    <!-- Fondo animado -->
+    <div class="video-background"></div>
+    <div class="video-overlay"></div>
+
+    <!-- Partículas -->
+    <div class="video-particle particle-1"></div>
+    <div class="video-particle particle-2"></div>
+    <div class="video-particle particle-3"></div>
+    <div class="video-particle particle-4"></div>
+    <div class="video-particle particle-5"></div>
+
+    <!-- Contenido principal -->
+    <div class="video-hero-content">
+        <div class="video-hero-badge">✨ Alquiler de Autocaravanas Premium</div>
+        <h1 class="video-hero-title">Vive La Aventura<br>De Tu Vida</h1>
+        <p class="video-hero-subtitle">
+            Descubre España a tu ritmo. Libertad sobre ruedas.<br>
+            Tu hogar donde quieras estar.
+        </p>
+        <div class="video-hero-buttons">
+            <a href="https://www.furgocasa.com/es/reservar" class="video-hero-button video-hero-button-primary">
+                Reservar Ahora
+            </a>
+            <a href="https://www.furgocasa.com" class="video-hero-button video-hero-button-secondary">
+                Ver Campers
+            </a>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="video-stats">
+        <div class="video-stat-item">
+            <div class="video-stat-number">50+</div>
+            <div class="video-stat-label">Campers</div>
+        </div>
+        <div class="video-stat-item">
+            <div class="video-stat-number">5000+</div>
+            <div class="video-stat-label">Clientes</div>
+        </div>
+        <div class="video-stat-item">
+            <div class="video-stat-number">15</div>
+            <div class="video-stat-label">Años</div>
+        </div>
+    </div>
+
+    <!-- Indicador de scroll -->
+    <div class="video-scroll-indicator">
+        <div class="scroll-arrow">↓</div>
+    </div>
+</div>
+<!-- FIN SECCIÓN HERO FULLWIDTH CON VIDEO -->
+
+

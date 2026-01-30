@@ -1,0 +1,296 @@
+<!-- SECCIÓN TIMELINE DE VIAJE -->
+<style>
+    .timeline-section {
+        max-width: 1000px;
+        margin: 60px auto;
+        padding: 40px 20px;
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 20px;
+    }
+
+    .timeline-header {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .timeline-header h2 {
+        font-size: 42px;
+        color: #2C3E50;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    .timeline-header p {
+        font-size: 20px;
+        color: #7F8C8D;
+    }
+
+    .timeline-container {
+        position: relative;
+        padding: 20px 0;
+    }
+
+    /* Línea central */
+    .timeline-line {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, #3498db 0%, #e74c3c 100%);
+        border-radius: 2px;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 80px;
+        display: flex;
+        align-items: center;
+    }
+
+    .timeline-item:nth-child(odd) {
+        flex-direction: row;
+    }
+
+    .timeline-item:nth-child(even) {
+        flex-direction: row-reverse;
+    }
+
+    .timeline-content {
+        width: 45%;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        position: relative;
+        transition: all 0.3s;
+    }
+
+    .timeline-content:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content::after {
+        content: '';
+        position: absolute;
+        right: -20px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 20px solid white;
+        border-top: 20px solid transparent;
+        border-bottom: 20px solid transparent;
+    }
+
+    .timeline-item:nth-child(even) .timeline-content::after {
+        content: '';
+        position: absolute;
+        left: -20px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-right: 20px solid white;
+        border-top: 20px solid transparent;
+        border-bottom: 20px solid transparent;
+    }
+
+    .timeline-icon-wrapper {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 80px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 0 4px #3498db, 0 5px 20px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            box-shadow: 0 0 0 4px #3498db, 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        50% {
+            box-shadow: 0 0 0 8px rgba(52, 152, 219, 0.5), 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    .timeline-icon {
+        font-size: 40px;
+    }
+
+    .timeline-date {
+        font-size: 14px;
+        color: #3498db;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+
+    .timeline-content h3 {
+        font-size: 24px;
+        color: #2C3E50;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    .timeline-content p {
+        font-size: 16px;
+        color: #7F8C8D;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+
+    .timeline-cta {
+        text-align: center;
+        margin-top: 50px;
+    }
+
+    .timeline-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white !important;
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 18px 50px;
+        border-radius: 50px;
+        box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        transition: all 0.3s;
+    }
+
+    .timeline-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(52, 152, 219, 0.6);
+        text-decoration: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .timeline-line {
+            left: 30px;
+        }
+
+        .timeline-item,
+        .timeline-item:nth-child(even) {
+            flex-direction: row;
+            padding-left: 80px;
+        }
+
+        .timeline-content {
+            width: 100%;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::after,
+        .timeline-item:nth-child(even) .timeline-content::after {
+            left: -20px;
+            right: auto;
+            border-right: 20px solid white;
+            border-left: none;
+        }
+
+        .timeline-icon-wrapper {
+            left: 30px;
+            width: 60px;
+            height: 60px;
+        }
+
+        .timeline-icon {
+            font-size: 30px;
+        }
+
+        .timeline-header h2 {
+            font-size: 32px;
+        }
+
+        .timeline-content h3 {
+            font-size: 20px;
+        }
+    }
+</style>
+
+<div class="timeline-section">
+    <div class="timeline-header">
+        <h2>Tu Viaje Perfecto en 5 Pasos</h2>
+        <p>Desde la reserva hasta la aventura de tu vida</p>
+    </div>
+
+    <div class="timeline-container">
+        <div class="timeline-line"></div>
+
+        <!-- Paso 1 -->
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <div class="timeline-date">Paso 1</div>
+                <h3>Elige Tu Camper</h3>
+                <p>Explora nuestra flota y selecciona la autocaravana perfecta para tu aventura. Tenemos opciones para todos los gustos y necesidades.</p>
+            </div>
+            <div class="timeline-icon-wrapper">
+                <div class="timeline-icon">🚐</div>
+            </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <div class="timeline-date">Paso 2</div>
+                <h3>Reserva Online</h3>
+                <p>Selecciona tus fechas, añade extras si lo deseas y completa tu reserva de forma rápida y segura desde nuestra web.</p>
+            </div>
+            <div class="timeline-icon-wrapper">
+                <div class="timeline-icon">📅</div>
+            </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <div class="timeline-date">Paso 3</div>
+                <h3>Recogida Express</h3>
+                <p>Recibe una explicación completa de tu camper. Nuestro equipo te mostrará todo lo que necesitas saber para disfrutar al máximo.</p>
+            </div>
+            <div class="timeline-icon-wrapper">
+                <div class="timeline-icon">🔑</div>
+            </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <div class="timeline-date">Paso 4</div>
+                <h3>¡A Viajar!</h3>
+                <p>Disfruta de tu aventura con total libertad. Cuenta con nuestro soporte 24/7 en cada kilómetro de tu viaje.</p>
+            </div>
+            <div class="timeline-icon-wrapper">
+                <div class="timeline-icon">🗺️</div>
+            </div>
+        </div>
+
+        <!-- Paso 5 -->
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <div class="timeline-date">Paso 5</div>
+                <h3>Devolución Fácil</h3>
+                <p>Entrega la camper y comparte tu experiencia. ¡Ya estarás pensando en tu próxima aventura con nosotros!</p>
+            </div>
+            <div class="timeline-icon-wrapper">
+                <div class="timeline-icon">⭐</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-cta">
+        <a href="https://www.furgocasa.com/es/reservar" class="timeline-button">Comenzar Mi Aventura</a>
+    </div>
+</div>
+<!-- FIN SECCIÓN TIMELINE DE VIAJE -->
+
+

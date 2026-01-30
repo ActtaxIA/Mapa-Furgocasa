@@ -1,0 +1,251 @@
+<!-- SECCIÓN PROCESO DE RESERVA DETALLADO -->
+<style>
+    .fc-proceso-reserva {
+        max-width: 1000px;
+        margin: 50px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-proceso-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    .fc-proceso-header h2 {
+        font-size: 32px;
+        margin-bottom: 10px;
+        color: #222;
+    }
+    .fc-proceso-header p {
+        font-size: 15px;
+        color: #666;
+    }
+    .fc-proceso-steps {
+        position: relative;
+    }
+    .fc-proceso-step {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 40px;
+        position: relative;
+    }
+    .fc-proceso-step::before {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 60px;
+        bottom: -40px;
+        width: 2px;
+        background: #e3e6ee;
+    }
+    .fc-proceso-step:last-child::before {
+        display: none;
+    }
+    .fc-proceso-step-number {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #fff;
+        border: 3px solid #2c7efb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        color: #2c7efb;
+        position: relative;
+        z-index: 2;
+    }
+    .fc-proceso-step-content {
+        flex: 1;
+        padding-top: 4px;
+    }
+    .fc-proceso-step-title {
+        font-size: 20px;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 8px;
+    }
+    .fc-proceso-step-text {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.7;
+        margin-bottom: 12px;
+    }
+    .fc-proceso-step-details {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 16px;
+        margin-top: 12px;
+    }
+    .fc-proceso-step-details-title {
+        font-size: 13px;
+        font-weight: bold;
+        color: #444;
+        margin-bottom: 8px;
+    }
+    .fc-proceso-step-details-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 13px;
+        color: #666;
+    }
+    .fc-proceso-step-details-list li {
+        margin-bottom: 6px;
+        padding-left: 20px;
+        position: relative;
+    }
+    .fc-proceso-step-details-list li::before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: #2c7efb;
+        font-weight: bold;
+    }
+    .fc-proceso-cta {
+        text-align: center;
+        margin-top: 50px;
+    }
+    .fc-proceso-button {
+        display: inline-block;
+        padding: 16px 42px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #2c7efb 0%, #1f63c9 100%);
+        color: #fff !important;
+        font-weight: bold;
+        font-size: 16px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    .fc-proceso-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(44, 126, 251, 0.3);
+        text-decoration: none;
+    }
+    @media (max-width: 600px) {
+        .fc-proceso-step {
+            flex-direction: column;
+            gap: 12px;
+        }
+        .fc-proceso-step::before {
+            display: none;
+        }
+    }
+</style>
+
+<div class="fc-proceso-reserva">
+    <div class="fc-proceso-header">
+        <h2>C&oacute;mo funciona el proceso de reserva</h2>
+        <p>Todo lo que necesitas saber paso a paso</p>
+    </div>
+
+    <div class="fc-proceso-steps">
+        <div class="fc-proceso-step">
+            <div class="fc-proceso-step-number">1</div>
+            <div class="fc-proceso-step-content">
+                <div class="fc-proceso-step-title">Consulta disponibilidad</div>
+                <div class="fc-proceso-step-text">
+                    Introduce tus fechas de viaje en nuestro sistema y consulta qu&eacute; campers 
+                    est&aacute;n disponibles para esas fechas. Puedes filtrar por modelo, precio o caracter&iacute;sticas.
+                </div>
+                <div class="fc-proceso-step-details">
+                    <div class="fc-proceso-step-details-title">Qu&eacute; ver&aacute;s:</div>
+                    <ul class="fc-proceso-step-details-list">
+                        <li>Calendario con fechas disponibles</li>
+                        <li>Precios seg&uacute;n temporada</li>
+                        <li>Caracter&iacute;sticas de cada modelo</li>
+                        <li>Fotos y descripciones detalladas</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="fc-proceso-step">
+            <div class="fc-proceso-step-number">2</div>
+            <div class="fc-proceso-step-content">
+                <div class="fc-proceso-step-title">Selecciona extras y completa datos</div>
+                <div class="fc-proceso-step-text">
+                    Elige los extras que quieras a&ntilde;adir (ropa de cama, WiFi, sillas exteriores...) 
+                    y completa tus datos personales y del conductor.
+                </div>
+                <div class="fc-proceso-step-details">
+                    <div class="fc-proceso-step-details-title">Necesitar&aacute;s:</div>
+                    <ul class="fc-proceso-step-details-list">
+                        <li>DNI o pasaporte del conductor</li>
+                        <li>Carnet de conducir tipo B (m&iacute;nimo 2 a&ntilde;os)</li>
+                        <li>Tarjeta de cr&eacute;dito para el dep&oacute;sito</li>
+                        <li>Datos de contacto</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="fc-proceso-step">
+            <div class="fc-proceso-step-number">3</div>
+            <div class="fc-proceso-step-content">
+                <div class="fc-proceso-step-title">Confirma y paga</div>
+                <div class="fc-proceso-step-text">
+                    Revisa todos los detalles de tu reserva y realiza el pago de forma segura. 
+                    Recibir&aacute;s un email de confirmaci&oacute;n con todos los detalles.
+                </div>
+                <div class="fc-proceso-step-details">
+                    <div class="fc-proceso-step-details-title">M&eacute;todos de pago:</div>
+                    <ul class="fc-proceso-step-details-list">
+                        <li>Tarjeta de cr&eacute;dito o d&eacute;bito</li>
+                        <li>Transferencia bancaria</li>
+                        <li>Pago fraccionado disponible</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="fc-proceso-step">
+            <div class="fc-proceso-step-number">4</div>
+            <div class="fc-proceso-step-content">
+                <div class="fc-proceso-step-title">Recogida y explicaci&oacute;n</div>
+                <div class="fc-proceso-step-text">
+                    El d&iacute;a de inicio, acude a nuestro punto de recogida. Te explicaremos 
+                    todos los sistemas de la camper y resolveremos cualquier duda antes de salir.
+                </div>
+                <div class="fc-proceso-step-details">
+                    <div class="fc-proceso-step-details-title">Incluye:</div>
+                    <ul class="fc-proceso-step-details-list">
+                        <li>Explicaci&oacute;n completa de sistemas</li>
+                        <li>Revisi&oacute;n del estado del veh&iacute;culo</li>
+                        <li>Entrega de documentaci&oacute;n y llaves</li>
+                        <li>Recomendaciones de rutas si las solicitas</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="fc-proceso-step">
+            <div class="fc-proceso-step-number">5</div>
+            <div class="fc-proceso-step-content">
+                <div class="fc-proceso-step-title">Disfruta y devuelve</div>
+                <div class="fc-proceso-step-text">
+                    Disfruta de tu aventura con total libertad. Al finalizar, devuelve la camper 
+                    en el punto acordado y comparte tu experiencia con nosotros.
+                </div>
+                <div class="fc-proceso-step-details">
+                    <div class="fc-proceso-step-details-title">Al devolver:</div>
+                    <ul class="fc-proceso-step-details-list">
+                        <li>Revisi&oacute;n r&aacute;pida del estado</li>
+                        <li>Liberaci&oacute;n del dep&oacute;sito (si todo correcto)</li>
+                        <li>Feedback sobre tu experiencia</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fc-proceso-cta">
+        <a href="https://www.furgocasa.com/es/reservar" class="fc-proceso-button">
+            Empezar mi reserva ahora
+        </a>
+    </div>
+</div>
+<!-- FIN SECCIÓN PROCESO DE RESERVA DETALLADO -->
+
+

@@ -1,0 +1,245 @@
+<!-- SECCIÓN COMPARATIVA DE MODELOS -->
+<style>
+    .fc-comparativa {
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-comparativa-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .fc-comparativa-header h2 {
+        font-size: 32px;
+        margin-bottom: 8px;
+        color: #222;
+    }
+    .fc-comparativa-header p {
+        font-size: 15px;
+        color: #666;
+    }
+    .fc-comparativa-table {
+        background: #fff;
+        border-radius: 20px;
+        border: 1px solid #e3e6ee;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .fc-comparativa-table-header {
+        display: grid;
+        grid-template-columns: 200px repeat(3, 1fr);
+        background: linear-gradient(135deg, #2c7efb 0%, #1f63c9 100%);
+        color: #fff;
+    }
+    .fc-comparativa-table-header-cell {
+        padding: 20px;
+        font-weight: bold;
+        text-align: center;
+        border-right: 1px solid rgba(255,255,255,0.2);
+    }
+    .fc-comparativa-table-header-cell:first-child {
+        text-align: left;
+        font-size: 16px;
+    }
+    .fc-comparativa-table-header-cell:last-child {
+        border-right: none;
+    }
+    .fc-comparativa-table-row {
+        display: grid;
+        grid-template-columns: 200px repeat(3, 1fr);
+        border-bottom: 1px solid #e3e6ee;
+    }
+    .fc-comparativa-table-row:last-child {
+        border-bottom: none;
+    }
+    .fc-comparativa-table-cell {
+        padding: 18px 20px;
+        border-right: 1px solid #e3e6ee;
+        display: flex;
+        align-items: center;
+    }
+    .fc-comparativa-table-cell:first-child {
+        font-weight: bold;
+        color: #444;
+        background: #f8f9fa;
+    }
+    .fc-comparativa-table-cell:last-child {
+        border-right: none;
+    }
+    .fc-comparativa-table-cell-center {
+        justify-content: center;
+        text-align: center;
+    }
+    .fc-comparativa-check {
+        color: #22b573;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .fc-comparativa-cross {
+        color: #e74c3c;
+        font-size: 18px;
+    }
+    .fc-comparativa-price {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2c7efb;
+    }
+    .fc-comparativa-price small {
+        font-size: 14px;
+        font-weight: normal;
+        color: #888;
+    }
+    .fc-comparativa-cta {
+        text-align: center;
+        margin-top: 30px;
+    }
+    .fc-comparativa-button {
+        display: inline-block;
+        padding: 14px 36px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #2c7efb 0%, #1f63c9 100%);
+        color: #fff !important;
+        font-weight: bold;
+        font-size: 15px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    .fc-comparativa-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(44, 126, 251, 0.3);
+        text-decoration: none;
+    }
+    @media (max-width: 900px) {
+        .fc-comparativa-table-header,
+        .fc-comparativa-table-row {
+            grid-template-columns: 120px repeat(3, 1fr);
+        }
+        .fc-comparativa-table-header-cell,
+        .fc-comparativa-table-cell {
+            padding: 12px 10px;
+            font-size: 13px;
+        }
+        .fc-comparativa-table-header-cell:first-child,
+        .fc-comparativa-table-cell:first-child {
+            font-size: 12px;
+        }
+    }
+</style>
+
+<div class="fc-comparativa">
+    <div class="fc-comparativa-header">
+        <h2>Compara nuestros modelos</h2>
+        <p>Encuentra la camper perfecta para tu tipo de viaje</p>
+    </div>
+
+    <div class="fc-comparativa-table">
+        <div class="fc-comparativa-table-header">
+            <div class="fc-comparativa-table-header-cell">Caracter&iacute;sticas</div>
+            <div class="fc-comparativa-table-header-cell">Compacta</div>
+            <div class="fc-comparativa-table-header-cell">Familiar</div>
+            <div class="fc-comparativa-table-header-cell">Premium</div>
+        </div>
+
+        <div class="fc-comparativa-table-row">
+            <div class="fc-comparativa-table-cell">Precio desde</div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <div class="fc-comparativa-price">89&euro;<small>/d&iacute;a</small></div>
+            </div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <div class="fc-comparativa-price">129&euro;<small>/d&iacute;a</small></div>
+            </div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <div class="fc-comparativa-price">159&euro;<small>/d&iacute;a</small></div>
+            </div>
+        </div>
+
+        <div class="fc-comparativa-table-row">
+            <div class="fc-comparativa-table-cell">Plazas dormir</div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">2</div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">4-5</div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">4</div>
+        </div>
+
+        <div class="fc-comparativa-table-row">
+            <div class="fc-comparativa-table-cell">Cocina completa</div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-check">✓</span>
+            </div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-check">✓</span>
+            </div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-check">✓</span>
+            </div>
+        </div>
+
+        <div class="fc-comparativa-table-row">
+            <div class="fc-comparativa-table-cell">Ba&ntilde;o con ducha</div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-cross">—</span>
+            </div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-check">✓</span>
+            </div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-check">✓</span>
+            </div>
+        </div>
+
+        <div class="fc-comparativa-table-row">
+            <div class="fc-comparativa-table-cell">Aire acondicionado</div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-cross">—</span>
+            </div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-check">✓</span>
+            </div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-check">✓</span>
+            </div>
+        </div>
+
+        <div class="fc-comparativa-table-row">
+            <div class="fc-comparativa-table-cell">TV y WiFi</div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-cross">—</span>
+            </div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-check">✓</span>
+            </div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-check">✓</span>
+            </div>
+        </div>
+
+        <div class="fc-comparativa-table-row">
+            <div class="fc-comparativa-table-cell">Paneles solares</div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-cross">—</span>
+            </div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-cross">—</span>
+            </div>
+            <div class="fc-comparativa-table-cell fc-comparativa-table-cell-center">
+                <span class="fc-comparativa-check">✓</span>
+            </div>
+        </div>
+
+        <div class="fc-comparativa-table-row">
+            <div class="fc-comparativa-table-cell">Ideal para</div>
+            <div class="fc-comparativa-table-cell">Parejas</div>
+            <div class="fc-comparativa-table-cell">Familias</div>
+            <div class="fc-comparativa-table-cell">M&aacute;ximo confort</div>
+        </div>
+    </div>
+
+    <div class="fc-comparativa-cta">
+        <a href="https://www.furgocasa.com/es/reservar" class="fc-comparativa-button">
+            Ver disponibilidad de todos los modelos
+        </a>
+    </div>
+</div>
+<!-- FIN SECCIÓN COMPARATIVA DE MODELOS -->
+
+

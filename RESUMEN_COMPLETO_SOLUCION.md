@@ -9,12 +9,14 @@
 ## 🎯 PROBLEMA IDENTIFICADO
 
 **Error principal reportado:**
+
 ```
 Error 429: email rate limit exceeded
 AuthApiError: email rate limit exceeded
 ```
 
 **Problemas secundarios:**
+
 1. Los usuarios no recibían emails de verificación
 2. Faltaba configuración `emailRedirectTo` en el registro
 3. Página `/terminos` no existía (Error 404)
@@ -29,6 +31,7 @@ AuthApiError: email rate limit exceeded
 **Archivo:** `app/(public)/auth/register/page.tsx`
 
 **Cambios realizados:**
+
 - ✅ Añadido `emailRedirectTo` para confirmación por email
 - ✅ Detección automática de confirmación requerida vs auto-confirmación
 - ✅ Nueva pantalla "Revisa tu correo" con email específico
@@ -36,6 +39,7 @@ AuthApiError: email rate limit exceeded
 - ✅ Manejo de rate limiting con mensajes claros
 
 **Antes:**
+
 ```typescript
 const { data, error } = await supabase.auth.signUp({
   email,
@@ -47,6 +51,7 @@ const { data, error } = await supabase.auth.signUp({
 ```
 
 **Después:**
+
 ```typescript
 const { data, error } = await supabase.auth.signUp({
   email,
@@ -63,6 +68,7 @@ const { data, error } = await supabase.auth.signUp({
 **Archivo creado:** `app/(public)/terminos/page.tsx`
 
 **Contenido:**
+
 - ✅ Términos y condiciones completos
 - ✅ Secciones legales detalladas
 - ✅ Enlaces desde/hacia registro
@@ -110,6 +116,7 @@ El servicio SMTP gratuito de Supabase tiene un límite de **4 emails por hora**.
 **SOLUCIÓN (15 minutos):**
 
 #### Paso 1: Crear cuenta SendGrid
+
 ```
 1. Ir a: https://sendgrid.com/
 2. Sign Up → Free (12,000 emails/mes)
@@ -119,6 +126,7 @@ El servicio SMTP gratuito de Supabase tiene un límite de **4 emails por hora**.
 ```
 
 #### Paso 2: Configurar en Supabase
+
 ```
 1. Ir a: https://supabase.com/dashboard
 2. Proyecto: dkqnemjcmcnyhuvstosf
@@ -136,6 +144,7 @@ El servicio SMTP gratuito de Supabase tiene un límite de **4 emails por hora**.
 ```
 
 #### Paso 3: Activar confirmación por email
+
 ```
 1. Authentication → Providers → Email
 2. ☑️ Enable email confirmations
@@ -143,6 +152,7 @@ El servicio SMTP gratuito de Supabase tiene un límite de **4 emails por hora**.
 ```
 
 #### Paso 4: Configurar URLs
+
 ```
 1. Authentication → URL Configuration
 2. Site URL: https://www.mapafurgocasa.com
@@ -156,12 +166,12 @@ El servicio SMTP gratuito de Supabase tiene un límite de **4 emails por hora**.
 
 ## 📊 COMPARACIÓN SERVICIOS SMTP
 
-| Servicio | Emails/Hora | Emails/Mes | Setup | Costo |
-|----------|-------------|------------|-------|-------|
-| **Supabase Gratuito** | ❌ 4 | 2,880 | 0 min | Gratis |
-| **SendGrid Free** | ✅ 400+ | 12,000 | 15 min | Gratis |
-| **Mailgun Free** | ✅ 400+ | 5,000 | 15 min | Gratis |
-| **Resend Free** | ✅ 100+ | 3,000 | 10 min | Gratis |
+| Servicio              | Emails/Hora | Emails/Mes | Setup  | Costo  |
+| --------------------- | ----------- | ---------- | ------ | ------ |
+| **Supabase Gratuito** | ❌ 4        | 2,880      | 0 min  | Gratis |
+| **SendGrid Free**     | ✅ 400+     | 12,000     | 15 min | Gratis |
+| **Mailgun Free**      | ✅ 400+     | 5,000      | 15 min | Gratis |
+| **Resend Free**       | ✅ 100+     | 3,000      | 10 min | Gratis |
 
 **Recomendación:** SendGrid por su generoso límite gratuito.
 
@@ -176,6 +186,7 @@ El servicio SMTP gratuito de Supabase tiene un límite de **4 emails por hora**.
 2. **Limpiar caché del navegador** (Ctrl+Shift+Delete)
 
 3. **Intentar registrarte de nuevo** en:
+
    ```
    https://www.mapafurgocasa.com/auth/register
    ```
@@ -198,13 +209,14 @@ e13d63d - fix: solucionar problema de emails de verificacion no enviados en regi
 
 **Archivos modificados:** 1  
 **Archivos creados:** 7  
-**Líneas añadidas:** +1,168  
+**Líneas añadidas:** +1,168
 
 ---
 
 ## 🚀 PRÓXIMOS PASOS
 
 ### Inmediato (HOY):
+
 1. ✅ Código arreglado (completado)
 2. ⚠️ Configurar SendGrid SMTP
 3. ⚠️ Activar confirmación por email
@@ -212,6 +224,7 @@ e13d63d - fix: solucionar problema de emails de verificacion no enviados en regi
 5. ✅ Probar registro
 
 ### Corto plazo (Esta semana):
+
 6. Monitorear logs de autenticación
 7. Verificar que OAuth Google funciona
 8. Hacer push a GitHub
@@ -219,6 +232,7 @@ e13d63d - fix: solucionar problema de emails de verificacion no enviados en regi
 10. Notificar a usuarios que ya estaba arreglado
 
 ### Opcional:
+
 - Configurar dominio personalizado para emails
 - Añadir plantillas de email con branding
 - Configurar alertas para emails fallidos
@@ -230,17 +244,20 @@ e13d63d - fix: solucionar problema de emails de verificacion no enviados en regi
 Después de completar la configuración:
 
 ✅ **Registro funcional**
+
 - Los usuarios pueden registrarse sin problemas
 - Reciben email de verificación inmediatamente
 - Pueden confirmar su cuenta
 - Pueden iniciar sesión normalmente
 
 ✅ **Escalabilidad**
+
 - Hasta 12,000 registros al mes
 - Sin límites restrictivos por hora
 - Listo para crecer
 
 ✅ **Profesional**
+
 - Emails con tu dominio
 - Términos y condiciones completos
 - Mensajes de error claros
@@ -261,11 +278,13 @@ Después de completar la configuración:
 **NIVEL DE PRIORIDAD: 🔴 ALTA**
 
 Sin configurar SMTP personalizado:
+
 - ❌ Solo 4 usuarios pueden registrarse por hora
 - ❌ El servicio está bloqueado temporalmente
 - ❌ Los usuarios reportarán problemas
 
 Con SMTP configurado:
+
 - ✅ 400+ usuarios pueden registrarse por hora
 - ✅ Servicio completamente funcional
 - ✅ Listo para producción

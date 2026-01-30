@@ -1,0 +1,273 @@
+<!-- SECCIÓN REQUISITOS DEL CONDUCTOR -->
+<style>
+    .fc-requisitos {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 50px 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-requisitos-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .fc-requisitos-header h2 {
+        font-size: 36px;
+        margin-bottom: 12px;
+        color: #222;
+    }
+    .fc-requisitos-header p {
+        font-size: 16px;
+        color: #666;
+    }
+    .fc-requisitos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+    .fc-requisito-card {
+        background: #fff;
+        border: 2px solid #e3e6ee;
+        border-radius: 16px;
+        padding: 28px 24px;
+        transition: all 0.3s;
+    }
+    .fc-requisito-card:hover {
+        border-color: #063971;
+        box-shadow: 0 8px 25px rgba(30, 74, 122, 0.12);
+        transform: translateY(-4px);
+    }
+    .fc-requisito-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: #063971;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+    .fc-requisito-card:nth-child(2) .fc-requisito-icon {
+        background: linear-gradient(135deg, #063971 0%, #074a8c 100%);
+    }
+    .fc-requisito-card:nth-child(3) .fc-requisito-icon {
+        background: linear-gradient(135deg, #ff8c42 0%, #e6732e 100%);
+    }
+    .fc-requisito-title {
+        font-size: 22px;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 12px;
+    }
+    .fc-requisito-text {
+        font-size: 15px;
+        color: #555;
+        line-height: 1.7;
+        margin-bottom: 16px;
+    }
+    .fc-requisito-detalle {
+        padding: 14px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #666;
+        border-left: 3px solid #063971;
+    }
+    .fc-requisito-card:nth-child(2) .fc-requisito-detalle {
+        border-left-color: #063971;
+    }
+    .fc-requisito-card:nth-child(3) .fc-requisito-detalle {
+        border-left-color: #1e4a7a;
+    }
+    .fc-requisitos-documentacion {
+        background: linear-gradient(135deg, #063971 0%, #074a8c 100%);
+        border-radius: 20px;
+        padding: 40px 36px;
+        color: #fff;
+    }
+    .fc-requisitos-documentacion-title {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+    .fc-requisitos-documentacion-subtitle {
+        font-size: 16px;
+        opacity: 0.95;
+        margin-bottom: 28px;
+    }
+    .fc-requisitos-documentacion-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+    }
+    .fc-requisitos-documentacion-item {
+        padding: 18px;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .fc-requisitos-documentacion-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+    .fc-requisitos-documentacion-text {
+        font-size: 15px;
+        line-height: 1.5;
+    }
+    .fc-requisitos-alert {
+        margin-top: 40px;
+        padding: 24px;
+        background: #fff8e6;
+        border-left: 4px solid #ffb347;
+        border-radius: 12px;
+    }
+    .fc-requisitos-alert-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #ff8c42;
+        margin-bottom: 10px;
+    }
+    .fc-requisitos-alert-text {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.7;
+    }
+    .fc-requisitos-alert-text strong {
+        color: #ff8c42;
+    }
+    @media (max-width: 768px) {
+        .fc-requisitos {
+            padding: 20px 16px;
+        }
+        .fc-requisitos-header h2 {
+            font-size: 28px;
+        }
+        .fc-requisitos-header p {
+            font-size: 14px;
+        }
+        .fc-requisitos-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .fc-requisito-card {
+            padding: 24px 20px;
+        }
+        .fc-requisito-icon {
+            width: 56px;
+            height: 56px;
+            font-size: 28px;
+        }
+        .fc-requisito-title {
+            font-size: 20px;
+        }
+        .fc-requisitos-documentacion {
+            padding: 32px 24px;
+        }
+        .fc-requisitos-documentacion-title {
+            font-size: 24px;
+        }
+        .fc-requisitos-documentacion-list {
+            grid-template-columns: 1fr;
+        }
+        .fc-requisitos-alert {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="fc-requisitos">
+    <div class="fc-requisitos-header">
+        <h2>Requisitos del conductor</h2>
+        <p>Todo lo que necesitas para alquilar una camper con nosotros</p>
+    </div>
+
+    <div class="fc-requisitos-grid">
+        <div class="fc-requisito-card">
+            <div class="fc-requisito-icon">👤</div>
+            <div class="fc-requisito-title">Edad m&iacute;nima</div>
+            <p class="fc-requisito-text">
+                El conductor principal y cada conductor adicional deben tener un m&iacute;nimo de 
+                <strong>25 a&ntilde;os de edad</strong>.
+            </p>
+            <div class="fc-requisito-detalle">
+                M&aacute;ximo 2 conductores por alquiler
+            </div>
+        </div>
+
+        <div class="fc-requisito-card">
+            <div class="fc-requisito-icon">🚗</div>
+            <div class="fc-requisito-title">Permiso de conducci&oacute;n</div>
+            <p class="fc-requisito-text">
+                <strong>Carnet de conducir tipo B</strong> en vigor, con una antig&uuml;edad 
+                m&iacute;nima de <strong>2 a&ntilde;os</strong>.
+            </p>
+            <div class="fc-requisito-detalle">
+                Si no eres residente UE, permiso internacional necesario
+            </div>
+        </div>
+
+        <div class="fc-requisito-card">
+            <div class="fc-requisito-icon">📋</div>
+            <div class="fc-requisito-title">Documentaci&oacute;n</div>
+            <p class="fc-requisito-text">
+                Debes enviar copia del <strong>DNI/Pasaporte</strong> y del 
+                <strong>carnet de conducir</strong> antes del inicio del alquiler.
+            </p>
+            <div class="fc-requisito-detalle">
+                Env&iacute;a la documentaci&oacute;n a reservas@furgocasa.com
+            </div>
+        </div>
+    </div>
+
+    <div class="fc-requisitos-documentacion">
+        <h3 class="fc-requisitos-documentacion-title">Documentaci&oacute;n necesaria</h3>
+        <p class="fc-requisitos-documentacion-subtitle">
+            Antes del inicio del alquiler, necesitamos que nos env&iacute;es:
+        </p>
+        <ul class="fc-requisitos-documentacion-list">
+            <li class="fc-requisitos-documentacion-item">
+                <div class="fc-requisitos-documentacion-icon">🆔</div>
+                <div class="fc-requisitos-documentacion-text">
+                    <strong>DNI o Pasaporte</strong> en vigor de todos los conductores
+                </div>
+            </li>
+            <li class="fc-requisitos-documentacion-item">
+                <div class="fc-requisitos-documentacion-icon">🪪</div>
+                <div class="fc-requisitos-documentacion-text">
+                    <strong>Carnet de conducir</strong> por ambas caras de todos los conductores
+                </div>
+            </li>
+            <li class="fc-requisitos-documentacion-item">
+                <div class="fc-requisitos-documentacion-icon">🌍</div>
+                <div class="fc-requisitos-documentacion-text">
+                    <strong>Permiso internacional</strong> si no eres residente en la UE
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="fc-requisitos-alert">
+        <div class="fc-requisitos-alert-title">⚠️ Importante</div>
+        <div class="fc-requisitos-alert-text">
+            Si realizas una reserva y, tras aportar la documentaci&oacute;n, <strong>no acreditas 
+            el cumplimiento de los requisitos</strong>, el alquiler ser&aacute; cancelado y se 
+            aplicar&aacute; una <strong>comisi&oacute;n de gesti&oacute;n de 40&euro;</strong> (IVA incluido).
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN REQUISITOS DEL CONDUCTOR -->
+

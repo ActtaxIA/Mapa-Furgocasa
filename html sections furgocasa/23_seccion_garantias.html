@@ -1,0 +1,154 @@
+<!-- SECCIÓN GARANTÍAS Y SEGURIDAD -->
+<style>
+    .fc-garantias {
+        max-width: 1100px;
+        margin: 50px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-garantias-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .fc-garantias-header h2 {
+        font-size: 32px;
+        margin-bottom: 10px;
+        color: #222;
+    }
+    .fc-garantias-header p {
+        font-size: 15px;
+        color: #666;
+    }
+    .fc-garantias-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    .fc-garantia-card {
+        border-radius: 18px;
+        border: 2px solid #e3e6ee;
+        padding: 28px 24px;
+        background: #fff;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+    .fc-garantia-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, #2c7efb 0%, #1f63c9 100%);
+        transform: scaleY(0);
+        transition: transform 0.3s;
+    }
+    .fc-garantia-card:hover {
+        border-color: #2c7efb;
+        box-shadow: 0 8px 25px rgba(44, 126, 251, 0.15);
+        transform: translateY(-4px);
+    }
+    .fc-garantia-card:hover::before {
+        transform: scaleY(1);
+    }
+    .fc-garantia-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #2c7efb 0%, #1f63c9 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin-bottom: 18px;
+        color: #fff;
+    }
+    .fc-garantia-card:nth-child(2) .fc-garantia-icon {
+        background: linear-gradient(135deg, #22b573 0%, #1a9d5f 100%);
+    }
+    .fc-garantia-card:nth-child(3) .fc-garantia-icon {
+        background: linear-gradient(135deg, #ff8c42 0%, #e6732e 100%);
+    }
+    .fc-garantia-card:nth-child(4) .fc-garantia-icon {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+    }
+    .fc-garantia-title {
+        font-size: 19px;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 10px;
+    }
+    .fc-garantia-text {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.7;
+    }
+    .fc-garantia-badge {
+        display: inline-block;
+        margin-top: 14px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #f0f4ff;
+        color: #2c7efb;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    @media (max-width: 900px) {
+        .fc-garantias-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="fc-garantias">
+    <div class="fc-garantias-header">
+        <h2>Tu tranquilidad es nuestra prioridad</h2>
+        <p>Garant&iacute;as y seguridades que te permiten viajar sin preocupaciones</p>
+    </div>
+
+    <div class="fc-garantias-grid">
+        <div class="fc-garantia-card">
+            <div class="fc-garantia-icon">✓</div>
+            <div class="fc-garantia-title">Seguro a todo riesgo incluido</div>
+            <div class="fc-garantia-text">
+                Todas nuestras campers incluyen seguro a todo riesgo con franquicia. 
+                Est&aacute;s cubierto ante cualquier imprevisto durante tu viaje.
+            </div>
+            <span class="fc-garantia-badge">Incluido</span>
+        </div>
+
+        <div class="fc-garantia-card">
+            <div class="fc-garantia-icon">24</div>
+            <div class="fc-garantia-title">Asistencia en carretera 24/7</div>
+            <div class="fc-garantia-text">
+                Servicio de asistencia disponible las 24 horas del d&iacute;a, los 7 d&iacute;as de la semana. 
+                Cualquier problema mec&aacute;nico o duda, estamos a un tel&eacute;fono de distancia.
+            </div>
+            <span class="fc-garantia-badge">Sin coste adicional</span>
+        </div>
+
+        <div class="fc-garantia-card">
+            <div class="fc-garantia-icon">🔄</div>
+            <div class="fc-garantia-title">Pol&iacute;tica de cancelaci&oacute;n flexible</div>
+            <div class="fc-garantia-text">
+                Puedes modificar o cancelar tu reserva sin coste hasta varios d&iacute;as antes 
+                del inicio del viaje, seg&uacute;n las condiciones de tu reserva.
+            </div>
+            <span class="fc-garantia-badge">Flexible</span>
+        </div>
+
+        <div class="fc-garantia-card">
+            <div class="fc-garantia-icon">⭐</div>
+            <div class="fc-garantia-title">Flota revisada y mantenida</div>
+            <div class="fc-garantia-text">
+                Cada camper pasa por una revisi&oacute;n completa antes de cada salida. 
+                Neum&aacute;ticos, sistemas el&eacute;ctricos, equipamiento... todo verificado para tu seguridad.
+            </div>
+            <span class="fc-garantia-badge">Garantizado</span>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN GARANTÍAS Y SEGURIDAD -->
+
+

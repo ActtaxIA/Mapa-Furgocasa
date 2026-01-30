@@ -1,0 +1,351 @@
+<!-- SECCIÓN FORMA DE PAGO -->
+<style>
+    .fc-forma-pago {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 50px 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-forma-pago-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .fc-forma-pago-header h2 {
+        font-size: 36px;
+        margin-bottom: 12px;
+        color: #222;
+    }
+    .fc-forma-pago-header p {
+        font-size: 16px;
+        color: #666;
+    }
+    .fc-forma-pago-box {
+        background: linear-gradient(135deg, #063971 0%, #074a8c 100%);
+        border-radius: 20px;
+        padding: 40px 36px;
+        color: #fff;
+        margin-bottom: 30px;
+    }
+    .fc-forma-pago-title {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .fc-forma-pago-icon {
+        font-size: 36px;
+    }
+    .fc-forma-pago-pasos {
+        display: grid;
+        gap: 20px;
+    }
+    .fc-forma-pago-paso {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+    }
+    .fc-forma-pago-paso-numero {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+    .fc-forma-pago-paso-content {
+        flex: 1;
+    }
+    .fc-forma-pago-paso-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+    .fc-forma-pago-paso-text {
+        font-size: 15px;
+        line-height: 1.7;
+        opacity: 0.95;
+    }
+    .fc-forma-pago-paso-monto {
+        font-size: 32px;
+        font-weight: bold;
+        margin-top: 8px;
+        color: #ffdd8a;
+    }
+    .fc-forma-pago-metodos {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    .fc-forma-pago-metodo {
+        background: #fff;
+        border: 2px solid #e3e6ee;
+        border-radius: 16px;
+        padding: 28px 24px;
+        text-align: center;
+        transition: all 0.3s;
+    }
+    .fc-forma-pago-metodo:hover {
+        border-color: #063971;
+        box-shadow: 0 8px 25px rgba(30, 74, 122, 0.12);
+        transform: translateY(-4px);
+    }
+    .fc-forma-pago-metodo-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #063971 0%, #074a8c 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        color: #fff;
+        margin: 0 auto 20px;
+    }
+    .fc-forma-pago-metodo-title {
+        font-size: 20px;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 10px;
+    }
+    .fc-forma-pago-metodo-text {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.6;
+    }
+    .fc-forma-pago-metodo-badge {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: #e8f4ff;
+        color: #063971;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .fc-forma-pago-importante {
+        background: #fff8e6;
+        border: 2px solid #ffb347;
+        border-radius: 16px;
+        padding: 28px;
+        margin-top: 30px;
+    }
+    .fc-forma-pago-importante-title {
+        font-size: 22px;
+        font-weight: bold;
+        color: #ff8c42;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .fc-forma-pago-importante-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .fc-forma-pago-importante-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 179, 71, 0.2);
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+    }
+    .fc-forma-pago-importante-list li:last-child {
+        border-bottom: none;
+    }
+    .fc-forma-pago-importante-list li::before {
+        content: '→';
+        color: #ff8c42;
+        font-weight: bold;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    @media (max-width: 768px) {
+        .fc-forma-pago {
+            padding: 20px 16px;
+        }
+        .fc-forma-pago-header h2 {
+            font-size: 28px;
+        }
+        .fc-forma-pago-header p {
+            font-size: 14px;
+        }
+        .fc-forma-pago-box {
+            padding: 32px 24px;
+        }
+        .fc-forma-pago-title {
+            font-size: 24px;
+            flex-direction: column;
+            text-align: center;
+        }
+        .fc-forma-pago-paso {
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+        .fc-forma-pago-paso-numero {
+            width: 42px;
+            height: 42px;
+            font-size: 20px;
+        }
+        .fc-forma-pago-paso-title {
+            font-size: 18px;
+        }
+        .fc-forma-pago-paso-text {
+            font-size: 14px;
+        }
+        .fc-forma-pago-paso-monto {
+            font-size: 28px;
+        }
+        .fc-forma-pago-metodos {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        .fc-forma-pago-metodo {
+            padding: 24px 20px;
+        }
+        .fc-forma-pago-metodo-icon {
+            width: 64px;
+            height: 64px;
+            font-size: 32px;
+        }
+        .fc-forma-pago-metodo-title {
+            font-size: 18px;
+        }
+        .fc-forma-pago-importante {
+            padding: 24px 20px;
+        }
+        .fc-forma-pago-importante-title {
+            font-size: 20px;
+            flex-direction: column;
+            text-align: center;
+            gap: 8px;
+        }
+    }
+</style>
+
+<div class="fc-forma-pago">
+    <div class="fc-forma-pago-header">
+        <h2>Forma de pago</h2>
+        <p>C&oacute;mo realizar el pago de tu reserva</p>
+    </div>
+
+    <div class="fc-forma-pago-box">
+        <h3 class="fc-forma-pago-title">
+            <span class="fc-forma-pago-icon">💳</span>
+            <span>Proceso de pago</span>
+        </h3>
+
+        <div class="fc-forma-pago-pasos">
+            <div class="fc-forma-pago-paso">
+                <div class="fc-forma-pago-paso-numero">1</div>
+                <div class="fc-forma-pago-paso-content">
+                    <div class="fc-forma-pago-paso-title">Primer pago - Al realizar la reserva</div>
+                    <p class="fc-forma-pago-paso-text">
+                        Al confirmar tu reserva, deber&aacute;s abonar el primer 50% del precio total 
+                        con <strong>tarjeta de cr&eacute;dito o d&eacute;bito</strong> a trav&eacute;s de nuestra web.
+                    </p>
+                    <div class="fc-forma-pago-paso-monto">50% del total</div>
+                </div>
+            </div>
+
+            <div class="fc-forma-pago-paso">
+                <div class="fc-forma-pago-paso-numero">2</div>
+                <div class="fc-forma-pago-paso-content">
+                    <div class="fc-forma-pago-paso-title">Segundo pago - Antes del alquiler</div>
+                    <p class="fc-forma-pago-paso-text">
+                        El 50% restante debe abonarse por <strong>tarjeta de cr&eacute;dito o d&eacute;bito</strong> 
+                        en el link de tu reserva como m&aacute;ximo 15 d&iacute;as antes del inicio. Si reservas 
+                        con menos de 15 d&iacute;as, tienes un m&aacute;ximo de 2 d&iacute;as desde la reserva.
+                    </p>
+                    <div class="fc-forma-pago-paso-monto">50% restante</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fc-forma-pago-metodos">
+        <div class="fc-forma-pago-metodo">
+            <div class="fc-forma-pago-metodo-icon">💳</div>
+            <h4 class="fc-forma-pago-metodo-title">Tarjeta de cr&eacute;dito/d&eacute;bito</h4>
+            <p class="fc-forma-pago-metodo-text">
+                Para el primer pago (50%) y el segundo pago (50% restante) a trav&eacute;s del 
+                link de tu reserva. Pago seguro y encriptado.
+            </p>
+            <span class="fc-forma-pago-metodo-badge">Primer y segundo pago</span>
+        </div>
+
+        <div class="fc-forma-pago-metodo">
+            <div class="fc-forma-pago-metodo-icon">🏦</div>
+            <h4 class="fc-forma-pago-metodo-title">Transferencia bancaria</h4>
+            <p class="fc-forma-pago-metodo-text">
+                Para la fianza de 1.000&euro; que debe abonarse m&aacute;ximo 72 horas antes 
+                del inicio del alquiler. Te proporcionaremos los datos bancarios.
+            </p>
+            <span class="fc-forma-pago-metodo-badge">Fianza</span>
+        </div>
+
+        <div class="fc-forma-pago-metodo">
+            <div class="fc-forma-pago-metodo-icon">🔒</div>
+            <h4 class="fc-forma-pago-metodo-title">Pago seguro</h4>
+            <p class="fc-forma-pago-metodo-text">
+                Todos los pagos con tarjeta se realizan a trav&eacute;s de <strong>Redsys</strong>, 
+                la pasarela de pago m&aacute;s segura y fiable del mercado.
+            </p>
+            <span class="fc-forma-pago-metodo-badge">Redsys</span>
+        </div>
+    </div>
+
+    <div class="fc-forma-pago-importante">
+        <div class="fc-forma-pago-importante-title">
+            <span>⚠️</span>
+            <span>Informaci&oacute;n importante sobre pagos</span>
+        </div>
+        <ul class="fc-forma-pago-importante-list">
+            <li>
+                <span>
+                    El <strong>primer 50%</strong> se paga con tarjeta en el momento de la reserva 
+                    a trav&eacute;s de la web.
+                </span>
+            </li>
+            <li>
+                <span>
+                    El <strong>segundo 50%</strong> se paga con tarjeta en el link de tu reserva, 
+                    m&aacute;ximo 15 d&iacute;as antes del inicio del alquiler.
+                </span>
+            </li>
+            <li>
+                <span>
+                    La <strong>fianza de 1.000&euro;</strong> se paga por <strong>transferencia bancaria</strong> 
+                    m&aacute;ximo 72 horas antes del inicio del alquiler.
+                </span>
+            </li>
+            <li>
+                <span>
+                    Si reservas con menos de 15 d&iacute;as de antelaci&oacute;n, el segundo pago 
+                    debe realizarse en un <strong>plazo m&aacute;ximo de 2 d&iacute;as</strong> desde la reserva.
+                </span>
+            </li>
+            <li>
+                <span>
+                    Los precios mostrados en la web incluyen IVA. No hay cargos ocultos ni comisiones adicionales.
+                </span>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- FIN SECCIÓN FORMA DE PAGO -->
+

@@ -1,0 +1,136 @@
+<!-- SECCIÓN VIDEO TESTIMONIAL -->
+<style>
+    .fc-video-testimonial {
+        max-width: 1000px;
+        margin: 50px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-video-testimonial-inner {
+        border-radius: 24px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: #fff;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .fc-video-testimonial-video {
+        flex: 1 1 400px;
+        min-height: 300px;
+        background: rgba(0,0,0,0.3);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .fc-video-play-btn {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .fc-video-play-btn:hover {
+        transform: scale(1.1);
+        background: #fff;
+    }
+    .fc-video-play-icon {
+        width: 0;
+        height: 0;
+        border-left: 24px solid #1e3c72;
+        border-top: 14px solid transparent;
+        border-bottom: 14px solid transparent;
+        margin-left: 6px;
+    }
+    .fc-video-testimonial-content {
+        flex: 1 1 400px;
+        padding: 40px 36px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .fc-video-testimonial-quote {
+        font-size: 20px;
+        line-height: 1.7;
+        margin-bottom: 24px;
+        font-style: italic;
+        color: #e8f0ff;
+    }
+    .fc-video-testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .fc-video-testimonial-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ffb347, #ff7e5f);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: bold;
+    }
+    .fc-video-testimonial-info {
+        flex: 1;
+    }
+    .fc-video-testimonial-name {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+    .fc-video-testimonial-role {
+        font-size: 13px;
+        color: #b8d4ff;
+    }
+    .fc-video-testimonial-rating {
+        margin-top: 8px;
+        font-size: 18px;
+        color: #ffd700;
+    }
+    @media (max-width: 900px) {
+        .fc-video-testimonial-inner {
+            flex-direction: column;
+        }
+        .fc-video-testimonial-video {
+            min-height: 250px;
+        }
+        .fc-video-testimonial-content {
+            padding: 32px 24px;
+        }
+    }
+</style>
+
+<div class="fc-video-testimonial">
+    <div class="fc-video-testimonial-inner">
+        <div class="fc-video-testimonial-video">
+            <div class="fc-video-play-btn">
+                <div class="fc-video-play-icon"></div>
+            </div>
+        </div>
+        <div class="fc-video-testimonial-content">
+            <div class="fc-video-testimonial-quote">
+                &quot;Fue nuestra primera vez en autocaravana y super&oacute; todas las expectativas. 
+                El equipo nos ayud&oacute; a planificar la ruta y la camper estaba impecable. 
+                Ya estamos pensando en la pr&oacute;xima aventura.&quot;
+            </div>
+            <div class="fc-video-testimonial-author">
+                <div class="fc-video-testimonial-avatar">M</div>
+                <div class="fc-video-testimonial-info">
+                    <div class="fc-video-testimonial-name">Mar&iacute;a Gonz&aacute;lez</div>
+                    <div class="fc-video-testimonial-role">Ruta Costa Brava &middot; Julio 2024</div>
+                    <div class="fc-video-testimonial-rating">⭐⭐⭐⭐⭐</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN VIDEO TESTIMONIAL -->
+
+

@@ -1,0 +1,109 @@
+<!-- SECCIÓN PASOS CÓMO FUNCIONA -->
+<style>
+    .fc-pasos {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-pasos-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .fc-pasos-header h2 {
+        font-size: 30px;
+        margin-bottom: 5px;
+    }
+    .fc-pasos-header p {
+        font-size: 14px;
+        color: #777;
+    }
+    .fc-pasos-linea {
+        position: relative;
+        margin-top: 20px;
+    }
+    .fc-pasos-line {
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        top: 18px;
+        height: 2px;
+        background: #e0e0e0;
+    }
+    .fc-pasos-grid {
+        display: grid;
+        grid-template-columns: repeat(4,1fr);
+        gap: 12px;
+        position: relative;
+    }
+    .fc-paso {
+        text-align: center;
+    }
+    .fc-paso-num {
+        width: 36px;
+        height: 36px;
+        border-radius: 999px;
+        background: #fff;
+        border: 2px solid #ff8c42;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 8px;
+        position: relative;
+        z-index: 2;
+    }
+    .fc-paso-title {
+        font-size: 15px;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+    .fc-paso-text {
+        font-size: 13px;
+        color: #666;
+    }
+    @media (max-width: 768px) {
+        .fc-pasos-grid {
+            grid-template-columns: 1fr 1fr;
+            row-gap: 20px;
+        }
+        .fc-pasos-line {
+            display: none;
+        }
+    }
+</style>
+
+<div class="fc-pasos">
+    <div class="fc-pasos-header">
+        <h2>Alquilar una camper es as&iacute; de f&aacute;cil</h2>
+        <p>Cuatro pasos y est&aacute;s en ruta</p>
+    </div>
+    <div class="fc-pasos-linea">
+        <div class="fc-pasos-line"></div>
+        <div class="fc-pasos-grid">
+            <div class="fc-paso">
+                <div class="fc-paso-num">1</div>
+                <div class="fc-paso-title">Fechas</div>
+                <div class="fc-paso-text">Indica cu&aacute;ndo quieres viajar.</div>
+            </div>
+            <div class="fc-paso">
+                <div class="fc-paso-num">2</div>
+                <div class="fc-paso-title">Elige camper</div>
+                <div class="fc-paso-text">Selecciona el modelo que mejor encaja contigo.</div>
+            </div>
+            <div class="fc-paso">
+                <div class="fc-paso-num">3</div>
+                <div class="fc-paso-title">Confirma</div>
+                <div class="fc-paso-text">Reserva online de forma rápida y segura.</div>
+            </div>
+            <div class="fc-paso">
+                <div class="fc-paso-num">4</div>
+                <div class="fc-paso-title">A rodar</div>
+                <div class="fc-paso-text">Recoge tu camper y empieza la aventura.</div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN PASOS CÓMO FUNCIONA -->
+
+

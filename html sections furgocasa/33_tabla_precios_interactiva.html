@@ -1,0 +1,357 @@
+<!-- TABLA DE PRECIOS INTERACTIVA -->
+<style>
+    .fc-precios-tabla {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 50px 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-precios-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .fc-precios-header h2 {
+        font-size: 36px;
+        margin-bottom: 12px;
+        color: #222;
+    }
+    .fc-precios-header p {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 24px;
+    }
+    .fc-precios-alert {
+        max-width: 800px;
+        margin: 0 auto 30px;
+        padding: 18px 24px;
+        background: #fff8e6;
+        border-left: 4px solid #ffb347;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.7;
+    }
+    .fc-precios-alert strong {
+        color: #ff8c42;
+    }
+    .fc-precios-tabla-container {
+        background: #fff;
+        border-radius: 20px;
+        border: 1px solid #e3e6ee;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .fc-precios-tabla-scroll {
+        overflow-x: auto;
+    }
+    .fc-precios-tabla-grid {
+        min-width: 600px;
+    }
+    .fc-precios-tabla-header {
+        display: grid;
+        grid-template-columns: 180px repeat(4, 1fr);
+        background: #063971;
+        color: #fff;
+    }
+    .fc-precios-tabla-header-cell {
+        padding: 20px 16px;
+        font-weight: bold;
+        text-align: center;
+        border-right: 1px solid rgba(255,255,255,0.2);
+        font-size: 15px;
+    }
+    .fc-precios-tabla-header-cell:first-child {
+        text-align: left;
+    }
+    .fc-precios-tabla-header-cell:last-child {
+        border-right: none;
+    }
+    .fc-precios-tabla-row {
+        display: grid;
+        grid-template-columns: 180px repeat(4, 1fr);
+        border-bottom: 1px solid #e3e6ee;
+    }
+    .fc-precios-tabla-row:last-child {
+        border-bottom: none;
+    }
+    .fc-precios-tabla-row:nth-child(even) {
+        background: #f8f9fa;
+    }
+    .fc-precios-tabla-cell {
+        padding: 18px 16px;
+        border-right: 1px solid #e3e6ee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .fc-precios-tabla-cell:first-child {
+        font-weight: bold;
+        color: #444;
+        background: #f8f9fa;
+        justify-content: flex-start;
+        text-align: left;
+    }
+    .fc-precios-tabla-cell:last-child {
+        border-right: none;
+    }
+    .fc-precios-precio {
+        font-size: 20px;
+        font-weight: bold;
+        color: #063971;
+    }
+    .fc-precios-precio small {
+        font-size: 13px;
+        font-weight: normal;
+        color: #888;
+    }
+    .fc-precios-descuentos {
+        margin-top: 40px;
+        padding: 28px;
+        background: linear-gradient(135deg, #063971 0%, #074a8c 100%);
+        border-radius: 16px;
+        color: #fff;
+    }
+    .fc-precios-descuentos-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .fc-precios-descuentos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .fc-precios-descuento-card {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+    }
+    .fc-precios-descuento-porcentaje {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+    .fc-precios-descuento-texto {
+        font-size: 14px;
+        opacity: 0.95;
+    }
+    .fc-precios-nota {
+        margin-top: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.7;
+    }
+    .fc-precios-nota strong {
+        color: #063971;
+    }
+    .fc-precios-cta {
+        text-align: center;
+        margin-top: 40px;
+    }
+    .fc-precios-button {
+        display: inline-block;
+        padding: 16px 48px;
+        border-radius: 8px;
+        background: #1e4a7a;
+        color: #fff !important;
+        font-weight: bold;
+        font-size: 16px;
+        text-decoration: none;
+        transition: all 0.3s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .fc-precios-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        text-decoration: none;
+        background: #074a8c;
+    }
+    @media (max-width: 768px) {
+        .fc-precios-tabla {
+            padding: 20px 16px;
+        }
+        .fc-precios-header h2 {
+            font-size: 28px;
+        }
+        .fc-precios-header p {
+            font-size: 14px;
+        }
+        .fc-precios-alert {
+            padding: 16px 20px;
+            font-size: 13px;
+        }
+        .fc-precios-tabla-header,
+        .fc-precios-tabla-row {
+            grid-template-columns: 100px repeat(4, 1fr);
+        }
+        .fc-precios-tabla-header-cell,
+        .fc-precios-tabla-cell {
+            padding: 12px 6px;
+            font-size: 11px;
+        }
+        .fc-precios-tabla-header-cell:first-child,
+        .fc-precios-tabla-cell:first-child {
+            font-size: 12px;
+        }
+        .fc-precios-precio {
+            font-size: 14px;
+        }
+        .fc-precios-precio small {
+            font-size: 10px;
+            display: block;
+        }
+        .fc-precios-descuentos {
+            padding: 24px 20px;
+        }
+        .fc-precios-descuentos-title {
+            font-size: 20px;
+        }
+        .fc-precios-descuento-porcentaje {
+            font-size: 30px;
+        }
+        .fc-precios-descuento-texto {
+            font-size: 13px;
+        }
+        .fc-precios-button {
+            padding: 14px 36px;
+            font-size: 15px;
+        }
+    }
+</style>
+
+<div class="fc-precios-tabla">
+    <div class="fc-precios-header">
+        <h2>Precios de alquiler</h2>
+        <p>Tarifas orientativas por d&iacute;a seg&uacute;n temporada</p>
+        
+        <div class="fc-precios-alert">
+            <strong>Nota importante:</strong> Estos precios son orientativos y pueden variar hasta un 
+            <strong>&plusmn;20%</strong> en funci&oacute;n de la demanda. Para conocer el precio exacto 
+            de tus fechas, realiza una b&uacute;squeda en nuestro buscador.
+        </div>
+    </div>
+
+    <div class="fc-precios-tabla-container">
+        <div class="fc-precios-tabla-scroll">
+            <div class="fc-precios-tabla-grid">
+                <div class="fc-precios-tabla-header">
+                    <div class="fc-precios-tabla-header-cell">Temporada</div>
+                    <div class="fc-precios-tabla-header-cell">Menos de una semana</div>
+                    <div class="fc-precios-tabla-header-cell">Al menos una semana</div>
+                    <div class="fc-precios-tabla-header-cell">Al menos dos semanas</div>
+                    <div class="fc-precios-tabla-header-cell">Al menos 3 semanas</div>
+                </div>
+
+                <div class="fc-precios-tabla-row">
+                    <div class="fc-precios-tabla-cell">Baja</div>
+                    <div class="fc-precios-tabla-cell">
+                        <div class="fc-precios-precio">95,00</div>
+                    </div>
+                    <div class="fc-precios-tabla-cell">
+                        <div class="fc-precios-precio">85,00</div>
+                    </div>
+                    <div class="fc-precios-tabla-cell">
+                        <div class="fc-precios-precio">75,00</div>
+                    </div>
+                    <div class="fc-precios-tabla-cell">
+                        <div class="fc-precios-precio">65,00</div>
+                    </div>
+                </div>
+
+                <div class="fc-precios-tabla-row">
+                    <div class="fc-precios-tabla-cell">Media</div>
+                    <div class="fc-precios-tabla-cell">
+                        <div class="fc-precios-precio">125,00</div>
+                    </div>
+                    <div class="fc-precios-tabla-cell">
+                        <div class="fc-precios-precio">115,00</div>
+                    </div>
+                    <div class="fc-precios-tabla-cell">
+                        <div class="fc-precios-precio">105,00</div>
+                    </div>
+                    <div class="fc-precios-tabla-cell">
+                        <div class="fc-precios-precio">95,00</div>
+                    </div>
+                </div>
+
+                <div class="fc-precios-tabla-row">
+                    <div class="fc-precios-tabla-cell">Alta</div>
+                    <div class="fc-precios-tabla-cell">
+                        <div class="fc-precios-precio">155,00</div>
+                    </div>
+                    <div class="fc-precios-tabla-cell">
+                        <div class="fc-precios-precio">145,00</div>
+                    </div>
+                    <div class="fc-precios-tabla-cell">
+                        <div class="fc-precios-precio">135,00</div>
+                    </div>
+                    <div class="fc-precios-tabla-cell">
+                        <div class="fc-precios-precio">125,00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fc-precios-descuentos">
+        <div class="fc-precios-descuentos-title">
+            <span>🎉</span>
+            <span>Descuentos por duraci&oacute;n del alquiler</span>
+        </div>
+        <div class="fc-precios-descuentos-grid">
+            <div class="fc-precios-descuento-card">
+                <div class="fc-precios-descuento-porcentaje">-10%</div>
+                <div class="fc-precios-descuento-texto">Alquileres de 7 d&iacute;as o m&aacute;s</div>
+            </div>
+            <div class="fc-precios-descuento-card">
+                <div class="fc-precios-descuento-porcentaje">-20%</div>
+                <div class="fc-precios-descuento-texto">Alquileres de 14 d&iacute;as o m&aacute;s</div>
+            </div>
+            <div class="fc-precios-descuento-card">
+                <div class="fc-precios-descuento-porcentaje">-30%</div>
+                <div class="fc-precios-descuento-texto">Alquileres de 21 d&iacute;as o m&aacute;s (solo Temp. Baja)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fc-precios-nota">
+        <strong>📌 Informaci&oacute;n adicional:</strong><br>
+        &bull; Los precios se devengan por per&iacute;odos completos de 24 horas.<br>
+        &bull; Los descuentos se aplican autom&aacute;ticamente seg&uacute;n la duraci&oacute;n del alquiler.<br><br>
+        
+        <strong>Veh&iacute;culos de 4 plazas:</strong><br>
+        En relaci&oacute;n a los veh&iacute;culos de hasta 4 plazas de noche, con dos camas, en el caso de que se desee 
+        <strong>incluir el colch&oacute;n de la segunda cama</strong> y, por tanto, disfrutar de <strong>la posibilidad de que 
+        duerman hasta 4 personas</strong>, los precios anteriormente mostrados <strong>se incrementar&aacute;n en 10,00 euros d&iacute;a</strong>, 
+        debiendo el cliente incluir el referido extra de alquiler en el momento de hacer la reserva.<br><br>
+        
+        <strong>Modificaci&oacute;n de fechas:</strong><br>
+        En el caso de que, habi&eacute;ndose realizado una reserva previa, el cliente ejerza el derecho de modificaci&oacute;n 
+        de fechas de su alquiler y el precio para estos nuevos d&iacute;as haya variado al alza o a la baja, siempre que la reserva 
+        se cambie dentro de la misma "Temporada", se mantendr&aacute; el precio d&iacute;a inicialmente contratado. En caso de que 
+        la modificaci&oacute;n se realice a temporada distinta, se tendr&aacute;n en cuenta para el ajuste los precios orientativos 
+        mostrados en esta tabla.<br><br>
+        
+        <strong>M&eacute;todo de pago:</strong><br>
+        El m&eacute;todo de pago aceptado ser&aacute; el pago con <strong>tarjeta de d&eacute;bito o cr&eacute;dito</strong> 
+        a trav&eacute;s de nuestra pasarela de pago segura Redsys.
+    </div>
+
+    <div class="fc-precios-cta">
+        <a href="https://www.furgocasa.com/es/reservar" class="fc-precios-button">
+            Consultar precio para mis fechas
+        </a>
+    </div>
+</div>
+<!-- FIN TABLA DE PRECIOS INTERACTIVA -->
+

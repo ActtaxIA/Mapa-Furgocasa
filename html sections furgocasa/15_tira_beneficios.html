@@ -1,0 +1,87 @@
+<!-- SECCIÓN TIRA DE BENEFICIOS -->
+<style>
+    .fc-benef-strip {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 18px 20px;
+        font-family: Arial, sans-serif;
+        background: #0b1a2a;
+        color: #e4edf8;
+        border-radius: 999px;
+    }
+    .fc-benef-inner {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .fc-benef-label {
+        font-size: 13px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #7ea5ff;
+    }
+    .fc-benef-items {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .fc-benef-item {
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+    .fc-benef-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+    .fc-benef-dot--green { background: #2ecc71; }
+    .fc-benef-dot--orange { background: #ffb347; }
+    .fc-benef-dot--blue { background: #3498db; }
+    .fc-benef-dot--purple { background: #9b59b6; }
+    @media (max-width: 900px) {
+        .fc-benef-strip {
+            border-radius: 20px;
+            text-align: center;
+        }
+        .fc-benef-inner {
+            align-items: flex-start;
+        }
+        .fc-benef-item {
+            white-space: normal;
+        }
+    }
+</style>
+
+<div class="fc-benef-strip">
+    <div class="fc-benef-inner">
+        <div class="fc-benef-label">Viajar en camper con Furgocasa</div>
+        <div class="fc-benef-items">
+            <div class="fc-benef-item">
+                <span class="fc-benef-dot fc-benef-dot--green"></span>
+                <span>Asistencia 24/7 incluida</span>
+            </div>
+            <div class="fc-benef-item">
+                <span class="fc-benef-dot fc-benef-dot--orange"></span>
+                <span>Campers modernas y revisadas</span>
+            </div>
+            <div class="fc-benef-item">
+                <span class="fc-benef-dot fc-benef-dot--blue"></span>
+                <span>Reservas online seguras</span>
+            </div>
+            <div class="fc-benef-item">
+                <span class="fc-benef-dot fc-benef-dot--purple"></span>
+                <span>Equipo experto en rutas</span>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN TIRA DE BENEFICIOS -->
+
+
+

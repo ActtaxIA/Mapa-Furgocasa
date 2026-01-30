@@ -1,0 +1,275 @@
+<!-- SECCIÓN FIANZA Y SEGURO -->
+<style>
+    .fc-fianza-seguro {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 50px 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-fianza-seguro-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 30px;
+    }
+    .fc-fianza-box {
+        background: linear-gradient(135deg, #063971 0%, #074a8c 100%);
+        border-radius: 20px;
+        padding: 40px 36px;
+        color: #fff;
+    }
+    .fc-fianza-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .fc-fianza-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        flex-shrink: 0;
+    }
+    .fc-fianza-title {
+        font-size: 28px;
+        font-weight: bold;
+        line-height: 1.2;
+    }
+    .fc-fianza-precio {
+        font-size: 56px;
+        font-weight: bold;
+        margin-bottom: 12px;
+        text-align: center;
+    }
+    .fc-fianza-texto {
+        font-size: 16px;
+        line-height: 1.7;
+        opacity: 0.95;
+        margin-bottom: 24px;
+    }
+    .fc-fianza-lista {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .fc-fianza-lista li {
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 15px;
+    }
+    .fc-fianza-lista li:last-child {
+        border-bottom: none;
+    }
+    .fc-fianza-lista li::before {
+        content: '✓';
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-weight: bold;
+        margin-top: 2px;
+    }
+    .fc-seguro-box {
+        background: #fff;
+        border: 2px solid #e3e6ee;
+        border-radius: 20px;
+        padding: 40px 36px;
+    }
+    .fc-seguro-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .fc-seguro-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #063971 0%, #074a8c 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: #fff;
+        flex-shrink: 0;
+    }
+    .fc-seguro-title {
+        font-size: 28px;
+        font-weight: bold;
+        color: #222;
+        line-height: 1.2;
+    }
+    .fc-seguro-franquicia {
+        text-align: center;
+        padding: 28px;
+        background: linear-gradient(135deg, #063971 0%, #074a8c 100%);
+        border-radius: 16px;
+        color: #fff;
+        margin-bottom: 24px;
+    }
+    .fc-seguro-franquicia-label {
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        opacity: 0.9;
+        margin-bottom: 8px;
+    }
+    .fc-seguro-franquicia-precio {
+        font-size: 48px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+    .fc-seguro-franquicia-texto {
+        font-size: 15px;
+        opacity: 0.95;
+    }
+    .fc-seguro-texto {
+        font-size: 15px;
+        color: #555;
+        line-height: 1.7;
+        margin-bottom: 20px;
+    }
+    .fc-seguro-lista {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .fc-seguro-lista li {
+        padding: 12px 0;
+        border-bottom: 1px solid #e3e6ee;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 15px;
+        color: #555;
+    }
+    .fc-seguro-lista li:last-child {
+        border-bottom: none;
+    }
+    .fc-seguro-lista li::before {
+        content: '→';
+        color: #063971;
+        font-weight: bold;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    .fc-seguro-exclusion {
+        margin-top: 24px;
+        padding: 18px;
+        background: #fff8e6;
+        border-left: 4px solid #ffb347;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #666;
+    }
+    .fc-seguro-exclusion strong {
+        color: #ff8c42;
+    }
+    @media (max-width: 900px) {
+        .fc-fianza-seguro-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 768px) {
+        .fc-fianza-seguro {
+            padding: 20px 16px;
+        }
+        .fc-fianza-box,
+        .fc-seguro-box {
+            padding: 32px 24px;
+        }
+        .fc-fianza-icon,
+        .fc-seguro-icon {
+            width: 56px;
+            height: 56px;
+            font-size: 28px;
+        }
+        .fc-fianza-title,
+        .fc-seguro-title {
+            font-size: 24px;
+        }
+        .fc-fianza-precio {
+            font-size: 48px;
+        }
+        .fc-seguro-franquicia-precio {
+            font-size: 42px;
+        }
+    }
+</style>
+
+<div class="fc-fianza-seguro">
+    <div class="fc-fianza-seguro-grid">
+        <!-- FIANZA -->
+        <div class="fc-fianza-box">
+            <div class="fc-fianza-header">
+                <div class="fc-fianza-icon">🔒</div>
+                <h3 class="fc-fianza-title">Fianza</h3>
+            </div>
+            
+            <div class="fc-fianza-precio">1.000 &euro;</div>
+            
+            <p class="fc-fianza-texto">
+                Antes de confirmar la cita del alquiler (m&aacute;ximo 72 horas antes), 
+                deber&aacute;s abonar la fianza mediante <strong>transferencia bancaria</strong> 
+                como garant&iacute;a del fiel cumplimiento del contrato.
+            </p>
+
+            <ul class="fc-fianza-lista">
+                <li>Pago mediante transferencia bancaria</li>
+                <li>M&aacute;ximo 72 horas antes del inicio</li>
+                <li>Enviar justificante y certificado de titularidad</li>
+                <li>El titular debe coincidir con el arrendatario</li>
+                <li>Devoluci&oacute;n en 10 d&iacute;as laborales tras la devoluci&oacute;n</li>
+                <li>Examen del veh&iacute;culo durante ese per&iacute;odo</li>
+            </ul>
+        </div>
+
+        <!-- SEGURO -->
+        <div class="fc-seguro-box">
+            <div class="fc-seguro-header">
+                <div class="fc-seguro-icon">🛡️</div>
+                <h3 class="fc-seguro-title">Seguro a todo riesgo</h3>
+            </div>
+
+            <div class="fc-seguro-franquicia">
+                <div class="fc-seguro-franquicia-label">Franquicia por siniestro</div>
+                <div class="fc-seguro-franquicia-precio">900 &euro;</div>
+                <div class="fc-seguro-franquicia-texto">
+                    Coste m&aacute;ximo a sufragar en caso de accidente
+                </div>
+            </div>
+
+            <p class="fc-seguro-texto">
+                Todas nuestras campers cuentan con <strong>seguro a todo riesgo</strong> apto 
+                para alquiler sin conductor. En caso de varios accidentes, la franquicia 
+                act&uacute;a de forma independiente para cada uno.
+            </p>
+
+            <ul class="fc-seguro-lista">
+                <li>Cobertura a todo riesgo incluida</li>
+                <li>900&euro; de franquicia por siniestro</li>
+                <li>Si el da&ntilde;o no alcanza 900&euro;, asumes el coste de reparaci&oacute;n</li>
+                <li>Si supera 900&euro;, ese es el m&aacute;ximo a pagar</li>
+                <li>Franquicia independiente por cada accidente</li>
+            </ul>
+
+            <div class="fc-seguro-exclusion">
+                <strong>⚠️ Importante:</strong> Este seguro <strong>no cubre da&ntilde;os</strong> 
+                ocasionados cuando el veh&iacute;culo <strong>no est&aacute; en circulaci&oacute;n</strong>.
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN FIANZA Y SEGURO -->
+

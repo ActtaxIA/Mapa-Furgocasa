@@ -1,0 +1,275 @@
+<!-- SECCIÓN CONTADOR DE ESTADÍSTICAS ANIMADO -->
+<style>
+    .stats-section {
+        max-width: 1200px;
+        margin: 60px auto;
+        padding: 80px 20px;
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Animación de fondo */
+    .stats-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.1;
+        background-image: 
+            radial-gradient(circle at 20% 50%, white 2px, transparent 2px),
+            radial-gradient(circle at 80% 80%, white 2px, transparent 2px),
+            radial-gradient(circle at 40% 20%, white 1px, transparent 1px);
+        background-size: 100px 100px, 150px 150px, 80px 80px;
+        animation: moveStars 20s linear infinite;
+    }
+
+    @keyframes moveStars {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-100px); }
+    }
+
+    .stats-header {
+        text-align: center;
+        margin-bottom: 60px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .stats-header h2 {
+        font-size: 48px;
+        color: white;
+        margin-bottom: 15px;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .stats-header p {
+        font-size: 22px;
+        color: rgba(255,255,255,0.9);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 40px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .stats-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 40px 30px;
+        text-align: center;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s;
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .stats-card:nth-child(1) { animation-delay: 0.1s; }
+    .stats-card:nth-child(2) { animation-delay: 0.2s; }
+    .stats-card:nth-child(3) { animation-delay: 0.3s; }
+    .stats-card:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .stats-card:hover {
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .stats-icon {
+        font-size: 60px;
+        margin-bottom: 20px;
+        display: block;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .stats-card:nth-child(1) .stats-icon { animation-delay: 0s; }
+    .stats-card:nth-child(2) .stats-icon { animation-delay: 0.5s; }
+    .stats-card:nth-child(3) .stats-icon { animation-delay: 1s; }
+    .stats-card:nth-child(4) .stats-icon { animation-delay: 1.5s; }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+
+    .stats-number {
+        font-size: 56px;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        line-height: 1;
+    }
+
+    .stats-label {
+        font-size: 18px;
+        color: rgba(255,255,255,0.9);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .stats-cta {
+        text-align: center;
+        margin-top: 60px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .stats-button {
+        display: inline-block;
+        background: white;
+        color: #667eea !important;
+        text-decoration: none;
+        font-size: 22px;
+        font-weight: bold;
+        padding: 20px 60px;
+        border-radius: 50px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s;
+        border: 3px solid white;
+    }
+
+    .stats-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        text-decoration: none;
+        background: #667eea;
+        color: white !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .stats-section {
+            padding: 60px 20px;
+        }
+
+        .stats-header h2 {
+            font-size: 36px;
+        }
+
+        .stats-header p {
+            font-size: 18px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .stats-number {
+            font-size: 48px;
+        }
+
+        .stats-label {
+            font-size: 16px;
+        }
+
+        .stats-button {
+            font-size: 18px;
+            padding: 16px 40px;
+        }
+    }
+</style>
+
+<div class="stats-section">
+    <div class="stats-background"></div>
+    
+    <div class="stats-header">
+        <h2>Furgocasa en Números</h2>
+        <p>Miles de aventureros confían en nosotros cada año</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stats-card">
+            <span class="stats-icon">🚐</span>
+            <div class="stats-number" data-target="50">0</div>
+            <div class="stats-label">Autocaravanas</div>
+        </div>
+
+        <div class="stats-card">
+            <span class="stats-icon">⭐</span>
+            <div class="stats-number"><span data-target="4">0</span>.9</div>
+            <div class="stats-label">Valoración Media</div>
+        </div>
+
+        <div class="stats-card">
+            <span class="stats-icon">👥</span>
+            <div class="stats-number" data-target="5000">0</div>
+            <div class="stats-label">Clientes Felices</div>
+        </div>
+
+        <div class="stats-card">
+            <span class="stats-icon">📍</span>
+            <div class="stats-number" data-target="15">0</div>
+            <div class="stats-label">Años de Experiencia</div>
+        </div>
+    </div>
+
+    <div class="stats-cta">
+        <a href="https://www.furgocasa.com/es/reservar" class="stats-button">¡Únete a Nuestra Comunidad!</a>
+    </div>
+</div>
+
+<script>
+    // Animación de contadores
+    function animateCounters() {
+        const counters = document.querySelectorAll('.stats-number [data-target], .stats-number[data-target]');
+        
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target'));
+            const duration = 2000; // 2 segundos
+            const increment = target / (duration / 16); // 60fps
+            let current = 0;
+
+            const updateCounter = () => {
+                current += increment;
+                if (current < target) {
+                    counter.textContent = Math.floor(current);
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    counter.textContent = target;
+                }
+            };
+
+            updateCounter();
+        });
+    }
+
+    // Iniciar animación cuando la sección sea visible
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounters();
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    const statsSection = document.querySelector('.stats-section');
+    if (statsSection) {
+        observer.observe(statsSection);
+    }
+</script>
+<!-- FIN SECCIÓN CONTADOR DE ESTADÍSTICAS ANIMADO -->
+
+

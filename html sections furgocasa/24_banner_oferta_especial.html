@@ -1,0 +1,177 @@
+<!-- SECCIÓN BANNER OFERTA ESPECIAL -->
+<style>
+    .fc-oferta-banner {
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 0 20px;
+        font-family: Arial, sans-serif;
+    }
+    .fc-oferta-banner-inner {
+        border-radius: 24px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 50%, #ffb347 100%);
+        color: #1c130e;
+        position: relative;
+        padding: 50px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+    .fc-oferta-content {
+        flex: 1 1 400px;
+        position: relative;
+        z-index: 2;
+    }
+    .fc-oferta-badge {
+        display: inline-block;
+        padding: 8px 18px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.3);
+        backdrop-filter: blur(10px);
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 16px;
+    }
+    .fc-oferta-title {
+        font-size: 38px;
+        font-weight: bold;
+        margin-bottom: 12px;
+        line-height: 1.2;
+    }
+    .fc-oferta-subtitle {
+        font-size: 18px;
+        margin-bottom: 24px;
+        opacity: 0.95;
+    }
+    .fc-oferta-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 28px;
+        font-size: 15px;
+    }
+    .fc-oferta-features li {
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .fc-oferta-features li::before {
+        content: '✓';
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+    .fc-oferta-cta {
+        display: inline-block;
+        padding: 16px 40px;
+        border-radius: 999px;
+        background: #1c130e;
+        color: #fff !important;
+        font-weight: bold;
+        font-size: 16px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    .fc-oferta-cta:hover {
+        background: #2a1f18;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        text-decoration: none;
+    }
+    .fc-oferta-visual {
+        flex: 0 0 280px;
+        position: relative;
+        z-index: 2;
+    }
+    .fc-oferta-discount-box {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 32px 28px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .fc-oferta-discount-label {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+    }
+    .fc-oferta-discount-number {
+        font-size: 64px;
+        font-weight: bold;
+        color: #ff6b6b;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+    .fc-oferta-discount-text {
+        font-size: 16px;
+        color: #333;
+        font-weight: bold;
+    }
+    .fc-oferta-pattern {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0, transparent 70%);
+        border-radius: 50%;
+        transform: translate(30%, -30%);
+    }
+    @media (max-width: 900px) {
+        .fc-oferta-banner-inner {
+            padding: 40px 28px;
+            text-align: center;
+        }
+        .fc-oferta-title {
+            font-size: 32px;
+        }
+        .fc-oferta-visual {
+            flex: 1 1 auto;
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="fc-oferta-banner">
+    <div class="fc-oferta-banner-inner">
+        <div class="fc-oferta-pattern"></div>
+        
+        <div class="fc-oferta-content">
+            <div class="fc-oferta-badge">Oferta limitada</div>
+            <h2 class="fc-oferta-title">Descuento especial en reservas anticipadas</h2>
+            <p class="fc-oferta-subtitle">
+                Reserva con m&aacute;s de 60 d&iacute;as de antelaci&oacute;n y obt&eacute;n un descuento exclusivo.
+            </p>
+            <ul class="fc-oferta-features">
+                <li>V&aacute;lido para todas las temporadas</li>
+                <li>Aplicable a cualquier modelo de camper</li>
+                <li>Sin condiciones ocultas ni letra peque&ntilde;a</li>
+                <li>Puedes combinarlo con otras promociones</li>
+            </ul>
+            <a href="https://www.furgocasa.com/es/reservar" class="fc-oferta-cta">
+                Aplicar descuento ahora
+            </a>
+        </div>
+
+        <div class="fc-oferta-visual">
+            <div class="fc-oferta-discount-box">
+                <div class="fc-oferta-discount-label">Ahorra hasta</div>
+                <div class="fc-oferta-discount-number">15%</div>
+                <div class="fc-oferta-discount-text">En tu reserva</div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FIN SECCIÓN BANNER OFERTA ESPECIAL -->
+
+

@@ -5,6 +5,7 @@
 He creado **2 versiones** del email de confirmación:
 
 ### Versión 1: Completa (Recomendada)
+
 - **Archivo:** `mail_mapas/email-confirmacion-signup.html`
 - **Características:**
   - Diseño profesional con gradiente
@@ -15,6 +16,7 @@ He creado **2 versiones** del email de confirmación:
   - Compatible con Outlook
 
 ### Versión 2: Simple (Alternativa)
+
 - **Archivo:** `mail_mapas/email-confirmacion-signup-simple.html`
 - **Características:**
   - Diseño minimalista
@@ -82,17 +84,17 @@ Subject: 🚐 Bienvenido a Mapa Furgocasa - Confirma tu cuenta
 Si quieres cambiar el logo, busca esta línea en el HTML:
 
 ```html
-<h1 style="margin: 0; color: #0284c7; font-size: 28px;">
-    🚐 FURGOCASA
-</h1>
+<h1 style="margin: 0; color: #0284c7; font-size: 28px;">🚐 FURGOCASA</h1>
 ```
 
 Y reemplázala con tu imagen real:
 
 ```html
-<img src="https://www.mapafurgocasa.com/logo-negro.png" 
-     alt="Mapa Furgocasa" 
-     style="max-width: 200px; height: auto;" />
+<img
+  src="https://www.mapafurgocasa.com/logo-negro.png"
+  alt="Mapa Furgocasa"
+  style="max-width: 200px; height: auto;"
+/>
 ```
 
 ---
@@ -102,21 +104,25 @@ Y reemplázala con tu imagen real:
 En Supabase también puedes personalizar:
 
 ### 1. Magic Link (Login sin contraseña)
+
 - **Template:** "Magic Link"
 - **Cuando se usa:** Login con link por email
 - **Variable:** `{{ .Token }}`
 
 ### 2. Change Email Address
+
 - **Template:** "Change Email Address"
 - **Cuando se usa:** Usuario cambia su email
 - **Variable:** `{{ .ConfirmationURL }}`
 
 ### 3. Reset Password
+
 - **Template:** "Reset Password"
 - **Cuando se usa:** Recuperación de contraseña
 - **Variable:** `{{ .Token }}`
 
 ### 4. Invite User
+
 - **Template:** "Invite User"
 - **Cuando se usa:** Invitaciones de usuario
 - **Variable:** `{{ .ConfirmationURL }}`
@@ -177,18 +183,22 @@ Fondo:           #f3f4f6
 ## 🆘 TROUBLESHOOTING
 
 ### El email no se ve bien en Gmail
+
 - **Causa:** CSS no soportado
 - **Solución:** Usa la versión simple
 
 ### El email no se ve bien en Outlook
+
 - **Causa:** Outlook usa renderizado antiguo
 - **Solución:** El código ya está optimizado con `<!--[if mso]-->`
 
 ### El enlace no funciona
+
 - **Causa:** Variable incorrecta
 - **Solución:** Verifica que sea `{{ .ConfirmationURL }}` exactamente
 
 ### Los colores no se ven
+
 - **Causa:** Cliente de email bloqueando CSS
 - **Solución:** Normal, los estilos inline funcionan mejor
 
@@ -217,7 +227,7 @@ Después de configurar:
 ✅ Compatible con todos los clientes de email  
 ✅ Botón CTA claro y visible  
 ✅ Enlace alternativo por si el botón no funciona  
-✅ Footer con información legal  
+✅ Footer con información legal
 
 ---
 
