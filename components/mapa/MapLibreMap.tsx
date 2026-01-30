@@ -211,12 +211,25 @@ export function MapLibreMap({
 
           el.addEventListener('click', () => {
             onAreaClick(area)
+            // ✅ Centrar mapa en el marcador al abrir popup
+            map.flyTo({
+              center: [lng, lat],
+              zoom: Math.max(map.getZoom(), 12), // Zoom mínimo 12 para ver detalles
+              duration: 800
+            })
           })
 
           const marker = new maplibregl.Marker({ element: el })
             .setLngLat([lng, lat])
             .setPopup(
-              new maplibregl.Popup({ offset: 25 })
+              new maplibregl.Popup({ 
+                offset: 25,
+                closeButton: true,      // ✅ Botón X para cerrar
+                closeOnClick: true,     // ✅ Cerrar al hacer click fuera
+                closeOnMove: false,     // No cerrar al mover el mapa
+                maxWidth: '360px',      // Ancho consistente
+                className: 'maplibre-popup-custom'
+              })
                 .setHTML(createPopupContent(area))
             )
             .addTo(map)

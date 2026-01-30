@@ -159,7 +159,16 @@ export function LeafletMap({
 
       const marker = L.marker([area.latitud, area.longitud], { icon: customIcon })
         .addTo(mapRef.current)
-        .bindPopup(createPopupContent(area))
+        .bindPopup(createPopupContent(area), {
+          maxWidth: 360,              // ✅ Ancho consistente
+          minWidth: 300,              // Ancho mínimo
+          closeButton: true,          // ✅ Botón X para cerrar
+          closeOnClick: true,         // ✅ Cerrar al hacer click fuera
+          autoClose: true,            // Cerrar automáticamente al abrir otro
+          autoPan: true,              // ✅ Centrar en el popup
+          autoPanPadding: [50, 50],   // Padding al centrar
+          className: 'leaflet-popup-custom'
+        })
         .on('click', () => {
           onAreaClick(area)
         })
