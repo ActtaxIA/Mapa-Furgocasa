@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import Supercluster from 'supercluster'
 import type { Area } from '@/types/database.types'
 import { BuscadorGeografico } from './BuscadorGeografico'
 
@@ -27,7 +28,8 @@ export function MapLibreMap({
 }: MapLibreMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
-  const markersRef = useRef<maplibregl.Marker[]>([])
+  const markersRef = useRef<{ [key: string]: maplibregl.Marker }>({})
+  const clusterIndexRef = useRef<Supercluster | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
 
   // Obtener URL de estilo según configuración
@@ -86,46 +88,164 @@ export function MapLibreMap({
     }
   }, [estilo])
 
-  // Añadir marcadores cuando el mapa esté listo
+  // Añadir marcadores CON CLUSTERING cuando el mapa esté listo
   useEffect(() => {
     if (!mapRef.current || !mapLoaded || areas.length === 0) return
 
-    console.log(`📍 Añadiendo ${areas.length} marcadores a MapLibre...`)
+    console.log(`📍 Inicializando clustering para ${areas.length} áreas...`)
 
-    // Limpiar marcadores anteriores
-    markersRef.current.forEach(marker => marker.remove())
-    markersRef.current = []
+    // Convertir áreas a formato GeoJSON para Supercluster
+    const points: Supercluster.PointFeature<{ area: Area }>[] = areas.map(area => ({
+      type: 'Feature',
+      properties: { area },
+      geometry: {
+        type: 'Point',
+        coordinates: [Number(area.longitud), Number(area.latitud)]
+      }
+    }))
 
-    // Crear nuevos marcadores
-    const newMarkers = areas.map(area => {
-      const el = document.createElement('div')
-      el.className = 'marker'
-      el.style.width = '20px'
-      el.style.height = '20px'
-      el.style.borderRadius = '50%'
-      el.style.backgroundColor = getTipoAreaColor(area.tipo_area)
-      el.style.border = '2px solid white'
-      el.style.cursor = 'pointer'
-      el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)'
+    // Inicializar Supercluster
+    const cluster = new Supercluster({
+      radius: 100,
+      maxZoom: 13,
+      minPoints: 3
+    })
+    cluster.load(points)
+    clusterIndexRef.current = cluster
 
-      const marker = new maplibregl.Marker({ element: el })
-        .setLngLat([Number(area.longitud), Number(area.latitud)])
-        .setPopup(
-          new maplibregl.Popup({ offset: 25 })
-            .setHTML(createPopupContent(area))
-        )
-        .addTo(mapRef.current!)
+    // Función para actualizar marcadores según el zoom/bounds
+    const updateMarkers = () => {
+      if (!mapRef.current || !clusterIndexRef.current) return
 
-      // Click en marcador
-      el.addEventListener('click', () => {
-        onAreaClick(area)
+      const map = mapRef.current
+      const zoom = Math.floor(map.getZoom())
+      const bounds = map.getBounds()
+      const bbox: [number, number, number, number] = [
+        bounds.getWest(),
+        bounds.getSouth(),
+        bounds.getEast(),
+        bounds.getNorth()
+      ]
+
+      // Obtener clusters y puntos para el viewport actual
+      const clusters = clusterIndexRef.current.getClusters(bbox, zoom)
+
+      // Limpiar marcadores que ya no están visibles
+      const newMarkerIds = new Set(clusters.map(c => 
+        c.properties.cluster ? `cluster-${c.properties.cluster_id}` : `area-${c.properties.area.id}`
+      ))
+
+      Object.keys(markersRef.current).forEach(id => {
+        if (!newMarkerIds.has(id)) {
+          markersRef.current[id].remove()
+          delete markersRef.current[id]
+        }
       })
 
-      return marker
-    })
+      // Añadir/actualizar marcadores
+      clusters.forEach(cluster => {
+        const [lng, lat] = cluster.geometry.coordinates
+        const isCluster = cluster.properties.cluster
 
-    markersRef.current = newMarkers
-    console.log(`✅ ${newMarkers.length} marcadores añadidos`)
+        if (isCluster) {
+          const clusterId = `cluster-${cluster.properties.cluster_id}`
+          const count = cluster.properties.point_count
+
+          // Si el cluster ya existe, no recrearlo
+          if (markersRef.current[clusterId]) return
+
+          // Crear elemento del cluster
+          const el = document.createElement('div')
+          el.className = 'marker-cluster'
+          el.style.width = '40px'
+          el.style.height = '40px'
+          el.style.borderRadius = '50%'
+          el.style.backgroundColor = '#0284c7'
+          el.style.color = 'white'
+          el.style.display = 'flex'
+          el.style.alignItems = 'center'
+          el.style.justifyContent = 'center'
+          el.style.fontWeight = '700'
+          el.style.fontSize = '14px'
+          el.style.cursor = 'pointer'
+          el.style.border = '3px solid white'
+          el.style.boxShadow = '0 2px 6px rgba(0,0,0,0.4)'
+          el.textContent = count.toString()
+
+          // Click en cluster: hacer zoom
+          el.addEventListener('click', () => {
+            const expansionZoom = clusterIndexRef.current!.getClusterExpansionZoom(cluster.properties.cluster_id!)
+            map.flyTo({
+              center: [lng, lat],
+              zoom: Math.min(expansionZoom, 16),
+              duration: 500
+            })
+          })
+
+          const marker = new maplibregl.Marker({ element: el })
+            .setLngLat([lng, lat])
+            .addTo(map)
+
+          markersRef.current[clusterId] = marker
+
+        } else {
+          // Marcador individual
+          const area = cluster.properties.area
+          const areaId = `area-${area.id}`
+
+          if (markersRef.current[areaId]) return
+
+          const el = document.createElement('div')
+          el.className = 'marker'
+          el.style.width = '20px'
+          el.style.height = '20px'
+          el.style.borderRadius = '50%'
+          el.style.backgroundColor = getTipoAreaColor(area.tipo_area)
+          el.style.border = '2px solid white'
+          el.style.cursor = 'pointer'
+          el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)'
+
+          el.addEventListener('click', () => {
+            onAreaClick(area)
+          })
+
+          const marker = new maplibregl.Marker({ element: el })
+            .setLngLat([lng, lat])
+            .setPopup(
+              new maplibregl.Popup({ offset: 25 })
+                .setHTML(createPopupContent(area))
+            )
+            .addTo(map)
+
+          markersRef.current[areaId] = marker
+        }
+      })
+
+      console.log(`✅ ${Object.keys(markersRef.current).length} marcadores visibles (clusters + áreas)`)
+    }
+
+    // Actualizar marcadores inicialmente
+    updateMarkers()
+
+    // Actualizar marcadores al mover/zoom
+    const handleUpdate = () => {
+      updateMarkers()
+    }
+
+    mapRef.current.on('moveend', handleUpdate)
+    mapRef.current.on('zoomend', handleUpdate)
+
+    return () => {
+      // Limpiar todos los marcadores
+      Object.values(markersRef.current).forEach(marker => marker.remove())
+      markersRef.current = {}
+      clusterIndexRef.current = null
+
+      if (mapRef.current) {
+        mapRef.current.off('moveend', handleUpdate)
+        mapRef.current.off('zoomend', handleUpdate)
+      }
+    }
 
   }, [areas, mapLoaded, onAreaClick])
 

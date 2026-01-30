@@ -6,9 +6,16 @@ import { BuscadorGeografico } from './BuscadorGeografico'
 
 // Importar Leaflet solo en cliente
 let L: any = null
+let MarkerClusterGroup: any = null
+
 if (typeof window !== 'undefined') {
   L = require('leaflet')
   require('leaflet/dist/leaflet.css')
+  
+  // Importar Leaflet.markercluster
+  require('leaflet.markercluster')
+  require('leaflet.markercluster/dist/MarkerCluster.css')
+  require('leaflet.markercluster/dist/MarkerCluster.Default.css')
   
   // Fix para los iconos de Leaflet (problema conocido con webpack)
   delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -40,7 +47,7 @@ export function LeafletMap({
 }: LeafletMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
-  const markersRef = useRef<any[]>([])
+  const markerClusterGroupRef = useRef<any>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
 
   // Obtener URL de tiles según estilo
@@ -105,19 +112,49 @@ export function LeafletMap({
     }
   }, [estilo])
 
-  // Añadir marcadores cuando el mapa esté listo
+  // Añadir marcadores CON CLUSTERING cuando el mapa esté listo
   useEffect(() => {
     if (!mapRef.current || !mapLoaded || areas.length === 0 || !L) return
 
-    console.log(`📍 Añadiendo ${areas.length} marcadores a Leaflet...`)
+    console.log(`📍 Añadiendo ${areas.length} marcadores con clustering a Leaflet...`)
 
-    // Limpiar marcadores anteriores
-    markersRef.current.forEach(marker => marker.remove())
-    markersRef.current = []
+    // Limpiar cluster group anterior
+    if (markerClusterGroupRef.current) {
+      mapRef.current.removeLayer(markerClusterGroupRef.current)
+    }
 
-    // Crear nuevos marcadores
-    const newMarkers = areas.map(area => {
-      // Crear icono personalizado según tipo
+    // Crear nuevo MarkerClusterGroup con opciones similares a Google Maps
+    const markerClusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 100,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true,
+      disableClusteringAtZoom: 14, // Similar a maxZoom: 13
+      iconCreateFunction: function(cluster: any) {
+        const count = cluster.getChildCount()
+        return L.divIcon({
+          html: `<div style="
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #0284c7;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+          ">${count}</div>`,
+          className: 'custom-cluster-icon',
+          iconSize: L.point(40, 40)
+        })
+      }
+    })
+
+    // Crear marcadores
+    areas.forEach(area => {
       const iconHtml = `
         <div style="
           width: 24px;
@@ -137,17 +174,25 @@ export function LeafletMap({
       })
 
       const marker = L.marker([area.latitud, area.longitud], { icon: customIcon })
-        .addTo(mapRef.current)
         .bindPopup(createPopupContent(area))
         .on('click', () => {
           onAreaClick(area)
         })
 
-      return marker
+      markerClusterGroup.addLayer(marker)
     })
 
-    markersRef.current = newMarkers
-    console.log(`✅ ${newMarkers.length} marcadores añadidos`)
+    // Añadir cluster group al mapa
+    mapRef.current.addLayer(markerClusterGroup)
+    markerClusterGroupRef.current = markerClusterGroup
+
+    console.log(`✅ ${areas.length} marcadores añadidos con clustering`)
+
+    return () => {
+      if (markerClusterGroupRef.current && mapRef.current) {
+        mapRef.current.removeLayer(markerClusterGroupRef.current)
+      }
+    }
 
   }, [areas, mapLoaded, onAreaClick])
 
