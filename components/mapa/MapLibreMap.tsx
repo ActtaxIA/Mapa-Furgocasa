@@ -141,7 +141,7 @@ export function MapLibreMap({
   }, [areaSeleccionada])
 
   // Handler para búsqueda geográfica
-  const handleLocationFound = (location: { lat: number; lng: number; address: string; country: string }) => {
+  const handleLocationFound = (location: { lat: number; lng: number; address: string; country: string; countryCode: string }) => {
     if (!mapRef.current) return
 
     console.log('📍 Búsqueda: volando a', location)

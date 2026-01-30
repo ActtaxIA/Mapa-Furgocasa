@@ -398,8 +398,8 @@ export function BuscadorGeografico({ map, onLocationFound, currentCountry }: Bus
       
       {/* Hint text - Solo en desktop cuando está expandido */}
       {isExpanded && (
-        <p className="hidden md:block text-[11px] text-blue-600 mt-1 px-2 bg-blue-50/80 rounded py-0.5">
-          Navega por el mapa (no filtra áreas)
+        <p className="hidden md:block text-[11px] text-green-600 mt-1 px-2 bg-green-50/80 rounded py-0.5">
+          ✓ Al buscar, el filtro de país cambiará automáticamente
         </p>
       )}
     </div>
