@@ -100,6 +100,9 @@ export function LeafletMap({
       center: [40.4168, -3.7038], // Madrid
       zoom: 6,
       zoomControl: true,
+      scrollWheelZoom: true, // ✅ Zoom bidireccional con scroll
+      doubleClickZoom: true,
+      touchZoom: true,
     })
 
     // Añadir capa de tiles
