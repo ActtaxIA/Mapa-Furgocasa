@@ -29,6 +29,7 @@ export default function MapaPage() {
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const [detectedCountry, setDetectedCountry] = useState<string | null>(null)
+  const [paisesDisponibles, setPaisesDisponibles] = useState<string[]>([]) // NUEVO: Lista completa de países
   const mapRef = useRef<any>(null) // Referencia al mapa para controlarlo
   const skipMapCenterRef = useRef(false) // Evitar centrado automático después de búsqueda geográfica
 
@@ -54,6 +55,64 @@ export default function MapaPage() {
 
     return () => subscription.unsubscribe()
   }, [])
+
+  // ✅ CARGAR LISTA COMPLETA DE PAÍSES (una sola vez, al inicio)
+  useEffect(() => {
+    const loadPaises = async () => {
+      try {
+        // Cache de países (válido por 1 hora)
+        const PAISES_CACHE_KEY = 'mapa_paises_disponibles'
+        const PAISES_TIMESTAMP_KEY = 'mapa_paises_timestamp'
+        const CACHE_MAX_AGE = 1000 * 60 * 60 // 1 hora
+
+        // Intentar desde cache
+        const cachedPaises = localStorage.getItem(PAISES_CACHE_KEY)
+        const cachedTimestamp = localStorage.getItem(PAISES_TIMESTAMP_KEY)
+
+        if (cachedPaises && cachedTimestamp) {
+          const age = Date.now() - parseInt(cachedTimestamp)
+          if (age < CACHE_MAX_AGE) {
+            console.log('⚡ Países cargados desde cache')
+            setPaisesDisponibles(JSON.parse(cachedPaises))
+            return
+          }
+        }
+
+        // Cargar desde Supabase: query ligero solo para obtener países únicos
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('areas')
+          .select('pais')
+          .eq('activo', true)
+
+        if (error) throw error
+
+        // Extraer países únicos
+        const paisesSet = new Set<string>()
+        data?.forEach((area: any) => {
+          if (area.pais) {
+            paisesSet.add(area.pais.trim())
+          }
+        })
+
+        const paisesArray = Array.from(paisesSet).sort()
+        console.log(`✅ ${paisesArray.length} países disponibles cargados`)
+        setPaisesDisponibles(paisesArray)
+
+        // Guardar en cache
+        try {
+          localStorage.setItem(PAISES_CACHE_KEY, JSON.stringify(paisesArray))
+          localStorage.setItem(PAISES_TIMESTAMP_KEY, Date.now().toString())
+        } catch (e) {
+          console.warn('⚠️ No se pudo guardar cache de países', e)
+        }
+      } catch (err) {
+        console.error('❌ Error cargando países:', err)
+      }
+    }
+
+    loadPaises()
+  }, []) // Solo ejecutar una vez al montar
 
   // Cargar áreas desde Supabase (OPTIMIZADO: Solo carga el país seleccionado)
   useEffect(() => {
@@ -323,17 +382,6 @@ export default function MapaPage() {
   }, [filtros.pais])
 
   // Obtener países únicos de las áreas
-  const paisesDisponibles = useMemo(() => {
-    const paises = new Set<string>()
-    areas.forEach((area: any) => {
-      if (area.pais) {
-        const paisNormalizado = area.pais.trim()
-        paises.add(paisNormalizado)
-      }
-    })
-    return Array.from(paises).sort()
-  }, [areas])
-
   // Ya no necesitamos comunidades ni provincias
 
   // Filtrar áreas según los filtros aplicados
