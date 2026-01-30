@@ -97,6 +97,7 @@ export default function MapaPage() {
 
         const paisesArray = Array.from(paisesSet).sort()
         console.log(`✅ ${paisesArray.length} países disponibles cargados`)
+        console.log('📋 Lista completa de países:', paisesArray)
         setPaisesDisponibles(paisesArray)
 
         // Guardar en cache

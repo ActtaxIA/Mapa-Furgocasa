@@ -54,6 +54,9 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
   const [paisDropdownOpen, setPaisDropdownOpen] = useState(false)
   const paisDropdownRef = useRef<HTMLDivElement>(null)
 
+  // Debug: Log de países disponibles
+  console.log(`🌍 FiltrosMapa recibió ${paisesDisponibles.length} países:`, paisesDisponibles)
+
   // Sincronizar con filtros externos cuando cambian
   useEffect(() => {
     setBusquedaLocal(filtros.busqueda)
