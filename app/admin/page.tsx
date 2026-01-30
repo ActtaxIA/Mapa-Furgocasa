@@ -17,7 +17,8 @@ import {
   PlusIcon,
   ExclamationTriangleIcon,
   TruckIcon,
-  TableCellsIcon
+  TableCellsIcon,
+  MapIcon
 } from '@heroicons/react/24/outline'
 
 export default function AdminDashboardPage() {
@@ -57,6 +58,13 @@ export default function AdminDashboardPage() {
       icon: <MagnifyingGlassIcon className="w-12 h-12" />,
       href: '/admin/areas/busqueda-masiva',
       color: 'from-blue-500 to-sky-600'
+    },
+    {
+      title: 'Configuración de Mapas',
+      description: 'Elige proveedor y estilo de mapas',
+      icon: <MapIcon className="w-12 h-12" />,
+      href: '/admin/mapas',
+      color: 'from-violet-500 to-purple-600'
     },
     {
       title: 'Actualizar Servicios',

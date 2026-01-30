@@ -6,6 +6,8 @@ import { MarkerClusterer, SuperClusterAlgorithm } from '@googlemaps/markercluste
 import type { Area } from '@/types/database.types'
 import Link from 'next/link'
 import { BuscadorGeografico } from './BuscadorGeografico'
+import { useMapConfig } from '@/hooks/useMapConfig'
+import { getMapStyle } from '@/lib/mapStyles'
 
 // Tipos simplificados para Google Maps (se cargan dinámicamente)
 type GoogleMap = any
@@ -33,6 +35,9 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const watchIdRef = useRef<number | null>(null)
   const [showInfoTooltip, setShowInfoTooltip] = useState(false) // Estado para tooltip de información
+  
+  // Cargar configuración de mapa desde Supabase
+  const { config: mapConfig } = useMapConfig()
   
   // Handler para cuando se busca una ubicación geográfica
   const handleLocationFound = (location: { lat: number; lng: number; address: string; country: string; countryCode: string }) => {
@@ -111,6 +116,11 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
           }
 
           console.log('🗺️ Inicializando mapa con centro:', { lat: 40.4168, lng: -3.7038 }, 'zoom:', 6)
+          
+          // Obtener estilo según configuración
+          const mapStyle = getMapStyle(mapConfig.estilo)
+          console.log(`🎨 Aplicando estilo: ${mapConfig.estilo}`, mapStyle.length > 0 ? `(${mapStyle.length} reglas)` : '(default)')
+          
           const mapInstance = new Map(mapRef.current, {
             mapId: "DEMO_MAP_ID", // Activa mapas vectoriales (transiciones suaves)
             isFractionalZoomEnabled: true, // Zoom fluido sin "saltos"
@@ -124,13 +134,7 @@ export function MapaInteractivo({ areas, areaSeleccionada, onAreaClick, mapRef: 
               position: google.maps.ControlPosition.RIGHT_CENTER
             },
             gestureHandling: 'greedy', // Permite desplazar con un dedo en móvil
-            styles: [
-              {
-                featureType: 'poi',
-                elementType: 'labels',
-                stylers: [{ visibility: 'off' }]
-              }
-            ]
+            styles: mapStyle // Aplicar estilo según configuración
           })
 
           setMap(mapInstance)
