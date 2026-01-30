@@ -414,7 +414,7 @@ export function MapLibreMap({
 
       {/* Buscador Geográfico - Igual que en Google Maps */}
       {mapLoaded && (
-        <div className="absolute top-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 w-56 md:w-80 z-10">
+        <div className="absolute top-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 w-56 md:w-80 z-[1000]">
           <BuscadorGeografico
             map={mapRef.current}
             onLocationFound={handleLocationFound}
@@ -424,7 +424,7 @@ export function MapLibreMap({
       )}
 
       {/* Badge MapLibre */}
-      <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg px-3 py-2 z-10">
+      <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg px-3 py-2 z-[1000]">
         <p className="text-xs font-semibold text-gray-700 flex items-center gap-2">
           <span className="text-green-600">⚡</span>
           MapLibre GL (OSM)
@@ -432,7 +432,7 @@ export function MapLibreMap({
       </div>
 
       {/* Contador de áreas */}
-      <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg px-3 py-2 z-10">
+      <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg px-3 py-2 z-[1000]">
         <p className="text-sm font-semibold text-gray-700">
           {areas.length} {areas.length === 1 ? 'área' : 'áreas'}
         </p>
@@ -441,7 +441,7 @@ export function MapLibreMap({
       {/* Botón GPS - Igual que Google Maps */}
       <button
         onClick={() => toggleGPS()}
-        className={`absolute bottom-20 md:bottom-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full shadow-lg font-semibold transition-all z-10 flex items-center gap-2 mb-16 md:mb-0 ${
+        className={`absolute bottom-20 md:bottom-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full shadow-lg font-semibold transition-all z-[1000] flex items-center gap-2 mb-16 md:mb-0 ${
           gpsActive
             ? 'bg-primary-600 text-white hover:bg-primary-700'
             : 'bg-white text-gray-700 hover:bg-gray-50'
@@ -473,7 +473,7 @@ export function MapLibreMap({
       {/* Botón Restablecer Zoom - Igual que Google Maps */}
       <button
         onClick={resetZoom}
-        className="absolute bottom-6 md:bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-10 flex items-center gap-2 font-semibold text-gray-700 mb-16 md:mb-0"
+        className="absolute bottom-6 md:bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-[1000] flex items-center gap-2 font-semibold text-gray-700 mb-16 md:mb-0"
         aria-label="Restablecer zoom"
       >
         <svg

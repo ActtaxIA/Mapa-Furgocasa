@@ -737,7 +737,7 @@ export function MapaInteractivoGoogle({ areas, areaSeleccionada, onAreaClick, ma
 
       {/* Buscador Geogr├ífico - M├│vil: derecha, Desktop: centro */}
       {map && (
-        <div className="absolute top-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 w-56 md:w-80 z-10">
+        <div className="absolute top-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 w-56 md:w-80 z-[1000]">
           <BuscadorGeografico
             map={map}
             onLocationFound={handleLocationFound}
@@ -749,7 +749,7 @@ export function MapaInteractivoGoogle({ areas, areaSeleccionada, onAreaClick, ma
       {/* Bot├│n de Informaci├│n - Izquierda, altura de controles de zoom */}
       <button
         onClick={() => setShowInfoTooltip(!showInfoTooltip)}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-10"
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-[1000]"
         aria-label="Informaci├│n sobre rendimiento"
       >
         <svg
@@ -850,7 +850,7 @@ export function MapaInteractivoGoogle({ areas, areaSeleccionada, onAreaClick, ma
       {/* Bot├│n GPS - Encima de Restablecer Zoom */}
       <button
         onClick={() => toggleGPS()}
-        className={`absolute bottom-20 md:bottom-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full shadow-lg font-semibold transition-all z-10 flex items-center gap-2 mb-16 md:mb-0 ${
+        className={`absolute bottom-20 md:bottom-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full shadow-lg font-semibold transition-all z-[1000] flex items-center gap-2 mb-16 md:mb-0 ${
           gpsActive 
             ? 'bg-orange-500 text-white hover:bg-orange-600' 
             : 'bg-white text-gray-700 hover:bg-gray-50'
@@ -882,7 +882,7 @@ export function MapaInteractivoGoogle({ areas, areaSeleccionada, onAreaClick, ma
       {/* Bot├│n Restablecer Zoom - Abajo Centro (m├ís arriba en m├│vil para evitar bottom bar) */}
       <button
         onClick={resetZoom}
-        className="absolute bottom-6 md:bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-10 flex items-center gap-2 font-semibold text-gray-700 mb-16 md:mb-0"
+        className="absolute bottom-6 md:bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all z-[1000] flex items-center gap-2 font-semibold text-gray-700 mb-16 md:mb-0"
         aria-label="Restablecer zoom"
       >
         <svg
