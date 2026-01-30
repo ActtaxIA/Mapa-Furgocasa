@@ -544,6 +544,40 @@ export function MapLibreMap({
 
   return (
     <div className="relative w-full h-full">
+      {/* Estilos personalizados para popups de MapLibre */}
+      <style jsx global>{`
+        .maplibregl-popup-content {
+          padding: 0 !important;
+          border-radius: 16px !important;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+          overflow: hidden !important;
+        }
+        .maplibregl-popup-close-button {
+          font-size: 24px !important;
+          width: 32px !important;
+          height: 32px !important;
+          color: #6B7280 !important;
+          background: white !important;
+          border-radius: 50% !important;
+          right: 12px !important;
+          top: 12px !important;
+          z-index: 10 !important;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+          transition: all 0.2s !important;
+        }
+        .maplibregl-popup-close-button:hover {
+          background: #F3F4F6 !important;
+          color: #111827 !important;
+          transform: scale(1.1) !important;
+        }
+        .maplibregl-popup-tip {
+          border-top-color: white !important;
+        }
+        .maplibre-popup-custom .maplibregl-popup-content {
+          max-width: 380px !important;
+        }
+      `}</style>
+
       {/* Contenedor del mapa */}
       <div 
         ref={mapContainerRef} 

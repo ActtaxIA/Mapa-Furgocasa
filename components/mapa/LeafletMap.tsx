@@ -472,6 +472,48 @@ export function LeafletMap({
 
   return (
     <div className="relative w-full h-full">
+      {/* Estilos personalizados para popups de Leaflet */}
+      <style jsx global>{`
+        .leaflet-popup-content-wrapper {
+          padding: 0 !important;
+          border-radius: 16px !important;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+          overflow: hidden !important;
+        }
+        .leaflet-popup-content {
+          margin: 0 !important;
+          width: auto !important;
+          max-width: 380px !important;
+        }
+        .leaflet-popup-close-button {
+          font-size: 24px !important;
+          width: 32px !important;
+          height: 32px !important;
+          color: #6B7280 !important;
+          background: white !important;
+          border-radius: 50% !important;
+          right: 12px !important;
+          top: 12px !important;
+          z-index: 10 !important;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+          transition: all 0.2s !important;
+          padding: 0 !important;
+          line-height: 32px !important;
+        }
+        .leaflet-popup-close-button:hover {
+          background: #F3F4F6 !important;
+          color: #111827 !important;
+          transform: scale(1.1) !important;
+        }
+        .leaflet-popup-tip {
+          background: white !important;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        }
+        .leaflet-popup-custom .leaflet-popup-content-wrapper {
+          max-width: 380px !important;
+        }
+      `}</style>
+
       {/* Contenedor del mapa */}
       <div 
         ref={mapContainerRef} 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { MagnifyingGlassIcon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 export interface Filtros {
   busqueda: string
@@ -49,13 +49,6 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
   // ✅ OPTIMIZACIÓN #2: Estado local para el input con debounce
   const [busquedaLocal, setBusquedaLocal] = useState(filtros.busqueda)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
-  
-  // Estado para dropdown personalizado de país
-  const [paisDropdownOpen, setPaisDropdownOpen] = useState(false)
-  const paisDropdownRef = useRef<HTMLDivElement>(null)
-
-  // Debug: Log de países disponibles
-  console.log(`🌍 FiltrosMapa recibió ${paisesDisponibles.length} países:`, paisesDisponibles)
 
   // Sincronizar con filtros externos cuando cambian
   useEffect(() => {
@@ -85,23 +78,6 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
       }
     }
   }, [])
-
-  // Cerrar dropdown al hacer click fuera
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (paisDropdownRef.current && !paisDropdownRef.current.contains(event.target as Node)) {
-        setPaisDropdownOpen(false)
-      }
-    }
-
-    if (paisDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [paisDropdownOpen])
 
   const handlePaisChange = (valor: string) => {
     onFiltrosChange({ ...filtros, pais: valor })
@@ -179,64 +155,23 @@ export function FiltrosMapa({ filtros, onFiltrosChange, onClose, totalResultados
           </div>
         </div>
 
-        {/* País - Dropdown Custom con Scroll Garantizado */}
-        <div ref={paisDropdownRef} className="relative">
+        {/* País - Select HTML nativo (funciona perfectamente) */}
+        <div>
           <label className="block text-xs font-medium text-gray-600 mb-0.5">
             País
           </label>
-          <button
-            type="button"
-            onClick={() => setPaisDropdownOpen(!paisDropdownOpen)}
-            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-transparent bg-white text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+          <select
+            value={filtros.pais}
+            onChange={(e) => handlePaisChange(e.target.value)}
+            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-transparent bg-white"
           >
-            <span className={filtros.pais ? 'text-gray-900' : 'text-gray-500'}>
-              {filtros.pais || 'Todos los países'}
-            </span>
-            <ChevronDownIcon className={`w-4 h-4 text-gray-400 transition-transform ${paisDropdownOpen ? 'rotate-180' : ''}`} />
-          </button>
-
-          {/* Dropdown List con Scroll */}
-          {paisDropdownOpen && (
-            <div className="absolute z-[1000] w-full mt-1 bg-white border border-gray-300 rounded-md shadow-xl max-h-80 overflow-y-auto">
-              {/* Opción "Todos los países" */}
-              <button
-                type="button"
-                onClick={() => {
-                  handlePaisChange('')
-                  setPaisDropdownOpen(false)
-                }}
-                className={`w-full text-left px-3 py-2 text-sm hover:bg-primary-50 transition-colors ${
-                  !filtros.pais ? 'bg-primary-100 font-semibold text-primary-900' : 'text-gray-700'
-                }`}
-              >
-                Todos los países
-              </button>
-
-              {/* Lista de países */}
-              {paisesDisponibles.map((pais) => (
-                <button
-                  key={pais}
-                  type="button"
-                  onClick={() => {
-                    handlePaisChange(pais)
-                    setPaisDropdownOpen(false)
-                  }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-primary-50 transition-colors ${
-                    filtros.pais === pais ? 'bg-primary-100 font-semibold text-primary-900' : 'text-gray-700'
-                  }`}
-                >
-                  {pais}
-                </button>
-              ))}
-              
-              {/* Indicador de total de países */}
-              {paisesDisponibles.length > 0 && (
-                <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-3 py-2 text-xs text-gray-500 text-center">
-                  {paisesDisponibles.length} países disponibles
-                </div>
-              )}
-            </div>
-          )}
+            <option value="">Todos los países</option>
+            {paisesDisponibles.map((pais) => (
+              <option key={pais} value={pais}>
+                {pais}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Servicios */}
